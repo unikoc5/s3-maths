@@ -4,13 +4,11 @@
  * chips swap the deck source.
  *
  * Tab 2 (Interactive Tool): a "simple vs compound interest" coin-stack timeline.
- * The learner drags three sliders — principal (1–10 coins), rate (5–30%) and time
- * (1–5 yr). Two lanes grow a stack of coins year by year:
- *   • Simple   — the principal coins are set aside; a fixed batch of interest coins
- *                is added each year (only the principal ever earns).
- *   • Compound — the whole pile grows by (1 + r) each year, so interest coins earn
- *                interest too; the newest year's coins glow.
- * KaTeX formula cards and a difference call-out summarise the two.
+ * The learner drags principal ($100–$1000), rate (5–30%) and time (1–5 yr), and
+ * can switch compound frequency (yearly / half-yearly / monthly). Stacks are scaled so large
+ * dollar amounts stay readable (not one coin per dollar).
+ *   • Simple   — only the principal earns each year.
+ *   • Compound — interest joins the pile each period (year, half-year, or month).
  *
  * Concept colours match the Manim decks:
  *   old value -> blue   new value -> amber   change factor -> violet
@@ -22,6 +20,8 @@
   const NS = "http://www.w3.org/2000/svg";
   const GOLD = "#FFD54F", GOLD_S = "#caa12f", GREEN = "#66BB6A", GREEN_S = "#3d8b40";
   const GLOW_RING = "#EF5350";
+  /** Cap visual coins so $1000 piles stay readable. */
+  const MAX_VISUAL_COINS = 28;
 
   function E(tag, attrs) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
   function clear(n) { while (n && n.firstChild) n.removeChild(n.firstChild); }
@@ -35,8 +35,22 @@
     const pV = document.getElementById("it-pv"), rV = document.getElementById("it-rv"), tV = document.getElementById("it-tv");
     const simpleSvg = document.getElementById("it-simple"), compoundSvg = document.getElementById("it-compound");
     const simpleTot = document.getElementById("it-simple-tot"), compoundTot = document.getElementById("it-compound-tot");
+    const guidance = document.getElementById("it-guidance");
+    const freqBtns = document.querySelectorAll(".it-freq-btn");
 
+    let freq = "year"; // "year" | "half" | "month"
     const YBASE = 256, TOPPAD = 46, RY = 7;
+
+    function freqPeriodsPerYear(f) {
+      if (f === "month") return 12;
+      if (f === "half") return 2;
+      return 1;
+    }
+    function freqLabel(f) {
+      if (f === "month") return "monthly";
+      if (f === "half") return "half-yearly";
+      return "yearly";
+    }
 
     function drawCoin(g, cx, cy, rx, fill, stroke, glow) {
       if (glow) g.appendChild(E("ellipse", { cx, cy, rx: rx + 2, ry: RY + 2, fill: "none", stroke: GLOW_RING, "stroke-width": 2, opacity: 0.95 }));
@@ -50,52 +64,75 @@
       t.textContent = txt; g.appendChild(t); return t;
     }
 
-    // render one lane. interestAt(y) = interest dollars after y years (theoretical, exact)
-    function renderLane(svg, P, years, dy, rx, interestAt, accent) {
+    /** Map dollars → visual coin count using a shared scale (scale = dollars per coin). */
+    function visualCoins(dollars, scale) {
+      if (dollars <= 0.005) return 0;
+      return Math.max(1, Math.round(dollars / scale));
+    }
+
+    // render one lane. amountAt(y) = total amount after y years; interestAt(y) = interest portion
+    function renderLane(svg, years, dy, rx, amountAt, interestAt, scale, accent, periodLabel) {
       clear(svg);
       const n = years + 1, colW = Math.max(96, 700 / n), Wv = n * colW;
       svg.setAttribute("viewBox", "0 0 " + Wv + " 300");
-      let prevICoins = 0;
+      let prevIVis = 0;
       for (let y = 0; y <= years; y++) {
         const cx = colW * (y + 0.5);
+        const amt = amountAt(y);
         const iDollars = interestAt(y);
-        const iCoins = Math.round(iDollars);
-        const newCoins = Math.max(0, iCoins - prevICoins);
-        const total = P + iCoins;
+        const pVis = visualCoins(amt - iDollars, scale);
+        const iVis = visualCoins(iDollars, scale);
+        const totalVis = pVis + iVis;
+        const newIVis = Math.max(0, iVis - prevIVis);
         shadow(svg, cx, rx);
         const g = E("g", {});
         if (y === years) g.setAttribute("class", "coin-pop");
         svg.appendChild(g);
-        for (let i = 0; i < total; i++) {
+        for (let i = 0; i < totalVis; i++) {
           const cy = YBASE - 6 - i * dy;
-          if (i < P) drawCoin(g, cx, cy, rx, GOLD, GOLD_S, false);
-          else { const glow = i >= P + iCoins - newCoins && newCoins > 0; drawCoin(g, cx, cy, rx, GREEN, GREEN_S, glow); }
+          if (i < pVis) drawCoin(g, cx, cy, rx, GOLD, GOLD_S, false);
+          else {
+            const glow = i >= pVis + iVis - newIVis && newIVis > 0;
+            drawCoin(g, cx, cy, rx, GREEN, GREEN_S, glow);
+          }
         }
-        const topY = YBASE - 6 - (total - 1) * dy;
-        const amt = P + iDollars;
+        const topY = YBASE - 6 - (totalVis - 1) * dy;
         const lby = Math.max(16, topY - RY - 12);
         label(svg, cx, lby, money(amt), "#e5e7eb", 13, 700);
-        label(svg, cx, 284, y === 0 ? "Start" : "Year " + y, accent, 12, 600);
-        prevICoins = iCoins;
+        label(svg, cx, 284, y === 0 ? "Start" : periodLabel(y), accent, 12, 600);
+        prevIVis = iVis;
       }
+    }
+
+    function setFreq(next) {
+      freq = (next === "month" || next === "half") ? next : "year";
+      freqBtns.forEach((b) => b.classList.toggle("active", b.dataset.freq === freq));
+      render();
     }
 
     function render() {
       const P = +pS.value, r = +rS.value, t = +tS.value, rate = r / 100;
-      pV.textContent = "$" + P; rV.textContent = r + "%"; tV.textContent = t + " yr";
+      const m = freqPeriodsPerYear(freq);
+      pV.textContent = "$" + P;
+      rV.textContent = r + "%";
+      tV.textContent = t + " yr";
 
       const simpleInterest = (y) => P * rate * y;
-      const compoundInterest = (y) => P * Math.pow(1 + rate, y) - P;
-      const aSimple = P + simpleInterest(t), aCompound = P + compoundInterest(t);
+      const simpleAmount = (y) => P + simpleInterest(y);
+      const compoundAmount = (y) => P * Math.pow(1 + rate / m, m * y);
+      const compoundInterest = (y) => compoundAmount(y) - P;
 
-      // shared vertical scale so the two piles are directly comparable
-      const maxCoins = Math.max(P + Math.round(simpleInterest(t)), P + Math.round(compoundInterest(t)), 1);
-      const dy = Math.min(11, Math.max(3, (YBASE - TOPPAD) / maxCoins));
+      const aSimple = simpleAmount(t), aCompound = compoundAmount(t);
+      const maxAmt = Math.max(aSimple, aCompound, P);
+      const scale = Math.max(1, maxAmt / MAX_VISUAL_COINS);
+      const maxVis = Math.ceil(maxAmt / scale);
+      const dy = Math.min(11, Math.max(3, (YBASE - TOPPAD) / Math.max(maxVis, 1)));
       const n = t + 1, colW = Math.max(96, 700 / n);
       const rx = Math.min(26, colW * 0.34);
 
-      renderLane(simpleSvg, P, t, dy, rx, simpleInterest, "#4FC3F7");
-      renderLane(compoundSvg, P, t, dy, rx, compoundInterest, "#66BB6A");
+      const yearLbl = (y) => "Year " + y;
+      renderLane(simpleSvg, t, dy, rx, simpleAmount, simpleInterest, scale, "#4FC3F7", yearLbl);
+      renderLane(compoundSvg, t, dy, rx, compoundAmount, compoundInterest, scale, "#66BB6A", yearLbl);
       simpleTot.textContent = money(aSimple);
       compoundTot.textContent = money(aCompound);
 
@@ -106,20 +143,58 @@
         "Interest each year is always " + money(perYear) + " (" + r + "% of the original $" + P + "). After " + t +
         (t === 1 ? " year" : " years") + " the interest is " + money(simpleInterest(t)) + ".";
 
-      km(document.getElementById("it-f-compound"),
-        "A = P\\left(1+\\tfrac{r}{100}\\right)^{t} = " + P + "\\left(1+\\tfrac{" + r + "}{100}\\right)^{" + t + "} = \\$" + aCompound.toFixed(2));
-      document.getElementById("it-n-compound").textContent =
-        "Each year you earn " + r + "% of the whole pile, so the interest grows: $" + P + " \u2192 " +
-        money(P * (1 + rate)) + " \u2192 " + money(P * Math.pow(1 + rate, 2)) + " \u2026  After " + t +
-        (t === 1 ? " year" : " years") + " the interest is " + money(compoundInterest(t)) + ".";
+      if (freq === "month") {
+        km(document.getElementById("it-f-compound"),
+          "A = P\\left(1+\\tfrac{r}{100\\cdot 12}\\right)^{12t} = " + P +
+          "\\left(1+\\tfrac{" + r + "}{1200}\\right)^{" + (12 * t) + "} = \\$" + aCompound.toFixed(2));
+        document.getElementById("it-n-compound").textContent =
+          "Compounded monthly: each month you earn " + (r / 12).toFixed(3) + "% of the whole pile (" +
+          (12 * t) + " periods in " + t + (t === 1 ? " year" : " years") + "). Interest ends at " +
+          money(compoundInterest(t)) + ".";
+      } else if (freq === "half") {
+        km(document.getElementById("it-f-compound"),
+          "A = P\\left(1+\\tfrac{r}{100\\cdot 2}\\right)^{2t} = " + P +
+          "\\left(1+\\tfrac{" + r + "}{200}\\right)^{" + (2 * t) + "} = \\$" + aCompound.toFixed(2));
+        document.getElementById("it-n-compound").textContent =
+          "Compounded half-yearly: every 6 months you earn " + (r / 2).toFixed(2) + "% of the whole pile (" +
+          (2 * t) + " periods in " + t + (t === 1 ? " year" : " years") + "). Interest ends at " +
+          money(compoundInterest(t)) + ".";
+      } else {
+        km(document.getElementById("it-f-compound"),
+          "A = P\\left(1+\\tfrac{r}{100}\\right)^{t} = " + P + "\\left(1+\\tfrac{" + r + "}{100}\\right)^{" + t + "} = \\$" + aCompound.toFixed(2));
+        document.getElementById("it-n-compound").textContent =
+          "Each year you earn " + r + "% of the whole pile, so the interest grows: $" + P + " \u2192 " +
+          money(P * (1 + rate)) + " \u2192 " + money(P * Math.pow(1 + rate, 2)) + " \u2026  After " + t +
+          (t === 1 ? " year" : " years") + " the interest is " + money(compoundInterest(t)) + ".";
+      }
 
+      const extra = aCompound - aSimple;
+      const freqWord = freqLabel(freq) + " compound";
       document.getElementById("it-diff").innerHTML =
-        "After <b>" + t + (t === 1 ? " year" : " years") + "</b> at <b>" + r + "%</b>: compound grows to <b>" + money(aCompound) +
-        "</b> versus simple's <span class=\"sm\">" + money(aSimple) + "</span> \u2014 compound earns <b>" + money(aCompound - aSimple) + "</b> more.";
+        "After <b>" + t + (t === 1 ? " year" : " years") + "</b> at <b>" + r + "%</b> (" + freqWord + "): compound grows to <b>" + money(aCompound) +
+        "</b> versus simple's <span class=\"sm\">" + money(aSimple) + "</span> \u2014 compound earns <b>" + money(extra) + "</b> more.";
+
+      if (guidance) {
+        const showTip = t >= 3 && extra > P * 0.02;
+        guidance.hidden = !showTip;
+        if (showTip) {
+          if (freq === "month") {
+            guidance.innerHTML = "Notice: <b>monthly</b> compounding pulls ahead of simple (and yearly / half-yearly) because interest is added most often.";
+          } else if (freq === "half") {
+            guidance.innerHTML = "Notice: <b>half-yearly</b> sits between yearly and monthly — a common wording in public-exam compound-interest questions.";
+          } else {
+            guidance.innerHTML = "Notice: <b>compound</b> pulls ahead because interest earns interest. Try <b>half-yearly</b> or <b>Monthly</b> for a larger gap.";
+          }
+        }
+      }
+
+      if (typeof window.__jmToolsPostHeight === "function") {
+        requestAnimationFrame(window.__jmToolsPostHeight);
+      }
     }
 
     [pS, rS, tS].forEach((s) => s.addEventListener("input", render));
-    // single-tool subnav: keep the chip active state tidy
+    freqBtns.forEach((b) => b.addEventListener("click", () => setFreq(b.dataset.freq)));
     document.querySelectorAll("#panel-tools [data-tool]").forEach((b) => b.addEventListener("click", () => {
       document.querySelectorAll("#panel-tools [data-tool]").forEach((x) => x.classList.toggle("active", x === b));
     }));

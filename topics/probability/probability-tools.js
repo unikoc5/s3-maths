@@ -335,14 +335,20 @@
   const ENUM_CAP = 8000;       // safety cap on enumerated outcomes
   const TREE_MAX_LEAVES = 40;  // above this, the tree is too dense to draw
   const TAB_MAX_LEAVES = 240;  // above this, list a summary instead of every row
+  const FILL_MAX_LEAVES = 8;   // Fill-branches practice: keep the tree small
 
   function initBallTool() {
     const nbagsBox = document.getElementById("bb-nbags");
     const replaceCb = document.getElementById("bb-replace");
+    const modeBox = document.getElementById("bb-mode");
     const favSel = document.getElementById("bb-fav");
     const resetBtn = document.getElementById("bb-reset");
     const bagsBox = document.getElementById("bb-bags");
     const warn = document.getElementById("bb-warn");
+    const fillBar = document.getElementById("bb-fill-bar");
+    const fillCheck = document.getElementById("bb-fill-check");
+    const fillReveal = document.getElementById("bb-fill-reveal");
+    const fillStatus = document.getElementById("bb-fill-status");
     const fBox = document.getElementById("bb-formula");
     const treeSvg = document.getElementById("bb-tree-svg");
     const tabBox = document.getElementById("bb-tab");
@@ -350,13 +356,17 @@
 
     const def = () => ({ nBags: 1,
       bags: [{ R: 2, G: 1, B: 1 }, { R: 1, G: 1, B: 0 }, { R: 1, G: 0, B: 1 }],
-      draws: [2, 0, 0], replace: false, fav: "any_red" });
+      draws: [2, 0, 0], replace: false, fav: "any_red", mode: "explore" });
     let state = def();
+    // edgeKey -> { nInp, dInp, pill, trueFrac, chips }
+    let fillEdges = [];
+    let fillRevealed = false;
     (function fromURL() {
       const q = new URLSearchParams(location.search);
       if (q.get("nbags")) state.nBags = Math.min(3, Math.max(1, +q.get("nbags")));
       if (q.get("replace")) state.replace = q.get("replace") === "1";
       if (q.get("fav") && FAV[q.get("fav")]) state.fav = q.get("fav");
+      state.mode = "explore";
       if (q.get("bags")) q.get("bags").split("_").forEach((bs, i) => {
         const m = bs.split("-").map(Number);
         if (i < 3 && m.length === 3 && m.every((x) => !isNaN(x))) state.bags[i] = { R: m[0], G: m[1], B: m[2] };
@@ -368,6 +378,7 @@
     favSel.value = state.fav;
     replaceCb.checked = state.replace;
     nbagsBox.querySelectorAll(".seg-btn").forEach((x) => x.classList.toggle("active", +x.dataset.n === state.nBags));
+    if (modeBox) modeBox.querySelectorAll(".seg-btn").forEach((x) => x.classList.toggle("active", x.dataset.mode === state.mode));
 
     function bagTotal(b) { const x = state.bags[b]; return x.R + x.G + x.B; }
     function totalDraws() { let s = 0; for (let b = 0; b < state.nBags; b++) s += state.draws[b]; return s; }
@@ -437,10 +448,47 @@
       return { root, leaves, drawList, tooBig };
     }
 
+    function fillUsable(tree) {
+      return !tree.tooBig && tree.drawList.length > 0 && tree.leaves.length > 0 &&
+        tree.leaves.length <= FILL_MAX_LEAVES;
+    }
+
+    function setFillStatus(msg, cls) {
+      if (!fillStatus) return;
+      fillStatus.textContent = msg || "";
+      fillStatus.className = "bb-fill-status" + (cls ? " " + cls : "");
+    }
+
+    function parseFracInput(nRaw, dRaw) {
+      const nStr = String(nRaw == null ? "" : nRaw).trim();
+      const dStr = String(dRaw == null ? "" : dRaw).trim();
+      if (!nStr && !dStr) return { empty: true };
+      // allow "1/2" pasted into numerator alone
+      const slash = nStr.match(/^(-?\d+)\s*\/\s*(-?\d+)$/);
+      if (slash) return { empty: false, frac: fr(+slash[1], +slash[2]) };
+      const n = +nStr, d = +dStr;
+      if (!Number.isFinite(n) || !Number.isFinite(d) || d === 0 || nStr === "" || dStr === "") return { empty: false, bad: true };
+      return { empty: false, frac: fr(n, d) };
+    }
+
+    function sameFrac(a, b) { return a.n === b.n && a.d === b.d; }
+
     /* ---- probability panel ---- */
     function renderFormula(tree) {
       const { leaves, tooBig } = tree;
       clear(fBox);
+      if (state.mode === "fill" && !fillRevealed) {
+        const d = document.createElement("div"); d.className = "eq-line";
+        d.style.cssText = "font-size:14px;color:var(--dim);line-height:1.45";
+        if (!fillUsable(tree)) {
+          d.textContent = "Fill mode needs a small tree (ideally 2 draws, ≤ " + FILL_MAX_LEAVES +
+            " outcomes). Reduce draws or colours, then try again.";
+        } else {
+          d.textContent = "Answers hidden — fill each branch probability on the tree, then press Check. " +
+            (state.replace ? "With replacement: denominators stay the same." : "Without replacement: update the bag after each draw.");
+        }
+        fBox.appendChild(d); return;
+      }
       if (tooBig) {
         const d = document.createElement("div"); d.className = "eq-line";
         d.style.cssText = "font-size:14px;color:var(--dim)";
@@ -475,20 +523,35 @@
     /* ---- tree diagram ---- */
     function renderTree(tree) {
       clear(treeSvg);
+      fillEdges = [];
       const { root, leaves, drawList, tooBig } = tree;
       const pred = FAV[state.fav].test;
       const D = drawList.length;
-      if (D === 0) { treeSvg.setAttribute("viewBox", "0 0 400 80");
-        texSvg(treeSvg, 200, 40, tc(C.dim, "\\text{choose a draw}"), C.dim, 14, 280, 24); return; }
-      if (tooBig || leaves.length > TREE_MAX_LEAVES) {
+      const fillMode = state.mode === "fill";
+
+      if (D === 0) {
+        treeSvg.setAttribute("viewBox", "0 0 400 80");
+        texSvg(treeSvg, 200, 40, tc(C.dim, "\\text{choose a draw}"), C.dim, 14, 280, 24);
+        return;
+      }
+      if (fillMode && !fillUsable(tree)) {
+        treeSvg.setAttribute("viewBox", "0 0 440 120");
+        const n = tooBig ? (ENUM_CAP + "+") : leaves.length;
+        texSvg(treeSvg, 220, 38, tc(C.dim, "\\text{Fill mode needs a smaller tree}"), C.dim, 14, 400, 24);
+        texSvg(treeSvg, 220, 68, tc(C.dim, "\\text{" + n + " outcomes — try 2 draws, fewer colours}"), C.dim, 12, 420, 24);
+        texSvg(treeSvg, 220, 94, tc(C.dim, "\\text{(at most " + FILL_MAX_LEAVES + " outcomes), or switch to Explore}"), C.dim, 12, 400, 22);
+        return;
+      }
+      if (!fillMode && (tooBig || leaves.length > TREE_MAX_LEAVES)) {
         treeSvg.setAttribute("viewBox", "0 0 400 110");
         const n = tooBig ? (ENUM_CAP + "+") : leaves.length;
         texSvg(treeSvg, 200, 45, tc(C.dim, "\\text{" + n + "\\ outcomes}"), C.dim, 15, 360, 24);
         texSvg(treeSvg, 200, 72, tc(C.dim, "\\text{too many to draw — see probability \\& tabulation}"), C.dim, 12, 380, 24);
         return;
       }
-      const LEAFH = 30, TOP = 44, LEFT = 30, LEVELW = 150;
-      const leafLabelW = 150;
+
+      const LEAFH = fillMode ? 44 : 30, TOP = 44, LEFT = 30, LEVELW = fillMode ? 180 : 150;
+      const leafLabelW = fillMode ? 90 : 150;
       let slot = 0;
       (function assignY(n) {
         if (n.leaf || !n.children || !n.children.length) { n.y = TOP + slot * LEAFH + LEAFH / 2; slot++; return n.y; }
@@ -499,49 +562,133 @@
       const W = LEFT + D * LEVELW + leafLabelW, H = Math.max(120, TOP + slot * LEAFH + 10);
       treeSvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
 
-      // level headers
       for (let d = 1; d <= D; d++) {
         const b = drawList[d - 1];
         const lbl = state.nBags > 1 ? `\\text{Draw }${d}\\;(\\text{Bag }${b + 1})` : `\\text{Draw }${d}`;
         texSvg(treeSvg, LEFT + d * LEVELW, 16, tc(C.dim, lbl), C.dim, 12, LEVELW, 22);
       }
-      // start node
       treeSvg.appendChild(E("circle", { cx: root.x, cy: root.y, r: 6, fill: "#1b2945", stroke: C.dim, "stroke-width": 1.5 }));
 
-      (function draw(n) {
-        if (n.children) n.children.forEach((c, i) => { edge(n, c, i, n.children.length); draw(c); });
+      (function draw(n, pathKey) {
+        if (n.children) n.children.forEach((c, i) => {
+          const key = pathKey + c.colour;
+          edge(n, c, i, n.children.length, key);
+          draw(c, key);
+        });
         if (n !== root) ball(n);
-      })(root);
+      })(root, "");
 
-      function edge(p, c, i, cnt) {
+      function edge(p, c, i, cnt, key) {
         const col = BALL[c.colour].fill;
         treeSvg.appendChild(E("line", { x1: p.x, y1: p.y, x2: c.x, y2: c.y,
           stroke: col, "stroke-width": 1.6, opacity: 0.5 }));
-        // small colour-matched pill badge — staggered along the branch per sibling
-        // index so neighbouring fractions never stack on top of one another
         const t = 0.5 + (i - (cnt - 1) / 2) * 0.16;
         const mx = p.x + (c.x - p.x) * t, my = p.y + (c.y - p.y) * t;
-        const pw = 30, ph = 22;
-        treeSvg.appendChild(E("rect", { x: mx - pw / 2, y: my - ph / 2, width: pw, height: ph, rx: 6,
-          fill: "#0f172a", stroke: col, "stroke-width": 1, opacity: 0.97 }));
-        texSvg(treeSvg, mx, my, tc(col, fracTex(c.frac)), col, 10, pw - 7, ph - 3);
+
+        if (!fillMode) {
+          const pw = 30, ph = 22;
+          treeSvg.appendChild(E("rect", { x: mx - pw / 2, y: my - ph / 2, width: pw, height: ph, rx: 6,
+            fill: "#0f172a", stroke: col, "stroke-width": 1, opacity: 0.97 }));
+          texSvg(treeSvg, mx, my, tc(col, fracTex(c.frac)), col, 10, pw - 7, ph - 3);
+          return;
+        }
+
+        // Fill mode: blank fraction inputs + optional chips of bag-based candidates
+        const pw = 58, ph = 28;
+        const pill = E("rect", { x: mx - pw / 2, y: my - ph / 2, width: pw, height: ph, rx: 6,
+          fill: "#0f172a", stroke: col, "stroke-width": 1.2, opacity: 0.97, class: "bb-edge-pill" });
+        treeSvg.appendChild(pill);
+
+        const fo = E("foreignObject", { x: mx - pw / 2, y: my - ph / 2, width: pw, height: ph });
+        fo.setAttribute("overflow", "visible");
+        const wrap = document.createElement("div");
+        wrap.className = "bb-frac-wrap";
+        wrap.style.cssText = "pointer-events:auto;width:" + pw + "px;height:" + ph + "px";
+        const nInp = document.createElement("input");
+        nInp.type = "text"; nInp.inputMode = "numeric"; nInp.className = "bb-frac-inp";
+        nInp.setAttribute("aria-label", "numerator for " + BALL[c.colour].name + " branch");
+        nInp.autocomplete = "off";
+        const slash = document.createElement("span"); slash.className = "bb-frac-slash"; slash.textContent = "/";
+        const dInp = document.createElement("input");
+        dInp.type = "text"; dInp.inputMode = "numeric"; dInp.className = "bb-frac-inp";
+        dInp.setAttribute("aria-label", "denominator for " + BALL[c.colour].name + " branch");
+        dInp.autocomplete = "off";
+        wrap.appendChild(nInp); wrap.appendChild(slash); wrap.appendChild(dInp);
+        fo.appendChild(wrap);
+        treeSvg.appendChild(fo);
+
+        // Candidate chips = distinct sibling branch probs at this node
+        const cand = [];
+        const seen = {};
+        const addCand = (f) => {
+          const s = fracStr(f);
+          if (seen[s] || f.n < 0 || f.d <= 0) return;
+          seen[s] = true; cand.push(f);
+        };
+        p.children.forEach((sib) => addCand(sib.frac));
+        const chipH = 18;
+        const chipFo = E("foreignObject", {
+          x: mx - 48, y: my + ph / 2 + 1, width: 96, height: chipH + 2
+        });
+        chipFo.setAttribute("overflow", "visible");
+        const chipRow = document.createElement("div");
+        chipRow.className = "bb-frac-chips";
+        chipRow.style.cssText = "pointer-events:auto";
+        const chipBtns = [];
+        cand.forEach((f) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "bb-frac-chip";
+          btn.textContent = fracStr(f);
+          btn.addEventListener("click", (ev) => {
+            ev.preventDefault(); ev.stopPropagation();
+            nInp.value = String(f.n); dInp.value = String(f.d);
+            chipBtns.forEach((b) => b.classList.toggle("picked", b === btn));
+            pill.classList.remove("ok", "bad", "revealed");
+            setFillStatus("");
+          });
+          chipRow.appendChild(btn);
+          chipBtns.push(btn);
+        });
+        chipFo.appendChild(chipRow);
+        treeSvg.appendChild(chipFo);
+
+        const onEdit = () => {
+          pill.classList.remove("ok", "bad", "revealed");
+          const parsed = parseFracInput(nInp.value, dInp.value);
+          chipBtns.forEach((b) => {
+            b.classList.toggle("picked", !parsed.empty && !parsed.bad && !!parsed.frac && b.textContent === fracStr(parsed.frac));
+          });
+          setFillStatus("");
+        };
+        nInp.addEventListener("input", onEdit);
+        dInp.addEventListener("input", onEdit);
+        // stop enlarge-modal / card click bubbling from inputs
+        [nInp, dInp, wrap, chipRow].forEach((el) => {
+          el.addEventListener("click", (ev) => ev.stopPropagation());
+          el.addEventListener("mousedown", (ev) => ev.stopPropagation());
+        });
+
+        fillEdges.push({ key, nInp, dInp, pill, trueFrac: c.frac, chipBtns });
       }
       function ball(n) {
         const fav = n.leaf && pred(n.seq);
         const circ = E("circle", { cx: n.x, cy: n.y, r: 9, fill: BALL[n.colour].fill,
-          stroke: fav ? C.fav : "#0b1324", "stroke-width": fav ? 2.5 : 1 });
-        if (fav) circ.setAttribute("filter", "drop-shadow(0 0 4px " + C.fav + ")");
+          stroke: fav && !fillMode ? C.fav : "#0b1324", "stroke-width": fav && !fillMode ? 2.5 : 1 });
+        if (fav && !fillMode) circ.setAttribute("filter", "drop-shadow(0 0 4px " + C.fav + ")");
         treeSvg.appendChild(circ);
         if (n.leaf) {
           let lx = n.x + 16;
-          if (fav) treeSvg.appendChild(E("rect", { x: lx - 4, y: n.y - 12, width: leafLabelW - 18, height: 24, rx: 6,
+          if (fav && !fillMode) treeSvg.appendChild(E("rect", { x: lx - 4, y: n.y - 12, width: leafLabelW - 18, height: 24, rx: 6,
             fill: "rgba(255,213,79,.12)", stroke: C.fav, "stroke-width": 1 }));
           n.seq.forEach((c, i) => {
             treeSvg.appendChild(E("circle", { cx: lx + 6 + i * 14, cy: n.y, r: 5, fill: BALL[c].fill }));
           });
-          const px = lx + 6 + n.seq.length * 14 + 6;
-          texSvg(treeSvg, px + 30, n.y, (fav ? tc(C.fav, "=" + fracTex(n.prob)) : "=" + fracTex(n.prob)),
-            fav ? C.fav : C.dim, 12, 70, 20);
+          if (!fillMode || fillRevealed) {
+            const px = lx + 6 + n.seq.length * 14 + 6;
+            texSvg(treeSvg, px + 30, n.y, (fav ? tc(C.fav, "=" + fracTex(n.prob)) : "=" + fracTex(n.prob)),
+              fav ? C.fav : C.dim, 12, 70, 20);
+          }
         }
       }
     }
@@ -551,6 +698,14 @@
       const { leaves, drawList, tooBig } = tree;
       const pred = FAV[state.fav].test;
       const D = drawList.length;
+      if (state.mode === "fill" && !fillRevealed) {
+        if (!fillUsable(tree)) {
+          tabBox.innerHTML = '<p style="color:var(--dim);font-size:14px">Reduce draws or colours for Fill mode (≤ ' + FILL_MAX_LEAVES + ' outcomes), or switch to Explore.</p>';
+        } else {
+          tabBox.innerHTML = '<p style="color:var(--dim);font-size:14px">Tabulation hidden while you fill the tree. Press Reveal (or switch to Explore) to see every outcome.</p>';
+        }
+        return;
+      }
       if (D === 0) { tabBox.innerHTML = '<p style="color:var(--dim);font-size:14px">No draws selected.</p>'; return; }
       if (tooBig) { tabBox.innerHTML = '<p style="color:var(--dim);font-size:14px">Too many outcomes to list — reduce the number of draws.</p>'; return; }
       if (D !== 2 && leaves.length > TAB_MAX_LEAVES) {
@@ -604,11 +759,77 @@
       </table></div>`;
     }
 
+    function syncFillBar(tree) {
+      if (!fillBar) return;
+      const on = state.mode === "fill";
+      fillBar.classList.toggle("visible", on);
+      if (fillCheck) fillCheck.disabled = !on || !fillUsable(tree);
+      if (fillReveal) fillReveal.disabled = !on || !fillUsable(tree);
+    }
+
+    function checkFillAnswers() {
+      if (!fillEdges.length) return;
+      let ok = 0, wrong = 0, empty = 0;
+      fillEdges.forEach((e) => {
+        const parsed = parseFracInput(e.nInp.value, e.dInp.value);
+        e.pill.classList.remove("ok", "bad", "revealed");
+        if (parsed.empty) { empty++; return; }
+        if (parsed.bad || !sameFrac(parsed.frac, e.trueFrac)) {
+          e.pill.classList.add("bad"); wrong++;
+        } else {
+          e.pill.classList.add("ok"); ok++;
+        }
+      });
+      if (empty && !ok && !wrong) setFillStatus("Enter a fraction on each branch.", "bad");
+      else if (wrong || empty) {
+        setFillStatus((ok ? ok + " correct · " : "") + (wrong ? wrong + " incorrect" : "") +
+          (empty ? (wrong ? " · " : "") + empty + " blank" : "") + ".", "bad");
+      } else {
+        revealFillAnswers(true);
+      }
+    }
+
+    function revealFillAnswers(fromCheck) {
+      fillRevealed = true;
+      const saved = fillEdges.map((e) => ({
+        key: e.key,
+        n: e.nInp.value,
+        d: e.dInp.value,
+      }));
+      const tree = buildTree();
+      renderFormula(tree);
+      renderTree(tree);
+      renderTab(tree);
+      fillEdges.forEach((e) => {
+        if (fromCheck) {
+          const prev = saved.find((s) => s.key === e.key);
+          if (prev) { e.nInp.value = prev.n; e.dInp.value = prev.d; }
+        } else {
+          e.nInp.value = String(e.trueFrac.n);
+          e.dInp.value = String(e.trueFrac.d);
+        }
+        e.pill.classList.remove("ok", "bad", "revealed");
+        e.pill.classList.add(fromCheck ? "ok" : "revealed");
+        if (e.chipBtns) e.chipBtns.forEach((b) => b.classList.toggle("picked", b.textContent === fracStr(e.trueFrac)));
+      });
+      if (fromCheck) setFillStatus("All " + fillEdges.length + " branches correct!", "ok");
+      else setFillStatus("Correct fractions shown.", "ok");
+    }
+
     /* ---- recompute everything ---- */
     function compute() {
       if (totalDraws() === 0) { warn.textContent = "Set at least one draw to build the experiment."; }
-      else { warn.textContent = ""; }
+      else if (state.mode === "fill") {
+        const preview = buildTree();
+        if (!fillUsable(preview) && totalDraws() > 0) {
+          warn.textContent = "Fill branches works best with 2 draws and ≤ " + FILL_MAX_LEAVES +
+            " outcomes — reduce draws or colours (or switch to Explore).";
+        } else { warn.textContent = ""; }
+      } else { warn.textContent = ""; }
+      fillRevealed = false;
+      setFillStatus("");
       const tree = buildTree();
+      syncFillBar(tree);
       renderFormula(tree);
       renderTree(tree);
       renderTab(tree);
@@ -645,6 +866,13 @@
       if (totalDraws() === 0) state.draws[0] = 1;
       renderAll();
     }));
+    if (modeBox) modeBox.querySelectorAll(".seg-btn").forEach((b) => b.addEventListener("click", () => {
+      state.mode = "explore";
+      modeBox.querySelectorAll(".seg-btn").forEach((x) => x.classList.toggle("active", x.dataset.mode === "explore"));
+      compute();
+    }));
+    if (fillCheck) fillCheck.addEventListener("click", (e) => { e.stopPropagation(); checkFillAnswers(); });
+    if (fillReveal) fillReveal.addEventListener("click", (e) => { e.stopPropagation(); revealFillAnswers(false); });
     replaceCb.addEventListener("change", () => {
       state.replace = replaceCb.checked;
       if (!state.replace) for (let b = 0; b < 3; b++) if (state.draws[b] > bagTotal(b)) state.draws[b] = bagTotal(b);
@@ -653,6 +881,7 @@
     favSel.addEventListener("change", () => { state.fav = favSel.value; compute(); });
     resetBtn.addEventListener("click", () => {
       state = def();
+      state.mode = "explore";
       replaceCb.checked = false; favSel.value = state.fav;
       nbagsBox.querySelectorAll(".seg-btn").forEach((x) => x.classList.toggle("active", x.dataset.n === "1"));
       renderAll();

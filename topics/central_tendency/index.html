@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,12 +8,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260813-jm31b">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
     h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
     .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .jm-page { width: min(920px, 100%); }
     #comics-subnav { margin-bottom: 14px; }
     .comic-figure {
       margin: 0;
@@ -28,6 +29,77 @@
       height: auto;
       vertical-align: middle;
     }
+    .note-box {
+      margin-top: 12px; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid rgba(2,132,199,.25); background: rgba(2,132,199,.06);
+      font-size: 14px; line-height: 1.55; color: var(--text);
+    }
+    .split-hint { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+    .quiz-question {
+      margin: 10px 0 14px; font-size: 16px; font-weight: 600; line-height: 1.5; color: var(--text);
+    }
+    .numline-svg {
+      width: 100%; max-width: 640px; height: 100px; display: block; margin: 12px auto 0;
+      border-radius: 14px; border: 1px solid var(--line); background: #0f172a;
+    }
+    .bar-chart-fixed {
+      width: 100%; max-width: 640px; height: 140px; display: block; margin: 12px auto 0;
+      border-radius: 14px; border: 1px solid var(--line); background: #0f172a;
+    }
+    .compare-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;
+    }
+    @media (max-width: 640px) { .compare-grid { grid-template-columns: 1fr; } }
+    .compare-col {
+      padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .compare-col h3 { margin: 0 0 8px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .stat-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .stat-pill {
+      padding: 6px 10px; border-radius: 999px; font-size: 13px; font-weight: 700;
+      border: 1px solid var(--line); background: #fff;
+    }
+    .stat-pill.mean { color: #fbbf24; border-color: rgba(251,191,36,.45); }
+    .stat-pill.median { color: #34d399; border-color: rgba(52,211,153,.45); }
+    .stat-pill.mode { color: #f472b6; border-color: rgba(244,114,182,.45); }
+    .stat-card .lbl .katex { font-size: 1.05em; }
+    .freq-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+    .freq-table th, .freq-table td {
+      border: 1px solid var(--line); padding: 8px 10px; text-align: center;
+    }
+    .freq-table th { background: var(--surface-2); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+    .freq-table input {
+      width: 56px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line);
+      font: inherit; font-weight: 700; text-align: center;
+    }
+    .scenario-card {
+      padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line);
+      background: var(--surface-2); margin-bottom: 12px;
+    }
+    .scenario-card h3 { margin: 0 0 6px; font-size: 16px; }
+    .scenario-card p { margin: 0 0 10px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+    .scenario-data {
+      font-family: ui-monospace, monospace; font-size: 13px; padding: 8px 10px;
+      border-radius: 8px; background: #fff; border: 1px dashed var(--line); margin-bottom: 10px;
+      word-break: break-all;
+    }
+    .scenario-step2 { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+    .rule-box {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px; margin-top: 12px;
+    }
+    .rule-card {
+      padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: #fff;
+      font-size: 14px; line-height: 1.5;
+    }
+    .rule-card strong { display: block; margin-bottom: 4px; color: var(--accent); }
+    .transform-sliders { margin: 12px 0; }
+    .transform-sliders .slider-row { margin: 8px 0; }
+    .transform-sliders span.val { font-weight: 700; min-width: 3em; color: var(--accent); font-variant-numeric: tabular-nums; }
+    #more-questions-panel { display: none; margin-top: 16px; }
+    #more-questions-panel.open { display: block; }
+    .section-gap { margin-top: 20px; padding-top: 4px; }
   </style>
 </head>
 <body>
@@ -35,45 +107,116 @@
     <a class="jm-back" href="/#lessons">← S3 Lessons</a>
     <p class="jm-eyebrow">JM31 · Lesson 31</p>
     <h1>Measures of Central Tendencies</h1>
-    <p class="lead">Build a data set, watch mean, median and mode update live — then add an outlier and compare.</p>
+    <p class="lead">Build a data set, compare mean, median and mode on the number line, explore frequency and weighted mean, then test which average fits each context.</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
     </nav>
     <section id="panel-tools" class="jm-panel">
-      <p class="part-title">Part 1 · Live statistics lab</p>
-      <section class="block">
-        <h2>1. Data set builder</h2>
-        <p class="hint">Add numbers or click a chip to remove it. The bar chart and all three averages update instantly.</p>
-        <div class="count-row">
-          <input id="stat-in" type="number" step="1" placeholder="Value">
-          <button class="btn" type="button" id="stat-add">Add</button>
-          <button class="btn" type="button" id="stat-sample">Sample 2,4,6,8</button>
-          <button class="btn" type="button" id="stat-outlier">Add outlier 100</button>
-          <button class="btn" type="button" id="stat-clear">Clear</button>
-        </div>
-        <div class="chip-list" id="stat-chips"></div>
-        <svg class="bar-chart" id="stat-chart" viewBox="0 0 400 120" aria-label="Bar chart"></svg>
-        <div class="stat-grid">
-          <div class="stat-card"><div class="val" id="stat-mean">—</div><div class="lbl">Mean</div></div>
-          <div class="stat-card"><div class="val" id="stat-median">—</div><div class="lbl">Median</div></div>
-          <div class="stat-card"><div class="val" id="stat-mode">—</div><div class="lbl">Mode</div></div>
-          <div class="stat-card"><div class="val" id="stat-n">0</div><div class="lbl">Count</div></div>
-        </div>
-        <p class="formula" id="stat-insight">Mean uses every value; median resists outliers.</p>
-      </section>
-      <section class="block">
-        <h2>2. Which changed more?</h2>
-        <p class="hint">After adding the outlier, which average moved further from the original mean?</p>
-        <div class="task-box">
+      <div class="subnav" id="jm31-lab-nav" aria-label="Tool labs"></div>
+
+      <div class="lab active" id="lab-averages">
+        <p class="part-title">Lab 1 · Mean · Median · Mode</p>
+        <section class="block">
+          <h2>Three averages on one data set</h2>
+          <p class="hint">Add values (0–999) or load the default set. Click a chip to remove it. Yellow = mean, green = median, pink = mode on the number line.</p>
           <div class="count-row">
-            <button class="btn" type="button" data-ans="mean">Mean</button>
-            <button class="btn" type="button" data-ans="median">Median</button>
-            <button class="btn" type="button" id="stat-quiz-check">Check</button>
+            <input id="avg-in" type="number" min="0" max="999" step="1" value="0">
+            <button class="btn" type="button" id="avg-add">Add</button>
+            <button class="btn" type="button" id="avg-default">Default</button>
+            <button class="btn" type="button" id="avg-clear">Clear</button>
           </div>
-          <p class="feedback" id="stat-quiz-fb">Add the outlier first, then pick your answer.</p>
-        </div>
-      </section>
+          <div class="chip-list" id="avg-chips"></div>
+          <svg class="numline-svg" id="avg-numline" viewBox="0 0 640 100" aria-label="Number line with mean, median and mode"></svg>
+          <div class="stat-grid">
+            <div class="stat-card"><div class="val" id="avg-mean">—</div><div class="lbl">Mean</div></div>
+            <div class="stat-card"><div class="val" id="avg-median">—</div><div class="lbl">Median</div></div>
+            <div class="stat-card"><div class="val" id="avg-mode">—</div><div class="lbl">Mode</div></div>
+            <div class="stat-card"><div class="val" id="avg-n">0</div><div class="lbl">Count n</div></div>
+          </div>
+          <p class="formula" id="avg-formula">\(\bar{x}\) = Mean, \(M_d\) = Median, \(M_o\) = Mode</p>
+          <div class="note-box" id="avg-note">Mean uses every datum; median resists extreme values; mode is the most frequent value.</div>
+
+          <div class="section-gap" id="avg-bar-section" style="display:none">
+            <p class="split-hint">Frequency bar chart (values 0–10 only)</p>
+            <svg class="bar-chart-fixed" id="avg-bar-chart" viewBox="0 0 640 140" aria-label="Frequency bar chart from current data set"></svg>
+          </div>
+
+          <div class="section-gap">
+            <h2 style="font-size:17px;margin:0 0 8px">Weighted mean</h2>
+            <p class="hint">Edit marks and weights (%). Weighted mean = Σ(mark × weight) ÷ Σweights.</p>
+            <table class="freq-table" id="weight-table" aria-label="Weighted mean table"></table>
+            <div class="stat-grid">
+              <div class="stat-card"><div class="val" id="weight-mean">—</div><div class="lbl">Weighted \(\bar{x}\)</div></div>
+              <div class="stat-card"><div class="val" id="weight-sum">—</div><div class="lbl">Σ(weight × mark)</div></div>
+              <div class="stat-card"><div class="val" id="weight-wsum">—</div><div class="lbl">Σ weights</div></div>
+            </div>
+            <p class="formula" id="weight-formula">Weighted mean = (45%×59 + 25%×47 + …) ÷ 100%</p>
+          </div>
+
+          <div class="section-gap task-box">
+            <p class="quiz-question">After adding an outlier to 2, 4, 6, 8, which average moved further from the original mean?</p>
+            <div class="count-row">
+              <button class="btn" type="button" data-oans="mean">Mean</button>
+              <button class="btn" type="button" data-oans="median">Median</button>
+            </div>
+            <p class="feedback" id="outlier-fb"></p>
+          </div>
+
+          <div class="section-gap" style="text-align:center">
+            <button class="btn" type="button" id="more-questions-btn">More questions</button>
+          </div>
+          <div id="more-questions-panel">
+            <section class="block" style="margin-top:12px">
+              <h2>Which average fits?</h2>
+              <p class="hint">Read the data and context — pick the best average for each scenario.</p>
+              <div id="scenario-list"></div>
+            </section>
+          </div>
+        </section>
+      </div>
+
+      <div class="lab" id="lab-transform">
+        <p class="part-title">Lab 2 · + / × constant</p>
+        <section class="block">
+          <h2>Effect on \(\bar{x}\), \(M_d\) &amp; \(M_o\)</h2>
+          <p class="hint">Move the sliders to add a constant or multiply every value. Data are shown in ascending order.</p>
+          <div class="count-row">
+            <button class="btn" type="button" data-tpreset="custom">Simple sample</button>
+            <button class="btn" type="button" data-tpreset="notes">Small sample</button>
+            <button class="btn" type="button" data-tpreset="exam">Exam sample</button>
+          </div>
+          <div class="chip-list" id="transform-chips"></div>
+          <div class="transform-sliders">
+            <div class="slider-row">
+              <label for="transform-add">+c to each datum</label>
+              <input id="transform-add" type="range" min="-15" max="15" step="1" value="0">
+              <span class="val" id="transform-add-val">0</span>
+            </div>
+            <div class="slider-row">
+              <label for="transform-mul">×k each datum</label>
+              <input id="transform-mul" type="range" min="0.5" max="3" step="0.1" value="1">
+              <span class="val" id="transform-mul-val">1</span>
+            </div>
+          </div>
+          <div class="compare-grid">
+            <div class="compare-col">
+              <h3>Original</h3>
+              <div class="stat-row" id="transform-orig"></div>
+            </div>
+            <div class="compare-col">
+              <h3>After ×k then +c</h3>
+              <div class="stat-row" id="transform-new"></div>
+            </div>
+          </div>
+          <div class="rule-box">
+            <div class="rule-card"><strong>+c to every datum</strong>new \(\bar{x}\) = \(\bar{x}\) + c<br>new \(M_d\) = \(M_d\) + c<br>new \(M_o\) = \(M_o\) + c</div>
+            <div class="rule-card"><strong>×k every datum</strong>new \(\bar{x}\) = \(\bar{x}\) × k<br>new \(M_d\) = \(M_d\) × k<br>new \(M_o\) = \(M_o\) × k</div>
+            <div class="rule-card"><strong>Both (×k then +c)</strong>Each average follows the same transform.</div>
+          </div>
+          <div class="note-box" id="transform-note">Move the sliders — +c shifts all three averages by c; ×k scales all three by k.</div>
+        </section>
+      </div>
     </section>
     <section id="panel-comics" class="jm-panel hidden">
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
@@ -83,12 +226,18 @@
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260729-jm"></script>
-  <script defer src="central-tendency-tools.js?v=20260729-jm"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260813-jm31b"></script>
+  <script defer src="central-tendency-tools.js?v=20260813-jm31f"></script>
   <script defer src="central-tendency-comics.js?v=20260818-jm31d"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
+      if (window.renderMathInElement) {
+        window.renderMathInElement(document.getElementById("avg-formula"), {
+          delimiters: [{ left: "\\(", right: "\\)", display: false }],
+          throwOnError: false,
+        });
+      }
     });
   </script>
 </body>

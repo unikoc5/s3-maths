@@ -104,7 +104,8 @@
   var angDrag = null;
   var matchDrag = null;
   var matchOverlay = false;
-  var matchReveal = 0; // 0 = show nothing first; -1 = show all
+  var matchHighlight = null;
+  var matchPulseOnce = false;
 
   var PAIR_COLORS = [
     { fill: "rgba(56,189,248,.5)", stroke: "#38bdf8", text: "#7dd3fc" },
@@ -980,7 +981,43 @@
   var MATCH_LEFT = { x: 15, y: 20, w: 235, h: 280 };
   var MATCH_RIGHT = { x: 270, y: 20, w: 235, h: 280 };
   var MATCH_CENTER = { x: 120, y: 30, w: 280, h: 260 };
+  var MATCH_MIN_ANGLE = 18;
+  var MATCH_MAX_SIDE_RATIO = 3.2;
+  var MATCH_K_MIN = 0.7;
+  var MATCH_K_MAX = 1.25;
   var lastMatchLayout = null;
+
+  /** Reject collapsed / needle-thin shapes so labels stay readable. */
+  function matchShapeAllowed(sh) {
+    var v = [
+      { x: 0, y: 0 },
+      { x: sh[1].x, y: sh[1].y },
+      { x: sh[2].x, y: sh[2].y },
+    ];
+    var area2 = Math.abs(sh[1].x * sh[2].y - sh[2].x * sh[1].y);
+    if (area2 < 3500) return false;
+    for (var i = 0; i < 3; i++) {
+      var a = angleAt(v, i);
+      if (!(a >= MATCH_MIN_ANGLE && a <= 180 - MATCH_MIN_ANGLE)) return false;
+    }
+    var sides = sideLengths(v);
+    var lo = Math.min(sides[0], sides[1], sides[2]);
+    var hi = Math.max(sides[0], sides[1], sides[2]);
+    if (lo < 1e-6 || hi / lo > MATCH_MAX_SIDE_RATIO) return false;
+    return true;
+  }
+
+  function clampMatchPointer(p) {
+    var pad = 12;
+    return {
+      x: Math.max(MATCH_LEFT.x + pad, Math.min(MATCH_LEFT.x + MATCH_LEFT.w - pad, p.x)),
+      y: Math.max(MATCH_LEFT.y + pad, Math.min(MATCH_LEFT.y + MATCH_LEFT.h - pad, p.y)),
+    };
+  }
+
+  function clampSimK(k) {
+    return Math.max(MATCH_K_MIN, Math.min(MATCH_K_MAX, k));
+  }
 
   /** Congruent: same scale. Similar: DEF size fixed; ABC = DEF/k so changing k resizes ABC only. */
   function layoutMatchPair(raw, k, congruent) {
@@ -995,8 +1032,9 @@
         sh: sh,
       };
     }
+    k = clampSimK(k);
     var sDef = fitScale(sh, MATCH_RIGHT);
-    var sAbc = sDef / Math.max(k, 0.05);
+    var sAbc = sDef / Math.max(k, MATCH_K_MIN);
     var sAbcMax = fitScale(sh, MATCH_LEFT);
     if (sAbc > sAbcMax) {
       sAbc = sAbcMax;
@@ -1045,11 +1083,18 @@
     });
   }
 
-  function sideRatioLabel(g, p, q, text, col) {
+  function sideRatioLabel(g, p, q, text, col, awayFrom) {
     var m = mid(p, q);
     var n = perp(unit(p, q));
+    if (awayFrom) {
+      var outward = { x: m.x - awayFrom.x, y: m.y - awayFrom.y };
+      if (n.x * outward.x + n.y * outward.y < 0) {
+        n = { x: -n.x, y: -n.y };
+      }
+    }
+    var dist = 22;
     var t = E("text", {
-      x: m.x + n.x * 14, y: m.y + n.y * 14 + 4,
+      x: m.x + n.x * dist, y: m.y + n.y * dist + 4,
       fill: col || "#f472b6", "font-size": 13, "font-weight": 700, "text-anchor": "middle",
     });
     t.textContent = text;
@@ -1057,26 +1102,170 @@
   }
 
   function kSideLabel(name) {
-    var ks = simK.toFixed(1);
-    return ks + name;
+    return formatK(simK) + name;
+  }
+
+  function formatK(k) {
+    return (Math.round(k * 100) / 100).toFixed(2).replace(/\.?0+$/, "");
+  }
+
+  /** Corresponding parts for the active congruence / similarity condition (chip + geometry). */
+  function matchPairDefs(kind, cond) {
+    if (kind === "cong") {
+      if (cond === "SSS") {
+        return [
+          { chip: "AB=DE", type: "side", i0: 0, i1: 1 },
+          { chip: "BC=EF", type: "side", i0: 1, i1: 2 },
+          { chip: "CA=FD", type: "side", i0: 2, i1: 0 },
+        ];
+      }
+      if (cond === "SAS") {
+        return [
+          { chip: "AB=DE", type: "side", i0: 0, i1: 1 },
+          { chip: "∠B=∠E", type: "angle", vi: 1 },
+          { chip: "BC=EF", type: "side", i0: 1, i1: 2 },
+        ];
+      }
+      if (cond === "ASA") {
+        return [
+          { chip: "∠B=∠E", type: "angle", vi: 1 },
+          { chip: "BC=EF", type: "side", i0: 1, i1: 2 },
+          { chip: "∠C=∠F", type: "angle", vi: 2 },
+        ];
+      }
+      if (cond === "AAS") {
+        return [
+          { chip: "∠A=∠D", type: "angle", vi: 0 },
+          { chip: "∠B=∠E", type: "angle", vi: 1 },
+          { chip: "AB=DE", type: "side", i0: 0, i1: 1 },
+        ];
+      }
+      if (cond === "RHS") {
+        return [
+          { chip: "right ∠ at A,D", type: "right", vi: 0 },
+          { chip: "BC=EF", type: "side", i0: 1, i1: 2 },
+          { chip: "AC=DF", type: "side", i0: 0, i1: 2 },
+        ];
+      }
+      return [];
+    }
+    if (cond === "AAA") {
+      return [
+        { chip: "∠A=∠D", type: "angle", vi: 0 },
+        { chip: "∠B=∠E", type: "angle", vi: 1 },
+        { chip: "∠C=∠F", type: "angle", vi: 2 },
+      ];
+    }
+    if (cond === "3sides") {
+      return [
+        { chip: "AB=" + kSideLabel("a"), type: "side", i0: 0, i1: 1 },
+        { chip: "BC=" + kSideLabel("b"), type: "side", i0: 1, i1: 2 },
+        { chip: "CA=" + kSideLabel("c"), type: "side", i0: 2, i1: 0 },
+      ];
+    }
+    return [
+      { chip: "AB=" + kSideLabel("a"), type: "side", i0: 0, i1: 1 },
+      { chip: "∠B=∠E", type: "angle", vi: 1 },
+      { chip: "BC=" + kSideLabel("b"), type: "side", i0: 1, i1: 2 },
+    ];
   }
 
   function congPartsList(cond) {
-    if (cond === "SSS") return ["side AB≅DE", "side BC≅EF", "side CA≅FD"];
-    if (cond === "SAS") return ["side AB≅DE", "∠B≅∠E", "side BC≅EF"];
-    if (cond === "ASA") return ["∠B≅∠E", "side BC≅EF", "∠C≅∠F"];
-    if (cond === "AAS") return ["∠A≅∠D", "∠B≅∠E", "side AB≅DE"];
-    if (cond === "RHS") return ["right ∠ at A,D", "hypotenuse BC≅EF", "side AC≅DF"];
-    return [];
+    return matchPairDefs("cong", cond).map(function (p) { return p.chip; });
   }
 
   function simPartsList(cond) {
-    if (cond === "AAA") return ["∠A=∠D", "∠B=∠E", "∠C=∠F"];
-    if (cond === "3sides") return ["AB:" + kSideLabel("a"), "BC:" + kSideLabel("b"), "CA:" + kSideLabel("c")];
-    return ["AB→" + kSideLabel("a"), "∠B=∠E", "BC→" + kSideLabel("b")];
+    return matchPairDefs("sim", cond).map(function (p) { return p.chip; });
   }
 
-  function applyMatchMarks(svg, A, D, kind, cond, revealCount) {
+  function highlightAngleWedge(g, v, vi, r, fill, stroke) {
+    var V = v[vi];
+    var P = v[(vi + 2) % 3];
+    var Q = v[(vi + 1) % 3];
+    var a0 = Math.atan2(P.y - V.y, P.x - V.x);
+    var a1 = Math.atan2(Q.y - V.y, Q.x - V.x);
+    g.appendChild(E("path", {
+      d: wedgePath(V, a0, a1, r),
+      fill: fill,
+      stroke: stroke,
+      "stroke-width": 2,
+    }));
+  }
+
+  function highlightMatchPair(svg, A, D, def, pulse) {
+    if (!def || !A || !D) return;
+    var g = E("g", pulse ? { class: "match-pulse" } : {});
+    var stroke = "#38bdf8";
+    var fill = "rgba(56,189,248,.42)";
+    if (def.type === "side") {
+      var la = seg(A[def.i0], A[def.i1], stroke, 5.5);
+      var ld = seg(D[def.i0], D[def.i1], stroke, 5.5);
+      la.setAttribute("opacity", "0.95");
+      ld.setAttribute("opacity", "0.95");
+      g.appendChild(la);
+      g.appendChild(ld);
+    } else if (def.type === "angle" || def.type === "right") {
+      var r = def.type === "right" ? 24 : 30;
+      highlightAngleWedge(g, A, def.vi, r, fill, stroke);
+      highlightAngleWedge(g, D, def.vi, r, fill, stroke);
+    }
+    svg.appendChild(g);
+  }
+
+  function refreshMatchPartsChips() {
+    var row = document.getElementById("match-parts-chips");
+    if (!row) return;
+    var cond = matchKind === "cong" ? congMode : simMode;
+    var defs = matchPairDefs(matchKind, cond);
+    if (matchHighlight != null && (matchHighlight < 0 || matchHighlight >= defs.length)) {
+      matchHighlight = null;
+    }
+    row.innerHTML = "";
+    defs.forEach(function (def, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "btn" + (matchHighlight === i ? " active" : "");
+      b.textContent = def.chip;
+      b.addEventListener("click", function () {
+        if (matchHighlight === i) {
+          matchHighlight = null;
+          matchPulseOnce = false;
+        } else {
+          matchHighlight = i;
+          matchPulseOnce = true;
+        }
+        renderMatch();
+      });
+      row.appendChild(b);
+    });
+  }
+
+  function updateMatchKReadout() {
+    var kv = document.getElementById("match-k-val");
+    if (kv) kv.textContent = formatK(simK);
+    var ratios = document.getElementById("match-k-ratios");
+    if (!ratios) return;
+    var k2 = simK * simK;
+    ratios.textContent = "";
+    var side = document.createElement("span");
+    side.innerHTML = "side ratio \\(k = " + formatK(simK) + "\\)";
+    var sep = document.createTextNode(" · ");
+    var area = document.createElement("span");
+    area.innerHTML = "area ratio \\(k^{2} = " + formatK(k2) + "\\)";
+    var note = document.createElement("span");
+    note.textContent = " — area scales by k²";
+    ratios.appendChild(side);
+    ratios.appendChild(sep);
+    ratios.appendChild(area);
+    ratios.appendChild(note);
+    if (window.renderMathInElement) {
+      window.renderMathInElement(ratios, {
+        delimiters: [{ left: "\\(", right: "\\)", display: false }],
+      });
+    }
+  }
+
+  function applyMatchMarks(svg, A, D, kind, cond) {
     var parts = [];
     if (kind === "cong") {
       if (cond === "SSS") {
@@ -1164,32 +1353,34 @@
       });
     } else if (cond === "3sides") {
       var names = ["a", "b", "c"];
+      var cA = triCenter(A);
+      var cD = triCenter(D);
       parts = [[0, 1], [1, 2], [2, 0]].map(function (s, i) {
         return function () {
-          sideRatioLabel(svg, A[s[0]], A[s[1]], names[i], "#f472b6");
-          sideRatioLabel(svg, D[s[0]], D[s[1]], kSideLabel(names[i]), "#f472b6");
+          sideRatioLabel(svg, A[s[0]], A[s[1]], names[i], "#f472b6", cA);
+          sideRatioLabel(svg, D[s[0]], D[s[1]], kSideLabel(names[i]), "#f472b6", cD);
         };
       });
     } else {
+      var cA2 = triCenter(A);
+      var cD2 = triCenter(D);
       parts = [
         function () {
-          sideRatioLabel(svg, A[0], A[1], "a", "#f472b6");
-          sideRatioLabel(svg, D[0], D[1], kSideLabel("a"), "#f472b6");
+          sideRatioLabel(svg, A[0], A[1], "a", "#f472b6", cA2);
+          sideRatioLabel(svg, D[0], D[1], kSideLabel("a"), "#f472b6", cD2);
         },
         function () {
           svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
           svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
         },
         function () {
-          sideRatioLabel(svg, A[1], A[2], "b", "#f472b6");
-          sideRatioLabel(svg, D[1], D[2], kSideLabel("b"), "#f472b6");
+          sideRatioLabel(svg, A[1], A[2], "b", "#f472b6", cA2);
+          sideRatioLabel(svg, D[1], D[2], kSideLabel("b"), "#f472b6", cD2);
         },
       ];
     }
 
-    var n = revealCount < 0 ? parts.length : Math.min(revealCount, parts.length);
-    for (var i = 0; i < n; i++) parts[i]();
-    return parts.length;
+    for (var i = 0; i < parts.length; i++) parts[i]();
   }
 
   function renderMatch() {
@@ -1229,7 +1420,13 @@
     }
 
     var cond = matchKind === "cong" ? congMode : simMode;
-    var totalParts = applyMatchMarks(svg, A, D, matchKind, cond, matchReveal);
+    applyMatchMarks(svg, A, D, matchKind, cond);
+
+    var defs = matchPairDefs(matchKind, cond);
+    if (matchHighlight != null && defs[matchHighlight]) {
+      highlightMatchPair(svg, A, D, defs[matchHighlight], matchPulseOnce);
+      matchPulseOnce = false;
+    }
 
     if (!(matchKind === "cong" && congMode === "RHS") && !matchOverlay) {
       A.forEach(function (v, i) {
@@ -1247,37 +1444,33 @@
     var note = document.getElementById("match-note");
     if (note) {
       var parts = matchKind === "cong" ? congPartsList(cond) : simPartsList(cond);
-      var shown = matchReveal < 0 ? parts.length : Math.min(matchReveal, parts.length);
       if (matchKind === "cong") {
-        note.textContent = "△ABC " + sym + " △DEF (same size). Marks hidden until you reveal — showing " +
-          shown + "/" + parts.length +
-          (shown ? ": " + parts.slice(0, shown).join("; ") : "") +
-          ".";
+        note.textContent = "△ABC " + sym + " △DEF (same size). Matching parts: " + parts.join("; ") + ".";
       } else {
         note.textContent = "△ABC " + sym + " △DEF. DEF stays fixed size; ABC is scaled so sides of DEF are " +
-          simK.toFixed(1) + "× the matching sides of ABC. Showing " + shown + "/" + parts.length + " marks.";
+          formatK(simK) + "× the matching sides of ABC. Matching parts: " + parts.join("; ") + ".";
       }
     }
 
     var kRow = document.getElementById("match-k-row");
     if (kRow) kRow.style.display = matchKind === "sim" ? "flex" : "none";
-    var kv = document.getElementById("match-k-val");
-    if (kv) kv.textContent = simK.toFixed(1);
+    updateMatchKReadout();
 
     var hint = document.getElementById("match-drag-hint");
     if (hint) {
       hint.textContent = matchKind === "cong"
         ? (matchOverlay
           ? "Overlay on — dashed △DEF sits on △ABC (same size)."
-          : "Drag A, B or C. Start with no marks — use Reveal next / Show all. Overlay stacks △DEF on △ABC.")
+          : "Drag A, B or C. Markings show all matching parts for the selected condition. Overlay stacks △DEF on △ABC.")
         : "Drag A, B or C to change the shape. Adjust k to resize ABC only (DEF size stays put). Labels use " +
-          simK.toFixed(1) + "a, " + simK.toFixed(1) + "b, …";
+          formatK(simK) + "a, " + formatK(simK) + "b, …";
     }
 
-    refreshMatchExtraBtns(totalParts);
+    refreshMatchPartsChips();
+    refreshMatchExtraBtns();
   }
 
-  function refreshMatchExtraBtns(totalParts) {
+  function refreshMatchExtraBtns() {
     var row = document.getElementById("match-extra-btns");
     if (!row) return;
     row.innerHTML = "";
@@ -1291,21 +1484,6 @@
       row.appendChild(b);
     }
 
-    var max = totalParts || (matchKind === "cong" ? congPartsList(congMode).length : simPartsList(simMode).length);
-
-    addBtn("Reveal next", false, function () {
-      if (matchReveal < 0) matchReveal = 0;
-      matchReveal = Math.min(max, matchReveal + 1);
-      renderMatch();
-    });
-    addBtn("Show all", matchReveal < 0, function () {
-      matchReveal = -1;
-      renderMatch();
-    });
-    addBtn("Clear marks", matchReveal === 0, function () {
-      matchReveal = 0;
-      renderMatch();
-    });
     if (matchKind === "cong") {
       addBtn(matchOverlay ? "Side by side" : "Overlay ≅", matchOverlay, function () {
         matchOverlay = !matchOverlay;
@@ -1320,15 +1498,14 @@
     bindBtns("match-cond-btns", items, active, function (id) {
       if (matchKind === "cong") {
         congMode = id;
-        matchReveal = 0;
         if (id === "RHS") {
           matchA = [{ x: 70, y: 230 }, { x: 210, y: 230 }, { x: 70, y: 90 }];
         }
       } else {
         simMode = id;
         matchOverlay = false;
-        matchReveal = 0;
       }
+      matchHighlight = null;
       renderMatch();
     });
   }
@@ -1408,7 +1585,7 @@
     bindBtns("match-kind-btns", MATCH_KINDS, matchKind, function (id) {
       matchKind = id;
       matchOverlay = false;
-      matchReveal = 0;
+      matchHighlight = null;
       refreshMatchCondBtns();
       renderMatch();
     });
@@ -1459,7 +1636,7 @@
     });
     matchSvg.addEventListener("pointermove", function (e) {
       if (matchDrag == null || !lastMatchLayout || lastMatchLayout.overlay) return;
-      var p = pt(e, matchSvg);
+      var p = clampMatchPointer(pt(e, matchSvg));
       var sh = lastMatchLayout.sh.slice().map(function (q) { return { x: q.x, y: q.y }; });
       var local = invPlaceToShape(p, lastMatchLayout.sh, lastMatchLayout.sA, MATCH_LEFT);
       sh[matchDrag] = local;
@@ -1468,11 +1645,7 @@
         var dy = sh[0].y;
         sh = sh.map(function (q) { return { x: q.x - dx, y: q.y - dy }; });
       }
-      // Avoid collapsing the triangle
-      var area = Math.abs(
-        (sh[1].x * sh[2].y - sh[2].x * sh[1].y)
-      );
-      if (area < 80) return;
+      if (!matchShapeAllowed(sh)) return;
       commitShapeToMatchA(sh);
       renderMatch();
     });
@@ -1481,8 +1654,12 @@
 
     var kEl = document.getElementById("match-k");
     if (kEl) {
+      kEl.min = String(MATCH_K_MIN);
+      kEl.max = String(MATCH_K_MAX);
+      kEl.value = String(simK);
       kEl.addEventListener("input", function (e) {
-        simK = +e.target.value;
+        simK = clampSimK(+e.target.value);
+        e.target.value = String(simK);
         renderMatch();
       });
     }

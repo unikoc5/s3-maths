@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,17 +6,357 @@
   <title>Factorization &amp; Polynomials — JM25</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260828-sel1">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
+  <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
+  <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
+  <script defer src="factorization-tools.js?v=20260806-jm25-fix4"></script>
   <style>
+  <style>
+    :root {
+      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
+      /* Text colours (readable on light bg) */
+      --a: #0277BD; --b: #9A7209; --ab: #2E7D32;
+      /* Cell / chip fills (keep Manim-bright swatches) */
+      --a-fill: #4FC3F7; --b-fill: #FFB74D; --ab-fill: #81C784;
+      --line: rgba(0, 0, 0, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg); color: var(--ink);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+    }
+    header {
+      padding: 14px 28px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: baseline; gap: 14px;
+    }
+    header h1 { font-size: 22px; margin: 0; font-weight: 700; }
+    header .crumb { color: var(--dim); font-size: 13px; }
+    html.in-embed header { display: none; }
+    .tab-row {
+      display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap;
+      padding: 10px 24px 0; flex: none;
+    }
+    html.in-embed .tab-row { padding-top: 6px; }
+    .tabs { display: flex; gap: 6px; padding: 0; flex: none; }
+    .tab {
+      background: none; border: none; color: var(--dim); font: inherit; font-weight: 600;
+      padding: 10px 16px; cursor: pointer; border-radius: 8px 8px 0 0; font-size: 15px;
+    }
+    .tab.active { color: var(--ink); background: var(--panel); box-shadow: inset 0 -2px 0 var(--a-fill); }
+    .subnav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .chip {
+      background: var(--panel); border: 1px solid var(--line); color: var(--ink);
+      font: inherit; font-weight: 600; padding: 10px 16px; border-radius: 999px; cursor: pointer;
+      font-size: 16px; transition: all .15s; line-height: 1.3;
+    }
+    .chip .katex { font-size: 1.08em; }
+    .chip:hover { color: var(--a); border-color: rgba(2, 119, 189, 0.35); }
+    .chip.active { color: #06283d; background: var(--a-fill); border-color: var(--a-fill); }
+    /* Tab 1: slide deck — height from topic-shell.css */
+    .deck-wrap {
+      background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    }
+    .hint { color: var(--dim); font-size: 13px; text-align: center; margin-top: 10px; }
+    /* Tab 2: tools */
+    .tool-layout {
+      display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(260px, 1fr);
+      gap: 22px; align-items: stretch;
+    }
+    @media (max-width: 960px) {
+      .tool-layout { grid-template-columns: 1fr; gap: 16px; }
+    }
+    .figure-card, .control-stack {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+      min-width: 0;
+    }
+    .tool-sliders { min-width: 0; user-select: none; -webkit-user-select: none; caret-color: transparent; }
+    .tool-meta { min-width: 0; caret-color: transparent; }
+    .eq-line, #tool-eq, .legend-title, .lg-item em, .lg-item .katex, .cross-math, .cross-preview, .cross-step-note {
+      -webkit-user-select: text; user-select: text; caret-color: transparent;
+    }
+    #tool-svg { width: 100%; height: auto; display: block; max-height: min(62vh, 520px); }
+    .control-card h3, .tool-sliders h3 { margin: 2px 0 14px; font-size: 13px; color: var(--ink); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; }
+    .slider-row { display: grid; grid-template-columns: 32px 1fr 40px; align-items: center; gap: 12px; margin-bottom: 14px;
+      user-select: none; -webkit-user-select: none; caret-color: transparent; }
+    .slider-name { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 20px;
+      user-select: none; -webkit-user-select: none; caret-color: transparent; }
+    .slider-val { min-width: 2.6em; font-family: "JetBrains Mono", monospace; text-align: right; color: var(--ink); font-weight: 700; font-size: 16px;
+      user-select: none; -webkit-user-select: none; caret-color: transparent; }
+    .slider-val .katex { font-size: 1em; }
+    input[type=range] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 999px;
+      background: #e8e0d4; outline: none; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+      background: var(--a-fill); cursor: pointer; border: 2px solid #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--a-fill);
+      cursor: pointer; border: 2px solid #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    .tool-action { margin-top: 6px; width: 100%; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+      font: inherit; font-weight: 600; padding: 10px; border-radius: 9px; cursor: pointer; }
+    .tool-action:hover { border-color: var(--a); }
+    #tool-eq { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); min-width: 0; overflow: visible; }
+    .eq-line { font-size: 24px; margin: 14px 0; line-height: 1.55; color: var(--ink); overflow-wrap: anywhere; }
+    .eq-line .katex { font-size: 1.12em; }
+    .eq-hint {
+      font-size: 13px; line-height: 1.5; color: var(--dim); margin: 4px 0 0;
+      white-space: normal; overflow-wrap: anywhere; word-break: break-word;
+    }
+    .eq-hint .eq-hint-math { white-space: nowrap; }
+    .eq-hint .eq-hint-math .katex { font-size: 1.05em; }
+    .legend { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .legend-title { margin: 0 0 10px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink); font-weight: 700; }
+    .lg-item { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 15px; color: var(--ink); }
+    .lg-item .sw { width: 16px; height: 16px; border-radius: 4px; flex: none; border: 1px solid var(--line); }
+    .lg-item .lg-sym { min-width: 36px; font-weight: 700; }
+    .lg-item .lg-sym[data-tex="a"] { color: var(--a); }
+    .lg-item .lg-sym[data-tex="b"] { color: var(--b); }
+    .lg-item .lg-sym[data-tex="ab"] { color: var(--ab); }
+    .lg-item em { font-style: normal; color: var(--dim); font-size: 14px; }
+    /* ── Cross method lab (wizard) ── */
+    .tool-layout.hidden { display: none; }
+    .cross-lab.hidden { display: none; }
+    .cross-lab { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; }
+    .cross-steps { display: flex; gap: 8px; margin-bottom: 18px; }
+    .cross-step-dot {
+      width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+    }
+    .cross-step-dot.active { background: var(--a-fill); color: #06283d; border-color: var(--a-fill); }
+    .cross-step-dot.done { color: var(--ab); border-color: var(--ab-fill); background: rgba(129,199,132,.18); }
+    .cross-step-panel.hidden { display: none; }
+    .cross-step-panel h3 { margin: 0 0 8px; font-size: 15px; color: var(--ink); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; }
+    .cross-step-note { color: var(--dim); font-size: 15px; margin: 0 0 14px; line-height: 1.55; }
+    .cross-math { font-size: 20px; margin: 12px 0; line-height: 1.6; color: var(--ink); }
+    .cross-math .katex { font-size: 1.05em; }
+    .cross-form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .cross-num { width: 64px; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+      border-radius: 9px; padding: 10px 8px; font: inherit; font-size: 18px; font-weight: 700; text-align: center;
+      font-family: "JetBrains Mono", monospace; }
+    .cross-num:focus { outline: none; border-color: var(--a); }
+    .cross-term { font-size: 19px; min-width: 26px; color: var(--ink); }
+    .cross-op { font-size: 20px; color: var(--ink); font-weight: 700; }
+    .cross-preview { font-size: 20px; margin: 8px 0 16px; min-height: 32px; color: var(--ink); }
+    .cross-err { background: rgba(198,40,40,.1); border: 1px solid #C62828; border-radius: 10px;
+      padding: 12px 14px; color: #C62828; font-size: 14px; margin-bottom: 12px; }
+    .cross-err.hidden { display: none; }
+    .cross-nav { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+    .cross-btn { background: var(--panel2); border: 1px solid var(--line); color: var(--ink); font: inherit;
+      font-weight: 600; padding: 10px 20px; border-radius: 9px; cursor: pointer; font-size: 14px; }
+    .cross-btn:hover { border-color: var(--a); }
+    .cross-btn.primary { background: var(--a-fill); color: #06283d; border-color: var(--a-fill); }
+    .cross-lab-layout { display: grid; grid-template-columns: minmax(180px, 280px) minmax(0, 1fr); gap: 18px; align-items: start; }
+    @media (max-width: 860px) { .cross-lab-layout { grid-template-columns: 1fr; } }
+    .cross-pair-bank { background: var(--panel2); border: 1px solid var(--line); border-radius: 12px;
+      padding: 12px; max-height: 520px; overflow-y: auto; }
+    .cross-bank-section { margin-bottom: 14px; }
+    .cross-bank-section:last-child { margin-bottom: 0; }
+    .cross-bank-section h4 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink); font-weight: 700; }
+    .pair-group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;
+      padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 9px; }
+    .pair-group-sep { color: var(--dim); font-size: 13px; font-weight: 700; }
+    .drag-chip {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 34px;
+      padding: 0 10px; border-radius: 8px; font-family: "JetBrains Mono", monospace; font-weight: 700;
+      font-size: 15px; cursor: grab; user-select: none; border: 1px solid var(--line);
+    }
+    .drag-chip.x-chip { background: rgba(79,195,247,.22); color: var(--a); border-color: rgba(2,119,189,.4); }
+    .drag-chip.y-chip { background: rgba(255,213,79,.28); color: var(--b); border-color: rgba(154,114,9,.4); }
+    .drag-chip:active { cursor: grabbing; opacity: .85; }
+    .cross-board { background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+    .cross-board-inner { max-width: 460px; margin: 0 auto 8px; }
+    .cross-grid {
+      display: grid; grid-template-columns: minmax(64px, 84px) 26px 52px minmax(64px, 84px) 26px;
+      grid-template-rows: auto auto; align-items: center; justify-content: center; gap: 10px 4px;
+    }
+    .cross-grid [data-slot="tl"] { grid-column: 1; grid-row: 1; }
+    .cross-grid [data-slot="bl"] { grid-column: 1; grid-row: 2; }
+    .cross-grid [data-slot="tr"] { grid-column: 4; grid-row: 1; }
+    .cross-grid [data-slot="br"] { grid-column: 4; grid-row: 2; }
+    .cross-grid .cv-r1c2 { grid-column: 2; grid-row: 1; }
+    .cross-grid .cv-r2c2 { grid-column: 2; grid-row: 2; }
+    .cross-grid .cv-r1c5 { grid-column: 5; grid-row: 1; }
+    .cross-grid .cv-r2c5 { grid-column: 5; grid-row: 2; }
+    .cross-bridge { grid-column: 3; grid-row: 1 / span 2; display: flex; align-items: center; justify-content: center;
+      align-self: stretch; min-height: 120px; }
+    .cross-bridge svg { width: 52px; height: 100%; max-height: 130px; display: block; }
+    .cross-bridge line { stroke: #2E7D32; stroke-width: 3; stroke-linecap: round; opacity: .9; }
+    .cross-var { text-align: center; font-weight: 700; font-size: 18px; color: var(--ink); }
+    .drop-slot {
+      min-height: 56px; border: 2px dashed rgba(0,0,0,.22); border-radius: 10px; display: flex; align-items: center;
+      justify-content: center; position: relative; background: #fff; transition: border-color .15s, background .15s;
+      z-index: 1; box-shadow: inset 0 0 0 1px rgba(0,0,0,.03);
+    }
+    .drop-slot.drag-over { border-color: var(--a); background: rgba(79,195,247,.12); }
+    .drop-slot.filled { border-style: solid; background: #fff; }
+    .drop-slot.filled.x-slot { border-color: rgba(2,119,189,.55); background: rgba(79,195,247,.12); }
+    .drop-slot.filled.y-slot { border-color: rgba(154,114,9,.55); background: rgba(255,213,79,.18); }
+    .drop-slot.correct { box-shadow: 0 0 0 1px var(--ab) inset; border-color: var(--ab); }
+    .drop-slot.wrong { box-shadow: 0 0 0 1px #C62828 inset; border-color: #C62828; }
+    .slot-val { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 18px; color: var(--ink); }
+    .slot-val.x-val { color: var(--a); }
+    .slot-val.y-val { color: var(--b); }
+    .slot-clear { position: absolute; top: 2px; right: 4px; background: none; border: none; color: var(--dim);
+      font-size: 16px; cursor: pointer; line-height: 1; padding: 2px 4px; }
+    .slot-clear:hover { color: var(--ink); }
+    .cross-equation { font-size: 28px; text-align: center; margin: 0 0 10px; line-height: 1.5; min-height: 42px; color: var(--ink); }
+    .cross-equation .katex { font-size: 1.15em; }
+    .cross-target { font-size: 16px; color: var(--ink); text-align: center; margin-bottom: 12px; font-weight: 600; }
+    .cross-products {
+      display: grid; grid-template-columns: minmax(64px, 84px) 26px 52px minmax(64px, 84px) 26px;
+      align-items: center; justify-content: center; gap: 10px 4px;
+      margin-top: 8px; padding-top: 12px; border-top: 2px solid var(--line); min-height: 44px;
+    }
+    .cross-products.empty { border-top-color: transparent; padding-top: 0; margin-top: 4px; min-height: 0; }
+    .cross-products.empty > * { display: none; }
+    .cross-prod-bl { grid-column: 1; text-align: center; font-size: 24px; color: var(--b); }
+    .cross-prod-bl .katex { color: var(--b); }
+    .cross-prod-tr { grid-column: 4; text-align: center; font-size: 24px; color: var(--a); }
+    .cross-prod-tr .katex { color: var(--a); }
+    .cross-prod-op { grid-column: 3; text-align: center; font-size: 28px; font-weight: 700; color: var(--ink); }
+    .cross-prod-sum-row {
+      text-align: center; font-size: 24px; margin-top: 10px; min-height: 36px;
+      display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+    }
+    .cross-prod-sum-row.hidden { display: none; }
+    .cross-check { display: flex; align-items: center; justify-content: center; min-height: 28px; margin-top: 6px; }
+    .cross-check-math { font-size: 17px; color: var(--ink); }
+    .cross-mark { font-size: 26px; font-weight: 700; line-height: 1; }
+    .cross-mark.ok { color: var(--ab); }
+    .cross-mark.bad { color: #C62828; }
+    .cross-answer { font-size: 20px; text-align: center; margin-top: 10px; color: var(--ink); }
+    .cross-hint { font-size: 14px; color: var(--dim); text-align: center; margin-top: 8px; }
+    .cross-slot.cross-swap-out {
+      animation: cross-swap-out .32s ease-in forwards;
+    }
+    .cross-slot.cross-swap-in {
+      animation: cross-swap-in .38s ease-out;
+    }
+    @keyframes cross-swap-out {
+      to { opacity: .15; transform: translateY(10px) scale(.92); }
+    }
+    @keyframes cross-swap-in {
+      from { opacity: .2; transform: translateY(-12px) scale(.92); }
+      to { opacity: 1; transform: none; }
+    }
+    @media (max-width: 640px) {
+      .chip { font-size: 15px; padding: 9px 12px; }
+      .eq-line { font-size: 18px; }
+      .eq-line .katex { font-size: 1.05em; }
+      .cross-equation { font-size: 22px; }
+      .cross-grid {
+        grid-template-columns: minmax(56px, 72px) 22px 44px minmax(56px, 72px) 22px;
+        gap: 8px 2px;
+      }
+      .cross-products { grid-template-columns: minmax(56px, 72px) 22px 44px minmax(56px, 72px) 22px; }
+      .drop-slot { min-height: 48px; }
+      .control-card, .control-stack, .figure-card, .cross-lab { padding: 14px; }
+    }
+    html.tablet-touch #panel-tools .tool-layout {
+      grid-template-columns: minmax(0, 1.25fr) minmax(240px, 1fr);
+      grid-template-areas:
+        "figure meta"
+        "sliders sliders";
+      gap: 14px;
+      align-items: start;
+    }
+    html.tablet-touch #panel-tools .figure-card {
+      grid-area: figure;
+      padding-bottom: 12px;
+      align-self: stretch;
+    }
+    html.tablet-touch #panel-tools .control-stack {
+      display: contents;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    html.tablet-touch #panel-tools .tool-sliders {
+      grid-area: sliders;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    html.tablet-touch #panel-tools .tool-meta {
+      grid-area: meta;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      align-self: stretch;
+    }
+    html.tablet-touch #panel-tools #tool-eq {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+    html.tablet-touch #panel-tools .legend {
+      margin-top: 16px;
+      padding-top: 14px;
+    }
+    html.tablet-touch #panel-tools .eq-line { font-size: 20px; margin: 10px 0; }
+    html.tablet-touch #panel-tools .eq-line .katex { font-size: 1.06em; }
+    html.tablet-touch #panel-tools .eq-hint { font-size: 12px; margin-top: 2px; }
+    html.tablet-touch #tool-svg { max-width: 100%; margin: 0; max-height: min(52vh, 480px); }
+    /* ── iPhone only — identities tools label sizing (desktop & iPad unchanged) ── */
+    html.phone-compact #panel-tools .figure-card {
+      padding: 12px 10px 14px;
+    }
+    html.phone-compact #tool-svg {
+      width: 100%;
+      max-height: min(46vh, 400px);
+    }
+    html.phone-compact #panel-tools .eq-line {
+      font-size: clamp(15px, 4.2vw, 20px);
+      margin: 8px 0;
+      line-height: 1.45;
+    }
+    html.phone-compact #panel-tools .eq-line .katex {
+      font-size: 1em;
+    }
+    html.phone-compact #panel-tools .eq-hint {
+      font-size: 12px;
+      line-height: 1.45;
+      margin-top: 2px;
+    }
+    html.phone-compact #panel-tools .legend {
+      margin-top: 14px;
+      padding-top: 12px;
+    }
+    html.phone-compact #panel-tools .legend .lg-item {
+      font-size: 14px;
+      margin: 6px 0;
+    }
+    html.phone-compact #panel-tools .legend .lg-item em {
+      font-size: 13px;
+    }
+    html.phone-compact #panel-tools .legend .lg-sym .katex {
+      font-size: 1.05em;
+    }
+    html.phone-compact #panel-tools .slider-name .katex {
+      font-size: 1.15em;
+    }
+    html.phone-compact #panel-tools .slider-val {
+      font-size: 15px;
+    }
+    html.phone-compact #panel-tools .control-card h3,
+    html.phone-compact #panel-tools .tool-sliders h3 {
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    /* Cross method: phone-only label sizing */
     :root {
       --surface: #ffffff;
       --surface-2: #eef2f7;
       --text: #1e293b;
       --muted: #64748b;
-      --line: rgba(30, 41, 59, 0.12);
-      --accent: #0284c7;
+      --line-page: rgba(30, 41, 59, 0.12);
+      --accent-page: #0284c7;
       --glow: #0369a1;
     }
     * { box-sizing: border-box; }
@@ -37,23 +377,20 @@
     }
     .back {
       display: inline-flex; margin-bottom: 18px; padding: 7px 12px;
-      border: 1px solid var(--line); border-radius: 8px;
+      border: 1px solid var(--line-page); border-radius: 8px;
       background: var(--surface-2); color: var(--text);
       text-decoration: none; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
     }
-    .back:hover { border-color: var(--accent); color: var(--accent); }
+    .back:hover { border-color: var(--accent-page); color: var(--accent-page); }
     .eyebrow {
       margin: 0 0 6px; color: var(--glow); font-size: 11px; font-weight: 700;
       letter-spacing: .12em; text-transform: uppercase;
     }
     h1 { margin: 0 0 8px; font-size: clamp(26px, 4vw, 36px); letter-spacing: -.03em; }
     .lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.55; }
-    .back:focus-visible, .tab:focus-visible {
-      outline: 2px solid var(--accent); outline-offset: 3px;
-    }
     .tabs {
       display: flex; gap: 6px; margin: 0 0 14px;
-      border-bottom: 1px solid var(--line); padding-bottom: 0;
+      border-bottom: 1px solid var(--line-page); padding-bottom: 0;
     }
     .tab {
       background: none; border: none; color: var(--muted);
@@ -65,10 +402,11 @@
     .tab.active {
       color: var(--text);
       background: var(--surface);
-      box-shadow: inset 0 -2px 0 var(--accent);
+      box-shadow: inset 0 -2px 0 var(--accent-page);
     }
     .mode-panel { display: block; }
     .mode-panel.hidden { display: none; }
+    #panel-tools { padding-top: 4px; }
   </style>
 </head>
 <body>
@@ -83,11 +421,139 @@
       <button class="tab" type="button" data-tab="comics">Comics</button>
     </nav>
 
-    <section id="panel-tools" class="mode-panel"></section>
-    <section id="panel-comics" class="mode-panel hidden"></section>
+    <section id="panel-tools" class="mode-panel">
+    <div class="subnav">
+      <button class="chip active" data-tool="sum" data-tex="(a+b)^2"></button>
+      <button class="chip" data-tool="diff" data-tex="(a-b)^2"></button>
+      <button class="chip" data-tool="dos" data-tex="a^2-b^2"></button>
+      <button class="chip" data-tool="cross">Cross method</button>
+    </div>
+    <div class="tool-layout">
+      <div class="figure-card">
+        <svg id="tool-svg" viewBox="0 0 400 380" role="img" aria-label="interactive area model"></svg>
+      </div>
+      <div class="control-stack">
+        <div class="tool-sliders">
+          <h3>Drag the variables</h3>
+          <div id="tool-controls"></div>
+        </div>
+        <div class="tool-meta">
+          <div id="tool-eq"></div>
+          <div class="legend">
+            <p class="legend-title">Colour key</p>
+            <div class="lg-item"><i class="sw" style="background:var(--a-fill)"></i><span class="lg-sym" data-tex="a"></span><em>multiple of x</em></div>
+            <div class="lg-item"><i class="sw" style="background:var(--b-fill)"></i><span class="lg-sym" data-tex="b"></span><em>multiple of y</em></div>
+            <div class="lg-item"><i class="sw" style="background:var(--ab-fill)"></i><span class="lg-sym" data-tex="ab"></span><em>product / middle term</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="cross-lab" class="cross-lab hidden">
+      <div class="cross-steps" id="cross-steps">
+        <span class="cross-step-dot active" data-step="1">1</span>
+        <span class="cross-step-dot" data-step="2">2</span>
+        <span class="cross-step-dot" data-step="3">3</span>
+        <span class="cross-step-dot" data-step="4">4</span>
+      </div>
+
+      <div class="cross-step-panel" id="cross-step-1">
+        <h3>Step 1 — Enter coefficients</h3>
+        <p class="cross-step-note">Enter the coefficients of the trinomial in x and y.</p>
+        <div class="cross-form">
+          <input id="cross-a" class="cross-num" type="number" value="2" aria-label="x squared coefficient">
+          <span class="cross-term" data-tex="x^2"></span>
+          <span class="cross-op">+</span>
+          <input id="cross-b" class="cross-num" type="number" value="7" aria-label="xy coefficient">
+          <span class="cross-term" data-tex="xy"></span>
+          <span class="cross-op">+</span>
+          <input id="cross-c" class="cross-num" type="number" value="3" aria-label="y squared coefficient">
+          <span class="cross-term" data-tex="y^2"></span>
+        </div>
+        <div id="cross-preview" class="cross-preview"></div>
+        <div id="cross-step1-err" class="cross-err hidden"></div>
+        <div class="cross-nav">
+          <button type="button" class="cross-btn primary" id="cross-next-1">Next</button>
+        </div>
+      </div>
+
+      <div class="cross-step-panel hidden" id="cross-step-2">
+        <h3>Step 2 — Extract negative sign</h3>
+        <p class="cross-step-note" id="cross-step2-note"></p>
+        <div id="cross-step2-math" class="cross-math"></div>
+        <div class="cross-nav">
+          <button type="button" class="cross-btn" id="cross-back-2">Back</button>
+          <button type="button" class="cross-btn primary" id="cross-next-2">Next</button>
+        </div>
+      </div>
+
+      <div class="cross-step-panel hidden" id="cross-step-3">
+        <h3>Step 3 — Extract common factor</h3>
+        <p class="cross-step-note" id="cross-step3-note"></p>
+        <div id="cross-step3-math" class="cross-math"></div>
+        <div class="cross-nav">
+          <button type="button" class="cross-btn" id="cross-back-3">Back</button>
+          <button type="button" class="cross-btn primary" id="cross-next-3">Next</button>
+        </div>
+      </div>
+
+      <div class="cross-step-panel hidden" id="cross-step-4">
+        <h3>Step 4 — Cross method</h3>
+        <p class="cross-step-note">Drag numbers from the factor pairs into the four slots, then check whether the cross products give the correct xy term.</p>
+        <div class="cross-lab-layout">
+          <aside class="cross-pair-bank">
+            <div class="cross-bank-section">
+              <h4>x² pairs (<span id="cross-a2-label"></span>)</h4>
+              <div id="cross-x-pairs"></div>
+            </div>
+            <div class="cross-bank-section">
+              <h4>y² pairs (<span id="cross-c2-label"></span>)</h4>
+              <div id="cross-y-pairs"></div>
+            </div>
+          </aside>
+          <div class="cross-board">
+            <div class="cross-equation" id="cross-equation"></div>
+            <div class="cross-target">Target xy coefficient: <span id="cross-target-b"></span></div>
+            <div class="cross-board-inner" id="cross-board-inner">
+              <div class="cross-grid">
+                <div class="drop-slot x-slot" data-slot="tl" data-kind="x"><span class="slot-placeholder">?</span></div>
+                <span class="cross-var cv-r1c2">x</span>
+                <div class="cross-bridge" aria-hidden="true">
+                  <svg viewBox="0 0 52 120" preserveAspectRatio="xMidYMid meet">
+                    <line x1="6" y1="18" x2="46" y2="102"/>
+                    <line x1="6" y1="102" x2="46" y2="18"/>
+                  </svg>
+                </div>
+                <div class="drop-slot y-slot" data-slot="tr" data-kind="y"><span class="slot-placeholder">?</span></div>
+                <span class="cross-var cv-r1c5">y</span>
+                <div class="drop-slot x-slot" data-slot="bl" data-kind="x"><span class="slot-placeholder">?</span></div>
+                <span class="cross-var cv-r2c2">x</span>
+                <div class="drop-slot y-slot" data-slot="br" data-kind="y"><span class="slot-placeholder">?</span></div>
+                <span class="cross-var cv-r2c5">y</span>
+              </div>
+              <div class="cross-products empty" id="cross-products">
+                <div class="cross-prod-bl" id="cross-prod-bl"></div>
+                <span class="cross-prod-op">+</span>
+                <div class="cross-prod-tr" id="cross-prod-tr"></div>
+              </div>
+              <div class="cross-prod-sum-row hidden" id="cross-prod-sum"></div>
+            </div>
+            <div class="cross-check" id="cross-check">
+              <span class="cross-hint">Fill all four slots to test a combination.</span>
+            </div>
+            <div class="cross-answer" id="cross-answer"></div>
+          </div>
+        </div>
+        <div class="cross-nav">
+          <button type="button" class="cross-btn" id="cross-back-4">Back</button>
+          <button type="button" class="cross-btn" id="cross-clear-slots">Clear slots</button>
+        </div>
+      </div>
+    </div>
+  </section>
+        <section id="panel-comics" class="mode-panel hidden"></section>
   </main>
 
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script src="comics-manifest.js?v=20260828-sel1"></script>
   <script src="comics-quiz.js?v=20260828-sel1"></script>
@@ -119,6 +585,7 @@
         });
         window.__jm25ComicsReady = true;
       }
+      if (name === "tools") renderKatex(document.getElementById("panel-tools"));
     }
 
     document.querySelectorAll(".tab").forEach((btn) => {
