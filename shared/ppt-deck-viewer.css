@@ -1,0 +1,58 @@
+html, body { margin: 0; height: 100%; background: #0f172a; color: #e5e7eb; }
+body.embed-mode { overflow: hidden; background: #000; }
+body.embed-mode .stage {
+  padding: 0; gap: 0; box-sizing: border-box;
+  justify-content: flex-start; align-items: stretch;
+}
+body.embed-mode video {
+  flex: 1 1 0; min-height: 0; width: 100%; max-width: 100%; max-height: none;
+  height: 100%; object-fit: contain; border-radius: 0;
+}
+body.embed-mode .clip-ui {
+  flex: none; width: 100%; max-width: none; margin-top: auto;
+  padding: 0 6px 2px; box-sizing: border-box;
+}
+body { display: flex; flex-direction: column; font-family: "Segoe UI", system-ui, sans-serif; overflow: hidden; }
+.bar {
+  flex: none; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 6px 10px; background: #16213a; border-bottom: 1px solid #28365c;
+}
+.bar .title { flex: 1; min-width: 200px; font-weight: 600; font-size: 14px; color: #e5e7eb; }
+.bar .meta { font-size: 12px; color: #94a3b8; }
+.bar .meta.ppt-src { color: #FFD54F; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; }
+.bar button {
+  background: #1b2945; border: 1px solid #28365c; color: #e5e7eb;
+  border-radius: 8px; padding: 6px 12px; cursor: pointer; font: inherit; font-weight: 600; font-size: 13px;
+}
+.bar button:hover { border-color: #4FC3F7; color: #4FC3F7; }
+.stage {
+  flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 4px; background: #000; gap: 6px;
+}
+video {
+  max-width: 100%; max-height: 100%; width: auto; height: auto; flex: 1; min-height: 0;
+  border-radius: 8px; background: #000; outline: none;
+}
+.clip-ui {
+  flex: none; width: min(100%, 720px); display: flex; align-items: center; gap: 10px;
+  padding: 0 4px 2px;
+}
+.clip-ui input[type=range] {
+  flex: 1; height: 5px; border-radius: 999px; appearance: none; background: #28365c; outline: none;
+}
+.clip-ui input[type=range]::-webkit-slider-thumb {
+  appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #4FC3F7;
+  border: 2px solid #0f172a; cursor: pointer;
+}
+.clip-ui input[type=range]::-moz-range-thumb {
+  width: 14px; height: 14px; border-radius: 50%; background: #4FC3F7; border: 2px solid #0f172a; cursor: pointer;
+}
+.clip-clock {
+  flex: none; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; color: #FFD54F; min-width: 88px;
+}
+.err {
+  max-width: 520px; text-align: center; padding: 28px 24px; line-height: 1.55;
+  color: #94a3b8; border: 1px dashed #28365c; border-radius: 14px; background: #16213a;
+}
+.err strong { display: block; color: #E57373; font-size: 17px; margin-bottom: 10px; }
+.err code { color: #4FC3F7; font-size: 13px; }

@@ -1,0 +1,1360 @@
+{
+ "topic": "Inequality",
+ "questions": [
+  {
+   "id": "INEQ-L03-Q1",
+   "source": "L03(A)",
+   "number": 1,
+   "prompt_latex": "x + 3 < 7",
+   "type": "inequality",
+   "answer_latex": "x < 4",
+   "steps_latex": [
+    "x + 3 < 7",
+    "x < 7 - 3",
+    "x < 4"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 4.0,
+    "bound_latex": "4",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q2",
+   "source": "L03(A)",
+   "number": 2,
+   "prompt_latex": "x - 3 > 7",
+   "type": "inequality",
+   "answer_latex": "x > 10",
+   "steps_latex": [
+    "x - 3 > 7",
+    "x > 7 + 3",
+    "x > 10"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": 10.0,
+    "bound_latex": "10",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q3",
+   "source": "L03(A)",
+   "number": 3,
+   "prompt_latex": "x + 6 \\le 10",
+   "type": "inequality",
+   "answer_latex": "x \\le 4",
+   "steps_latex": [
+    "x + 6 \\le 10",
+    "x \\le 10 - 6",
+    "x \\le 4"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 4.0,
+    "bound_latex": "4",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q4",
+   "source": "L03(A)",
+   "number": 4,
+   "prompt_latex": "7 < x - 15",
+   "type": "inequality",
+   "answer_latex": "x > 22",
+   "steps_latex": [
+    "7 < x - 15",
+    "22 < x",
+    "- x < -22",
+    "x > 22\\;(\\div -1,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": 22.0,
+    "bound_latex": "22",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q5",
+   "source": "L03(A)",
+   "number": 5,
+   "prompt_latex": "11 \\ge x + 3",
+   "type": "inequality",
+   "answer_latex": "x \\le 8",
+   "steps_latex": [
+    "11 \\ge x + 3",
+    "8 \\ge x",
+    "- x \\ge -8",
+    "x \\le 8\\;(\\div -1,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 8.0,
+    "bound_latex": "8",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q6",
+   "source": "L03(A)",
+   "number": 6,
+   "prompt_latex": "x + 10 < 27",
+   "type": "inequality",
+   "answer_latex": "x < 17",
+   "steps_latex": [
+    "x + 10 < 27",
+    "x < 27 - 10",
+    "x < 17"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 17.0,
+    "bound_latex": "17",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q7",
+   "source": "L03(A)",
+   "number": 7,
+   "prompt_latex": "10 < 15 - x",
+   "type": "inequality",
+   "answer_latex": "x < 5",
+   "steps_latex": [
+    "10 < 15 - x",
+    "- x > -5",
+    "x < 5"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 5.0,
+    "bound_latex": "5",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q8",
+   "source": "L03(A)",
+   "number": 8,
+   "prompt_latex": "209 \\le 300 - x",
+   "type": "inequality",
+   "answer_latex": "x \\le 91",
+   "steps_latex": [
+    "209 \\le 300 - x",
+    "- x > -91",
+    "x \\le 91"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 91.0,
+    "bound_latex": "91",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q9",
+   "source": "L03(A)",
+   "number": 9,
+   "prompt_latex": "287 \\ge x + 106",
+   "type": "inequality",
+   "answer_latex": "x \\le 181",
+   "steps_latex": [
+    "287 \\ge x + 106",
+    "181 \\ge x",
+    "- x \\ge -181",
+    "x \\le 181\\;(\\div -1,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 181.0,
+    "bound_latex": "181",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q10",
+   "source": "L03(A)",
+   "number": 10,
+   "prompt_latex": "256 - x < 96",
+   "type": "inequality",
+   "answer_latex": "x > 160",
+   "steps_latex": [
+    "256 - x < 96",
+    "- x < -160",
+    "x > 160\\;(\\div -1,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": 160.0,
+    "bound_latex": "160",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q11",
+   "source": "L03(A)",
+   "number": 11,
+   "prompt_latex": "3 x < 15",
+   "type": "inequality",
+   "answer_latex": "x < 5",
+   "steps_latex": [
+    "3 x < 15",
+    "x < 5\\;(\\div 3)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 5.0,
+    "bound_latex": "5",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q12",
+   "source": "L03(A)",
+   "number": 12,
+   "prompt_latex": "2 x < 86",
+   "type": "inequality",
+   "answer_latex": "x < 43",
+   "steps_latex": [
+    "2 x < 86",
+    "x < 43\\;(\\div 2)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 43.0,
+    "bound_latex": "43",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q13",
+   "source": "L03(A)",
+   "number": 13,
+   "prompt_latex": "\\frac{x}{8} < 9",
+   "type": "inequality",
+   "answer_latex": "x < 72",
+   "steps_latex": [
+    "\\frac{x}{8} < 9",
+    "x < 72 \\quad(\\times 8)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 72.0,
+    "bound_latex": "72",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q14",
+   "source": "L03(A)",
+   "number": 14,
+   "prompt_latex": "\\frac{x}{7} \\le 13",
+   "type": "inequality",
+   "answer_latex": "x \\le 91",
+   "steps_latex": [
+    "\\frac{x}{7} \\le 13",
+    "x \\le 91 \\quad(\\times 7)"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 91.0,
+    "bound_latex": "91",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q15",
+   "source": "L03(A)",
+   "number": 15,
+   "prompt_latex": "15 < \\frac{x}{6}",
+   "type": "inequality",
+   "answer_latex": "x > 90",
+   "steps_latex": [
+    "15 < \\frac{x}{6}",
+    "90 < x \\quad(\\times 6)",
+    "- x < -90",
+    "x > 90\\;(\\div -1,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": 90.0,
+    "bound_latex": "90",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q16",
+   "source": "L03(A)",
+   "number": 16,
+   "prompt_latex": "32 \\ge \\frac{x}{3}",
+   "type": "inequality",
+   "answer_latex": "x \\le 96",
+   "steps_latex": [
+    "32 \\ge \\frac{x}{3}",
+    "96 \\ge x \\quad(\\times 3)",
+    "- x \\ge -96",
+    "x \\le 96\\;(\\div -1,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 96.0,
+    "bound_latex": "96",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q17",
+   "source": "L03(A)",
+   "number": 17,
+   "prompt_latex": "\\frac{24 x}{5} \\ge 48",
+   "type": "inequality",
+   "answer_latex": "x \\ge 10",
+   "steps_latex": [
+    "\\frac{24 x}{5} \\ge 48",
+    "24 x \\ge 240 \\quad(\\times 5)",
+    "x \\ge 10\\;(\\div 24)"
+   ],
+   "params": {
+    "direction": "ge",
+    "bound": 10.0,
+    "bound_latex": "10",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q18",
+   "source": "L03(A)",
+   "number": 18,
+   "prompt_latex": "258 < \\frac{3 x}{2}",
+   "type": "inequality",
+   "answer_latex": "x > 172",
+   "steps_latex": [
+    "258 < \\frac{3 x}{2}",
+    "516 < 3 x \\quad(\\times 2)",
+    "- 3 x < -516",
+    "x > 172\\;(\\div -3,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": 172.0,
+    "bound_latex": "172",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q19",
+   "source": "L03(A)",
+   "number": 19,
+   "prompt_latex": "9 < \\frac{3 x}{35}",
+   "type": "inequality",
+   "answer_latex": "x > 105",
+   "steps_latex": [
+    "9 < \\frac{3 x}{35}",
+    "315 < 3 x \\quad(\\times 35)",
+    "- 3 x < -315",
+    "x > 105\\;(\\div -3,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": 105.0,
+    "bound_latex": "105",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q20",
+   "source": "L03(A)",
+   "number": 20,
+   "prompt_latex": "\\frac{3 x}{7} < 8",
+   "type": "inequality",
+   "answer_latex": "x < \\frac{56}{3}",
+   "steps_latex": [
+    "\\frac{3 x}{7} < 8",
+    "3 x < 56 \\quad(\\times 7)",
+    "x < \\frac{56}{3}\\;(\\div 3)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 18.666666666666668,
+    "bound_latex": "\\frac{56}{3}",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q21",
+   "source": "L03(A)",
+   "number": 21,
+   "prompt_latex": "\\frac{5 x}{18} < 10",
+   "type": "inequality",
+   "answer_latex": "x < 36",
+   "steps_latex": [
+    "\\frac{5 x}{18} < 10",
+    "5 x < 180 \\quad(\\times 18)",
+    "x < 36\\;(\\div 5)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 36.0,
+    "bound_latex": "36",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q22",
+   "source": "L03(A)",
+   "number": 22,
+   "prompt_latex": "24 x \\le 24",
+   "type": "inequality",
+   "answer_latex": "x \\le 1",
+   "steps_latex": [
+    "24 x \\le 24",
+    "x \\le 1\\;(\\div 24)"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 1.0,
+    "bound_latex": "1",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q23",
+   "source": "L03(A)",
+   "number": 23,
+   "prompt_latex": "3 - x > 7",
+   "type": "inequality",
+   "answer_latex": "x < -4",
+   "steps_latex": [
+    "3 - x > 7",
+    "- x > 4",
+    "x < -4\\;(\\div -1,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": -4.0,
+    "bound_latex": "-4",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q24",
+   "source": "L03(A)",
+   "number": 24,
+   "prompt_latex": "5 - 2 x < 17",
+   "type": "inequality",
+   "answer_latex": "x > -6",
+   "steps_latex": [
+    "5 - 2 x < 17",
+    "- 2 x < 12",
+    "x > -6\\;(\\div -2,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": -6.0,
+    "bound_latex": "-6",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q25",
+   "source": "L03(A)",
+   "number": 25,
+   "prompt_latex": "x + 2 \\ge 3 x + 4",
+   "type": "inequality",
+   "answer_latex": "x \\le -1",
+   "steps_latex": [
+    "x + 2 \\ge 3 x + 4",
+    "- 2 x \\ge 2",
+    "x \\le -1\\;(\\div -2,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": -1.0,
+    "bound_latex": "-1",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q26",
+   "source": "L03(A)",
+   "number": 26,
+   "prompt_latex": "13 \\le 9 x - 5",
+   "type": "inequality",
+   "answer_latex": "x \\ge 2",
+   "steps_latex": [
+    "13 \\le 9 x - 5",
+    "- 9 x \\le -18",
+    "x \\ge 2\\;(\\div -9,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "ge",
+    "bound": 2.0,
+    "bound_latex": "2",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q27",
+   "source": "L03(A)",
+   "number": 27,
+   "prompt_latex": "7 - 4 x > 5",
+   "type": "inequality",
+   "answer_latex": "x < \\frac{1}{2}",
+   "steps_latex": [
+    "7 - 4 x > 5",
+    "- 4 x > -2",
+    "x < \\frac{1}{2}\\;(\\div -4,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 0.5,
+    "bound_latex": "\\frac{1}{2}",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q28",
+   "source": "L03(A)",
+   "number": 28,
+   "prompt_latex": "2 x + 3 < 10 x - 5",
+   "type": "inequality",
+   "answer_latex": "x > 1",
+   "steps_latex": [
+    "2 x + 3 < 10 x - 5",
+    "- 8 x < -8",
+    "x > 1\\;(\\div -8,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": 1.0,
+    "bound_latex": "1",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q29",
+   "source": "L03(A)",
+   "number": 29,
+   "prompt_latex": "10 - 2 x \\ge x + 1",
+   "type": "inequality",
+   "answer_latex": "x \\le 3",
+   "steps_latex": [
+    "10 - 2 x \\ge x + 1",
+    "- 3 x \\ge -9",
+    "x \\le 3\\;(\\div -3,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 3.0,
+    "bound_latex": "3",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q30",
+   "source": "L03(A)",
+   "number": 30,
+   "prompt_latex": "5 - 3 x \\le 3 x - 1",
+   "type": "inequality",
+   "answer_latex": "x \\ge 1",
+   "steps_latex": [
+    "5 - 3 x \\le 3 x - 1",
+    "- 6 x \\le -6",
+    "x \\ge 1\\;(\\div -6,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "ge",
+    "bound": 1.0,
+    "bound_latex": "1",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q31",
+   "source": "L03(A)",
+   "number": 31,
+   "prompt_latex": "x + 4 > 4 x - 8",
+   "type": "inequality",
+   "answer_latex": "x < 4",
+   "steps_latex": [
+    "x + 4 > 4 x - 8",
+    "- 3 x > -12",
+    "x < 4\\;(\\div -3,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 4.0,
+    "bound_latex": "4",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q32",
+   "source": "L03(A)",
+   "number": 32,
+   "prompt_latex": "12 x - 30 < 42",
+   "type": "inequality",
+   "answer_latex": "x < 6",
+   "steps_latex": [
+    "12 x - 30 < 42",
+    "12 x < 72",
+    "x < 6\\;(\\div 12)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 6.0,
+    "bound_latex": "6",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q33",
+   "source": "L03(A)",
+   "number": 33,
+   "prompt_latex": "4 x - 4 \\ge 7 x - 10",
+   "type": "inequality",
+   "answer_latex": "x \\le 2",
+   "steps_latex": [
+    "4 x - 4 \\ge 7 x - 10",
+    "- 3 x \\ge -6",
+    "x \\le 2\\;(\\div -3,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 2.0,
+    "bound_latex": "2",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q34",
+   "source": "L03(A)",
+   "number": 34,
+   "prompt_latex": "18 - 6 x \\le 12 - 8 x",
+   "type": "inequality",
+   "answer_latex": "x \\le -3",
+   "steps_latex": [
+    "18 - 6 x \\le 12 - 8 x",
+    "2 x \\le -6",
+    "x \\le -3\\;(\\div 2)"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": -3.0,
+    "bound_latex": "-3",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q35",
+   "source": "L03(A)",
+   "number": 35,
+   "prompt_latex": "2 x + 3 > 10 x - 5",
+   "type": "inequality",
+   "answer_latex": "x < 1",
+   "steps_latex": [
+    "2 x + 3 > 10 x - 5",
+    "- 8 x > -8",
+    "x < 1\\;(\\div -8,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 1.0,
+    "bound_latex": "1",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q36",
+   "source": "L03(A)",
+   "number": 36,
+   "prompt_latex": "18 - 6 x < 12 - 8 x",
+   "type": "inequality",
+   "answer_latex": "x < -3",
+   "steps_latex": [
+    "18 - 6 x < 12 - 8 x",
+    "2 x < -6",
+    "x < -3\\;(\\div 2)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": -3.0,
+    "bound_latex": "-3",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q37",
+   "source": "L03(A)",
+   "number": 37,
+   "prompt_latex": "12 - 2 x \\ge x + 3",
+   "type": "inequality",
+   "answer_latex": "x \\le 3",
+   "steps_latex": [
+    "12 - 2 x \\ge x + 3",
+    "- 3 x \\ge -9",
+    "x \\le 3\\;(\\div -3,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 3.0,
+    "bound_latex": "3",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q38",
+   "source": "L03(A)",
+   "number": 38,
+   "prompt_latex": "4 - 2 x \\le 2 x - 1",
+   "type": "inequality",
+   "answer_latex": "x \\ge \\frac{5}{4}",
+   "steps_latex": [
+    "4 - 2 x \\le 2 x - 1",
+    "- 4 x \\le -5",
+    "x \\ge \\frac{5}{4}\\;(\\div -4,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "ge",
+    "bound": 1.25,
+    "bound_latex": "\\frac{5}{4}",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q39",
+   "source": "L03(A)",
+   "number": 39,
+   "prompt_latex": "x + 4 > 4 x - 8",
+   "type": "inequality",
+   "answer_latex": "x < 4",
+   "steps_latex": [
+    "x + 4 > 4 x - 8",
+    "- 3 x > -12",
+    "x < 4\\;(\\div -3,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 4.0,
+    "bound_latex": "4",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q40",
+   "source": "L03(A)",
+   "number": 40,
+   "prompt_latex": "5 x - 1 < 3 x - 7",
+   "type": "inequality",
+   "answer_latex": "x < -3",
+   "steps_latex": [
+    "5 x - 1 < 3 x - 7",
+    "2 x < -6",
+    "x < -3\\;(\\div 2)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": -3.0,
+    "bound_latex": "-3",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q41",
+   "source": "L03(A)",
+   "number": 41,
+   "prompt_latex": "4 x - 12 \\ge 10 - 7 x",
+   "type": "inequality",
+   "answer_latex": "x \\ge 2",
+   "steps_latex": [
+    "4 x - 12 \\ge 10 - 7 x",
+    "11 x \\ge 22",
+    "x \\ge 2\\;(\\div 11)"
+   ],
+   "params": {
+    "direction": "ge",
+    "bound": 2.0,
+    "bound_latex": "2",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q42",
+   "source": "L03(A)",
+   "number": 42,
+   "prompt_latex": "13 - 5 x \\le 23 - 7 x",
+   "type": "inequality",
+   "answer_latex": "x \\le 5",
+   "steps_latex": [
+    "13 - 5 x \\le 23 - 7 x",
+    "2 x \\le 10",
+    "x \\le 5\\;(\\div 2)"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 5.0,
+    "bound_latex": "5",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q43",
+   "source": "L03(A)",
+   "number": 43,
+   "prompt_latex": "12 x - 30 > 42",
+   "type": "inequality",
+   "answer_latex": "x > 6",
+   "steps_latex": [
+    "12 x - 30 > 42",
+    "x > 42 + 30",
+    "12 x > 72",
+    "x > 6\\;(\\div 12)"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": 6.0,
+    "bound_latex": "6",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q44",
+   "source": "L03(A)",
+   "number": 44,
+   "prompt_latex": "5 x - 40 < 10",
+   "type": "inequality",
+   "answer_latex": "x < 10",
+   "steps_latex": [
+    "5 x - 40 < 10",
+    "5 x < 50",
+    "x < 10\\;(\\div 5)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 10.0,
+    "bound_latex": "10",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q45",
+   "source": "L03(A)",
+   "number": 45,
+   "prompt_latex": "- \\frac{x}{5} - \\frac{4}{5} \\ge 8",
+   "type": "inequality",
+   "answer_latex": "x \\le -44",
+   "steps_latex": [
+    "- \\frac{x}{5} - \\frac{4}{5} \\ge 8",
+    "- x - 4 \\ge 40 \\quad(\\times 5)",
+    "x \\ge 40 + 4",
+    "- x \\ge 44",
+    "x \\le -44\\;(\\div -1,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": -44.0,
+    "bound_latex": "-44",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q46",
+   "source": "L03(A)",
+   "number": 46,
+   "prompt_latex": "\\frac{4 x}{3} - \\frac{1}{3} \\le 1",
+   "type": "inequality",
+   "answer_latex": "x \\le 1",
+   "steps_latex": [
+    "\\frac{4 x}{3} - \\frac{1}{3} \\le 1",
+    "4 x - 1 \\le 3 \\quad(\\times 3)",
+    "4 x \\le 4",
+    "x \\le 1\\;(\\div 4)"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 1.0,
+    "bound_latex": "1",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q47",
+   "source": "L03(A)",
+   "number": 47,
+   "prompt_latex": "\\frac{x}{2} + \\frac{1}{2} \\ge \\frac{9 x}{19} + \\frac{5}{19}",
+   "type": "inequality",
+   "answer_latex": "x \\ge -9",
+   "steps_latex": [
+    "\\frac{x}{2} + \\frac{1}{2} \\ge \\frac{9 x}{19} + \\frac{5}{19}",
+    "19 x + 19 \\ge 18 x + 10 \\quad(\\times 38)",
+    "x \\ge -9"
+   ],
+   "params": {
+    "direction": "ge",
+    "bound": -9.0,
+    "bound_latex": "-9",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q48",
+   "source": "L03(A)",
+   "number": 48,
+   "prompt_latex": "\\frac{3 x}{2} + 4 \\ge \\frac{3}{5} - \\frac{x}{5}",
+   "type": "inequality",
+   "answer_latex": "x \\ge -2",
+   "steps_latex": [
+    "\\frac{3 x}{2} + 4 \\ge \\frac{3}{5} - \\frac{x}{5}",
+    "15 x + 40 \\ge 6 - 2 x \\quad(\\times 10)",
+    "17 x \\ge -34",
+    "x \\ge -2\\;(\\div 17)"
+   ],
+   "params": {
+    "direction": "ge",
+    "bound": -2.0,
+    "bound_latex": "-2",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q49",
+   "source": "L03(A)",
+   "number": 49,
+   "prompt_latex": "\\frac{7 x}{44} + \\frac{13}{44} < 0",
+   "type": "inequality",
+   "answer_latex": "x < - \\frac{13}{7}",
+   "steps_latex": [
+    "\\frac{7 x}{44} + \\frac{13}{44} < 0",
+    "7 x + 13 < 0 \\quad(\\times 44)",
+    "x < 0 - 13",
+    "7 x < -13",
+    "x < - \\frac{13}{7}\\;(\\div 7)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": -1.8571428571428572,
+    "bound_latex": "- \\frac{13}{7}",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q50",
+   "source": "L03(A)",
+   "number": 50,
+   "prompt_latex": "\\frac{91}{12} - \\frac{13 x}{12} \\le 0",
+   "type": "inequality",
+   "answer_latex": "x \\ge 7",
+   "steps_latex": [
+    "\\frac{91}{12} - \\frac{13 x}{12} \\le 0",
+    "91 - 13 x \\le 0 \\quad(\\times 12)",
+    "- 13 x \\le -91",
+    "x \\ge 7\\;(\\div -13,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "ge",
+    "bound": 7.0,
+    "bound_latex": "7",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q51",
+   "source": "L03(A)",
+   "number": 51,
+   "prompt_latex": "x + 16 > \\frac{2 x}{13} + 5",
+   "type": "inequality",
+   "answer_latex": "x > -13",
+   "steps_latex": [
+    "x + 16 > \\frac{2 x}{13} + 5",
+    "13 x + 208 > 2 x + 65 \\quad(\\times 13)",
+    "11 x > -143",
+    "x > -13\\;(\\div 11)"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": -13.0,
+    "bound_latex": "-13",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q52",
+   "source": "L03(A)",
+   "number": 52,
+   "prompt_latex": "\\frac{5 x}{3} - 2 < \\frac{10 x}{9} + 3",
+   "type": "inequality",
+   "answer_latex": "x < 9",
+   "steps_latex": [
+    "\\frac{5 x}{3} - 2 < \\frac{10 x}{9} + 3",
+    "15 x - 18 < 10 x + 27 \\quad(\\times 9)",
+    "5 x < 45",
+    "x < 9\\;(\\div 5)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 9.0,
+    "bound_latex": "9",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q53",
+   "source": "L03(A)",
+   "number": 53,
+   "prompt_latex": "\\frac{9 x}{2} + 16 < 13",
+   "type": "inequality",
+   "answer_latex": "x < - \\frac{2}{3}",
+   "steps_latex": [
+    "\\frac{9 x}{2} + 16 < 13",
+    "9 x + 32 < 26 \\quad(\\times 2)",
+    "x < 26 - 32",
+    "9 x < -6",
+    "x < - \\frac{2}{3}\\;(\\div 9)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": -0.6666666666666666,
+    "bound_latex": "- \\frac{2}{3}",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q54",
+   "source": "L03(A)",
+   "number": 54,
+   "prompt_latex": "7 - 4 x > \\frac{x}{3} + \\frac{1}{3}",
+   "type": "inequality",
+   "answer_latex": "x < \\frac{20}{13}",
+   "steps_latex": [
+    "7 - 4 x > \\frac{x}{3} + \\frac{1}{3}",
+    "21 - 12 x > x + 1 \\quad(\\times 3)",
+    "- 13 x > -20",
+    "x < \\frac{20}{13}\\;(\\div -13,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 1.5384615384615385,
+    "bound_latex": "\\frac{20}{13}",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q55",
+   "source": "L03(A)",
+   "number": 55,
+   "prompt_latex": "\\frac{9 x}{14} - \\frac{1}{2} \\ge 3 x + 3",
+   "type": "inequality",
+   "answer_latex": "x \\le - \\frac{49}{33}",
+   "steps_latex": [
+    "\\frac{9 x}{14} - \\frac{1}{2} \\ge 3 x + 3",
+    "9 x - 7 \\ge 42 x + 42 \\quad(\\times 14)",
+    "- 33 x \\ge 49",
+    "x \\le - \\frac{49}{33}\\;(\\div -33,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": -1.4848484848484849,
+    "bound_latex": "- \\frac{49}{33}",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q56",
+   "source": "L03(A)",
+   "number": 56,
+   "prompt_latex": "\\frac{23 x}{5} + \\frac{9}{5} \\le x - 3",
+   "type": "inequality",
+   "answer_latex": "x \\le - \\frac{4}{3}",
+   "steps_latex": [
+    "\\frac{23 x}{5} + \\frac{9}{5} \\le x - 3",
+    "23 x + 9 \\le 5 x - 15 \\quad(\\times 5)",
+    "18 x \\le -24",
+    "x \\le - \\frac{4}{3}\\;(\\div 18)"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": -1.3333333333333333,
+    "bound_latex": "- \\frac{4}{3}",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q57",
+   "source": "L03(A)",
+   "number": 57,
+   "prompt_latex": "\\frac{5}{2} - \\frac{x}{2} \\ge \\frac{13}{3} - \\frac{x}{3}",
+   "type": "inequality",
+   "answer_latex": "x \\le -11",
+   "steps_latex": [
+    "\\frac{5}{2} - \\frac{x}{2} \\ge \\frac{13}{3} - \\frac{x}{3}",
+    "15 - 3 x \\ge 26 - 2 x \\quad(\\times 6)",
+    "- x \\ge 11",
+    "x \\le -11\\;(\\div -1,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": -11.0,
+    "bound_latex": "-11",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q58",
+   "source": "L03(A)",
+   "number": 58,
+   "prompt_latex": "\\frac{2 x}{15} - \\frac{4}{15} > -2",
+   "type": "inequality",
+   "answer_latex": "x > -13",
+   "steps_latex": [
+    "\\frac{2 x}{15} - \\frac{4}{15} > -2",
+    "2 x - 4 > -30 \\quad(\\times 15)",
+    "x > -30 + 4",
+    "2 x > -26",
+    "x > -13\\;(\\div 2)"
+   ],
+   "params": {
+    "direction": "gt",
+    "bound": -13.0,
+    "bound_latex": "-13",
+    "closed": false
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q59",
+   "source": "L03(A)",
+   "number": 59,
+   "prompt_latex": "\\frac{5}{2} - \\frac{3 x}{2} \\ge \\frac{11}{3} - \\frac{x}{3}",
+   "type": "inequality",
+   "answer_latex": "x \\le -1",
+   "steps_latex": [
+    "\\frac{5}{2} - \\frac{3 x}{2} \\ge \\frac{11}{3} - \\frac{x}{3}",
+    "15 - 9 x \\ge 22 - 2 x \\quad(\\times 6)",
+    "- 7 x \\ge 7",
+    "x \\le -1\\;(\\div -7,\\ \\text{flip})"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": -1.0,
+    "bound_latex": "-1",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-L03-Q60",
+   "source": "L03(A)",
+   "number": 60,
+   "prompt_latex": "\\frac{x}{6} + 1 \\le \\frac{5}{6} - x",
+   "type": "inequality",
+   "answer_latex": "x \\le - \\frac{1}{7}",
+   "steps_latex": [
+    "\\frac{x}{6} + 1 \\le \\frac{5}{6} - x",
+    "x + 6 \\le 5 - 6 x \\quad(\\times 6)",
+    "7 x \\le -1",
+    "x \\le - \\frac{1}{7}\\;(\\div 7)"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": -0.14285714285714285,
+    "bound_latex": "- \\frac{1}{7}",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-QZ-Q4",
+   "source": "Quiz",
+   "number": "Q4",
+   "prompt_latex": "3(x + 2) < 5(6 - x)",
+   "type": "inequality",
+   "answer_latex": "x < 3",
+   "steps_latex": [
+    "3(x + 2) < 5(6 - x)",
+    "3 x + 6 < 30 - 5 x",
+    "8 x < 24",
+    "x < 3\\;(\\div 8)"
+   ],
+   "params": {
+    "direction": "lt",
+    "bound": 3.0,
+    "bound_latex": "3",
+    "closed": false
+   },
+   "verified": true,
+   "note": "Quiz PDF Q4 bracket form"
+  },
+  {
+   "id": "INEQ-QZ-Q6a",
+   "source": "Quiz",
+   "number": "Q6a",
+   "prompt_latex": "\\frac{x}{4} - 2 \\le \\frac{4}{5} - \\frac{x}{3}",
+   "type": "inequality",
+   "answer_latex": "x \\le \\frac{24}{5}",
+   "steps_latex": [
+    "\\frac{x}{4} - 2 \\le \\frac{4}{5} - \\frac{x}{3}",
+    "15 x - 120 \\le 48 - 20 x \\quad(\\times 60)",
+    "35 x \\le 168",
+    "x \\le \\frac{24}{5}\\;(\\div 35)"
+   ],
+   "params": {
+    "direction": "le",
+    "bound": 4.8,
+    "bound_latex": "\\frac{24}{5}",
+    "closed": true
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "INEQ-QZ-Q7",
+   "source": "Quiz",
+   "number": "Q7",
+   "prompt_latex": "\\frac{4 x + 3}{5} < \\frac{1 - 3 x}{6} + 4",
+   "type": "integer_list",
+   "answer_latex": "1, 2",
+   "steps_latex": [
+    "\\frac{4 x + 3}{5} < \\frac{1 - 3 x}{6} + 4",
+    "6(4 x + 3) < 5(1 - 3 x) + 120 \\quad(\\times 30)",
+    "24 x + 18 < 125 - 15 x",
+    "39 x < 107",
+    "x < \\frac{107}{39}\\;(\\div 39)",
+    "\\text{Positive integers: } 1, 2"
+   ],
+   "params": {
+    "kind": "intlist",
+    "values": [
+     1,
+     2
+    ],
+    "direction": "lt",
+    "bound": 2.7435897435897436,
+    "bound_latex": "\\frac{107}{39}",
+    "closed": false
+   },
+   "verified": true,
+   "note": "Quiz PDF Q7 — positive integers"
+  }
+ ]
+}

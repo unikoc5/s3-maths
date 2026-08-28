@@ -1,0 +1,205 @@
+/* Chem-inspired light theme for KOC S3 Math dashboards (UI shell only) */
+
+:root {
+  --bg: #fdfbf7;
+  --panel: #ffffff;
+  --panel2: #f5efe6;
+  --ink: #2c2420;
+  --dim: #5d544f;
+  --line: rgba(0, 0, 0, 0.08);
+  --a: #4fc3f7;
+  --accent: #4fc3f7;
+  --on-accent: #06283d;
+  --nav-surface: rgba(255, 255, 255, 0.72);
+  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* ── Topic page header (hidden in embed) ── */
+header {
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--nav-surface);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+html.in-embed header {
+  display: none;
+}
+
+.topic-logo {
+  height: 36px;
+  width: auto;
+  flex: none;
+}
+
+.topic-headings {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.topic-brand {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dim);
+  letter-spacing: -0.01em;
+}
+
+.topic-brand .plus {
+  color: var(--a);
+}
+
+header h1 {
+  font-size: 22px;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+header .crumb {
+  color: var(--dim);
+  font-size: 13px;
+}
+
+/* ── Tabs (layout unchanged) ── */
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 14px 28px 0;
+  flex-wrap: wrap;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+html.in-embed .tabs {
+  padding-top: 8px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  color: var(--dim);
+  font: inherit;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  font-size: 15px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.tab:hover:not(.active) {
+  color: var(--ink);
+}
+
+.tab.active {
+  color: var(--ink);
+  background: var(--panel);
+  box-shadow: inset 0 -2px 0 var(--a);
+}
+
+.tab-row {
+  display: flex;
+  align-items: center;
+  gap: 10px 14px;
+  flex-wrap: wrap;
+  padding: 10px 24px 0;
+  flex: none;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+html.in-embed .tab-row {
+  padding-top: 6px;
+}
+
+.tab-row .tabs {
+  padding: 0;
+  border-bottom: none;
+  flex: 1;
+  min-width: 0;
+}
+
+/* iPad embed: All topics sits on the right of the tab row (hub viewer-bar hidden) */
+.embed-back-btn {
+  display: none;
+}
+html.tablet-touch.in-embed .tab-row {
+  display: flex;
+  align-items: center;
+  gap: 10px 12px;
+  flex-wrap: nowrap;
+  padding: 6px 16px 0;
+}
+html.tablet-touch.in-embed .tab-row .tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+html.tablet-touch.in-embed .tab-row .tabs::-webkit-scrollbar {
+  display: none;
+}
+html.tablet-touch.in-embed .tab {
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+html.tablet-touch.in-embed .embed-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  margin-left: auto;
+  background: var(--panel, #fff);
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  color: var(--ink, #2c2420);
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+html.tablet-touch.in-embed .embed-back-btn:active {
+  border-color: var(--a, #0277BD);
+  color: var(--a, #0277BD);
+}
+html.tablet-touch.in-embed .panel {
+  padding-top: 10px;
+  padding-bottom: 12px;
+}
+
+/* ── Subnav chips ── */
+.chip {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--dim);
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.chip:hover {
+  color: var(--ink);
+  border-color: rgba(79, 195, 247, 0.35);
+}
+
+.chip.active {
+  color: var(--on-accent);
+  background: var(--a);
+  border-color: var(--a);
+}

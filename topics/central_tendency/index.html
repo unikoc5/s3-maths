@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Measures of Central Tendencies — JM31</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+      background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    #comics-subnav { margin-bottom: 14px; }
+    .comic-figure {
+      margin: 0;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0f172a;
+      overflow: hidden;
+    }
+    .comic-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <main class="jm-page">
+    <a class="jm-back" href="/#lessons">← S3 Lessons</a>
+    <p class="jm-eyebrow">JM31 · Lesson 31</p>
+    <h1>Measures of Central Tendencies</h1>
+    <p class="lead">Build a data set, watch mean, median and mode update live — then add an outlier and compare.</p>
+    <nav class="jm-tabs" aria-label="Lesson sections">
+      <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
+      <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    </nav>
+    <section id="panel-tools" class="jm-panel">
+      <p class="part-title">Part 1 · Live statistics lab</p>
+      <section class="block">
+        <h2>1. Data set builder</h2>
+        <p class="hint">Add numbers or click a chip to remove it. The bar chart and all three averages update instantly.</p>
+        <div class="count-row">
+          <input id="stat-in" type="number" step="1" placeholder="Value">
+          <button class="btn" type="button" id="stat-add">Add</button>
+          <button class="btn" type="button" id="stat-sample">Sample 2,4,6,8</button>
+          <button class="btn" type="button" id="stat-outlier">Add outlier 100</button>
+          <button class="btn" type="button" id="stat-clear">Clear</button>
+        </div>
+        <div class="chip-list" id="stat-chips"></div>
+        <svg class="bar-chart" id="stat-chart" viewBox="0 0 400 120" aria-label="Bar chart"></svg>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="val" id="stat-mean">—</div><div class="lbl">Mean</div></div>
+          <div class="stat-card"><div class="val" id="stat-median">—</div><div class="lbl">Median</div></div>
+          <div class="stat-card"><div class="val" id="stat-mode">—</div><div class="lbl">Mode</div></div>
+          <div class="stat-card"><div class="val" id="stat-n">0</div><div class="lbl">Count</div></div>
+        </div>
+        <p class="formula" id="stat-insight">Mean uses every value; median resists outliers.</p>
+      </section>
+      <section class="block">
+        <h2>2. Which changed more?</h2>
+        <p class="hint">After adding the outlier, which average moved further from the original mean?</p>
+        <div class="task-box">
+          <div class="count-row">
+            <button class="btn" type="button" data-ans="mean">Mean</button>
+            <button class="btn" type="button" data-ans="median">Median</button>
+            <button class="btn" type="button" id="stat-quiz-check">Check</button>
+          </div>
+          <p class="feedback" id="stat-quiz-fb">Add the outlier first, then pick your answer.</p>
+        </div>
+      </section>
+    </section>
+    <section id="panel-comics" class="jm-panel hidden">
+      <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+      <div id="comics-stage"></div>
+      <p class="hint">The Averages Quest — mean, median, mode. Read each page. No follow-up questions on this tab.</p>
+    </section>
+  </main>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260729-jm"></script>
+  <script defer src="central-tendency-tools.js?v=20260729-jm"></script>
+  <script defer src="central-tendency-comics.js?v=20260818-jm31d"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.initJmTabs) window.initJmTabs();
+    });
+  </script>
+</body>
+</html>

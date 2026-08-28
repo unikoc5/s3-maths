@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Law of Indices — JM24</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260828-sel1">
+  <style>
+    :root {
+      --surface: #ffffff;
+      --surface-2: #eef2f7;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: rgba(30, 41, 59, 0.12);
+      --accent: #0284c7;
+      --glow: #0369a1;
+      --good: #15803d;
+      --warn: #a16207;
+      --bad: #be123c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 12% 0%, rgba(14, 165, 233, 0.12), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 90% 10%, rgba(56, 189, 248, 0.1), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(125, 211, 252, 0.14), transparent 55%),
+        linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      background-attachment: fixed;
+      user-select: none;
+    }
+    .page {
+      position: relative; z-index: 1; width: min(860px, 100%);
+      margin: 0 auto; padding: 28px 22px 80px;
+    }
+    .back {
+      display: inline-flex; margin-bottom: 18px; padding: 7px 12px;
+      border: 1px solid var(--line); border-radius: 8px;
+      background: var(--surface-2); color: var(--text);
+      text-decoration: none; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .back:hover { border-color: var(--accent); color: var(--accent); }
+    .eyebrow {
+      margin: 0 0 6px; color: var(--glow); font-size: 11px; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+    }
+    h1 { margin: 0 0 8px; font-size: clamp(26px, 4vw, 36px); letter-spacing: -.03em; }
+    .lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .back:focus-visible, .tab:focus-visible, .chip:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: 3px;
+    }
+    .tabs {
+      display: flex; gap: 6px; margin: 0 0 14px;
+      border-bottom: 1px solid var(--line); padding-bottom: 0;
+    }
+    .tab {
+      background: none; border: none; color: var(--muted);
+      font: inherit; font-weight: 600; font-size: 15px;
+      padding: 10px 16px; cursor: pointer;
+      border-radius: 10px 10px 0 0;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: var(--text);
+      background: var(--surface);
+      box-shadow: inset 0 -2px 0 var(--accent);
+    }
+    .mode-panel { display: block; }
+    .mode-panel.hidden { display: none; }
+    .subnav {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin: 0 0 16px; align-items: center;
+    }
+    .chip {
+      background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+      font: inherit; font-weight: 600; padding: 8px 14px;
+      border-radius: 10px; cursor: pointer; font-size: 14px;
+      transition: color .15s, background .15s, border-color .15s;
+    }
+    .chip:hover { color: var(--text); }
+    .chip.active {
+      color: #fff; background: var(--accent); border-color: var(--accent);
+    }
+    .lab { display: none; }
+    .lab.active { display: block; }
+    .part-title {
+      margin: 28px 0 12px; font-size: 13px; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+    }
+    .lab > .part-title:first-of-type { margin-top: 4px; }
+    .lab > .lead { margin-bottom: 14px; }
+    section.block {
+      margin-bottom: 16px; padding: 18px 16px 20px;
+      border: 1px solid var(--line); border-radius: 16px;
+      background: var(--surface); backdrop-filter: blur(12px);
+    }
+    section.block h2 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; }
+    .hint { margin: 0 0 12px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .formula { margin: 14px 0 0; text-align: center; color: var(--accent); font-size: 1.15em; }
+    .formula.formula-locked { display: none; }
+
+    .step-frame {
+      display: grid; grid-template-columns: 48px 1fr 48px; gap: 10px;
+      min-height: 200px; padding: 12px; border-radius: 14px;
+      border: 1px solid var(--line); background: var(--surface-2);
+    }
+    @media (max-width: 640px) {
+      .step-frame { grid-template-columns: 1fr; }
+      .nav-btn.prev { order: 2; justify-self: start; }
+      .nav-btn.next { order: 3; justify-self: end; margin-top: -44px; }
+      .step-body { order: 1; }
+    }
+    .nav-btn {
+      border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2);
+      color: var(--text); font-size: 22px; font-weight: 700; cursor: pointer;
+      min-height: 48px; align-self: center;
+    }
+    .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .step-body { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 6px; min-height: 170px; }
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+    .step-label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--glow); }
+    .step-title { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.35; }
+    .step-text { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .step-math { margin: 6px 0 0; font-size: 1.25em; color: var(--accent); text-align: center; }
+    .step-examples { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .chip-ex {
+      padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line);
+      background: #e0f2fe; font-size: 1.1em;
+    }
+    .step-dots { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+    .step-dots span { width: 8px; height: 8px; border-radius: 50%; background: rgba(2, 132, 199, .25); }
+    .step-dots span.on { background: var(--accent); }
+
+    .stage {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+      gap: 12px; min-height: 110px; padding: 18px 14px; border-radius: 12px;
+      border: 1px dashed rgba(2, 132, 199, .35); background: var(--surface-2);
+    }
+    .task-box {
+      margin-top: 12px; padding: 14px; border-radius: 12px;
+      border: 1px dashed rgba(2, 132, 199, .35); background: #f8fafc;
+    }
+    .task-box h3 {
+      margin: 0 0 8px; font-size: 12px; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+    }
+
+    .power-block {
+      min-width: 72px; min-height: 64px; padding: 10px 14px; border-radius: 14px;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px;
+      font-size: 1.35em; font-weight: 700; color: #fff; cursor: pointer;
+      border: 1px solid transparent;
+      background: linear-gradient(145deg, #60a5fa, #2563eb);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, .35);
+    }
+    .power-block.purple {
+      background: linear-gradient(145deg, #c4b5fd, #7c3aed);
+      box-shadow: 0 6px 16px rgba(124, 58, 237, .35);
+    }
+    .power-block.rose {
+      background: linear-gradient(145deg, #fda4af, #e11d48);
+      box-shadow: 0 6px 16px rgba(225, 29, 72, .3);
+    }
+    .power-block:hover:not(.open) { box-shadow: 0 0 0 2px rgba(158, 203, 255, .35), 0 8px 18px rgba(0,0,0,.35); }
+    .power-block.open {
+      cursor: default; background: #f8fafc;
+      border-color: rgba(2, 132, 199, .35); box-shadow: none; color: var(--accent); font-size: 1.1em;
+    }
+    .tiny-x {
+      width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
+      font-size: 16px; font-weight: 700; color: #fff; cursor: pointer;
+      background: linear-gradient(145deg, #60a5fa, #2563eb);
+      transition: opacity .2s, transform .2s, width .2s;
+    }
+    .tiny-x.purple { background: linear-gradient(145deg, #c4b5fd, #7c3aed); }
+    .tiny-x.rose { background: linear-gradient(145deg, #fda4af, #e11d48); }
+    .tiny-x.gone { opacity: 0; transform: scale(.35); pointer-events: none; width: 0; margin: 0; overflow: hidden; }
+    .tiny-x.selected { outline: 2px solid var(--warn); outline-offset: 2px; }
+    .times-sign { color: var(--muted); font-size: 26px; font-weight: 700; min-width: 22px; text-align: center; }
+
+    /* fraction cancel */
+    .fraction {
+      display: inline-flex; flex-direction: column; align-items: center; gap: 0;
+      padding: 8px 10px; min-width: 180px;
+    }
+    .frac-row {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+      gap: 6px; min-height: 52px; padding: 6px 4px;
+    }
+    .frac-bar {
+      width: 100%; height: 3px; border-radius: 2px;
+      background: rgba(30, 41, 59, .55); margin: 4px 0;
+    }
+    .one-mark {
+      display: none; min-width: 34px; min-height: 34px; border-radius: 9px;
+      place-items: center; font-weight: 700; font-size: 18px; color: var(--warn);
+      border: 1px solid rgba(253, 230, 138, .45); background: rgba(253, 230, 138, .12);
+    }
+    .one-mark.show { display: grid; }
+
+    .count-row {
+      margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    .count-row label { color: var(--muted); font-size: 15px; }
+    .count-row input {
+      width: 72px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line);
+      background: #fff; color: var(--text); font: inherit;
+      font-size: 16px; font-weight: 700; text-align: center;
+    }
+    .count-row input:disabled { opacity: .45; }
+    .btn {
+      border: 1px solid var(--line); border-radius: 999px; background: var(--surface-2);
+      color: var(--text); font: inherit; font-size: 13px; font-weight: 600;
+      padding: 7px 13px; cursor: pointer;
+    }
+    .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .feedback { margin-top: 10px; min-height: 1.4em; font-size: 15px; color: var(--muted); line-height: 1.45; }
+    .feedback.ok { color: var(--good); }
+    .feedback.bad { color: var(--bad); }
+    .feedback.warn { color: var(--warn); }
+
+    .stack { display: flex; flex-direction: column; gap: 12px; }
+    .panel {
+      padding: 16px; border-radius: 12px; border: 1px solid var(--line);
+      background: #f8fafc;
+    }
+    .panel h3 { margin: 0 0 10px; font-size: 16px; }
+    .panel p { margin: 0 0 10px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .panel p:last-child { margin-bottom: 0; }
+    .panel.ok { border-color: rgba(134, 239, 172, .35); }
+    .panel .line {
+      margin: 8px 0; text-align: center; font-size: 1.2em; color: var(--text);
+    }
+    .panel .line.accent { color: var(--accent); }
+
+    /* ── Binary lab ── */
+    .bit-row {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+      width: 100%;
+    }
+    .bit-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .bit-pv { font-size: 13px; color: var(--muted); min-height: 22px; }
+    .bit-toggle {
+      width: 44px; height: 52px; border-radius: 12px; border: 2px solid var(--line);
+      background: #e2e8f0; cursor: pointer; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 4px; transition: all .15s;
+      padding: 4px;
+    }
+    .bit-toggle.on {
+      background: linear-gradient(145deg, #fde047, #f59e0b);
+      border-color: #d97706; box-shadow: 0 0 12px rgba(245, 158, 11, .45);
+    }
+    .bit-bulb {
+      width: 14px; height: 14px; border-radius: 50%; background: #94a3b8;
+      transition: background .15s, box-shadow .15s;
+    }
+    .bit-toggle.on .bit-bulb {
+      background: #fff; box-shadow: 0 0 8px #fff, 0 0 14px #fbbf24;
+    }
+    .bit-digit { font-size: 16px; font-weight: 700; color: var(--text); }
+    .bin-readout {
+      margin-top: 12px; padding: 12px; border-radius: 10px;
+      background: #f8fafc; border: 1px solid var(--line); text-align: center;
+      font-size: 15px; line-height: 1.6;
+    }
+    .bin-readout .bin-str { font-weight: 700; font-family: ui-monospace, monospace; }
+    .bit-row.compact { gap: 5px; }
+    .bit-row.compact .bit-toggle { width: 34px; height: 42px; border-radius: 9px; }
+    .bit-row.compact .bit-pv { font-size: 11px; min-height: 18px; }
+    .bit-row.compact .bit-digit { font-size: 14px; }
+    .bin-ladder-panel {
+      margin-top: 14px; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid var(--line); background: #f8fafc;
+    }
+    .ladder-steps {
+      display: flex; flex-wrap: wrap; gap: 5px; max-height: 68px; overflow-y: auto;
+      margin: 8px 0; padding: 6px; border-radius: 8px;
+      background: #fff; border: 1px solid var(--line);
+    }
+    .ladder-step-chip {
+      font-size: 12px; padding: 3px 8px; border-radius: 6px;
+      background: #eef2f7; border: 1px solid var(--line); white-space: nowrap;
+    }
+    .ladder-remainders {
+      margin: 8px 0;
+    }
+    .ladder-remainders .hint {
+      margin: 0 0 6px; font-size: 13px;
+    }
+    .ladder-binary-row {
+      max-height: none; min-height: 48px;
+      align-items: center; justify-content: center;
+    }
+    .ladder-binary-result {
+      width: 100%; text-align: center; padding: 10px 12px;
+      font-size: 1.35em; font-weight: 700;
+    }
+    .ladder-binary-result .katex { font-size: 1.15em; }
+    .sort-area { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+    .sort-pool {
+      display: flex; flex-wrap: wrap; gap: 8px; min-height: 52px; padding: 10px;
+      border-radius: 10px; border: 1px dashed rgba(2, 132, 199, .35);
+      background: var(--surface-2);
+    }
+    .sort-slots-row {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    }
+    .sort-slot-wrap {
+      display: flex; flex-direction: column; gap: 6px; min-width: 0;
+    }
+    .sort-slot-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--muted); text-align: center;
+      line-height: 1.2;
+    }
+    .sort-slot {
+      min-height: 56px; padding: 8px; border-radius: 10px;
+      border: 1px dashed rgba(2, 132, 199, .35); background: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .15s, background .15s;
+      overflow: hidden;
+    }
+    .sort-slot.drag-over { border-color: var(--accent); background: rgba(2, 132, 199, .08); }
+    .sort-card {
+      border: 1px solid var(--line); border-radius: 10px; background: #fff;
+      padding: 10px 14px; font: inherit; font-weight: 600; cursor: grab;
+      user-select: none; touch-action: none;
+      transition: border-color .15s, opacity .15s;
+    }
+    .sort-card:hover { border-color: var(--accent); }
+    .sort-card.dragging { opacity: .35; }
+    .drag-ghost {
+      position: fixed; z-index: 80; pointer-events: none; transform: translate(-50%, -50%);
+      border: 1px solid var(--accent); border-radius: 10px; background: #fff;
+      padding: 10px 14px; font-weight: 600; font-size: 15px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, .18);
+    }
+    .bin-arith-q {
+      font-size: 1.15em; text-align: center; margin: 8px 0 12px; font-weight: 600;
+    }
+    .streak-badge {
+      display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px;
+      background: rgba(21, 128, 61, .12); color: var(--good); font-size: 12px; font-weight: 700;
+    }
+
+    /* ── Scientific notation lab ── */
+    .sci-digit-row {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+      gap: 2px; font-size: clamp(22px, 4vw, 32px); font-weight: 700;
+      font-family: ui-monospace, "Cascadia Code", monospace; letter-spacing: .04em;
+      min-height: 52px;
+    }
+    .sci-digit {
+      min-width: 22px; text-align: center; padding: 4px 2px;
+      border-radius: 8px; background: #e0f2fe;
+    }
+    .sci-decimal {
+      color: var(--bad); font-size: 1.4em; font-weight: 900; padding: 0 2px;
+    }
+    .sci-preview {
+      margin-top: 10px; text-align: center; font-size: 1.2em; color: var(--accent); min-height: 1.6em;
+    }
+    .sci-shift-controls {
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;
+      margin-top: 12px;
+    }
+    .sci-exp-readout {
+      font-weight: 700; color: var(--glow); min-width: 2em; display: inline-block; text-align: center;
+    }
+    .sci-convert-fields, .sci-arith-fields {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center;
+    }
+    .sci-convert-fields label, .sci-arith-fields label {
+      display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 15px;
+    }
+    .sci-convert-fields input, .sci-arith-fields input {
+      width: 88px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line);
+      background: #fff; color: var(--text); font: inherit; font-weight: 700; text-align: center;
+    }
+    .sci-convert-q, .sci-arith-q { text-align: center; font-size: 1.1em; margin: 8px 0 12px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+
+<main class="page">
+    <a class="back" href="/#lessons">← S3 Lessons</a>
+    <p class="eyebrow">JM24 · Lesson 24</p>
+    <h1>Law of Indices</h1>
+    <p class="lead">Interactive tools for powers, scientific notation, binary, plus comics.</p>
+
+    <nav class="tabs" aria-label="Lesson sections">
+      <button class="tab active" type="button" data-tab="tools">Interactive Tools</button>
+      <button class="tab" type="button" data-tab="comics">Comics</button>
+    </nav>
+
+    <section id="panel-tools" class="mode-panel">
+      <div class="subnav" aria-label="Tools">
+        <button class="chip active" type="button" data-lab="powers">Powers</button>
+        <button class="chip" type="button" data-lab="scientific">Scientific notation</button>
+        <button class="chip" type="button" data-lab="sci-walk">Sci walkthrough</button>
+        <button class="chip" type="button" data-lab="binary">Binary</button>
+      </div>
+
+      <div class="lab active" id="lab-powers">
+      <p class="lead">Part 1: meaning of a power. Part 2: prove the laws — product, quotient, power of a power, roots, then zero and negative indices.</p>
+
+    <p class="part-title">Part 1 · What does a power mean?</p>
+
+    <section class="block">
+      <h2>1A. Powers: square and cube</h2>
+      <p class="hint">Use the arrows. The index counts how many identical factors you multiply.</p>
+      <div class="step-frame" data-stepper="intro">
+        <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
+        <div class="step-body">
+          <div class="step-panel active" data-step="0">
+            <div class="step-label">Step 1 / 3</div>
+            <p class="step-title">Square = two identical factors</p>
+            <div class="step-examples">
+              <div class="chip-ex">\(3^{2}=3\times 3\)</div>
+              <div class="chip-ex">\(x^{2}=x\times x\)</div>
+            </div>
+          </div>
+          <div class="step-panel" data-step="1">
+            <div class="step-label">Step 2 / 3</div>
+            <p class="step-title">Cube = three identical factors</p>
+            <div class="step-examples">
+              <div class="chip-ex">\(2^{3}=2\times 2\times 2\)</div>
+              <div class="chip-ex">\(x^{3}=x\times x\times x\)</div>
+            </div>
+          </div>
+          <div class="step-panel" data-step="2">
+            <div class="step-label">Step 3 / 3</div>
+            <p class="step-title">General rule</p>
+            <p class="step-text">\(x^{n}\) means \(n\) factors of \(x\) multiplied together.</p>
+            <p class="step-math">\[ x^{n}=\underbrace{x\times x\times\cdots\times x}_{n\text{ times}} \]</p>
+          </div>
+        </div>
+        <button class="nav-btn next" type="button" aria-label="Next">→</button>
+      </div>
+      <div class="step-dots" data-dots="intro"><span class="on"></span><span></span><span></span></div>
+    </section>
+
+    <section class="block">
+      <h2>1B. Why \(2x\) is not \(x^{2}\)</h2>
+      <p class="hint">Addition changes the coefficient. A power is repeated multiplication.</p>
+      <div class="step-frame" data-stepper="twox">
+        <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
+        <div class="step-body">
+          <div class="step-panel active" data-step="0">
+            <div class="step-label">Step 1 / 4</div>
+            <p class="step-title">Square means two identical numbers multiplied</p>
+            <p class="step-math">\[ a^{2}=a\times a \]</p>
+          </div>
+          <div class="step-panel" data-step="1">
+            <div class="step-label">Step 2 / 4</div>
+            <p class="step-title">Number examples</p>
+            <div class="step-examples">
+              <div class="chip-ex">\(3\times 3=9=3^{2}\)</div>
+              <div class="chip-ex">\(5\times 5=25=5^{2}\)</div>
+            </div>
+          </div>
+          <div class="step-panel" data-step="2">
+            <div class="step-label">Step 3 / 4</div>
+            <p class="step-title">If someone claims \(x\times x=2x\)</p>
+            <p class="step-text">Put \(x=3\): then \(x\times x\) is \(3\times 3=9\), but \(2x\) is \(2\times 3=6\). That would force \(3\times 3=6\) — impossible.</p>
+            <p class="step-math">\[ \text{If }x\times x=2x\text{ and }x=3,\text{ then }3\times 3=6\text{?} \]</p>
+          </div>
+          <div class="step-panel" data-step="3">
+            <div class="step-label">Step 4 / 4</div>
+            <p class="step-title">Conclusion</p>
+            <p class="step-text">\(3\times 3=9=3^{2}\), so \(x\times x=x^{2}\). Addition is different: \(x+x=2x\).</p>
+            <p class="step-math">\[ x\times x=x^{2}\qquad\text{and}\qquad x+x=2x \]</p>
+          </div>
+        </div>
+        <button class="nav-btn next" type="button" aria-label="Next">→</button>
+      </div>
+      <div class="step-dots" data-dots="twox"><span class="on"></span><span></span><span></span><span></span></div>
+    </section>
+
+    <p class="part-title">Part 2 · Index laws (add → subtract → multiply → divide → zero → negative)</p>
+
+    <!-- + Product -->
+    <section class="block">
+      <h2>2. Product (add indices) · \(x^{m}\times x^{n}=x^{m+n}\)</h2>
+      <p class="hint">Double-click each block to expand, then count.</p>
+      <div class="stage" id="prod-stage">
+        <div class="power-block" id="block-x2" data-power="2">\(x^{2}\)</div>
+        <span class="times-sign">\(\times\)</span>
+        <div class="power-block purple" id="block-x3" data-power="3">\(x^{3}\)</div>
+      </div>
+      <div class="task-box">
+        <h3>Your task</h3>
+        <p class="hint" id="prod-guide" style="margin:0">Double-click each block to split it into factors of \(x\).</p>
+        <div class="count-row">
+          <label for="prod-count">How many \(x\)?</label>
+          <input id="prod-count" type="number" min="1" max="20">
+          <button class="btn" type="button" id="prod-check">Check</button>
+          <button class="btn" type="button" id="prod-reset">Reset</button>
+        </div>
+        <p class="feedback" id="fb-prod">Answer the question above.</p>
+      </div>
+      <p class="formula formula-locked" id="formula-prod">\[ x^{2}\times x^{3}=x^{2+3}=x^{5} \]</p>
+    </section>
+
+    <!-- − Quotient -->
+    <section class="block">
+      <h2>3. Quotient (subtract indices) · \(x^{m}\div x^{n}=x^{m-n}\)</h2>
+      <p class="hint">
+        Write it as a fraction. Double-click to expand, then cancel matching factors across the line.
+        The denominator must not disappear — when everything cancels, it becomes \(1\).
+      </p>
+      <div class="stage" id="quot-stage">
+        <div class="fraction" id="quot-frac">
+          <div class="frac-row" id="quot-num-row">
+            <div class="power-block" id="quot-num" data-power="5" data-side="num">\(x^{5}\)</div>
+          </div>
+          <div class="frac-bar" aria-hidden="true"></div>
+          <div class="frac-row" id="quot-den-row">
+            <div class="power-block rose" id="quot-den" data-power="2" data-side="den">\(x^{2}\)</div>
+            <span class="one-mark" id="quot-one">\(1\)</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-box">
+        <h3>Cancel across the fraction line</h3>
+        <p class="hint" id="quot-guide" style="margin:0">
+          1) Double-click numerator and denominator.<br>
+          2) Click one top \(x\) and one bottom \(x\) to cancel.
+        </p>
+        <div class="count-row">
+          <label for="quot-count">How many \(x\) remain on top?</label>
+          <input id="quot-count" type="number" min="0" max="20">
+          <button class="btn" type="button" id="quot-check">Check</button>
+          <button class="btn" type="button" id="quot-reset">Reset</button>
+        </div>
+        <p class="feedback" id="fb-quot">Answer the question above.</p>
+      </div>
+      <p class="formula formula-locked" id="formula-quot">\[ \frac{x^{5}}{x^{2}}=x^{5-2}=x^{3} \]</p>
+    </section>
+
+    <!-- × Power of a power -->
+    <section class="block">
+      <h2>4. Power of a power (multiply indices) · \((x^{m})^{n}=x^{mn}\)</h2>
+      <p class="hint">
+        \(x\) to the power of \(n\) means \(n\) factors of \(x\) multiplied together.
+        So \((x^{2})^{3}=x^{2}\times x^{2}\times x^{2}\). Double-click each \(x^{2}\) to split, then count.
+      </p>
+      <div class="stage" id="pow-stage">
+        <div class="power-block" id="pow-a" data-power="2">\(x^{2}\)</div>
+        <span class="times-sign">\(\times\)</span>
+        <div class="power-block" id="pow-b" data-power="2">\(x^{2}\)</div>
+        <span class="times-sign">\(\times\)</span>
+        <div class="power-block" id="pow-c" data-power="2">\(x^{2}\)</div>
+      </div>
+      <div class="task-box">
+        <h3>Your task</h3>
+        <p class="hint" id="pow-guide" style="margin:0">Double-click each \(x^{2}\) block to turn it into \(x\times x\).</p>
+        <div class="count-row">
+          <label for="pow-count">How many \(x\)?</label>
+          <input id="pow-count" type="number" min="1" max="20">
+          <button class="btn" type="button" id="pow-check">Check</button>
+          <button class="btn" type="button" id="pow-reset">Reset</button>
+        </div>
+        <p class="feedback" id="fb-pow">Answer the question above.</p>
+      </div>
+      <p class="formula formula-locked" id="formula-pow">\[ (x^{2})^{3}=x^{2}\times x^{2}\times x^{2}=x^{6}=x^{2\times 3} \]</p>
+    </section>
+
+    <!-- ÷ Roots -->
+    <section class="block">
+      <h2>5. Roots / fractional indices (divide indices) · \(x^{\frac{n}{m}}=\sqrt[m]{x^{n}}\)</h2>
+      <div class="step-frame" data-stepper="root">
+        <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
+        <div class="step-body">
+          <div class="step-panel active" data-step="0">
+            <div class="step-label">Step 1 / 4</div>
+            <p class="step-title">What is a square root?</p>
+            <p class="step-text">A square root undoes squaring — it is the inverse of the 2nd power.</p>
+            <p class="step-math">\[ \left(\sqrt{a}\right)^{2}=a \]</p>
+          </div>
+          <div class="step-panel" data-step="1">
+            <div class="step-label">Step 2 / 4</div>
+            <p class="step-title">Higher roots</p>
+            <p class="step-text">An \(m\)-th root undoes an \(m\)-th power: \(\left(\sqrt[m]{a}\right)^{m}=a\).</p>
+            <p class="step-math">\[ \sqrt[m]{a^{m}}=a \]</p>
+          </div>
+          <div class="step-panel" data-step="2">
+            <div class="step-label">Step 3 / 4</div>
+            <p class="step-title">Why a fraction?</p>
+            <p class="step-text">We want \(r\) with \(\left(x^{r}\right)^{m}=x\). Then \(x^{rm}=x^{1}\), so \(r=\dfrac{1}{m}\).</p>
+            <p class="step-math">\[ x^{\frac{1}{m}}=\sqrt[m]{x} \]</p>
+          </div>
+          <div class="step-panel" data-step="3">
+            <div class="step-label">Step 4 / 4</div>
+            <p class="step-title">General rule</p>
+            <p class="step-text">
+              \(x^{\frac{n}{m}}=\left(x^{n}\right)^{\frac{1}{m}}=\sqrt[m]{x^{n}}\)
+              (also equal to \(\left(\sqrt[m]{x}\right)^{n}\)).
+            </p>
+            <p class="step-math">\[ x^{\frac{n}{m}}=\sqrt[m]{x^{n}} \]</p>
+          </div>
+        </div>
+        <button class="nav-btn next" type="button" aria-label="Next">→</button>
+      </div>
+      <div class="step-dots" data-dots="root"><span class="on"></span><span></span><span></span><span></span></div>
+      <p class="formula">\[ x^{\frac{n}{m}}=\sqrt[m]{x^{n}} \]</p>
+    </section>
+
+    <!-- Zero -->
+    <section class="block">
+      <h2>6. Zero exponent · \(x^{0}=1\)</h2>
+      <div class="panel ok">
+        <h3>Proof</h3>
+        <p class="line">\(0=n-n\)</p>
+        <p class="line accent">\(x^{0}=x^{n-n}=\dfrac{x^{n}}{x^{n}}=1\)</p>
+        <p>(for \(x\neq 0\)). Same number on top and bottom cancels to \(1\).</p>
+      </div>
+      <div class="panel" style="margin-top:12px;border-color:rgba(253,230,138,.4)">
+        <h3>Therefore \(0^{0}\) is undefined</h3>
+        <p>
+          Any positive power of \(0\) is \(0\): \(0^{n}=0\) (you are multiplying zeros).
+        </p>
+        <p>
+          So the same “proof” pattern would become
+          \(\dfrac{0^{n}}{0^{n}}\), which is essentially dividing by \(0\).
+        </p>
+        <p>
+          Division by zero is not allowed, so \(0^{0}\) is <strong>undefined</strong>.
+        </p>
+        <p class="line accent">\(0^{0}\) is undefined</p>
+      </div>
+      <p class="formula">\[ x^{0}=1\quad(x\neq 0),\qquad 0^{0}\text{ undefined} \]</p>
+    </section>
+
+    <!-- Negative -->
+    <section class="block">
+      <h2>7. Negative exponent · \(x^{-n}=\dfrac{1}{x^{n}}\)</h2>
+      <p class="hint">Uses the quotient rule and \(x^{0}=1\).</p>
+      <div class="stack">
+        <div class="panel">
+          <h3>Proof · via division</h3>
+          <p>Consider \(\dfrac{x^{0}}{x^{n}}\).</p>
+          <p>Left side: \(\dfrac{1}{x^{n}}\).</p>
+          <p>Right side (quotient rule): \(x^{0-n}=x^{-n}\).</p>
+          <p class="line accent">Therefore \(x^{-n}=\dfrac{1}{x^{n}}\).</p>
+        </div>
+        <div class="panel">
+          <h3>Check · via product</h3>
+          <p>\(x^{n}\cdot x^{-n}=x^{n+(-n)}=x^{0}=1\).</p>
+          <p>The number that multiplies \(x^{n}\) to give \(1\) is \(\dfrac{1}{x^{n}}\).</p>
+          <p class="line accent">Same conclusion: \(x^{-n}=\dfrac{1}{x^{n}}\).</p>
+        </div>
+      </div>
+      <p class="formula">\[ x^{-n}=\frac{1}{x^{n}}\quad(x\neq 0) \]</p>
+    </section>
+      </div>
+
+      <div class="lab" id="lab-scientific">
+        <p class="lead">Write very large or very small numbers as \(a \times 10^{n}\) with \(1 \le a &lt; 10\). Uses the same index laws as the Powers lab — multiply adds indices, divide subtracts.</p>
+
+        <p class="part-title">Part 1 · Standard form</p>
+        <section class="block">
+          <h2>1. What is scientific notation?</h2>
+          <p class="hint">Worksheet §1–10: express ordinary numbers in the form \(a \times 10^{n}\).</p>
+          <div class="step-frame" data-stepper="sci-intro">
+            <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
+            <div class="step-body">
+              <div class="step-panel active" data-step="0">
+                <div class="step-label">Step 1 / 4</div>
+                <p class="step-title">Standard form</p>
+                <p class="step-text">Scientific notation (standard form) writes a number as a coefficient times a power of ten.</p>
+                <p class="step-math">\[ a \times 10^{n}\qquad\text{where}\quad 1 \le a < 10 \]</p>
+              </div>
+              <div class="step-panel" data-step="1">
+                <div class="step-label">Step 2 / 4</div>
+                <p class="step-title">Large numbers → positive \(n\)</p>
+                <div class="step-examples">
+                  <div class="chip-ex">\(102\,000\,000 = 1.02 \times 10^{8}\)</div>
+                  <div class="chip-ex">\(9\,410\,000\,000 = 9.41 \times 10^{9}\)</div>
+                </div>
+                <p class="step-text">Move the decimal point left; count how many places → that is \(n\).</p>
+              </div>
+              <div class="step-panel" data-step="2">
+                <div class="step-label">Step 3 / 4</div>
+                <p class="step-title">Small numbers → negative \(n\)</p>
+                <div class="step-examples">
+                  <div class="chip-ex">\(0.000\,504 = 5.04 \times 10^{-4}\)</div>
+                  <div class="chip-ex">\(0.000\,000\,000\,000\,001\,4 = 1.4 \times 10^{-15}\)</div>
+                </div>
+                <p class="step-text">Move the decimal point right; the count is negative.</p>
+              </div>
+              <div class="step-panel" data-step="3">
+                <div class="step-label">Step 4 / 4</div>
+                <p class="step-title">Why powers of \(10\)?</p>
+                <p class="step-text">Each shift of the decimal is one factor of \(10\). That is exactly the index law you already know: \(10^{m} \times 10^{n} = 10^{m+n}\).</p>
+                <p class="step-math">\[ 2.45 \times 10^{2} \times 10^{6} = 2.45 \times 10^{8} \]</p>
+              </div>
+            </div>
+            <button class="nav-btn next" type="button" aria-label="Next">→</button>
+          </div>
+          <div class="step-dots" data-dots="sci-intro"><span class="on"></span><span></span><span></span><span></span></div>
+        </section>
+
+        <p class="part-title">Part 2 · Move the decimal</p>
+        <section class="block">
+          <h2>2. Convert by shifting the decimal point</h2>
+          <p class="hint" id="sci-shift-target">Convert the number below into standard form.</p>
+          <div class="stage">
+            <div id="sci-shift-display"></div>
+            <p class="sci-preview" id="sci-shift-preview">\(1 \times 10^{0}\)</p>
+          </div>
+          <div class="sci-shift-controls">
+            <button class="btn" type="button" id="sci-shift-left">← shift decimal left</button>
+            <span class="sci-exp-readout" id="sci-shift-power">Power: \(10^{0}\)</span>
+            <button class="btn" type="button" id="sci-shift-right">shift decimal right →</button>
+          </div>
+          <div class="task-box">
+            <h3>Your task</h3>
+            <p class="hint" style="margin:0">Stop when exactly one non-zero digit is before the decimal point (\(1 \le a &lt; 10\)).</p>
+            <div class="count-row">
+              <button class="btn" type="button" id="sci-shift-check">Check</button>
+              <button class="btn" type="button" id="sci-shift-reset">New number</button>
+            </div>
+            <p class="feedback" id="fb-sci-shift">Move the decimal until you have one non-zero digit before the point.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-sci-shift">\[ 1.02 \times 10^{8} \]</p>
+        </section>
+
+        <p class="part-title">Part 3 · Practice</p>
+        <section class="block">
+          <h2>3. Convert both ways</h2>
+          <p class="hint">Random question: ordinary → scientific, or scientific → ordinary (worksheet Q1–10 style).</p>
+          <p class="sci-convert-q" id="sci-convert-q">—</p>
+          <div class="sci-convert-fields" id="sci-convert-fields"></div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="sci-convert-check">Check</button>
+              <button class="btn" type="button" id="sci-convert-reset">New question</button>
+            </div>
+            <p class="feedback" id="fb-sci-convert">Enter your answer, then Check.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-sci-convert">\[ \text{answer} \]</p>
+        </section>
+
+        <p class="part-title">Part 4 · Multiply &amp; divide</p>
+        <section class="block">
+          <h2>4. Use index laws (worksheet Q11–22)</h2>
+          <p class="hint">Combine coefficients, then add or subtract the indices — same rules as \(x^{m} \times x^{n}\) and \(x^{m} \div x^{n}\).</p>
+          <p class="sci-arith-q" id="sci-arith-q">—</p>
+          <div class="sci-arith-fields">
+            <label>Answer: <input id="sci-arith-a" type="number" step="any"> × 10<sup>n</sup>, n = <input id="sci-arith-n" type="number" step="1"></label>
+          </div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="sci-arith-check">Check</button>
+              <button class="btn" type="button" id="sci-arith-reset">New question</button>
+            </div>
+            <p class="feedback" id="fb-sci-arith">Multiply: add indices. Divide: subtract indices.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-sci-arith">\[ \text{answer} \]</p>
+        </section>
+
+        <p class="part-title">Part 5 · Compare &amp; order</p>
+        <section class="block" id="sci-sort-wrap">
+          <h2>5. Arrange in order (worksheet Q33–34)</h2>
+          <p class="hint" id="sci-sort-label">Drag into ascending order (smallest → largest).</p>
+          <div class="sort-area">
+            <div class="sort-pool" id="sci-sort-pool"></div>
+            <div class="sort-slots-row" id="sci-sort-slots">
+              <div class="sort-slot-wrap"><span class="sort-slot-label">1st</span><div class="sort-slot" data-slot="0"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">2nd</span><div class="sort-slot" data-slot="1"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">3rd</span><div class="sort-slot" data-slot="2"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">4th</span><div class="sort-slot" data-slot="3"></div></div>
+            </div>
+          </div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="sci-sort-check">Check order</button>
+              <button class="btn" type="button" id="sci-sort-reset">New set</button>
+            </div>
+            <p class="feedback" id="fb-sci-sort">Convert mentally to compare, then drag the cards.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-sci-sort">\[ \text{correct order} \]</p>
+        </section>
+      </div>
+
+      <div class="lab" id="lab-sci-walk">
+        <p class="lead">Guided scientific-notation walkthrough (from the comics lesson) — step through conversion and arithmetic modules. The Scientific notation lab above stays available for practice drills.</p>
+        <div id="sci-walk-root"></div>
+      </div>
+
+      <div class="lab" id="lab-binary">
+        <p class="lead">Base 2 uses powers of \(2\) as place values — the same indices you met in the Powers lab. Flip bits, match targets, and try worksheet-style challenges.</p>
+
+        <p class="part-title">Part 1 · Base 2 and place value</p>
+        <section class="block">
+          <h2>1. From indices to binary</h2>
+          <p class="hint">Each binary digit is a coefficient times a power of \(2\).</p>
+          <div class="step-frame" data-stepper="binary-intro">
+            <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
+            <div class="step-body">
+              <div class="step-panel active" data-step="0">
+                <div class="step-label">Step 1 / 4</div>
+                <p class="step-title">Denary expanded form</p>
+                <div class="step-examples">
+                  <div class="chip-ex">\(763_{(10)} = 7\times10^{2} + 6\times10^{1} + 3\times10^{0}\)</div>
+                </div>
+              </div>
+              <div class="step-panel" data-step="1">
+                <div class="step-label">Step 2 / 4</div>
+                <p class="step-title">Binary is base \(2\)</p>
+                <div class="step-examples">
+                  <div class="chip-ex">\(11_{(2)} = 1\times2^{1} + 1\times2^{0} = 3_{(10)}\)</div>
+                  <div class="chip-ex">\(100_{(2)} = 1\times2^{2} = 4_{(10)}\)</div>
+                </div>
+              </div>
+              <div class="step-panel" data-step="2">
+                <div class="step-label">Step 3 / 4</div>
+                <p class="step-title">Only digits \(0\) and \(1\)</p>
+                <p class="step-text">Each place is either “on” (\(1\)) or “off” (\(0\)) — like light bulbs in a row.</p>
+              </div>
+              <div class="step-panel" data-step="3">
+                <div class="step-label">Step 4 / 4</div>
+                <p class="step-title">Place value of a digit</p>
+                <p class="step-math">\[ \text{In } 10111_{(2)}, \text{ the } 0 \text{ has place value } 2^{3} \]</p>
+              </div>
+            </div>
+            <button class="nav-btn next" type="button" aria-label="Next">→</button>
+          </div>
+          <div class="step-dots" data-dots="binary-intro"><span class="on"></span><span></span><span></span><span></span></div>
+        </section>
+
+        <p class="part-title">Part 2 · Bit flip playground</p>
+        <section class="block">
+          <h2>2. Flip the bits</h2>
+          <p class="hint">Click a bulb to toggle \(0\leftrightarrow1\). Watch the expanded form and denary value update live.</p>
+          <div class="stage" id="bin-play-stage">
+            <div id="bin-play-row"></div>
+          </div>
+          <div class="bin-readout">
+            <div>Binary: <span class="bin-str" id="bin-read-binary">1(2)</span></div>
+            <div id="bin-read-denary">\(= 1_{(10)}\)</div>
+            <div id="bin-read-expanded">\(1 \times 2^{0}\)</div>
+          </div>
+          <div class="count-row">
+            <button class="btn" type="button" id="bin-random">Random</button>
+            <button class="btn" type="button" id="bin-clear">Clear all</button>
+          </div>
+          <div class="bin-ladder-panel">
+            <p class="hint" style="margin:0 0 6px">Divide-by-\(2\) method: stack remainders bottom-up to get binary.</p>
+            <p class="hint" style="margin:0 0 8px">Convert: <strong id="bin-ladder-target">\(35_{(10)}\)</strong></p>
+            <div class="ladder-steps" id="bin-ladder-steps"></div>
+            <div class="ladder-remainders">
+              <p class="hint">Binary (read remainders bottom-up):</p>
+              <div class="ladder-steps ladder-binary-row">
+                <div class="ladder-binary-result" id="bin-ladder-digits">—</div>
+              </div>
+            </div>
+            <div class="count-row">
+              <button class="btn" type="button" id="bin-ladder-step">Divide by 2</button>
+              <button class="btn" type="button" id="bin-ladder-reset">New number</button>
+            </div>
+            <p class="feedback" id="fb-bin-ladder">Click “Divide by 2” for each step.</p>
+            <p class="formula formula-locked" id="formula-bin-ladder">\[ 35_{(10)} = 100011_{(2)} \]</p>
+          </div>
+        </section>
+
+        <p class="part-title">Part 3 · Challenge</p>
+        <section class="block">
+          <h2>3. Match the denary number</h2>
+          <p class="hint">Flip bits until your binary equals the target.</p>
+          <p class="hint">Target: <strong id="bin-match-target">\(35_{(10)}\)</strong></p>
+          <div class="stage"><div id="bin-match-row"></div></div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="bin-match-check">Check</button>
+              <button class="btn" type="button" id="bin-match-reset">New target</button>
+            </div>
+            <p class="feedback" id="fb-bin-match">Flip bits to match the target, then Check.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-bin-match">\[ 35_{(10)} = 100011_{(2)} \]</p>
+        </section>
+
+        <p class="part-title">Part 4 · Add, subtract &amp; order</p>
+        <section class="block">
+          <h2>4A. Binary arithmetic (denary answer)</h2>
+          <p class="hint">Convert each binary number to denary, then add or subtract.</p>
+          <p class="bin-arith-q" id="bin-arith-q">\(110101_{(2)} + 1101011_{(2)}\)</p>
+          <div class="task-box">
+            <div class="count-row">
+              <label for="bin-arith-input">Answer (denary):</label>
+              <input id="bin-arith-input" type="number">
+              <button class="btn" type="button" id="bin-arith-check">Check</button>
+              <button class="btn" type="button" id="bin-arith-reset">New question</button>
+            </div>
+            <p class="feedback" id="fb-bin-arith">Answer the question above.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-bin-arith">\[ 53 + 107 = 160_{(10)} \]</p>
+        </section>
+
+        <section class="block" id="bin-order-wrap">
+          <h2>4B. Order smallest to largest</h2>
+          <p class="hint">Drag cards into the row (ascending denary value).</p>
+          <div class="sort-area">
+            <div class="sort-pool" id="bin-order-pool"></div>
+            <div class="sort-slots-row" id="bin-order-slots">
+              <div class="sort-slot-wrap"><span class="sort-slot-label">1st (smallest)</span><div class="sort-slot" data-slot="0"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">2nd</span><div class="sort-slot" data-slot="1"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">3rd (largest)</span><div class="sort-slot" data-slot="2"></div></div>
+            </div>
+          </div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="bin-order-check">Check</button>
+              <button class="btn" type="button" id="bin-order-reset">New question</button>
+            </div>
+            <p class="feedback" id="fb-bin-order">Drag cards into the slots left-to-right (smallest first).</p>
+          </div>
+          <p class="formula formula-locked" id="formula-bin-order">\[ 28 < 55 < 57 \]</p>
+        </section>
+      </div>
+    </section>
+
+    <section id="panel-comics" class="mode-panel hidden"></section>
+  </main>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="law-of-indices-binary.js?v=20260730-bin8"></script>
+  <script defer src="law-of-indices-scientific.js?v=20260810-sci3"></script>
+  <script src="sci-notation-content.js?v=20260828-sel1"></script>
+  <script src="sci-notation-tool.js?v=20260828-sel1"></script>
+  <script>
+    function renderKatex(root) {
+      if (!window.renderMathInElement) return;
+      renderMathInElement(root || document.body, {
+        delimiters: [
+          { left: "\\(", right: "\\)", display: false },
+          { left: "\\[", right: "\\]", display: true },
+        ],
+      });
+    }
+    function waitKatex() {
+      return new Promise((resolve) => {
+        const tick = () => window.renderMathInElement ? (renderKatex(document.body), resolve()) : setTimeout(tick, 40);
+        tick();
+      });
+    }
+
+    const stepperState = {};
+    function initStepper(name) {
+      const frame = document.querySelector(`[data-stepper="${name}"]`);
+      const dotsWrap = document.querySelector(`[data-dots="${name}"]`);
+      const panels = [...frame.querySelectorAll(".step-panel")];
+      const prev = frame.querySelector(".prev");
+      const next = frame.querySelector(".next");
+      stepperState[name] = 0;
+      function show(i) {
+        stepperState[name] = Math.max(0, Math.min(panels.length - 1, i));
+        panels.forEach((p, idx) => p.classList.toggle("active", idx === stepperState[name]));
+        [...dotsWrap.querySelectorAll("span")].forEach((d, idx) => d.classList.toggle("on", idx === stepperState[name]));
+        prev.disabled = stepperState[name] === 0;
+        next.disabled = stepperState[name] === panels.length - 1;
+        renderKatex(frame);
+      }
+      prev.addEventListener("click", () => show(stepperState[name] - 1));
+      next.addEventListener("click", () => show(stepperState[name] + 1));
+      show(0);
+    }
+
+    function expandPowerBlock(block, colorClass) {
+      if (block.classList.contains("open")) return;
+      const n = Number(block.dataset.power);
+      block.classList.add("open");
+      block.innerHTML = "";
+      for (let i = 0; i < n; i++) {
+        if (i) {
+          const t = document.createElement("span");
+          t.className = "times-sign";
+          t.style.fontSize = "16px";
+          t.innerHTML = "\\(\\times\\)";
+          block.appendChild(t);
+        }
+        const x = document.createElement("span");
+        x.className = "tiny-x" + (colorClass ? " " + colorClass : "");
+        x.innerHTML = "\\(x\\)";
+        block.appendChild(x);
+      }
+      renderKatex(block);
+    }
+
+    function revealFormula(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove("formula-locked");
+        renderKatex(el);
+      }
+    }
+    function lockFormula(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("formula-locked");
+    }
+
+    /* Product */
+    function resetProd() {
+      const b2 = document.getElementById("block-x2");
+      const b3 = document.getElementById("block-x3");
+      b2.className = "power-block";
+      b3.className = "power-block purple";
+      b2.innerHTML = "\\(x^{2}\\)";
+      b3.innerHTML = "\\(x^{3}\\)";
+      renderKatex(document.getElementById("prod-stage"));
+      const input = document.getElementById("prod-count");
+      const check = document.getElementById("prod-check");
+      input.value = "";
+      input.disabled = false;
+      check.disabled = false;
+      const g = document.getElementById("prod-guide");
+      g.innerHTML = "Double-click each block to split it into factors of \\(x\\).";
+      renderKatex(g);
+      const fb = document.getElementById("fb-prod");
+      fb.className = "feedback";
+      fb.textContent = "Answer the question above.";
+      lockFormula("formula-prod");
+    }
+    function updateProdReady() {
+      const both = document.getElementById("block-x2").classList.contains("open")
+        && document.getElementById("block-x3").classList.contains("open");
+      if (!both) return;
+      const g = document.getElementById("prod-guide");
+      g.innerHTML = "Count every \\(x\\). How many factors in total?";
+      renderKatex(g);
+    }
+    document.getElementById("block-x2").addEventListener("dblclick", () => {
+      expandPowerBlock(document.getElementById("block-x2"));
+      updateProdReady();
+    });
+    document.getElementById("block-x3").addEventListener("dblclick", () => {
+      expandPowerBlock(document.getElementById("block-x3"), "purple");
+      updateProdReady();
+    });
+    document.getElementById("prod-check").addEventListener("click", () => {
+      const fb = document.getElementById("fb-prod");
+      const val = Number(document.getElementById("prod-count").value);
+      if (val === 5) {
+        fb.className = "feedback ok";
+        fb.innerHTML = "Correct — 5 factors, so \\(x^{2}\\times x^{3}=x^{5}=x^{2+3}\\).";
+        revealFormula("formula-prod");
+      } else {
+        fb.className = "feedback bad";
+        fb.innerHTML = "Count again: \\(x\\times x\\times x\\times x\\times x\\).";
+      }
+      renderKatex(fb);
+    });
+    document.getElementById("prod-reset").addEventListener("click", resetProd);
+
+    /* Quotient fraction */
+    let selected = null;
+    function resetQuot() {
+      selected = null;
+      const numRow = document.getElementById("quot-num-row");
+      const denRow = document.getElementById("quot-den-row");
+      numRow.innerHTML = "";
+      denRow.innerHTML = "";
+
+      const num = document.createElement("div");
+      num.className = "power-block";
+      num.id = "quot-num";
+      num.dataset.power = "5";
+      num.dataset.side = "num";
+      num.innerHTML = "\\(x^{5}\\)";
+      num.addEventListener("dblclick", () => expandIntoRow(num, numRow, "", "num"));
+
+      const den = document.createElement("div");
+      den.className = "power-block rose";
+      den.id = "quot-den";
+      den.dataset.power = "2";
+      den.dataset.side = "den";
+      den.innerHTML = "\\(x^{2}\\)";
+      den.addEventListener("dblclick", () => expandIntoRow(den, denRow, "rose", "den"));
+
+      const one = document.createElement("span");
+      one.className = "one-mark";
+      one.id = "quot-one";
+      one.innerHTML = "\\(1\\)";
+
+      numRow.appendChild(num);
+      denRow.appendChild(den);
+      denRow.appendChild(one);
+      renderKatex(document.getElementById("quot-stage"));
+
+      const g = document.getElementById("quot-guide");
+      g.innerHTML = "1) Double-click numerator and denominator.<br>2) Click one top \\(x\\) and one bottom \\(x\\) to cancel.";
+      renderKatex(g);
+      const fb = document.getElementById("fb-quot");
+      fb.className = "feedback";
+      fb.textContent = "Answer the question above.";
+      renderKatex(fb);
+      document.getElementById("quot-count").value = "";
+      lockFormula("formula-quot");
+    }
+    function bindCancel(root) {
+      root.querySelectorAll(".tiny-x").forEach((x) => {
+        x.addEventListener("click", () => {
+          if (x.classList.contains("gone")) return;
+          if (!selected) {
+            selected = x;
+            x.classList.add("selected");
+            return;
+          }
+          if (selected === x) {
+            selected.classList.remove("selected");
+            selected = null;
+            return;
+          }
+          const a = selected, b = x;
+          const sideA = a.dataset.side;
+          const sideB = b.dataset.side;
+          a.classList.remove("selected");
+          selected = null;
+          if (sideA === sideB) {
+            const fb = document.getElementById("fb-quot");
+            fb.className = "feedback warn";
+            fb.textContent = "Cancel across the fraction line: one from top and one from bottom.";
+            return;
+          }
+          a.classList.add("gone");
+          b.classList.add("gone");
+          cleanupTimes(document.getElementById("quot-num-row"));
+          cleanupTimes(document.getElementById("quot-den-row"));
+          updateQuot();
+        });
+      });
+    }
+    function cleanupTimes(row) {
+      row.querySelectorAll(".times-sign").forEach((t) => t.remove());
+      const visible = [...row.querySelectorAll(".tiny-x")].filter((x) => !x.classList.contains("gone"));
+      for (let i = 0; i < visible.length - 1; i++) {
+        const t = document.createElement("span");
+        t.className = "times-sign";
+        t.style.fontSize = "16px";
+        t.innerHTML = "\\(\\times\\)";
+        visible[i].insertAdjacentElement("afterend", t);
+      }
+      renderKatex(row);
+    }
+    function expandIntoRow(block, row, color, side) {
+      if (block.classList.contains("open") || block.style.display === "none") return;
+      const n = Number(block.dataset.power);
+      block.style.display = "none";
+      block.classList.add("open");
+      for (let i = 0; i < n; i++) {
+        if (i) {
+          const t = document.createElement("span");
+          t.className = "times-sign";
+          t.style.fontSize = "16px";
+          t.innerHTML = "\\(\\times\\)";
+          row.insertBefore(t, row.querySelector(".one-mark") || null);
+        }
+        const x = document.createElement("span");
+        x.className = "tiny-x" + (color ? " " + color : "");
+        x.dataset.side = side;
+        x.innerHTML = "\\(x\\)";
+        row.insertBefore(x, row.querySelector(".one-mark") || null);
+      }
+      renderKatex(row);
+      bindCancel(row);
+      const numHidden = document.getElementById("quot-num")?.style.display === "none";
+      const denHidden = document.getElementById("quot-den")?.style.display === "none";
+      if (numHidden && denHidden) {
+        document.getElementById("fb-quot").innerHTML = "Click one top \\(x\\) and one bottom \\(x\\) to cancel.";
+        renderKatex(document.getElementById("fb-quot"));
+      }
+    }
+    function updateQuot() {
+      if (!document.getElementById("formula-quot").classList.contains("formula-locked")) return;
+      const numLeft = document.querySelectorAll("#quot-num-row .tiny-x:not(.gone)").length;
+      const denLeft = document.querySelectorAll("#quot-den-row .tiny-x:not(.gone)").length;
+      const one = document.getElementById("quot-one");
+      if (denLeft === 0) one.classList.add("show");
+      else one.classList.remove("show");
+      const fb = document.getElementById("fb-quot");
+      if (denLeft > 0) {
+        fb.className = "feedback";
+        fb.innerHTML = "Remaining: top \\(" + numLeft + "\\), bottom \\(" + denLeft + "\\). Keep cancelling.";
+      } else {
+        fb.className = "feedback";
+        fb.textContent = "Answer the question above.";
+      }
+      renderKatex(fb);
+    }
+    document.getElementById("quot-reset").addEventListener("click", resetQuot);
+    document.getElementById("quot-check").addEventListener("click", () => {
+      const fb = document.getElementById("fb-quot");
+      const val = Number(document.getElementById("quot-count").value);
+      if (val === 3) {
+        fb.className = "feedback ok";
+        fb.innerHTML = "Correct — \\(\\dfrac{x^{5}}{x^{2}}=x^{5-2}=x^{3}\\), so 3 factors remain on top.";
+        revealFormula("formula-quot");
+      } else {
+        fb.className = "feedback bad";
+        fb.innerHTML = "Subtract the indices: \\(5-2=3\\), so \\(x^{3}\\) factors remain on top.";
+      }
+      renderKatex(fb);
+    });
+
+    // Initial dblclick bindings are attached inside resetQuot()
+    // so first load must call resetQuot after katex.
+
+    /* Power of a power */
+    function resetPow() {
+      ["pow-a", "pow-b", "pow-c"].forEach((id) => {
+        const b = document.getElementById(id);
+        b.className = "power-block";
+        b.innerHTML = "\\(x^{2}\\)";
+      });
+      renderKatex(document.getElementById("pow-stage"));
+      const input = document.getElementById("pow-count");
+      const check = document.getElementById("pow-check");
+      input.value = "";
+      input.disabled = false;
+      check.disabled = false;
+      const g = document.getElementById("pow-guide");
+      g.innerHTML = "Double-click each \\(x^{2}\\) block to turn it into \\(x\\times x\\).";
+      renderKatex(g);
+      const fb = document.getElementById("fb-pow");
+      fb.className = "feedback";
+      fb.textContent = "Answer the question above.";
+      lockFormula("formula-pow");
+    }
+    function updatePowReady() {
+      const all = ["pow-a", "pow-b", "pow-c"].every((id) => document.getElementById(id).classList.contains("open"));
+      if (!all) return;
+      const g = document.getElementById("pow-guide");
+      g.innerHTML = "Count every \\(x\\). How many factors in total?";
+      renderKatex(g);
+    }
+    ["pow-a", "pow-b", "pow-c"].forEach((id) => {
+      document.getElementById(id).addEventListener("dblclick", () => {
+        expandPowerBlock(document.getElementById(id));
+        updatePowReady();
+      });
+    });
+    document.getElementById("pow-check").addEventListener("click", () => {
+      const fb = document.getElementById("fb-pow");
+      const val = Number(document.getElementById("pow-count").value);
+      if (val === 6) {
+        fb.className = "feedback ok";
+        fb.innerHTML = "Correct — 6 factors, so \\((x^{2})^{3}=x^{6}=x^{2\\times 3}\\).";
+        revealFormula("formula-pow");
+      } else {
+        fb.className = "feedback bad";
+        fb.innerHTML = "Three groups of \\(x\\times x\\) make six \\(x\\)'s.";
+      }
+      renderKatex(fb);
+    });
+    document.getElementById("pow-reset").addEventListener("click", resetPow);
+
+    window.initStepper = initStepper;
+    window.revealFormula = revealFormula;
+    window.lockFormula = lockFormula;
+
+    function showTab(name) {
+      document.querySelectorAll(".tab").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === name);
+      });
+      document.querySelectorAll(".mode-panel").forEach((panel) => {
+        panel.classList.toggle("hidden", panel.id !== "panel-" + name);
+      });
+      if (name === "tools") {
+        const activeLab = document.querySelector(".lab.active");
+        if (activeLab) renderKatex(activeLab);
+      }
+    }
+    function showLab(name) {
+      showTab("tools");
+      document.querySelectorAll(".subnav .chip").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.lab === name);
+      });
+      document.querySelectorAll(".lab").forEach((lab) => {
+        lab.classList.toggle("active", lab.id === "lab-" + name);
+      });
+      history.replaceState(null, "", "#" + name);
+      const labEl = document.getElementById("lab-" + name);
+      if (labEl) renderKatex(labEl);
+      if (name === "sci-walk" && window.SciNotationTool && !window.__sciWalkReady) {
+        const root = document.getElementById("sci-walk-root");
+        if (root) {
+          window.SciNotationTool.init(root);
+          window.__sciWalkReady = true;
+        }
+      }
+    }
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const name = btn.dataset.tab;
+        showTab(name);
+        history.replaceState(null, "", name === "tools" ? "#powers" : "#comics");
+        if (name === "tools") {
+          const active = document.querySelector(".subnav .chip.active");
+          if (active) history.replaceState(null, "", "#" + active.dataset.lab);
+        }
+      });
+    });
+    document.querySelectorAll(".subnav .chip").forEach((btn) => {
+      btn.addEventListener("click", () => showLab(btn.dataset.lab));
+    });
+
+    waitKatex().then(() => {
+      ["intro", "twox", "root"].forEach(initStepper);
+      resetProd();
+      resetQuot();
+      resetPow();
+      if (window.initBinaryLab) window.initBinaryLab();
+      if (window.initScientificLab) window.initScientificLab();
+      const hash = (location.hash || "").replace("#", "");
+      if (hash === "comics") showTab("comics");
+      else if (hash === "binary") showLab("binary");
+      else if (hash === "scientific") showLab("scientific");
+      else if (hash === "sci-walk") showLab("sci-walk");
+      else if (hash === "powers" || hash === "tools") showLab("powers");
+    });
+  </script>
+</body>
+</html>

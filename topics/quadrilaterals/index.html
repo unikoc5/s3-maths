@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quadrilaterals — JM29</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260730-jm29m">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(14,165,233,.12), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 92% 8%, rgba(56,189,248,.1), transparent 50%),
+        linear-gradient(180deg,#f8fafc,#f1f5f9);
+      background-attachment: fixed; user-select:none; }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); letter-spacing:-.03em; }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .note-box {
+      margin-top:12px; padding:12px 14px; border-radius:12px;
+      border:1px solid rgba(2,132,199,.25); background:rgba(2,132,199,.06);
+      font-size:14px; line-height:1.55; color:var(--text);
+    }
+    .diff-table { width:100%; border-collapse:collapse; margin-top:12px; font-size:13px; }
+    .diff-table th, .diff-table td {
+      border:1px solid var(--line); padding:8px 10px; text-align:center; vertical-align:middle;
+    }
+    .diff-table th { background:var(--surface-2); font-size:12px; }
+    .diff-table td.yes { color:var(--good); font-weight:700; }
+    .diff-table td.no { color:var(--muted); }
+    .diff-table td.feat { text-align:left; font-weight:600; }
+    .diff-table tr.hl td { background:rgba(2,132,199,.1); }
+    .reason-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:10px; margin-top:10px;
+    }
+    .reason-grid.cong-grid {
+      grid-template-columns:repeat(5, minmax(120px, 1fr));
+    }
+    .reason-grid.cong-grid .reason-card.row2 {
+      grid-column: span 1;
+    }
+    .reason-grid.cong-grid .reason-card.row2:first-of-type,
+    .reason-grid.cong-grid .reason-card.row2-start {
+      grid-column: 1;
+    }
+    @media (max-width:900px) {
+      .reason-grid.cong-grid { grid-template-columns:repeat(3, minmax(120px, 1fr)); }
+      .reason-grid.cong-grid .reason-card.row2-start { grid-column: 1; }
+    }
+    @media (max-width:600px) {
+      .reason-grid.cong-grid { grid-template-columns:1fr; }
+      .reason-grid.cong-grid .reason-card.row2-start { grid-column: auto; }
+    }
+    .reason-card {
+      padding:12px 14px; border-radius:12px; border:1px solid var(--line);
+      background:var(--surface-2); cursor:pointer; text-align:left;
+      font:inherit; color:var(--text);
+    }
+    .reason-card:hover, .reason-card.active { border-color:var(--accent); background:#e0f2fe; }
+    .reason-card .abbr { display:block; color:var(--accent); font-weight:700; font-size:13px; margin-bottom:4px; }
+    .reason-card .desc { font-size:13px; line-height:1.45; color:var(--muted); }
+    .measure-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px; }
+    .measure-chip {
+      padding:6px 12px; border-radius:999px; background:rgba(2,132,199,.1);
+      border:1px solid rgba(2,132,199,.3); font-size:13px; font-weight:600;
+    }
+    .prop-list { margin:10px 0 0; padding:0; list-style:none; }
+    .prop-list li {
+      padding:8px 12px; margin-bottom:6px; border-radius:10px;
+      background:var(--surface-2); border:1px solid var(--line); font-size:14px; line-height:1.45;
+    }
+    .prop-list li .code { color:var(--accent); font-weight:700; font-size:12px; }
+    .explain-split {
+      display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:12px; align-items:start;
+    }
+    @media (max-width:700px) { .explain-split { grid-template-columns:1fr; } }
+    .explain-steps { font-size:14px; line-height:1.55; color:var(--text); }
+    .explain-steps ol { margin:8px 0 0; padding-left:1.2em; }
+    .explain-steps li { margin-bottom:6px; }
+    #comics-subnav { margin-bottom: 14px; }
+    .comic-figure {
+      margin: 0;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0f172a;
+      overflow: hidden;
+    }
+    .comic-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <main class="jm-page">
+    <a class="jm-back" href="/#lessons">← S3 Lessons</a>
+    <p class="jm-eyebrow">JM29 · Lesson 29</p>
+    <h1>Quadrilaterals</h1>
+    <p class="lead">Drag freely to classify shapes, explore mid-pt. &amp; intercept theorems, then tap a reason to see it in a figure.</p>
+    <nav class="jm-tabs" aria-label="Lesson sections">
+      <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
+      <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    </nav>
+
+    <section id="panel-tools" class="jm-panel">
+      <div class="subnav" id="jm29-lab-nav" aria-label="Tool labs"></div>
+
+      <!-- Lab 1 -->
+      <div class="lab active" id="lab-detect">
+        <p class="part-title">Lab 1 · Shape detector &amp; prove</p>
+        <section class="block">
+          <h2>Drag any corner — what shape is it?</h2>
+          <p class="hint">Pick a preset, or drag A–D. // marks use arrowheads; equal lengths use tick groups (same tick count = same length only). Marks are offset so they do not stack.</p>
+          <div class="tool-toggle-row" id="det-preset-btns"></div>
+          <svg class="lab-svg" id="det-svg" viewBox="0 0 500 340" aria-label="Quadrilateral detector"></svg>
+          <div class="badge-row" id="det-badges"></div>
+          <p class="formula" id="det-caption"></p>
+          <div class="note-box" id="det-props"></div>
+        </section>
+        <section class="block">
+          <h2>How to prove this shape</h2>
+          <p class="hint">If more than one reason works, pick a button. Follow the steps.</p>
+          <div class="tool-toggle-row" id="prove-reason-btns"></div>
+          <div class="step-frame">
+            <button class="nav-btn prev" type="button" id="prove-prev" aria-label="Previous">‹</button>
+            <div class="step-body" id="prove-body"></div>
+            <button class="nav-btn next" type="button" id="prove-next" aria-label="Next">›</button>
+          </div>
+          <div class="step-dots" id="prove-dots"></div>
+        </section>
+        <section class="block">
+          <h2>Comparison table</h2>
+          <p class="hint">✓ = must be true for that shape. The row for your current detection is highlighted.</p>
+          <div style="overflow-x:auto">
+            <table class="diff-table" id="det-table" aria-label="Property comparison"></table>
+          </div>
+        </section>
+      </div>
+
+      <!-- Lab 2 -->
+      <div class="lab" id="lab-thm">
+        <p class="part-title">Lab 2 · Mid-pt. thm. &amp; Intercept thm.</p>
+        <section class="block">
+          <h2>Parallel lines playground</h2>
+          <p class="hint">Drag near the left end of a green line to move it. Drag blue/purple end-handles to tilt. Mid-pt: match <strong>PB = BC</strong> and <strong>PE = EF</strong>. Intercept: match <strong>AB = BC</strong> (then DE = EF follows).</p>
+          <div class="tool-toggle-row" id="thm-mode-btns"></div>
+          <div class="tool-toggle-row" style="margin-top:.35rem">
+            <button type="button" class="btn" id="thm-snap-btn">Fit condition</button>
+          </div>
+          <svg class="lab-svg" id="thm-svg" viewBox="0 0 520 380" aria-label="Mid-point and intercept theorems"></svg>
+          <div class="measure-row" id="thm-measures"></div>
+          <p class="formula" id="thm-caption"></p>
+          <div class="note-box" id="thm-note"></div>
+        </section>
+      </div>
+
+      <!-- Lab 3 -->
+      <div class="lab" id="lab-reasons">
+        <p class="part-title">Lab 3 · Reason bank</p>
+        <section class="block">
+          <h2>Pick a reason — see it on a figure</h2>
+          <p class="hint">Tap a reason code. The frame shows a matching diagram and the wording you write in a proof.</p>
+          <div class="tool-toggle-row" id="reason-cat-btns"></div>
+          <div class="reason-grid" id="reason-grid"></div>
+          <div class="explain-split">
+            <svg class="lab-svg" id="reason-svg" viewBox="0 0 420 300" aria-label="Reason illustration"></svg>
+            <div class="explain-steps" id="reason-explain">
+              <p>Pick a reason card to see an explanation with a figure.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="panel-comics" class="jm-panel hidden">
+      <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+      <div id="comics-stage"></div>
+      <p class="hint">The Quadrilaterals Quest — read each page. No follow-up questions on this tab.</p>
+    </section>
+  </main>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260730-jm29m"></script>
+  <script defer src="quadrilaterals-tools.js?v=20260730-jm29m"></script>
+  <script defer src="quadrilaterals-comics.js?v=20260827-jm29ae"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.initJmTabs) window.initJmTabs();
+    });
+  </script>
+</body>
+</html>

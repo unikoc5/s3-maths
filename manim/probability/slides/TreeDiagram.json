@@ -1,0 +1,79 @@
+{
+  "slides": [
+    {
+      "loop": false,
+      "auto_next": false,
+      "playback_rate": 1.0,
+      "reversed_playback_rate": 1.0,
+      "notes": "",
+      "dedent_notes": true,
+      "skip_animations": false,
+      "src": null,
+      "type": "video",
+      "direction": "horizontal",
+      "file": "slides\\files\\TreeDiagram\\a959031d017b3d7c580bff0f7da05f59860f3f2e9eb9735faeff9bda22a81839.mp4",
+      "rev_file": "slides\\files\\TreeDiagram\\a959031d017b3d7c580bff0f7da05f59860f3f2e9eb9735faeff9bda22a81839_reversed.mp4"
+    },
+    {
+      "loop": false,
+      "auto_next": false,
+      "playback_rate": 1.0,
+      "reversed_playback_rate": 1.0,
+      "notes": "",
+      "dedent_notes": true,
+      "skip_animations": false,
+      "src": null,
+      "type": "video",
+      "direction": "horizontal",
+      "file": "slides\\files\\TreeDiagram\\baa691e3a8b7ab7e6b28bc742e58df673f9b9e23552df5795db925abda565ada.mp4",
+      "rev_file": "slides\\files\\TreeDiagram\\baa691e3a8b7ab7e6b28bc742e58df673f9b9e23552df5795db925abda565ada_reversed.mp4"
+    },
+    {
+      "loop": false,
+      "auto_next": false,
+      "playback_rate": 1.0,
+      "reversed_playback_rate": 1.0,
+      "notes": "",
+      "dedent_notes": true,
+      "skip_animations": false,
+      "src": null,
+      "type": "video",
+      "direction": "horizontal",
+      "file": "slides\\files\\TreeDiagram\\5f1d0902c389ebbc3e30415c0d021a5a39f9a58f921738d3ea3d6121663fb8e7.mp4",
+      "rev_file": "slides\\files\\TreeDiagram\\5f1d0902c389ebbc3e30415c0d021a5a39f9a58f921738d3ea3d6121663fb8e7_reversed.mp4"
+    },
+    {
+      "loop": false,
+      "auto_next": false,
+      "playback_rate": 1.0,
+      "reversed_playback_rate": 1.0,
+      "notes": "",
+      "dedent_notes": true,
+      "skip_animations": false,
+      "src": null,
+      "type": "video",
+      "direction": "horizontal",
+      "file": "slides\\files\\TreeDiagram\\3cf9d34af5273a565b0c659999e9c6a8f19f36d9b0198373477db5817e1d9048.mp4",
+      "rev_file": "slides\\files\\TreeDiagram\\3cf9d34af5273a565b0c659999e9c6a8f19f36d9b0198373477db5817e1d9048_reversed.mp4"
+    },
+    {
+      "loop": false,
+      "auto_next": false,
+      "playback_rate": 1.0,
+      "reversed_playback_rate": 1.0,
+      "notes": "",
+      "dedent_notes": true,
+      "skip_animations": false,
+      "src": null,
+      "type": "video",
+      "direction": "horizontal",
+      "file": "slides\\files\\TreeDiagram\\155e472be40ba5f50c26c879bfed4681f4aa7452af87e5784f5089a7d63f9668.mp4",
+      "rev_file": "slides\\files\\TreeDiagram\\155e472be40ba5f50c26c879bfed4681f4aa7452af87e5784f5089a7d63f9668_reversed.mp4"
+    }
+  ],
+  "resolution": [
+    1920,
+    1080
+  ],
+  "background_color": "#0f172a"
+}

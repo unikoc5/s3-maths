@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frustum Solver - Final Vivid Logo</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+    
+    <!-- MathJax -->
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --c-blue: #3498db;
+            --c-purple: #9b59b6;
+            --c-orange: #f39c12;
+            --c-red: #e74c3c;
+            --c-milk-bg: #f0f8ff;
+            --c-black: #333;
+            --bg-color: #ffffff;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* --- Left Panel (50%) --- */
+        #panel-left {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.03);
+            z-index: 10;
+            height: 100vh;
+        }
+
+        #header {
+            padding: 20px 30px 15px 30px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            flex: 0 0 auto;
+        }
+
+        h1 {
+            font-family: 'Patrick Hand', cursive;
+            color: var(--c-black);
+            margin: 0;
+            font-size: 1.8rem;
+            border-bottom: 3px solid var(--c-blue);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        #steps-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 30px;
+            scroll-behavior: smooth;
+        }
+
+        .step-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-left: 5px solid #ddd;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.4s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .step-card.active {
+            border-left-color: var(--c-blue);
+            background: #fbfdff;
+            border: 1px solid #e6f2ff;
+            border-left: 5px solid var(--c-blue);
+        }
+
+        .step-title {
+            font-weight: 700;
+            color: var(--c-blue);
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1.1rem;
+        }
+
+        .math-block {
+            font-size: 1rem;
+            color: #444;
+            line-height: 1.7;
+        }
+
+        /* Controls */
+        #controls {
+            flex: 0 0 auto;
+            padding: 15px 30px;
+            background: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn {
+            height: 44px;
+            padding: 0 24px;
+            border: none;
+            border-radius: 22px;
+            font-family: 'Patrick Hand', cursive;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            outline: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--c-black);
+            color: white;
+            flex: 1;
+            max-width: 200px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+        .btn-primary:hover { background: var(--c-blue); transform: translateY(-2px); }
+        .btn-primary:disabled { background: #27ae60; cursor: default; transform: none; box-shadow: none; }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #555;
+        }
+        .btn-secondary:hover { background: #e5e5e5; }
+        .btn-secondary:disabled { opacity: 0.4; cursor: default; }
+
+        /* --- Right Panel (50%) --- */
+        #panel-right {
+            width: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f9fbfd; 
+            overflow: hidden;
+        }
+
+        /* --- LOGO STYLING (Vivid & Original) --- */
+        .brand-logo {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 160px;
+            z-index: 20; /* High z-index to stay on top */
+            pointer-events: none;
+            opacity: 1; /* Full visibility */
+            /* No filters or blend modes */
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .geo-line {
+            fill: none;
+            stroke: var(--c-black);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .geo-fill {
+            fill: var(--c-blue);
+            opacity: 0;
+            transition: opacity 0.6s;
+            mix-blend-mode: multiply;
+        }
+
+        .geo-text {
+            font-family: 'Patrick Hand', cursive;
+            fill: #555;
+            font-size: 20px;
+            text-anchor: middle;
+            user-select: none;
+            text-shadow: 2px 2px 0px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+        }
+
+        /* --- Animation Keyframes --- */
+        @keyframes flowDownLeft {
+            0% { stroke-dasharray: 0, 300; stroke-dashoffset: 0; opacity: 1; }
+            50% { stroke-dasharray: 150, 300; stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dasharray: 0, 300; stroke-dashoffset: -300; opacity: 0; }
+        }
+        @keyframes flowDownRight {
+            0% { stroke-dasharray: 0, 300; stroke-dashoffset: 0; opacity: 1; }
+            50% { stroke-dasharray: 150, 300; stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dasharray: 0, 300; stroke-dashoffset: -300; opacity: 0; }
+        }
+        @keyframes puddleExpand {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .anim-flow-left { animation: flowDownLeft 2s ease-in-out forwards; }
+        .anim-flow-right { animation: flowDownRight 2s ease-in-out forwards; }
+        .anim-puddle { transform-origin: center; animation: puddleExpand 1s ease-out forwards; animation-delay: 1s; }
+
+        .dashed { stroke-dasharray: 5, 4; }
+        
+        /* Highlight Classes */
+        .hl-orange { fill: rgba(243, 156, 18, 0.2); stroke: var(--c-orange); stroke-width: 3px; }
+        .hl-purple { fill: rgba(155, 89, 182, 0.1); stroke: var(--c-purple); stroke-width: 3px; }
+        .hl-red-text { fill: var(--c-red); font-weight: bold; font-size: 24px; }
+        .hl-dim { font-size: 18px; fill: #666; font-weight: bold; }
+        
+        /* Comparison Text */
+        .comp-title { font-size: 22px; font-weight: bold; fill: var(--c-black); }
+        .comp-sub { font-size: 18px; fill: #666; }
+
+    </style>
+</head>
+<body>
+
+<div id="panel-left">
+    <div id="header">
+        <h1>Frustum Solver</h1>
+    </div>
+    <div id="steps-scroll-area">
+        <div id="start-msg" style="text-align:center; color:#888; margin-top:50px;">
+            Click "Start" to begin.
+        </div>
+    </div>
+    <div id="controls">
+        <button class="btn btn-secondary" id="btn-prev" onclick="prevStep()" disabled>Back</button>
+        <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Start</button>
+    </div>
+</div>
+
+<div id="panel-right">
+    <!-- BRAND LOGO (Original Colors) -->
+    <img src="https://d41chssnpqdne.cloudfront.net/user_upload_by_module/chat_bot/files/31554385/QWQZSg75N6zcPFl7.png?Expires=1765540949&Signature=cVyaPf5eGUe-cI4FQTNAWsrneoI8zyD~VZqdVjkMaiU49mnhE25qRu6zdBUZkAGkHEbovKmkZdu3~Ab3y22IDR2Ro06QaEmr9n4uNTq5S-8ps~uo6TSn6iRtvBj9S8NrTdWnMDnAfLva4hOEumNHpMB2OveSw3LdDQBDED49qkyzIqnFKmMYoyM6pcEbk0S2xtEls9PmrCui3AGSoNW-7zS-3ROXJKp28Y7u8q8yZBYgXz7Yn0yUesAK4vsK3bcpNCXkdL85zEUHkgc7eC7HM9Q1lcj1BPuEKlmcdOPs1yCeGsHA9WV4zS8PNSSz8pZWIJrUOmBUH36Ke76B11KdGA__&Key-Pair-Id=K3USGZIKWMDCSX" 
+         alt="Unit Education" 
+         class="brand-logo">
+
+    <svg viewBox="0 0 800 600" id="geo-svg">
+        <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <path d="M2,2 L6,4 L2,6" fill="none" stroke="#555" stroke-width="1"/>
+            </marker>
+            
+            <!-- Define Vessel Geometry for reuse -->
+            <g id="def-vessel">
+                <path d="M -120 0 A 120 120 0 0 0 120 0" class="geo-line" fill="#fff" stroke="#ccc" />
+                <ellipse cx="0" cy="0" rx="120" ry="20" class="geo-fill" style="fill:var(--c-milk-bg); opacity:1; stroke:#e0e0e0;" />
+                <ellipse cx="0" cy="0" rx="120" ry="20" class="geo-line" fill="none" />
+            </g>
+        </defs>
+
+        <!-- GROUP 1: FRUSTUM & CONE (Left Side) -->
+        <g id="grp-cone" transform="translate(400, 300) scale(0.9)">
+            <!-- Similar Triangle Highlights -->
+            <path id="tri-small" d="M 0 -384 L 0 -96 L 72 -96 Z" class="geo-line" style="opacity:0" />
+            <path id="tri-large" d="M 0 -384 L 0 0 L 96 0 Z" class="geo-line" style="opacity:0" />
+            <!-- Phantom Cone Lines -->
+            <path id="cone-phantom" d="M -96 0 L 0 -384 L 96 0" class="geo-line dashed" stroke="#ccc" style="opacity:0" />
+            <!-- Frustum Body -->
+            <ellipse id="frust-base" cx="0" cy="0" rx="96" ry="20" class="geo-line" />
+            <ellipse id="frust-top" cx="0" cy="-96" rx="72" ry="15" class="geo-line" />
+            <line id="frust-left" x1="-96" y1="0" x2="-72" y2="-96" class="geo-line" />
+            <line id="frust-right" x1="96" y1="0" x2="72" y2="-96" class="geo-line" />
+            
+            <!-- LABELS -->
+            <g id="labels-init" style="opacity:0; transition: opacity 0.5s;">
+                <line x1="0" y1="0" x2="0" y2="-96" class="geo-line dashed" />
+                <text x="15" y="-48" class="geo-text">h=8</text>
+                <text x="36" y="-105" class="geo-text">r=6</text>
+                <text x="48" y="25" class="geo-text">R=8</text>
+            </g>
+            <g id="labels-vars" style="opacity:0; transition: opacity 0.5s;">
+                <text x="36" y="-105" class="geo-text" style="fill:var(--c-orange); font-weight:bold">r=6</text>
+                <text x="-15" y="-240" class="geo-text" style="fill:var(--c-orange); font-weight:bold">h</text>
+                <text x="48" y="25" class="geo-text" style="fill:var(--c-purple); font-weight:bold">R=8</text>
+                <text x="-40" y="-192" class="geo-text" style="fill:var(--c-purple); font-weight:bold">h+8</text>
+            </g>
+            <g id="labels-calc" style="opacity:0; transition: opacity 0.5s;">
+                <text x="36" y="-105" class="geo-text" style="fill:var(--c-orange); font-weight:bold">r=6</text>
+                <text x="-15" y="-240" class="geo-text" style="fill:var(--c-orange); font-weight:bold">h=24</text>
+                <text x="48" y="25" class="geo-text" style="fill:var(--c-purple); font-weight:bold">R=8</text>
+                <text x="-40" y="-192" class="geo-text" style="fill:var(--c-purple); font-weight:bold">H=32</text>
+            </g>
+        </g>
+
+        <!-- GROUP 2: SINGLE VESSEL (Animation) -->
+        <g id="grp-vessel" transform="translate(400, 320)" style="opacity: 0">
+            <g id="puddle-layer">
+                <ellipse id="puddle-left" cx="-140" cy="120" rx="40" ry="10" fill="var(--c-blue)" opacity="0" />
+                <ellipse id="puddle-right" cx="140" cy="120" rx="40" ry="10" fill="var(--c-blue)" opacity="0" />
+            </g>
+            <use href="#def-vessel" />
+            <circle cx="0" cy="0" r="3" fill="#333" />
+            <text x="10" y="-10" class="geo-text" style="opacity:1">O</text>
+            <g id="grp-Rs" style="opacity:0; transition: opacity 0.5s;">
+                <line x1="0" y1="0" x2="120" y2="0" class="geo-line dashed" />
+                <text x="60" y="-15" class="geo-text">R_s = 10</text>
+            </g>
+
+            <!-- UPRIGHT FRUSTUM -->
+            <g id="frust-upright-group" transform="translate(0, -250)" style="opacity: 0">
+                <g id="frust-upright-shape">
+                    <ellipse cx="0" cy="0" rx="96" ry="16" class="geo-line" fill="#fff" fill-opacity="0.9" stroke="#555" />
+                    <ellipse cx="0" cy="-96" rx="72" ry="12" class="geo-line" fill="#fff" fill-opacity="0.9" stroke="#555" />
+                    <line x1="-96" y1="0" x2="-72" y2="-96" class="geo-line" stroke="#555" />
+                    <line x1="96" y1="0" x2="72" y2="-96" class="geo-line" stroke="#555" />
+                    <path id="slice-upright" d="M -78 -72 L -96 0 A 96 16 0 0 0 96 0 L 78 -72 A 78 13 0 0 1 -78 -72" 
+                          class="geo-fill" style="fill:var(--c-blue); opacity:0" />
+                </g>
+            </g>
+
+            <!-- INVERTED FRUSTUM -->
+            <g id="frust-inverted-group" transform="translate(0, -250)" style="opacity: 0">
+                <g id="frust-inverted-shape">
+                    <ellipse cx="0" cy="0" rx="72" ry="12" class="geo-line" fill="#fff" fill-opacity="0.9" stroke="#555" />
+                    <ellipse cx="0" cy="-96" rx="96" ry="16" class="geo-line" fill="#fff" fill-opacity="0.9" stroke="#555" />
+                    <line x1="-72" y1="0" x2="-96" y2="-96" class="geo-line" stroke="#555" />
+                    <line x1="72" y1="0" x2="96" y2="-96" class="geo-line" stroke="#555" />
+                    <path id="slice-inverted" d="M -96 -96 L -72 0 A 72 12 0 0 0 72 0 L 96 -96 A 96 16 0 0 1 -96 -96" 
+                          class="geo-fill" style="fill:var(--c-blue); opacity:0" />
+                </g>
+            </g>
+
+            <!-- SPILL STREAMS -->
+            <g id="spill-layer" style="pointer-events: none;">
+                <path id="stream-left" d="M -120 0 Q -140 20 -140 120" fill="none" stroke="var(--c-blue)" stroke-width="6" stroke-linecap="round" style="opacity:0" />
+                <path id="stream-right" d="M 120 0 Q 140 20 140 120" fill="none" stroke="var(--c-blue)" stroke-width="6" stroke-linecap="round" style="opacity:0" />
+            </g>
+
+            <!-- Internal Triangles -->
+            <g id="tri-upright" style="opacity:0; transition: opacity 0.5s;">
+                <line x1="0" y1="0" x2="0" y2="72" class="geo-line mode-red" />
+                <text x="-20" y="40" class="geo-text hl-red-text">d=6</text>
+                <line x1="0" y1="72" x2="96" y2="72" class="geo-line dashed" />
+                <text x="48" y="65" class="geo-text hl-dim">8</text>
+                <line x1="0" y1="0" x2="96" y2="72" class="geo-line dashed" stroke="#888" />
+                <text x="55" y="30" class="geo-text hl-dim">10</text>
+            </g>
+            <g id="tri-inverted" style="opacity:0; transition: opacity 0.5s;">
+                <line x1="0" y1="0" x2="0" y2="96" class="geo-line mode-red" />
+                <text x="-20" y="50" class="geo-text hl-red-text">d=8</text>
+                <line x1="0" y1="96" x2="72" y2="96" class="geo-line dashed" />
+                <text x="36" y="90" class="geo-text hl-dim">6</text>
+                <line x1="0" y1="0" x2="72" y2="96" class="geo-line dashed" stroke="#888" />
+                <text x="45" y="40" class="geo-text hl-dim">10</text>
+            </g>
+            <text id="lbl-spill" x="0" y="170" class="geo-text" style="fill:var(--c-blue); font-weight:bold; opacity:0">Displaced Volume = Spilled Milk</text>
+        </g>
+
+        <!-- GROUP 3: FINAL COMPARISON (Side-by-Side) -->
+        <g id="grp-final-comparison" style="opacity: 0; pointer-events: none;">
+            
+            <!-- LEFT: Upright -->
+            <g transform="translate(220, 350) scale(0.65)">
+                <use href="#def-vessel" />
+                <!-- Static Upright Frustum at y=72 -->
+                <g transform="translate(0, 72)">
+                    <ellipse cx="0" cy="0" rx="96" ry="16" class="geo-line" fill="#fff" fill-opacity="0.8" stroke="#555" />
+                    <ellipse cx="0" cy="-96" rx="72" ry="12" class="geo-line" fill="#fff" fill-opacity="0.8" stroke="#555" />
+                    <line x1="-96" y1="0" x2="-72" y2="-96" class="geo-line" stroke="#555" />
+                    <line x1="96" y1="0" x2="72" y2="-96" class="geo-line" stroke="#555" />
+                    <path d="M -78 -72 L -96 0 A 96 16 0 0 0 96 0 L 78 -72 A 78 13 0 0 1 -78 -72" 
+                          class="geo-fill" style="fill:var(--c-blue); opacity:1" />
+                </g>
+                <text y="160" class="geo-text comp-title">Upright</text>
+                <text y="190" class="geo-text comp-sub">Submerged d=6</text>
+            </g>
+
+            <!-- RIGHT: Inverted -->
+            <g transform="translate(580, 350) scale(0.65)">
+                <use href="#def-vessel" />
+                <!-- Static Inverted Frustum at y=96 -->
+                <g transform="translate(0, 96)">
+                    <ellipse cx="0" cy="0" rx="72" ry="12" class="geo-line" fill="#fff" fill-opacity="0.8" stroke="#555" />
+                    <ellipse cx="0" cy="-96" rx="96" ry="16" class="geo-line" fill="#fff" fill-opacity="0.8" stroke="#555" />
+                    <line x1="-72" y1="0" x2="-96" y2="-96" class="geo-line" stroke="#555" />
+                    <line x1="72" y1="0" x2="96" y2="-96" class="geo-line" stroke="#555" />
+                    <path d="M -96 -96 L -72 0 A 72 12 0 0 0 72 0 L 96 -96 A 96 16 0 0 1 -96 -96" 
+                          class="geo-fill" style="fill:var(--c-blue); opacity:1" />
+                </g>
+                <text y="160" class="geo-text comp-title">Inverted</text>
+                <text y="190" class="geo-text comp-sub">Submerged d=8</text>
+            </g>
+        </g>
+
+    </svg>
+</div>
+
+<script>
+    // --- Step Data ---
+    const script = [
+        {
+            title: "Introduction",
+            html: `We have a frustum (truncated cone) with:
+                   <ul>
+                   <li>Top Radius $r = 6$ cm</li>
+                   <li>Bottom Radius $R = 8$ cm</li>
+                   <li>Height $h = 8$ cm</li>
+                   </ul>`,
+            setup: () => {
+                resetAll();
+                show('grp-cone');
+                show('labels-init');
+            }
+        },
+        {
+            title: "Part (a): Similar Triangles",
+            html: `Consider the right-angled triangles along the central axis:
+                   <ul>
+                   <li><span style="color:var(--c-orange)"><b>Small Triangle</b></span>: Base $r=6$, Height $h$</li>
+                   <li><span style="color:var(--c-purple)"><b>Large Triangle</b></span>: Base $R=8$, Height $h+8$</li>
+                   </ul>
+                   Ratio: $\\frac{h}{h+8} = \\frac{6}{8}$`,
+            setup: () => {
+                resetAll();
+                show('grp-cone');
+                show('cone-phantom');
+                
+                hide('labels-init');
+                show('labels-vars');
+                
+                const small = document.getElementById('tri-small');
+                const large = document.getElementById('tri-large');
+                small.style.opacity = 1; small.className.baseVal = "geo-line hl-orange";
+                large.style.opacity = 1; large.className.baseVal = "geo-line hl-purple";
+            }
+        },
+        {
+            title: "Part (a): Solve for Height",
+            html: `$$ 8h = 6(h+8) \\implies 2h = 48 $$
+                   $$ h = 24 $$
+                   Total Height $H = 24 + 8 = 32$ cm.
+                   <br><i>(See diagram for calculated dimensions)</i>`,
+            setup: () => {
+                resetAll();
+                show('grp-cone');
+                show('cone-phantom');
+                
+                hide('labels-vars');
+                show('labels-calc');
+                
+                const small = document.getElementById('tri-small');
+                const large = document.getElementById('tri-large');
+                small.style.opacity = 1; small.className.baseVal = "geo-line hl-orange";
+                large.style.opacity = 1; large.className.baseVal = "geo-line hl-purple";
+            }
+        },
+        {
+            title: "Part (a): Calculate Volume",
+            html: `Volume = (Large Cone) - (Small Cone)
+                   $$ V = \\frac{1}{3}\\pi (8)^2 (32) - \\frac{1}{3}\\pi (6)^2 (24) $$
+                   $$ = \\frac{1184\\pi}{3} \\text{ cm}^3 $$`,
+            setup: () => {
+                resetAll();
+                show('grp-cone');
+                show('cone-phantom');
+                show('labels-calc');
+            }
+        },
+        {
+            title: "Part (b)(i): The Vessel",
+            html: `A <b>hemispherical vessel</b> with radius $R_s=10$ cm is fully filled with milk.`,
+            setup: () => {
+                resetAll();
+                document.getElementById('grp-cone').style.opacity = 0; 
+                show('grp-vessel');
+                show('water-surface');
+                show('grp-Rs');
+            }
+        },
+        {
+            title: "Part (b)(ii): Immersion & Spilling",
+            html: `The frustum is placed vertically.
+                   <br>Milk spills out equal to the submerged volume.`,
+            setup: () => {
+                resetAll();
+                show('grp-vessel');
+                show('water-surface');
+                
+                const frustum = document.getElementById('frust-upright-group');
+                frustum.style.opacity = 1;
+                frustum.style.transition = 'transform 2.5s cubic-bezier(0.25, 1, 0.5, 1)';
+                frustum.setAttribute('transform', 'translate(0, 72)'); 
+                
+                const leftStream = document.getElementById('stream-left');
+                const rightStream = document.getElementById('stream-right');
+                leftStream.classList.remove('anim-flow-left');
+                rightStream.classList.remove('anim-flow-right');
+                void leftStream.offsetWidth;
+                setTimeout(() => { leftStream.classList.add('anim-flow-left'); rightStream.classList.add('anim-flow-right'); }, 500);
+                
+                const leftPuddle = document.getElementById('puddle-left');
+                const rightPuddle = document.getElementById('puddle-right');
+                leftPuddle.classList.remove('anim-puddle'); rightPuddle.classList.remove('anim-puddle');
+                void leftPuddle.offsetWidth;
+                setTimeout(() => { leftPuddle.classList.add('anim-puddle'); rightPuddle.classList.add('anim-puddle'); }, 500);
+
+                setTimeout(() => { show('slice-upright'); show('lbl-spill'); }, 2500);
+            }
+        },
+        {
+            title: "Part (b)(ii): Depth Calculation",
+            html: `Bottom rim ($R=8$) touches the sphere ($R_s=10$).
+                   <br>Calculate depth $d$ using the triangle shown:
+                   $$ d = \\sqrt{10^2 - 8^2} = \\sqrt{36} = 6 \\text{ cm} $$`,
+            setup: () => {
+                show('grp-vessel');
+                show('water-surface');
+                document.getElementById('frust-upright-group').style.opacity = 1;
+                document.getElementById('frust-upright-group').setAttribute('transform', 'translate(0, 72)');
+                show('slice-upright');
+                show('tri-upright');
+                document.getElementById('puddle-left').style.opacity = 1; document.getElementById('puddle-left').style.transform = 'scale(1)';
+                document.getElementById('puddle-right').style.opacity = 1; document.getElementById('puddle-right').style.transform = 'scale(1)';
+            }
+        },
+        {
+            title: "Part (b)(ii): Remaining Milk",
+            html: `Submerged Height is $6$ cm.
+                   <br>Remaining Milk = Total - Displaced
+                   $$ \\frac{2000\\pi}{3} - 316.5\\pi \\approx \\frac{1100\\pi}{3} $$`,
+            setup: () => {
+                 show('grp-vessel');
+                 show('water-surface');
+                 document.getElementById('frust-upright-group').style.opacity = 1;
+                 document.getElementById('frust-upright-group').setAttribute('transform', 'translate(0, 72)');
+                 show('slice-upright');
+                 show('tri-upright');
+                 document.getElementById('puddle-left').style.opacity = 1;
+                 document.getElementById('puddle-right').style.opacity = 1;
+            }
+        },
+        {
+            title: "Part (b)(iii): Inverting the Frustum",
+            html: `Albert claims inverting it displaces more milk.
+                   <br>Let's flip it (Bottom $r=6$).`,
+            setup: () => {
+                resetAll();
+                show('grp-vessel');
+                show('water-surface');
+                
+                document.getElementById('puddle-left').style.opacity = 0;
+                document.getElementById('puddle-right').style.opacity = 0;
+
+                const upright = document.getElementById('frust-upright-group');
+                upright.style.transition = 'transform 0.8s ease-in';
+                upright.style.opacity = 1;
+                upright.setAttribute('transform', 'translate(0, 72)');
+                
+                setTimeout(() => { upright.setAttribute('transform', 'translate(0, -250)'); }, 100);
+
+                setTimeout(() => {
+                    upright.style.opacity = 0;
+                    const inverted = document.getElementById('frust-inverted-group');
+                    inverted.style.opacity = 1;
+                    inverted.style.transition = 'transform 2.5s cubic-bezier(0.25, 1, 0.5, 1)';
+                    
+                    setTimeout(() => {
+                        inverted.setAttribute('transform', 'translate(0, 96)');
+                        
+                        const leftStream = document.getElementById('stream-left'); const rightStream = document.getElementById('stream-right');
+                        const leftPuddle = document.getElementById('puddle-left'); const rightPuddle = document.getElementById('puddle-right');
+
+                        leftStream.classList.remove('anim-flow-left'); rightStream.classList.remove('anim-flow-right');
+                        leftPuddle.classList.remove('anim-puddle'); rightPuddle.classList.remove('anim-puddle');
+                        void leftStream.offsetWidth;
+
+                        setTimeout(() => { leftStream.classList.add('anim-flow-left'); rightStream.classList.add('anim-flow-right'); leftPuddle.classList.add('anim-puddle'); rightPuddle.classList.add('anim-puddle'); }, 500);
+
+                        setTimeout(() => { show('slice-inverted'); }, 2500);
+                    }, 100);
+                }, 900);
+            }
+        },
+        {
+            title: "Part (b)(iii): New Depth",
+            html: `Bottom rim ($r=6$) touches sphere ($R_s=10$).
+                   $$ d = \\sqrt{10^2 - 6^2} = \\sqrt{64} = 8 \\text{ cm} $$
+                   Since frustum height is $8$, it is <b>fully submerged</b>.`,
+            setup: () => {
+                 show('grp-vessel');
+                 show('water-surface');
+                 const inverted = document.getElementById('frust-inverted-group');
+                 inverted.style.opacity = 1;
+                 inverted.setAttribute('transform', 'translate(0, 96)');
+                 show('slice-inverted');
+                 show('tri-inverted'); // Shows d=8, 6, 10
+                 document.getElementById('puddle-left').style.opacity = 1;
+                 document.getElementById('puddle-right').style.opacity = 1;
+            }
+        },
+        {
+            title: "Conclusion",
+            html: `<b>Comparison:</b>
+                   <ul>
+                   <li>Upright: Submerged $d=6$.</li>
+                   <li>Inverted: Submerged $d=8$ (Full).</li>
+                   </ul>
+                   More submerged volume $\\rightarrow$ More milk spilled $\\rightarrow$ <b>Less milk remaining</b>.
+                   <br><span style="color:var(--c-blue); font-weight:bold">Albert is correct.</span>`,
+            setup: () => {
+                 // Final Step: Hide single vessel, show comparison group
+                 hide('grp-vessel');
+                 show('grp-final-comparison');
+            }
+        }
+    ];
+
+    let currentStep = -1;
+
+    function nextStep() {
+        if (currentStep === -1) {
+            document.getElementById('start-msg').style.display = 'none';
+        }
+
+        if (currentStep < script.length - 1) {
+            currentStep++;
+            addStepCard(currentStep);
+            updateButtons();
+            if (script[currentStep].setup) script[currentStep].setup();
+        }
+    }
+
+    function prevStep() {
+        if (currentStep >= 0) {
+            const container = document.getElementById('steps-scroll-area');
+            if (container.lastElementChild) {
+                container.removeChild(container.lastElementChild);
+            }
+            currentStep--;
+            
+            if (currentStep === -1) {
+                document.getElementById('start-msg').style.display = 'block';
+                resetAll();
+                document.getElementById('frust-upright-group').setAttribute('transform', 'translate(0, -250)');
+                document.getElementById('frust-inverted-group').setAttribute('transform', 'translate(0, -250)');
+            } else {
+                if (script[currentStep].setup) script[currentStep].setup();
+            }
+            updateButtons();
+        }
+    }
+
+    function addStepCard(index) {
+        const container = document.getElementById('steps-scroll-area');
+        const step = script[index];
+        
+        const prevCards = document.querySelectorAll('.step-card');
+        prevCards.forEach(c => c.classList.remove('active'));
+
+        const card = document.createElement('div');
+        card.className = 'step-card active';
+        card.innerHTML = `
+            <span class="step-title">${step.title}</span>
+            <div class="math-block">${step.html}</div>
+        `;
+        container.appendChild(card);
+        
+        MathJax.typesetPromise([card]).then(() => {
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    function updateButtons() {
+        document.getElementById('btn-prev').disabled = (currentStep === -1);
+        const nextBtn = document.getElementById('btn-next');
+        if (currentStep === script.length - 1) {
+            nextBtn.innerHTML = "Finished";
+            nextBtn.disabled = true;
+        } else {
+            nextBtn.innerHTML = "Next";
+            nextBtn.disabled = false;
+        }
+    }
+
+    function resetAll() {
+        const ids = [
+            'grp-cone', 'grp-vessel', 'cone-phantom', 
+            'slice-upright', 'slice-inverted', 'lbl-spill',
+            'tri-small', 'tri-large', 
+            'labels-init', 'labels-vars', 'labels-calc',
+            'grp-Rs', 'tri-upright', 'tri-inverted',
+            'grp-final-comparison'
+        ];
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.style.opacity = 0;
+        });
+        
+        document.getElementById('frust-upright-group').style.opacity = 0;
+        document.getElementById('frust-inverted-group').style.opacity = 0;
+        
+        document.getElementById('puddle-left').style.opacity = 0;
+        document.getElementById('puddle-right').style.opacity = 0;
+        document.getElementById('puddle-left').style.transform = 'scale(0)';
+        document.getElementById('puddle-right').style.transform = 'scale(0)';
+
+        document.querySelectorAll('.anim-flow-left, .anim-flow-right, .anim-puddle').forEach(el => {
+            el.classList.remove('anim-flow-left', 'anim-flow-right', 'anim-puddle');
+        });
+    }
+
+    function show(id) {
+        const el = document.getElementById(id);
+        if (el) el.style.opacity = 1;
+    }
+    
+    function hide(id) {
+        const el = document.getElementById(id);
+        if (el) el.style.opacity = 0;
+    }
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+

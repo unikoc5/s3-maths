@@ -1,0 +1,65 @@
+{
+  "slides": [
+    {
+      "loop": false,
+      "auto_next": false,
+      "playback_rate": 1.0,
+      "reversed_playback_rate": 1.0,
+      "notes": "",
+      "dedent_notes": true,
+      "skip_animations": false,
+      "src": null,
+      "type": "video",
+      "direction": "horizontal",
+      "file": "slides\\files\\ProbabilityFormula\\cbb071ffde65084a6f6e0f57857649b20fc0adad13668f43cb3b3296e8016307.mp4",
+      "rev_file": "slides\\files\\ProbabilityFormula\\cbb071ffde65084a6f6e0f57857649b20fc0adad13668f43cb3b3296e8016307_reversed.mp4"
+    },
+    {
+      "loop": false,
+      "auto_next": false,
+      "playback_rate": 1.0,
+      "reversed_playback_rate": 1.0,
+      "notes": "",
+      "dedent_notes": true,
+      "skip_animations": false,
+      "src": null,
+      "type": "video",
+      "direction": "horizontal",
+      "file": "slides\\files\\ProbabilityFormula\\c29a835c65daf8e53728cdb1be3afdc7de6b20781acbb937ced99636ff1b5ea2.mp4",
+      "rev_file": "slides\\files\\ProbabilityFormula\\c29a835c65daf8e53728cdb1be3afdc7de6b20781acbb937ced99636ff1b5ea2_reversed.mp4"
+    },
+    {
+      "loop": false,
+      "auto_next": false,
+      "playback_rate": 1.0,
+      "reversed_playback_rate": 1.0,
+      "notes": "",
+      "dedent_notes": true,
+      "skip_animations": false,
+      "src": null,
+      "type": "video",
+      "direction": "horizontal",
+      "file": "slides\\files\\ProbabilityFormula\\cb3db58bf9e4155ae01825f9f5e3a8be9b8e8ab177f1c30758a8de2378840229.mp4",
+      "rev_file": "slides\\files\\ProbabilityFormula\\cb3db58bf9e4155ae01825f9f5e3a8be9b8e8ab177f1c30758a8de2378840229_reversed.mp4"
+    },
+    {
+      "loop": false,
+      "auto_next": false,
+      "playback_rate": 1.0,
+      "reversed_playback_rate": 1.0,
+      "notes": "",
+      "dedent_notes": true,
+      "skip_animations": false,
+      "src": null,
+      "type": "video",
+      "direction": "horizontal",
+      "file": "slides\\files\\ProbabilityFormula\\f8bf4391cde74b94e9274424097b4e0ecd06e9d2901954c226022706e85cce9c.mp4",
+      "rev_file": "slides\\files\\ProbabilityFormula\\f8bf4391cde74b94e9274424097b4e0ecd06e9d2901954c226022706e85cce9c_reversed.mp4"
+    }
+  ],
+  "resolution": [
+    1920,
+    1080
+  ],
+  "background_color": "#0f172a"
+}

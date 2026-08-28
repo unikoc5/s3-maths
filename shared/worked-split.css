@@ -1,0 +1,118 @@
+/* Draggable split between animation and worked-solution panels (all topic dashboards). */
+.ws-split {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  gap: 0;
+  width: 100%;
+}
+.worked-stage.ws-split,
+#worked-stage.ws-split {
+  flex: none;
+}
+.ws-split-pane {
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.ws-split-left {
+  flex: 0 0 var(--ws-left-pct, 55%);
+  display: flex;
+  flex-direction: column;
+}
+.ws-split-right {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+.ws-split-handle {
+  flex: none;
+  width: 10px;
+  margin: 0 -2px;
+  cursor: col-resize;
+  position: relative;
+  z-index: 6;
+  touch-action: none;
+  align-self: stretch;
+}
+.ws-split-handle::before {
+  content: "";
+  position: absolute;
+  top: 6%;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  border-radius: 4px;
+  background: var(--line, #28365c);
+  transition: background .15s, box-shadow .15s;
+}
+.ws-split-handle:hover::before,
+.ws-split-handle.dragging::before {
+  background: var(--a, #4FC3F7);
+  box-shadow: 0 0 0 2px rgba(79, 195, 247, .18);
+}
+.ws-split-handle::after {
+  content: "";
+  position: absolute;
+  inset: 0 -4px;
+}
+body.ws-split-dragging {
+  cursor: col-resize !important;
+  user-select: none;
+}
+body.ws-split-dragging * {
+  cursor: col-resize !important;
+}
+
+.ws-split-left.worked-main,
+.ws-split-left.worked-anim-col {
+  min-width: 0;
+}
+.worked-layout > .ws-split > .solution-panel.ws-split-right {
+  max-height: none;
+  height: auto;
+}
+
+/* Collapsed animation — solution takes full width */
+.worked-stage.anim-collapsed .ws-split-left,
+.worked-stage.anim-collapsed .ws-split-handle {
+  display: none;
+}
+.worked-stage.anim-collapsed .ws-split-right {
+  flex: 1 1 100%;
+}
+
+/* Responsive step font scales with solution panel width */
+.ws-split-right .step-card .sc-body,
+.solution-panel.ws-split-right .step-card .sc-body {
+  font-size: var(--ws-step-font, 15px);
+  line-height: 1.55;
+}
+.ws-split-right .step-card .sc-title,
+.solution-panel.ws-split-right .step-card .sc-title {
+  font-size: var(--ws-step-title, 13px);
+}
+.ws-split-right .step-card .sc-body .katex,
+.solution-panel.ws-split-right .step-card .sc-body .katex {
+  font-size: var(--ws-step-katex, 1.05em);
+}
+.ws-split-right .step-card .sc-idx,
+.solution-panel.ws-split-right .step-card .sc-idx {
+  width: var(--ws-step-idx, 22px);
+  height: var(--ws-step-idx, 22px);
+  font-size: var(--ws-step-idx-font, 12px);
+}
+
+/* Pinned question — same scale as solution step body text */
+.worked-content .sp-q .sp-q-row,
+.solution-panel.ws-split-right .sp-q .sp-q-row {
+  font-size: var(--ws-step-font, 15px);
+  line-height: 1.55;
+}
+.worked-content .sp-q .katex,
+.solution-panel.ws-split-right .sp-q .katex {
+  font-size: var(--ws-step-katex, 1.05em);
+}

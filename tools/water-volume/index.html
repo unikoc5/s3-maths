@@ -1,0 +1,2372 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幾何與物理互動虛擬實驗室：圓柱、球體與立方體的水位變幻</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- KaTeX for ultra-fast formula rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <!-- FontAwesome for beautiful icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- GSAP for smooth animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0b1329;
+        }
+        .font-mono {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Glassmorphism glass card */
+        .glass {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-light {
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+        /* Glow effects */
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+        }
+        .glow-emerald {
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.25);
+        }
+        .glow-orange {
+            box-shadow: 0 0 20px rgba(251, 146, 60, 0.25);
+        }
+        .glow-violet {
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.25);
+        }
+        .text-glow-cyan {
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+        }
+        /* Active mode switch button styles */
+        .active-btn-rod {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            box-shadow: 0 0 12px rgba(14, 165, 233, 0.4);
+            color: white !important;
+        }
+        .active-btn-sphere {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.4);
+            color: white !important;
+        }
+        .active-btn-cube {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+            color: white !important;
+        }
+        /* Custom ranges styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            height: 6px;
+        }
+        .dark input[type="range"] {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .range-cyan::-webkit-slider-thumb { background: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.5); }
+        .range-cyan::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        .range-orange::-webkit-slider-thumb { background: #fb923c; box-shadow: 0 0 8px rgba(251, 146, 60, 0.5); }
+        .range-orange::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        .range-violet::-webkit-slider-thumb { background: #a78bfa; box-shadow: 0 0 8px rgba(167, 139, 250, 0.5); }
+        .range-violet::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.1);
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.5);
+        }
+        /* Grid background */
+        .bg-grid {
+            background-size: 30px 30px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+        .light .bg-grid {
+            background-image: linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+        }
+        /* ── Embedded-in-dashboard view ──
+           Hide the page chrome so the experiment, parameters and live formula
+           read clearly inside the worked-solution panel, and give the 3D scene
+           more room. Activated by ?embed=1 (adds .embedded to <body>). */
+        body.embedded header { display: none; }
+        body.embedded > .absolute { display: none; }
+        body.embedded main { padding-top: 14px; padding-bottom: 18px; }
+        body.embedded #canvas3d-card { min-height: 560px; }
+        body.embedded .embed-banner { display: flex; }
+        .embed-banner { display: none; align-items: center; gap: 10px; margin: 14px auto 0; max-width: 1600px;
+            padding: 10px 16px; border-radius: 14px; background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.28); }
+        .embed-banner i { color: #38bdf8; }
+        .embed-banner b { color: #e2e8f0; font-weight: 700; }
+        .embed-banner span { color: #94a3b8; font-size: 13px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col transition-colors duration-300 bg-grid relative overflow-x-hidden">
+
+    <!-- Glowing Background Orbs -->
+    <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <!-- Header / Navbar -->
+    <header class="w-full py-4 px-6 md:px-12 glass border-b border-slate-800 flex flex-wrap justify-between items-center z-10 gap-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+                <i class="fa-solid fa-cube text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-brand-300 bg-clip-text text-transparent">
+                    幾何與物理互動虛擬實驗室
+                </h1>
+                <p class="text-xs text-slate-400">探究柱、球、立方體排開水的體積與水位變幻</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button id="theme-toggle" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900/50 text-slate-400 hover:text-white hover:border-slate-700 transition" title="切換主題">
+                <i class="fa-solid fa-sun text-sm dark:hidden"></i>
+                <i class="fa-solid fa-moon text-sm hidden dark:block"></i>
+            </button>
+            <button id="btn-intro" class="px-4 py-2 rounded-xl border border-slate-800 bg-slate-900/50 text-slate-300 hover:text-white hover:border-slate-700 text-sm transition font-medium flex items-center gap-2">
+                <i class="fa-solid fa-circle-question"></i> 教學導引
+            </button>
+        </div>
+    </header>
+
+    <!-- Compact heading shown only when embedded beside a worked solution -->
+    <div class="embed-banner">
+        <i class="fa-solid fa-flask-vial"></i>
+        <b>Water displacement lab</b>
+        <span>— pre-set to this question. Drag the sliders or rotate the scene to see how the level changes.</span>
+    </div>
+
+    <!-- Main Content Grid -->
+    <main class="flex-grow w-full px-4 md:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 z-10 max-w-[1600px] mx-auto">
+        
+        <!-- Left Column: Controls and Formulas (5 cols on lg) -->
+        <section class="lg:col-span-5 flex flex-col space-y-6">
+            
+            <!-- Mode Switcher -->
+            <div class="glass rounded-2xl p-4 flex flex-col space-y-3">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-sliders text-brand-400"></i> 選擇實驗情境
+                </span>
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="mode-rod" class="py-2.5 px-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all duration-300 text-slate-400 hover:text-slate-200 border border-transparent active-btn-rod">
+                        <i class="fa-solid fa-align-justify rotate-90 text-sm"></i>
+                        <span>圓柱棒拔出</span>
+                    </button>
+                    <button id="mode-sphere" class="py-2.5 px-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all duration-300 text-slate-400 hover:text-slate-200 border border-transparent">
+                        <i class="fa-solid fa-circle text-sm"></i>
+                        <span>球體完全沉入</span>
+                    </button>
+                    <button id="mode-cube" class="py-2.5 px-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all duration-300 text-slate-400 hover:text-slate-200 border border-transparent">
+                        <i class="fa-solid fa-cube text-sm"></i>
+                        <span>立方體完全沉入</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Parameters Sliders Card -->
+            <div class="glass rounded-2xl p-5 flex flex-col space-y-5 shadow-xl relative overflow-hidden" id="card-parameters">
+                <!-- Color tag top corner -->
+                <div id="card-glow-indicator" class="absolute top-0 left-0 w-full h-[3px] bg-brand-400 transition-colors duration-300"></div>
+
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-gears text-brand-400" id="params-icon"></i>
+                        <span>幾何與物理參數調整</span>
+                    </h3>
+                    <button id="btn-reset" class="text-xs text-slate-400 hover:text-white transition flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> 重設數值
+                    </button>
+                </div>
+
+                <!-- Parameters Container -->
+                <div class="space-y-4">
+                    <!-- Tank Radius R -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-400 flex items-center gap-1">
+                                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400/30 inline-block border border-cyan-400"></span>
+                                水缸半徑 <span class="font-mono font-semibold text-cyan-400">R</span>
+                            </span>
+                            <span class="font-mono text-slate-200 font-medium" id="val-tank-r-lbl">10.0 cm</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <input type="range" id="param-tank-r" min="5" max="15" step="0.5" value="10" class="w-full range-cyan">
+                        </div>
+                    </div>
+
+                    <!-- Water Height H -->
+                    <div class="space-y-1.5" id="param-group-water-h">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-400 flex items-center gap-1">
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-400/30 inline-block border border-sky-400"></span>
+                                初始水深 <span class="font-mono font-semibold text-sky-400">H</span>
+                            </span>
+                            <span class="font-mono text-slate-200 font-medium" id="val-water-h-lbl">12.0 cm</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <input type="range" id="param-water-h" min="5" max="20" step="0.5" value="12" class="w-full range-cyan">
+                        </div>
+                    </div>
+
+                    <!-- Object Dimension Slider (Changes dynamically depending on mode) -->
+                    <div class="space-y-1.5" id="param-group-obj-dim">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-400 flex items-center gap-1" id="lbl-obj-dim">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-400/30 inline-block border border-brand-400" id="dot-obj-color"></span>
+                                圓柱棒半徑 <span class="font-mono font-semibold text-brand-400" id="sym-obj-dim">r</span>
+                            </span>
+                            <span class="font-mono text-slate-200 font-medium" id="val-obj-dim-lbl">3.0 cm</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <input type="range" id="param-obj-dim" min="1" max="8" step="0.1" value="3" class="w-full range-cyan">
+                        </div>
+                    </div>
+
+                    <!-- Water Tank Height (Read Only or Constrained) -->
+                    <div class="flex justify-between items-center pt-2 border-t border-slate-800/60 text-xs text-slate-400">
+                        <span>固定水缸總高度 (<span class="font-mono">H_tank</span>):</span>
+                        <span class="font-mono text-slate-300">25.0 cm</span>
+                    </div>
+                </div>
+
+                <!-- Simulation Control Buttons -->
+                <div class="pt-3 border-t border-slate-800/60 flex items-center justify-between gap-3">
+                    <span class="text-xs text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-person-running text-brand-400" id="anim-indicator-icon"></i>
+                        實驗狀態：<span id="anim-status-txt" class="font-semibold text-slate-300">圓柱棒已垂直放入</span>
+                    </span>
+                    <button id="btn-action" class="px-5 py-2 rounded-xl text-xs font-bold text-white shadow-md active-btn-rod transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrow-up-from-bracket" id="btn-action-icon"></i>
+                        <span id="btn-action-txt">拔出圓柱棒</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mathematical Formula Panel (MathJax/KaTeX output) -->
+            <div class="glass rounded-2xl p-5 flex flex-col space-y-4 shadow-xl flex-grow overflow-y-auto max-h-[450px]">
+                <div class="flex justify-between items-center border-b border-slate-800/80 pb-3">
+                    <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-square-root-variable text-emerald-400"></i>
+                        <span>數理公式與實時推導</span>
+                    </h3>
+                    <div class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">KaTeX Live</div>
+                </div>
+
+                <!-- Live formulas container -->
+                <div class="space-y-4 text-sm" id="formula-section">
+                    <!-- Formulas will be injected here via JavaScript -->
+                    <div class="p-4 bg-slate-900/40 rounded-xl border border-slate-800/60 space-y-3">
+                        <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider" id="lbl-step1">步驟 1: 拔出前的水體積</div>
+                        <div id="katex-step1" class="py-2 overflow-x-auto"></div>
+                    </div>
+                    
+                    <div class="p-4 bg-slate-900/40 rounded-xl border border-slate-800/60 space-y-3">
+                        <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider" id="lbl-step2">步驟 2: 計算拔出後的水位</div>
+                        <div id="katex-step2" class="py-2 overflow-x-auto"></div>
+                    </div>
+
+                    <div class="p-4 bg-brand-950/20 rounded-xl border border-brand-800/40 space-y-3 glow-cyan" id="result-box-glow">
+                        <div class="text-xs text-brand-400 font-bold uppercase tracking-wider flex items-center justify-between" id="lbl-result-header">
+                            <span id="lbl-result-title">最終結論：水位下降高度 (h)</span>
+                            <span class="text-glow-cyan text-xs" id="lbl-result-badge">★ 精簡比例法</span>
+                        </div>
+                        <div id="katex-result" class="py-2 overflow-x-auto text-cyan-300"></div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Right Column: 3D Visualization and Real-Time Annotations (7 cols on lg) -->
+        <section class="lg:col-span-7 flex flex-col space-y-6 relative min-h-[550px] lg:min-h-0">
+            
+            <!-- 3D Visualization Canvas Container -->
+            <div class="glass rounded-3xl p-4 flex-grow relative overflow-hidden flex flex-col min-h-[450px]" id="canvas3d-card">
+                <!-- Water Glass Container Label -->
+                <div class="absolute top-4 left-4 z-10 flex items-center space-x-2">
+                    <span class="px-3 py-1.5 rounded-full text-xs font-semibold glass text-slate-200 flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" id="live-indicator-dot"></span>
+                        3D 互動式物理場景
+                    </span>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-mono glass text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrows-spin"></i> 滑鼠拖曳可 360° 旋轉/縮放
+                    </span>
+                </div>
+
+                <!-- 3D Layer View Control Panel -->
+                <div class="absolute top-4 right-4 z-10 flex flex-col space-y-2">
+                    <button id="btn-toggle-wireframe" class="p-2 rounded-xl glass text-slate-400 hover:text-white transition text-xs flex items-center gap-1.5" title="切換剖面/實體視圖">
+                        <i class="fa-solid fa-border-none text-brand-400" id="wireframe-icon"></i> <span class="hidden md:inline">線框剖面</span>
+                    </button>
+                    <button id="btn-toggle-labels" class="p-2 rounded-xl glass text-slate-400 hover:text-white transition text-xs flex items-center gap-1.5" title="切換幾何尺寸標記">
+                        <i class="fa-solid fa-ruler-combined text-brand-400" id="labels-icon"></i> <span class="hidden md:inline">標註投影</span>
+                    </button>
+                    <button id="btn-toggle-force" class="p-2 rounded-xl glass text-slate-400 hover:text-white transition text-xs flex items-center gap-1.5 hidden" title="切換受力分析（重力與浮力）">
+                        <i class="fa-solid fa-arrows-up-down text-amber-500"></i> <span class="hidden md:inline">受力分析</span>
+                    </button>
+                </div>
+
+                <!-- Floating Water Level Alerts (Overflow detector) -->
+                <div id="overflow-alert" class="absolute inset-x-0 top-16 mx-auto w-fit z-10 px-4 py-2 rounded-full border border-red-500/30 bg-red-950/40 text-red-300 text-xs font-semibold flex items-center gap-2 shadow-lg shadow-red-950/50 transform translate-y-[-50px] opacity-0 transition-all duration-300 pointer-events-none">
+                    <i class="fa-solid fa-triangle-exclamation animate-bounce"></i>
+                    <span>⚠️ 警報！水已溢出水缸！部分物體排開的水漫出！</span>
+                </div>
+
+                <!-- Main Three.js Container -->
+                <div id="canvas-container" class="w-full flex-grow rounded-2xl bg-gradient-to-b from-slate-950/80 to-slate-900/60 border border-slate-800/40 relative">
+                    <!-- Loading Spinner -->
+                    <div id="three-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 z-20 space-y-4 rounded-2xl">
+                        <div class="w-12 h-12 rounded-full border-4 border-slate-800 border-t-brand-500 animate-spin"></div>
+                        <span class="text-sm font-semibold text-slate-400 animate-pulse">正在加載虛擬實驗室...</span>
+                    </div>
+
+                    <!-- SVG Overlay for 2D Smart Annotations -->
+                    <svg id="svg-annotations" class="absolute inset-0 w-full h-full pointer-events-none z-10 select-none"></svg>
+                </div>
+
+                <!-- Physical Analysis Statistics Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                    <div class="p-3 rounded-xl bg-slate-900/30 border border-slate-800/50 flex flex-col justify-between">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold">物體排開水體積</span>
+                        <span class="text-base font-bold font-mono text-cyan-400" id="stat-disp-vol">0.00 cm³</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-900/30 border border-slate-800/50 flex flex-col justify-between">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold">缸內總水體積</span>
+                        <span class="text-base font-bold font-mono text-sky-400" id="stat-total-water-vol">0.00 cm³</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-900/30 border border-slate-800/50 flex flex-col justify-between">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold">當前水深 (H)</span>
+                        <span class="text-base font-bold font-mono text-emerald-400" id="stat-current-h">0.00 cm</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-900/30 border border-slate-800/50 flex flex-col justify-between" id="stat-result-box">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold" id="stat-result-lbl">水位下降 (h)</span>
+                        <span class="text-base font-bold font-mono text-pink-400" id="stat-result-val">0.00 cm</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Deep Tutorial Explanation Section -->
+    <section class="w-full px-4 md:px-8 py-8 bg-slate-900/60 border-t border-slate-800/60 z-10 relative">
+        <div class="max-w-5xl mx-auto space-y-6">
+            <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                <i class="fa-solid fa-graduation-cap text-indigo-400"></i>
+                <span>產品設計與數理邏輯深度解析</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-300">
+                <div class="space-y-4">
+                    <h3 class="font-bold text-white flex items-center gap-1.5 text-brand-400">
+                        <i class="fa-solid fa-vial"></i>
+                        實驗物理原理與「阿基米德原理」
+                    </h3>
+                    <p class="leading-relaxed">
+                        在阿基米德幾何學中，固體浸入液體排開的液體體積等於固體浸入部分的體積。
+                        本模擬器設計了三種核心物理場景：
+                    </p>
+                    <ul class="list-disc pl-5 space-y-2 text-slate-400">
+                        <li>
+                            <strong class="text-slate-300">圓柱棒拔出 (Rod Removal)</strong>：棒子垂直觸底，原本與水共同佔據圓柱空間。
+                            當棒子移除後，原本被棒子「推開」的空間會由水填補，因此水位下降。下降量
+                            <span class="font-mono text-cyan-400">h = H × (r/R)²</span>，這個比例僅與「半徑平方比」和「初始高度」有關，非常神奇！
+                        </li>
+                        <li>
+                            <strong class="text-slate-300">球體浸入 (Sphere Immersion)</strong>：一個半徑為 <span class="font-mono text-orange-400">r_s</span> 的球體完全沉入水中，
+                            其體積為 <span class="font-mono text-orange-400">V = 4/3 π r_s³</span>。在未溢出情況下，排開水的體積等於球體體積，
+                            使水位上升 <span class="font-mono text-emerald-400">Δh = (4 r_s³) / (3 R²)</span>。
+                        </li>
+                        <li>
+                            <strong class="text-slate-300">正立方體浸入 (Cube Immersion)</strong>：邊長為 <span class="font-mono text-purple-400">a</span> 的正方體完全沉入，
+                            其體積為 <span class="font-mono text-purple-400">V = a³</span>，水位上升量為 
+                            <span class="font-mono text-emerald-400">Δh = a³ / (π R²)</span>。
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-white flex items-center gap-1.5 text-emerald-400">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        極致交互與 UX 用戶體驗解說
+                    </h3>
+                    <p class="leading-relaxed">
+                        我們基於優秀產品經理的角度出發，為了讓學生產生深刻的幾何感知，注入了多項貼心又高效的 UI/UX 設計：
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-400">
+                        <div class="p-3 rounded-lg bg-slate-950/40 border border-slate-800/40 space-y-1">
+                            <span class="font-semibold text-slate-200">✨ 3D-SVG 動態雙向投影</span>
+                            <p>3D 引擎內的頂點座標在每幀會自動投影到 2D 螢幕，由 SVG 畫出尺寸指引線與箭頭，精準標記幾何邊界，實時反饋數值變化。</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-slate-950/40 border border-slate-800/40 space-y-1">
+                            <span class="font-semibold text-slate-200">🌊 物理濺水與漣漪模擬</span>
+                            <p>物體投入或拔出時，觸發漣漪擴散以及半透明水花粒子噴灑，強化操作時的沉浸感與真實的物理碰撞反饋。</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-slate-950/40 border border-slate-800/40 space-y-1">
+                            <span class="font-semibold text-slate-200">💧 雙色分層排開水體</span>
+                            <p>在球體與立方體完全沉入後，3D 水體會自動分割為原有杯中水 (深藍色) 與實體加入後所排開的水 (亮青色)，讓學生能極其直觀地對比、理解排水範圍。</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-slate-950/40 border border-slate-800/40 space-y-1">
+                            <span class="font-semibold text-slate-200">📊 阿基米德溢出警報</span>
+                            <p>當投入物體體積過大導致水面升至水缸頂部時，水缸邊框將會紅光警示，並動態推導出溢出水量，擴展課堂知識邊界。</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-slate-950/40 border border-slate-800/40 space-y-1">
+                            <span class="font-semibold text-slate-200">🧮 KaTeX 實時符號連動</span>
+                            <p>不同於傳統靜態公式，本系統會將滑桿數值即時代入 LaTeX，在每一幀重新排版，讓學生看清變數轉換與代數運算全過程。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-6 px-6 text-center text-xs text-slate-500 border-t border-slate-900 bg-slate-950 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <span>© 2026 幾何與物理交互式虛擬實驗室. 保留所有權利。</span>
+        <div class="flex space-x-4">
+            <a href="#" class="hover:text-slate-300 transition">用戶協議</a>
+            <a href="#" class="hover:text-slate-300 transition">隱私政策</a>
+            <a href="#" class="hover:text-slate-300 transition">關於我們</a>
+        </div>
+    </footer>
+
+    <!-- Instructional Guide Modal -->
+    <div id="intro-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass max-w-lg w-full rounded-2xl p-6 space-y-4 shadow-2xl border border-brand-500/20 transform scale-95 transition-transform duration-300" id="intro-modal-content">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-brand-400"></i>
+                    <span>歡迎來到幾何交互虛擬實驗室！</span>
+                </h3>
+                <button id="btn-close-modal" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3 text-xs leading-relaxed text-slate-300">
+                <p>這款工具旨在幫助您以最直觀的「3D 視角」和「動態公式連動」理解高難度的幾何與物理複合問題：</p>
+                
+                <div class="space-y-2">
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-5 h-5 rounded bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-[10px] shrink-0">1</div>
+                        <p><strong class="text-slate-200">切換實驗模式</strong>：在左上角選擇 <strong>圓柱棒移除</strong>、<strong>球體沉入</strong> 或 <strong>正立方體沉入</strong> 實驗情境。</p>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-5 h-5 rounded bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold text-[10px] shrink-0">2</div>
+                        <p><strong class="text-slate-200">實時拖拽參數</strong>：調整水缸半徑、水深及物體尺寸，右側 3D 畫面與左側 LaTeX 計算公式會同時做出毫米級的瞬時反應！</p>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-5 h-5 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px] shrink-0">3</div>
+                        <p><strong class="text-slate-200">觸發動態實驗</strong>：點擊「投入/拔出物體」，觀看精美的物理重力沉降、漣漪、水花濺射與水位升降動畫。</p>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-5 h-5 rounded bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-[10px] shrink-0">4</div>
+                        <p><strong class="text-slate-200">觸控 3D 場景</strong>：在 3D 場景中，您可以使用單指/滑鼠左鍵旋轉場景，雙指滾輪/滑動縮放，或右鍵/雙指拖曳平移視野，全方位探究細節。</p>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-brand-950/30 border border-brand-500/20 text-brand-300 flex items-start gap-2 mt-2">
+                    <i class="fa-solid fa-star shrink-0 mt-0.5 animate-pulse"></i>
+                    <span><strong>學習小貼士</strong>：試著將球體/立方體半徑設為最大，然後投入水中，觀察溢出的水如何促使水位達到極限，並理解阿基米德浮力定律中「溢出體積」的推導！</span>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button id="btn-start-exp" class="px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-indigo-600 hover:from-brand-400 hover:to-indigo-500 text-white text-xs font-bold transition shadow-lg shadow-brand-500/20">
+                    開始探索實驗室
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script (The Brain) -->
+    <script>
+        // Global variables and state
+        let currentMode = 'rod'; // 'rod', 'sphere', 'cube'
+        let isObjectIn = true;   // For rod, true means inserted. For sphere/cube, true means dropped in.
+        let isAnimating = false; // block sliders and actions during GSAP tweening
+        let wireframeMode = false;
+        let showLabels = true;
+        let showForceVectors = false;
+
+        // Constants
+        const TANK_HEIGHT = 25.0; // Fixed tank height
+        const SCALE_FACTOR = 1.0; // 1:1 scale for centimeter mapping
+
+        // State parameters (editable)
+        let paramTankR = 10.0;   // Water Tank Radius R (5.0 - 15.0)
+        let paramWaterH = 12.0;  // Initial water height H (without object or prior insertion, 5.0 - 20.0)
+        let paramObjDim = 3.0;   // Object dimension (rod r=3, sphere r=4, cube a=6)
+
+        // Three.js instances
+        let scene, camera, renderer, controls;
+        let tankMesh, waterMesh, extraWaterMesh, rodMesh, sphereMesh, cubeMesh;
+        let wireframeTankMesh, wireframeWaterMesh, wireframeExtraWaterMesh;
+        let ambientLight, dirLight, pointLight;
+        let forceArrowGravity, forceArrowBuoyancy;
+
+        // Dynamic markers for SVG 2D layout alignment
+        const markers = {
+            tankBottom: new THREE.Vector3(0, -10, 0),
+            tankTop: new THREE.Vector3(0, 15, 0),
+            tankEdge: new THREE.Vector3(10, -10, 0),
+            waterSurface: new THREE.Vector3(0, 2, 0),
+            objectCenter: new THREE.Vector3(0, 0, 0),
+            objectEdge: new THREE.Vector3(3, 0, 0)
+        };
+
+        // Splash particle system variables
+        let splashParticles;
+        const splashCount = 40;
+        let particleGeometry, particleMaterial;
+        let particleVelocities = [];
+        let particlesActive = false;
+
+        // Ripple mesh variables
+        let rippleMesh;
+
+        // Elements caching
+        const elContainer = document.getElementById('canvas-container');
+        const elLoader = document.getElementById('three-loader');
+        const elSvg = document.getElementById('svg-annotations');
+        const elOverflowAlert = document.getElementById('overflow-alert');
+
+        // Initializer
+        window.addEventListener('load', () => {
+            initThree();
+            setupEventListeners();
+            resetParameters();
+            const embedded = applyURLParams();
+            updateSimulation();
+            animate();
+
+            // Show intro modal on load (skip when embedded in the dashboard)
+            if (!embedded) {
+                setTimeout(() => {
+                    toggleModal(true);
+                }, 500);
+            }
+        });
+
+        // Apply question defaults supplied via the query string so the lab opens
+        // pre-configured for the worked-solution it is embedded beside.
+        //   ?mode=rod|sphere|cube  &tankR=  &waterH=  &objDim=  &embed=1
+        function applyURLParams() {
+            const p = new URLSearchParams(location.search);
+            if (![...p.keys()].length) return false;
+            const mode = p.get('mode');
+            if (mode === 'rod' || mode === 'sphere' || mode === 'cube') switchMode(mode);
+            function setSlider(id, lblId, val, suffix) {
+                const el = document.getElementById(id);
+                if (!el || val == null || val === '') return null;
+                const v = parseFloat(val);
+                if (isNaN(v)) return null;
+                el.value = v;
+                const lbl = document.getElementById(lblId);
+                if (lbl) lbl.innerText = v.toFixed(1) + (suffix || '');
+                return v;
+            }
+            const tr = setSlider('param-tank-r', 'val-tank-r-lbl', p.get('tankR'), ' cm');
+            if (tr != null) paramTankR = tr;
+            const wh = setSlider('param-water-h', 'val-water-h-lbl', p.get('waterH'), ' cm');
+            if (wh != null) paramWaterH = wh;
+            const od = setSlider('param-obj-dim', 'val-obj-dim-lbl', p.get('objDim'), ' cm');
+            if (od != null) paramObjDim = od;
+            if (p.get('embed') === '1') {
+                document.body.classList.add('embedded');
+                return true;
+            }
+            return false;
+        }
+
+        // -------------------------------------------------------------
+        // THREE.JS INITIALIZATION
+        // -------------------------------------------------------------
+        function initThree() {
+            const width = elContainer.clientWidth;
+            const height = elContainer.clientHeight || 450;
+
+            // Scene & Camera
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0b1329, 0.005);
+
+            camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+            camera.position.set(0, 18, 42); // Optimized viewing angle
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.domElement.style.position = 'absolute';
+            renderer.domElement.style.top = '0';
+            renderer.domElement.style.left = '0';
+            renderer.domElement.style.display = 'block';
+            elContainer.appendChild(renderer.domElement);
+
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 + 0.1; // Limit rotation below floor
+            controls.minDistance = 15;
+            controls.maxDistance = 80;
+            controls.target.set(0, 2.5, 0); // Focus on container center
+
+            // Lighting
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.65); // Increased for brighter base illumination
+            scene.add(ambientLight);
+
+            dirLight = new THREE.DirectionalLight(0xffffff, 0.95); // Increased slightly for crisp highlights
+            dirLight.position.set(15, 30, 20);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 1024;
+            dirLight.shadow.mapSize.height = 1024;
+            dirLight.shadow.camera.near = 0.5;
+            dirLight.shadow.camera.far = 100;
+            const d = 20;
+            dirLight.shadow.camera.left = -d;
+            dirLight.shadow.camera.right = d;
+            dirLight.shadow.camera.top = d;
+            dirLight.shadow.camera.bottom = -d;
+            dirLight.shadow.bias = -0.0005;
+            scene.add(dirLight);
+
+            pointLight = new THREE.PointLight(0xffffff, 0.45, 30); // Dynamic white point light for center pop
+            pointLight.position.set(0, 16, 0);
+            scene.add(pointLight);
+
+            // Build Floor/Environment
+            const floorGeo = new THREE.PlaneGeometry(100, 100);
+            const floorMat = new THREE.ShadowMaterial({ opacity: 0.2 });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.y = -10.01;
+            floor.receiveShadow = true;
+            scene.add(floor);
+
+            // Floor Grid Helper (Subtle)
+            const gridHelper = new THREE.GridHelper(60, 40, 0x1e293b, 0x111827);
+            gridHelper.position.y = -10;
+            scene.add(gridHelper);
+
+            // Construct Water Tank and Objects
+            buildLabMeshes();
+            buildParticles();
+            buildRipples();
+            buildForceVectors();
+
+            // Loader fadeout
+            setTimeout(() => {
+                elLoader.style.opacity = '0';
+                setTimeout(() => elLoader.style.display = 'none', 300);
+            }, 600);
+        }
+
+        // -------------------------------------------------------------
+        // MESH BUILDERS
+        // -------------------------------------------------------------
+        function buildLabMeshes() {
+            // 1. Water Tank (Double cylinder for thickness look)
+            // Outer Cylinder (Glass)
+            const outerGeo = new THREE.CylinderGeometry(10, 10, TANK_HEIGHT, 48, 1, true);
+            const outerMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.08,
+                roughness: 0.1,
+                metalness: 0.1,
+                transmission: 0.6,
+                ior: 1.3,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+            tankMesh = new THREE.Mesh(outerGeo, outerMat);
+            tankMesh.position.y = 2.5; // Centered vertically around Y=2.5 (-10 to 15)
+            scene.add(tankMesh);
+
+            // Tank wireframe outlining
+            const wireGeo = new THREE.CylinderGeometry(10, 10, TANK_HEIGHT, 48, 1, true);
+            const wireMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.15
+            });
+            wireframeTankMesh = new THREE.Mesh(wireGeo, wireMat);
+            wireframeTankMesh.position.y = 2.5;
+            scene.add(wireframeTankMesh);
+
+            // Tank Base Rim (Metallic)
+            const baseGeo = new THREE.CylinderGeometry(10.2, 10.2, 0.4, 48);
+            const baseMat = new THREE.MeshStandardMaterial({
+                color: 0x334155,
+                roughness: 0.4,
+                metalness: 0.8
+            });
+            const tankBase = new THREE.Mesh(baseGeo, baseMat);
+            tankBase.position.y = -10;
+            tankBase.receiveShadow = true;
+            scene.add(tankBase);
+
+            // Top Rim
+            const topRim = new THREE.Mesh(new THREE.CylinderGeometry(10.1, 10.1, 0.3, 48, 1, true), baseMat);
+            topRim.position.y = 15;
+            scene.add(topRim);
+
+            // 2. Water Body (Dynamic scale)
+            // A. Base Water Mesh (Original Cup Water Volume, darker deep blue-cyan)
+            const waterGeo = new THREE.CylinderGeometry(9.9, 9.9, 1, 48);
+            const waterMat = new THREE.MeshPhysicalMaterial({
+                color: 0x0284c7,          // Deep ocean blue
+                transparent: true,
+                opacity: 0.65,
+                roughness: 0.25,
+                metalness: 0.1,
+                transmission: 0.25,
+                ior: 1.333,
+                side: THREE.DoubleSide
+            });
+            waterMesh = new THREE.Mesh(waterGeo, waterMat);
+            waterMesh.castShadow = true;
+            waterMesh.receiveShadow = true;
+            scene.add(waterMesh);
+
+            // Water surface highlight line for base water
+            const waterWireGeo = new THREE.CylinderGeometry(9.9, 9.9, 1, 48, 1, true);
+            const waterWireMat = new THREE.MeshBasicMaterial({
+                color: 0x0ea5e9,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.4
+            });
+            wireframeWaterMesh = new THREE.Mesh(waterWireGeo, waterWireMat);
+            scene.add(wireframeWaterMesh);
+
+            // B. Extra Water Mesh (Displaced/Added Water Volume, lighter vivid cyan)
+            const extraWaterMat = new THREE.MeshPhysicalMaterial({
+                color: 0x22d3ee,          // Bright vivid cyan
+                transparent: true,
+                opacity: 0.45,
+                roughness: 0.15,
+                metalness: 0.1,
+                transmission: 0.45,
+                ior: 1.333,
+                side: THREE.DoubleSide
+            });
+            extraWaterMesh = new THREE.Mesh(waterGeo, extraWaterMat);
+            extraWaterMesh.castShadow = true;
+            extraWaterMesh.receiveShadow = true;
+            scene.add(extraWaterMesh);
+
+            // Water surface highlight line for extra water
+            const extraWaterWireMat = new THREE.MeshBasicMaterial({
+                color: 0x67e8f9,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.5
+            });
+            wireframeExtraWaterMesh = new THREE.Mesh(waterWireGeo, extraWaterWireMat);
+            scene.add(wireframeExtraWaterMesh);
+
+            // 3. OBJECTS
+            // A. Cylindrical Rod (Polished Pearl White Ceramic with Gold Rim look)
+            const rodGeo = new THREE.CylinderGeometry(3, 3, TANK_HEIGHT, 32);
+            const rodMat = new THREE.MeshPhysicalMaterial({
+                color: 0xf1f5f9,          // 溫潤珍珠白 (Pearl White)
+                emissive: 0x1e293b,       // 微弱冰晶藍冷光，確保在任何陰影角度都不會變漆黑 (Subtle ambient cool glow)
+                roughness: 0.15,
+                metalness: 0.1,
+                clearcoat: 1.0,           // 高光清漆層
+                clearcoatRoughness: 0.1,
+                side: THREE.DoubleSide
+            });
+            rodMesh = new THREE.Mesh(rodGeo, rodMat);
+            rodMesh.castShadow = true;
+            rodMesh.receiveShadow = true;
+            scene.add(rodMesh);
+
+            // B. Sphere (Submerged, Orange polished plastic)
+            const sphereGeo = new THREE.SphereGeometry(4, 32, 32);
+            const sphereMat = new THREE.MeshPhysicalMaterial({
+                color: 0xf97316,
+                roughness: 0.1,
+                metalness: 0.1,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.1,
+                transparent: true,
+                opacity: 0.85
+            });
+            sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+            sphereMesh.castShadow = true;
+            sphereMesh.receiveShadow = true;
+            scene.add(sphereMesh);
+
+            // C. Cube (Submerged, Violet emitting edge look)
+            const cubeGeo = new THREE.BoxGeometry(6, 6, 6);
+            const cubeMat = new THREE.MeshPhysicalMaterial({
+                color: 0x8b5cf6,
+                roughness: 0.2,
+                metalness: 0.3,
+                transparent: true,
+                opacity: 0.8,
+                clearcoat: 0.5
+            });
+            cubeMesh = new THREE.Mesh(cubeGeo, cubeMat);
+            cubeMesh.castShadow = true;
+            cubeMesh.receiveShadow = true;
+            scene.add(cubeMesh);
+        }
+
+        // Particle System for Splashing
+        function buildParticles() {
+            particleGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(splashCount * 3);
+            const colors = new Float32Array(splashCount * 3);
+
+            for (let i = 0; i < splashCount * 3; i += 3) {
+                // Initial placement at origin (0,0,0)
+                positions[i] = 0;
+                positions[i + 1] = -100; // Keep offscreen
+                positions[i + 2] = 0;
+
+                // Color tinting: Water blue to white
+                colors[i] = 0.5 + Math.random() * 0.5; // R
+                colors[i + 1] = 0.8 + Math.random() * 0.2; // G
+                colors[i + 2] = 1.0; // B
+            }
+
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            particleMaterial = new THREE.PointsMaterial({
+                size: 0.4,
+                transparent: true,
+                opacity: 0.9,
+                vertexColors: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            splashParticles = new THREE.Points(particleGeometry, particleMaterial);
+            scene.add(splashParticles);
+        }
+
+        // Ripple flat mesh
+        function buildRipples() {
+            const rippleGeo = new THREE.RingGeometry(0.1, 1, 32);
+            // Rotate ring to lie flat
+            rippleGeo.rotateX(-Math.PI / 2);
+            
+            const rippleMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0
+            });
+            rippleMesh = new THREE.Mesh(rippleGeo, rippleMat);
+            scene.add(rippleMesh);
+        }
+
+        // Force Arrow Vectors
+        function buildForceVectors() {
+            // Gravity (pointing down, orange/red)
+            const dirG = new THREE.Vector3(0, -1, 0);
+            const originG = new THREE.Vector3(0, 0, 0);
+            forceArrowGravity = new THREE.ArrowHelper(dirG, originG, 5, 0xef4444, 1.2, 0.6);
+            
+            // Buoyancy (pointing up, green)
+            const dirB = new THREE.Vector3(0, 1, 0);
+            const originB = new THREE.Vector3(0, 0, 0);
+            forceArrowBuoyancy = new THREE.ArrowHelper(dirB, originB, 5, 0x10b981, 1.2, 0.6);
+
+            scene.add(forceArrowGravity);
+            scene.add(forceArrowBuoyancy);
+
+            // Start hidden
+            forceArrowGravity.visible = false;
+            forceArrowBuoyancy.visible = false;
+        }
+
+        // -------------------------------------------------------------
+        // MATHS & COMPUTATION ENGINE
+        // -------------------------------------------------------------
+        function calculateState() {
+            const R = paramTankR;
+            const H_init = paramWaterH;
+            const dim = paramObjDim;
+
+            let vObj = 0;          // Total volume of object
+            let vSubmerged = 0;    // Volume submerged in water
+            let vWater = 0;        // Net pure water volume in tank
+            let curH = 0;          // Current visual water height
+            let resultVal = 0;     // Computed metric (decrease or increase in cm)
+            let isOverflow = false;
+            let vOverflow = 0;
+
+            if (currentMode === 'rod') {
+                const r = dim;
+                // Rod is vertical cylinder of height 25.0
+                // When Rod is IN: Water is filled up to height H (which user sets).
+                // Under this state, the tank has water and rod sharing the cylinder of radius R and height H.
+                if (isObjectIn) {
+                    vSubmerged = Math.PI * r * r * H_init;
+                    vWater = Math.PI * (R * R - r * r) * H_init;
+                    vObj = Math.PI * r * r * TANK_HEIGHT; // Total rod volume
+                    curH = H_init;
+                    // Lower water state will happen if we REMOVE the rod:
+                    // In that state, water occupies full radius R, meaning H_new = vWater / (pi * R*R)
+                    const H_new = vWater / (Math.PI * R * R);
+                    resultVal = H_init - H_new; // Decrease in water level
+                } else {
+                    // Rod is OUT
+                    vWater = Math.PI * (R * R - r * r) * H_init; // Pure water volume is unchanged
+                    vSubmerged = 0;
+                    vObj = Math.PI * r * r * TANK_HEIGHT;
+                    curH = vWater / (Math.PI * R * R); // Water drops
+                    resultVal = H_init - curH; // Decrease
+                }
+            } else if (currentMode === 'sphere') {
+                const r_s = dim;
+                vObj = (4 / 3) * Math.PI * Math.pow(r_s, 3);
+                // In Sphere Mode: Initial state has only water up to height H_init (R, H_init).
+                vWater = Math.PI * R * R * H_init;
+
+                if (isObjectIn) {
+                    // Complete submerged volume
+                    vSubmerged = vObj;
+                    const H_new = H_init + (vSubmerged / (Math.PI * R * R));
+                    if (H_new > TANK_HEIGHT) {
+                        isOverflow = true;
+                        curH = TANK_HEIGHT;
+                        vOverflow = (H_new - TANK_HEIGHT) * Math.PI * R * R;
+                    } else {
+                        curH = H_new;
+                    }
+                    resultVal = curH - H_init; // Increase in water level
+                } else {
+                    vSubmerged = 0;
+                    curH = H_init;
+                    resultVal = (vObj / (Math.PI * R * R)); // Potential increase
+                }
+            } else if (currentMode === 'cube') {
+                const a = dim;
+                vObj = Math.pow(a, 3);
+                vWater = Math.PI * R * R * H_init;
+
+                if (isObjectIn) {
+                    vSubmerged = vObj;
+                    const H_new = H_init + (vSubmerged / (Math.PI * R * R));
+                    if (H_new > TANK_HEIGHT) {
+                        isOverflow = true;
+                        curH = TANK_HEIGHT;
+                        vOverflow = (H_new - TANK_HEIGHT) * Math.PI * R * R;
+                    } else {
+                        curH = H_new;
+                    }
+                    resultVal = curH - H_init; // Increase
+                } else {
+                    vSubmerged = 0;
+                    curH = H_init;
+                    resultVal = (vObj / (Math.PI * R * R)); // Potential
+                }
+            }
+
+            return {
+                vObj,
+                vSubmerged,
+                vWater,
+                curH,
+                resultVal,
+                isOverflow,
+                vOverflow,
+                R,
+                H_init,
+                dim
+            };
+        }
+
+        // -------------------------------------------------------------
+        // UPDATE ENGINE (SYNC THREE.JS & FORMULAS & UI)
+        // -------------------------------------------------------------
+        function updateSimulation() {
+            const state = calculateState();
+
+            // 1. UI Stat Box updates
+            document.getElementById('stat-disp-vol').innerText = (state.vSubmerged).toFixed(1) + ' cm³';
+            document.getElementById('stat-total-water-vol').innerText = (state.vWater).toFixed(1) + ' cm³';
+            document.getElementById('stat-current-h').innerText = state.curH.toFixed(2) + ' cm';
+            
+            const resultBox = document.getElementById('stat-result-box');
+            const resultValEl = document.getElementById('stat-result-val');
+            const resultLblEl = document.getElementById('stat-result-lbl');
+
+            if (currentMode === 'rod') {
+                resultLblEl.innerText = '水位下降值 (h)';
+                resultValEl.innerText = state.resultVal.toFixed(2) + ' cm';
+                resultBox.className = "p-3 rounded-xl bg-cyan-950/20 border border-cyan-800/40 flex flex-col justify-between";
+                resultValEl.className = "text-base font-bold font-mono text-cyan-400";
+            } else {
+                resultLblEl.innerText = '水位上升值 (Δh)';
+                resultValEl.innerText = state.resultVal.toFixed(2) + ' cm';
+                if (state.isOverflow) {
+                    resultBox.className = "p-3 rounded-xl bg-red-950/20 border border-red-800/40 flex flex-col justify-between";
+                    resultValEl.className = "text-base font-bold font-mono text-red-400 animate-pulse";
+                    resultValEl.innerHTML = state.resultVal.toFixed(2) + ' cm <span class="text-[10px] text-red-500 block">溢出: ' + state.vOverflow.toFixed(1) + ' cm³</span>';
+                } else {
+                    resultBox.className = "p-3 rounded-xl bg-emerald-950/20 border border-emerald-800/40 flex flex-col justify-between";
+                    resultValEl.className = "text-base font-bold font-mono text-emerald-400";
+                }
+            }
+
+            // Overflow alert trigger
+            if (state.isOverflow && isObjectIn) {
+                elOverflowAlert.classList.remove('opacity-0', 'translate-y-[-50px]');
+                elOverflowAlert.classList.add('opacity-100', 'translate-y-0');
+                if (tankMesh) {
+                    tankMesh.material.color.setHex(0xef4444);
+                    tankMesh.material.opacity = 0.2;
+                    wireframeTankMesh.material.color.setHex(0xef4444);
+                }
+            } else {
+                elOverflowAlert.classList.add('opacity-0', 'translate-y-[-50px]');
+                elOverflowAlert.classList.remove('opacity-100', 'translate-y-0');
+                if (tankMesh) {
+                    tankMesh.material.color.setHex(0xffffff);
+                    tankMesh.material.opacity = 0.08;
+                    wireframeTankMesh.material.color.setHex(0x38bdf8);
+                }
+            }
+
+            // 2. Three.js mesh dimension updates (Immediate changes when sliders move)
+            if (!isAnimating) {
+                syncThreeMeshes(state);
+            }
+
+            // 3. Render Latex Formulas
+            renderLatexFormulas(state);
+        }
+
+        // Immediate visual synchronization
+        function syncThreeMeshes(state) {
+            const R = state.R;
+            const curH = state.curH;
+            const dim = state.dim;
+
+            // Scale Water Tank
+            // R ranges from 5 to 15, default is 10. Radius 10 = scale 1
+            const rScale = R / 10.0;
+            tankMesh.scale.set(rScale, 1, rScale);
+            wireframeTankMesh.scale.set(rScale, 1, rScale);
+
+            // Scale & Position Water
+            // Base Water is always H_init (unless we are in rod mode, where it's H_out)
+            let baseWaterH = paramWaterH;
+            let extraWaterH = 0;
+
+            if (currentMode === 'rod') {
+                const r = dim;
+                const H_out = paramWaterH * (1 - (r * r) / (R * R));
+                if (isObjectIn) {
+                    baseWaterH = H_out;
+                    extraWaterH = Math.max(paramWaterH - H_out, 0);
+                } else {
+                    // When rod is removed, water drops. So the entire body is base water at a lower height
+                    baseWaterH = H_out;
+                    extraWaterH = 0;
+                }
+            } else {
+                // Sphere or Cube
+                if (isObjectIn) {
+                    baseWaterH = paramWaterH;
+                    extraWaterH = Math.max(curH - paramWaterH, 0);
+                } else {
+                    baseWaterH = paramWaterH;
+                    extraWaterH = 0;
+                }
+            }
+
+            // Sync Base Water Mesh
+            const bWaterHeight = Math.max(baseWaterH, 0.01);
+            waterMesh.scale.set(rScale * 0.99, bWaterHeight, rScale * 0.99);
+            waterMesh.position.y = -10.0 + bWaterHeight / 2;
+
+            wireframeWaterMesh.scale.set(rScale * 0.99, bWaterHeight, rScale * 0.99);
+            wireframeWaterMesh.position.y = -10.0 + bWaterHeight / 2;
+
+            // Sync Extra Displaced Water Mesh (on top of base water)
+            if (extraWaterH > 0) {
+                extraWaterMesh.visible = true;
+                wireframeExtraWaterMesh.visible = true;
+                extraWaterMesh.scale.set(rScale * 0.99, extraWaterH, rScale * 0.99);
+                extraWaterMesh.position.y = -10.0 + bWaterHeight + extraWaterH / 2;
+                
+                wireframeExtraWaterMesh.scale.set(rScale * 0.99, extraWaterH, rScale * 0.99);
+                wireframeExtraWaterMesh.position.y = -10.0 + bWaterHeight + extraWaterH / 2;
+            } else {
+                extraWaterMesh.visible = false;
+                wireframeExtraWaterMesh.visible = false;
+            }
+
+            const waterHeight = Math.max(curH, 0.01);
+
+            // Update Visibility and Geometry Scales of Objects
+            rodMesh.visible = (currentMode === 'rod');
+            sphereMesh.visible = (currentMode === 'sphere');
+            cubeMesh.visible = (currentMode === 'cube');
+
+            // Force vectors visibility
+            const showForce = showForceVectors && isObjectIn && (currentMode !== 'rod');
+            forceArrowGravity.visible = showForce;
+            forceArrowBuoyancy.visible = showForce;
+
+            if (currentMode === 'rod') {
+                const rodScale = dim / 3.0; // r=3 is default
+                rodMesh.scale.set(rodScale, 1, rodScale);
+                
+                if (isObjectIn) {
+                    rodMesh.position.set(0, 2.5, 0); // 插到底部
+                } else {
+                    rodMesh.position.set(0, 21.0, 0); // 拔出，升天
+                }
+            } else if (currentMode === 'sphere') {
+                const sScale = dim / 4.0; // r_s=4 is default
+                sphereMesh.scale.set(sScale, sScale, sScale);
+
+                let targetY = 22.0; // Out state
+                if (isObjectIn) {
+                    targetY = -10.0 + dim; // Resting on bottom
+                }
+                
+                // Offset sphere horizontally to the left so it doesn't overlap with the cube
+                const maxOffset = Math.max(R * 0.95 - dim, 0);
+                const xOffset = -Math.min(2.5, maxOffset);
+                sphereMesh.position.set(xOffset, targetY, 0);
+
+                if (showForce) {
+                    const arrowOrigin = new THREE.Vector3(xOffset, targetY, 0);
+                    forceArrowGravity.position.copy(arrowOrigin);
+                    forceArrowBuoyancy.position.copy(arrowOrigin);
+                    
+                    // Buoyancy scale based on submerged volume
+                    const fB = (state.vSubmerged / 500) * 4;
+                    const fG = (state.vObj / 500) * 4;
+                    forceArrowBuoyancy.setLength(Math.max(fB, 1.5), 0.8, 0.4);
+                    forceArrowGravity.setLength(Math.max(fG, 1.5), 0.8, 0.4);
+                }
+            } else if (currentMode === 'cube') {
+                const cScale = dim / 6.0; // a=6 is default
+                cubeMesh.scale.set(cScale, cScale, cScale);
+
+                let targetY = 22.0; // Out state
+                if (isObjectIn) {
+                    targetY = -10.0 + dim / 2; // Resting on bottom
+                }
+                
+                // Offset cube horizontally to the right so it doesn't overlap with the sphere
+                const maxOffset = Math.max(R * 0.95 - dim / 2, 0);
+                const xOffset = Math.min(2.5, maxOffset);
+                cubeMesh.position.set(xOffset, targetY, 0);
+
+                if (showForce) {
+                    const arrowOrigin = new THREE.Vector3(xOffset, targetY, 0);
+                    forceArrowGravity.position.copy(arrowOrigin);
+                    forceArrowBuoyancy.position.copy(arrowOrigin);
+
+                    const fB = (state.vSubmerged / 500) * 4;
+                    const fG = (state.vObj / 500) * 4;
+                    forceArrowBuoyancy.setLength(Math.max(fB, 1.5), 0.8, 0.4);
+                    forceArrowGravity.setLength(Math.max(fG, 1.5), 0.8, 0.4);
+                }
+            }
+
+            // Sync Marker Positions
+            markers.tankBottom.set(0, -10, 0);
+            markers.tankTop.set(0, 15, 0);
+            markers.tankEdge.set(R, -10, 0);
+            markers.waterSurface.set(0, -10.0 + waterHeight, 0);
+            
+            if (currentMode === 'rod') {
+                markers.objectCenter.copy(rodMesh.position);
+                markers.objectEdge.set(dim, rodMesh.position.y, 0);
+            } else if (currentMode === 'sphere') {
+                markers.objectCenter.copy(sphereMesh.position);
+                markers.objectEdge.set(sphereMesh.position.x + dim, sphereMesh.position.y, 0);
+            } else if (currentMode === 'cube') {
+                markers.objectCenter.copy(cubeMesh.position);
+                markers.objectEdge.set(cubeMesh.position.x + dim / 2, cubeMesh.position.y, 0);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // LATEX & MATHEMATICAL DISP WITH KATEX
+        // -------------------------------------------------------------
+        function renderLatexFormulas(state) {
+            if (typeof katex === 'undefined') return;
+
+            const R = state.R;
+            const H = state.H_init;
+            const dim = state.dim;
+
+            let step1Latex = "";
+            let step2Latex = "";
+            let resultLatex = "";
+
+            if (currentMode === 'rod') {
+                const r = dim;
+                const vWaterPi = (R * R - r * r) * H;
+                const vRodInWaterPi = r * r * H;
+                const vTotalCylinderPi = R * R * H;
+
+                step1Latex = `\\begin{aligned}
+                    V_{\\text{water}} &= V_{\\text{缸內總容積}} - V_{\\text{浸水棒}} \\\\
+                    &= \\pi \\times R^2 \\times H - \\pi \\times r^2 \\times H \\\\
+                    &= \\pi \\times ${R}^2 \\times ${H} - \\pi \\times ${r}^2 \\times ${H} \\\\
+                    &= (${(R*R*H)}\\pi - ${(r*r*H)}\\pi)\\text{ cm}^3 \\\\
+                    &= ${vWaterPi}\\pi\\text{ cm}^3 \\approx ${(vWaterPi*Math.PI).toFixed(2)}\\text{ cm}^3
+                \\end{aligned}`;
+
+                step2Latex = `\\begin{aligned}
+                    \\text{設 } H_2 &\\text{ 為拔出圓柱棒後的淨水水位：} \\\\
+                    V_{\\text{water}} &= \\pi \\times R^2 \\times H_2 = ${vWaterPi}\\pi \\\\
+                    \\pi \\times ${R}^2 \\times H_2 &= ${vWaterPi}\\pi \\\\
+                    ${R*R} \\times H_2 &= ${vWaterPi} \\\\
+                    H_2 &= \\frac{${vWaterPi}}{${R*R}} = ${(vWaterPi/(R*R)).toFixed(3)}\\text{ cm}
+                \\end{aligned}`;
+
+                resultLatex = `\\begin{aligned}
+                    h &= H_{\\text{拔出前}} - H_2 \\\\
+                    &= ${H} - ${(vWaterPi/(R*R)).toFixed(3)} = \\mathbf{${state.resultVal.toFixed(3)}\\text{ cm}} \\\\
+                    \\text{★ 比例秒殺法：} h &= H \\times \\frac{r^2}{R^2} \\\\
+                    &= ${H} \\times \\frac{${r}^2}{${R}^2} = ${H} \\times \\frac{${r*r}}{${R*R}} = \\mathbf{${state.resultVal.toFixed(3)}\\text{ cm}}
+                \\end{aligned}`;
+
+            } else if (currentMode === 'sphere') {
+                const r_s = dim;
+                const r_s_cubed = Math.pow(r_s, 3);
+                const vSpherePiFraction = (4/3) * r_s_cubed;
+                const vWaterPi = R * R * H;
+                const H_new = H + (vSpherePiFraction / (R*R));
+                const H_after_drop = Math.min(H_new, TANK_HEIGHT);
+
+                step1Latex = `\\begin{aligned}
+                    V_{\\text{water}} &= \\pi \\times R^2 \\times H = \\pi \\times ${R}^2 \\times ${H} \\\\
+                    &= ${vWaterPi}\\pi\\text{ cm}^3 \\approx ${(vWaterPi*Math.PI).toFixed(2)}\\text{ cm}^3 \\\\
+                    V_{\\text{sphere}} &= \\frac{4}{3} \\pi r_s^3 = \\frac{4}{3} \\pi \\times ${r_s}^3 \\\\
+                    &= \\frac{${(4*r_s_cubed).toFixed(1)}}{3} \\pi\\text{ cm}^3 \\approx ${state.vObj.toFixed(2)}\\text{ cm}^3
+                \\end{aligned}`;
+
+                if (H_new > TANK_HEIGHT) {
+                    step2Latex = `\\begin{aligned}
+                        \\text{投入後理想水位：} H_{\\text{ideal}} &= H + \\frac{V_{\\text{sphere}}}{\\pi R^2} \\\\
+                        &= ${H} + \\frac{${vSpherePiFraction.toFixed(2)}\\pi}{${R*R}\\pi} = ${H_new.toFixed(3)}\\text{ cm} \\\\
+                        \\text{⚠️ 因 } H_{\\text{ideal}} > H_{\\text{tank}} & (25\\text{ cm})\\text{，水漫出！} \\\\
+                        \\text{實際最終水位 } H_{\\text{final}} &= H_{\\text{tank}} = \\mathbf{25.00\\text{ cm}}
+                    \\end{aligned}`;
+
+                    resultLatex = `\\begin{aligned}
+                        \\Delta h &= H_{\\text{final}} - H = 25 - ${H} = \\mathbf{${(25-H).toFixed(2)}\\text{ cm}} \\\\
+                        V_{\\text{overflow}} &= V_{\\text{water}} + V_{\\text{sphere}} - V_{\\text{缸內總容量}} \\\\
+                        &= ${vWaterPi}\\pi + ${vSpherePiFraction.toFixed(2)}\\pi - (${(R*R*25)}\\pi) \\\\
+                        &= \\mathbf{${state.vOverflow.toFixed(2)}\\text{ cm}^3}
+                    \\end{aligned}`;
+                } else {
+                    step2Latex = `\\begin{aligned}
+                        \\text{投入後新水位 } H_2 &\\text{ 為：} \\\\
+                        \\pi \\times R^2 \\times H_2 &= V_{\\text{water}} + V_{\\text{sphere}} \\\\
+                        \\pi \\times ${R}^2 \\times H_2 &= ${vWaterPi}\\pi + ${vSpherePiFraction.toFixed(2)}\\pi \\\\
+                        ${R*R} \\times H_2 &= ${(vWaterPi + vSpherePiFraction).toFixed(2)} \\\\
+                        H_2 &= ${(vWaterPi + vSpherePiFraction).toFixed(2)} / ${R*R} = \\mathbf{${H_after_drop.toFixed(3)}\\text{ cm}}
+                    \\end{aligned}`;
+
+                    resultLatex = `\\begin{aligned}
+                        \\Delta h &= H_2 - H \\\\
+                        &= ${H_after_drop.toFixed(3)} - ${H} = \\mathbf{${(H_after_drop - H).toFixed(3)}\\text{ cm}} \\\\
+                        \\text{★ 比例秒殺法：} \\Delta h &= \\frac{V_{\\text{sphere}}}{\\pi R^2} = \\frac{4 r_s^3}{3 R^2} \\\\
+                        &= \\frac{4 \\times ${r_s}^3}{3 \\times ${R}^2} = \\frac{${4*r_s_cubed}}{300} = \\mathbf{${(H_after_drop - H).toFixed(3)}\\text{ cm}}
+                    \\end{aligned}`;
+                }
+
+            } else if (currentMode === 'cube') {
+                const a = dim;
+                const vCube = Math.pow(a, 3);
+                const vWaterPi = R * R * H;
+                const H_new = H + (vCube / (Math.PI * R*R));
+                const H_after_drop = Math.min(H_new, TANK_HEIGHT);
+
+                step1Latex = `\\begin{aligned}
+                    V_{\\text{water}} &= \\pi \\times R^2 \\times H = \\pi \\times ${R}^2 \\times ${H} \\\\
+                    &= ${vWaterPi}\\pi\\text{ cm}^3 \\approx ${(vWaterPi*Math.PI).toFixed(2)}\\text{ cm}^3 \\\\
+                    V_{\\text{cube}} &= a^3 = ${a}^3 = \\mathbf{${vCube}\\text{ cm}^3}
+                \\end{aligned}`;
+
+                if (H_new > TANK_HEIGHT) {
+                    step2Latex = `\\begin{aligned}
+                        \\text{投入後理想水位：} H_{\\text{ideal}} &= H + \\frac{V_{\\text{cube}}}{\\pi R^2} \\\\
+                        &= ${H} + \\frac{${vCube}}{\\pi \\times ${R}^2} = ${H_new.toFixed(3)}\\text{ cm} \\\\
+                        \\text{⚠️ 因 } H_{\\text{ideal}} > H_{\\text{tank}} & (25\\text{ cm})\\text{，水漫出！} \\\\
+                        \\text{實際最終水位 } H_{\\text{final}} &= H_{\\text{tank}} = \\mathbf{25.00\\text{ cm}}
+                    \\end{aligned}`;
+
+                    resultLatex = `\\begin{aligned}
+                        \\Delta h &= H_{\\text{final}} - H = 25 - ${H} = \\mathbf{${(25-H).toFixed(2)}\\text{ cm}} \\\\
+                        V_{\\text{overflow}} &= V_{\\text{water}} + V_{\\text{cube}} - V_{\\text{缸內總容量}} \\\\
+                        &= ${(vWaterPi*Math.PI).toFixed(2)} + ${vCube} - ${(R*R*Math.PI*25).toFixed(2)} \\\\
+                        &= \\mathbf{${state.vOverflow.toFixed(2)}\\text{ cm}^3}
+                    \\end{aligned}`;
+                } else {
+                    step2Latex = `\\begin{aligned}
+                        \\text{投入後新水位 } H_2 &\\text{ 為：} \\\\
+                        \\pi \\times R^2 \\times H_2 &= V_{\\text{water}} + V_{\\text{cube}} \\\\
+                        \\pi \\times ${R}^2 \\times H_2 &= ${(vWaterPi*Math.PI).toFixed(2)} + ${vCube} \\\\
+                        H_2 &= H + \\frac{V_{\\text{cube}}}{\\pi R^2} = ${H} + \\frac{${vCube}}{${(R*R*Math.PI).toFixed(2)}} \\\\
+                        H_2 &= ${H} + ${((vCube)/(R*R*Math.PI)).toFixed(3)} = \\mathbf{${H_after_drop.toFixed(3)}\\text{ cm}}
+                    \\end{aligned}`;
+
+                    resultLatex = `\\begin{aligned}
+                        \\Delta h &= H_2 - H = \\frac{a^3}{\\pi R^2} \\\\
+                        &= \\frac{${vCube}}{\\pi \\times ${R}^2} = \\mathbf{${(H_after_drop - H).toFixed(3)}\\text{ cm}}
+                    \\end{aligned}`;
+                }
+            }
+
+            // Render equations to divs
+            katex.render(step1Latex, document.getElementById('katex-step1'), { displayMode: true, throwOnError: false });
+            katex.render(step2Latex, document.getElementById('katex-step2'), { displayMode: true, throwOnError: false });
+            katex.render(resultLatex, document.getElementById('katex-result'), { displayMode: true, throwOnError: false });
+        }
+
+        // -------------------------------------------------------------
+        // SVG ANNOTATIONS (2D OVER-PROJECTION ON 3D SCREEN)
+        // -------------------------------------------------------------
+        function drawAnnotations() {
+            // Clear SVG first
+            elSvg.innerHTML = '';
+            if (!showLabels) return;
+
+            const width = elContainer.clientWidth;
+            const height = elContainer.clientHeight || 450;
+            const halfW = width / 2;
+            const halfH = height / 2;
+
+            const projectPoint = (vector3) => {
+                const p = vector3.clone();
+                p.project(camera);
+                return {
+                    x: (p.x * halfW) + halfW,
+                    y: -(p.y * halfH) + halfH,
+                    z: p.z
+                };
+            };
+
+            const state = calculateState();
+            const R = state.R;
+            const dim = state.dim;
+            // Get exact visual water height (handles animation & static states perfectly)
+            const visualH = waterMesh ? (waterMesh.scale.y + (extraWaterMesh && extraWaterMesh.visible ? extraWaterMesh.scale.y : 0)) : state.curH;
+            const waterSurfaceY = -10.0 + visualH;
+
+            // Project markers
+            const pBottom = projectPoint(markers.tankBottom);
+            const pTop = projectPoint(markers.tankTop);
+            
+            // Dynamic edges based on true 3D coordinates (perfect perspective alignment)
+            const pWaterLeft3D = new THREE.Vector3(-R, waterSurfaceY, 0);
+            const pWaterRight3D = new THREE.Vector3(R, waterSurfaceY, 0);
+            const pWaterLeft = projectPoint(pWaterLeft3D);
+            const pWaterRight = projectPoint(pWaterRight3D);
+
+            const pObjCenter = projectPoint(markers.objectCenter);
+            const pObjEdge = projectPoint(markers.objectEdge);
+
+            // Helper to draw SVG lines
+            const drawLine = (x1, y1, x2, y2, color, strokeWidth = 1.5, dash = null) => {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.setAttribute('stroke', color);
+                line.setAttribute('stroke-width', strokeWidth);
+                if (dash) line.setAttribute('stroke-dasharray', dash);
+                elSvg.appendChild(line);
+            };
+
+            // Helper to draw SVG labels
+            const drawLabel = (x, y, text, color, bgColor = 'rgba(15,23,42,0.8)', size = '11px') => {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                
+                // background rect
+                const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                r.setAttribute('fill', bgColor);
+                r.setAttribute('rx', '4');
+                r.setAttribute('ry', '4');
+                
+                const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                t.setAttribute('fill', color);
+                t.setAttribute('font-size', size);
+                t.setAttribute('font-weight', 'bold');
+                t.setAttribute('font-family', 'Fira Code, monospace');
+                t.setAttribute('text-anchor', 'middle');
+                t.setAttribute('alignment-baseline', 'middle');
+                t.textContent = text;
+                
+                g.appendChild(r);
+                g.appendChild(t);
+                elSvg.appendChild(g);
+
+                // Autoscale rect according to text width after insertion
+                const bbox = t.getBBox();
+                r.setAttribute('x', bbox.x - 5);
+                r.setAttribute('y', bbox.y - 3);
+                r.setAttribute('width', bbox.width + 10);
+                r.setAttribute('height', bbox.height + 6);
+                t.setAttribute('x', x);
+                t.setAttribute('y', y);
+                r.setAttribute('x', x - (bbox.width + 10) / 2);
+                r.setAttribute('y', y - (bbox.height + 6) / 2);
+            };
+
+            // Don't draw labels if points are offscreen/behind camera
+            if (pBottom.z > 1 || pTop.z > 1 || pWaterLeft.z > 1 || pWaterRight.z > 1) return;
+
+            // 1. Tank Radius Label (R) - Always drawn to the right-hand edge on screen
+            const pEdge3D = new THREE.Vector3(R, -10, 0);
+            const pEdgeAlt3D = new THREE.Vector3(-R, -10, 0);
+            const pEdgeProj = projectPoint(pEdge3D);
+            const pEdgeAltProj = projectPoint(pEdgeAlt3D);
+            const pRightEdge = pEdgeProj.x > pEdgeAltProj.x ? pEdgeProj : pEdgeAltProj;
+
+            drawLine(pBottom.x, pBottom.y, pRightEdge.x, pRightEdge.y, '#22d3ee', 1.5, '3,3');
+            drawLabel((pBottom.x + pRightEdge.x) / 2, (pBottom.y + pRightEdge.y) / 2 - 10, `R = ${paramTankR.toFixed(1)}cm`, '#22d3ee');
+
+            // 2. Tank Height line on screen's left side dynamically
+            const pTankTopLeft3D = new THREE.Vector3(-R, 15, 0);
+            const pTankBottomLeft3D = new THREE.Vector3(-R, -10, 0);
+            const pTankTopRight3D = new THREE.Vector3(R, 15, 0);
+            const pTankBottomRight3D = new THREE.Vector3(R, -10, 0);
+
+            const pTopL = projectPoint(pTankTopLeft3D);
+            const pBotL = projectPoint(pTankBottomLeft3D);
+            const pTopR = projectPoint(pTankTopRight3D);
+            const pBotR = projectPoint(pTankBottomRight3D);
+
+            const drawLeftLine = pTopL.x < pTopR.x;
+            const pTopLine = drawLeftLine ? pTopL : pTopR;
+            const pBotLine = drawLeftLine ? pBotL : pBotR;
+
+            drawLine(pBotLine.x, pBotLine.y, pTopLine.x, pTopLine.y, 'rgba(148,163,184,0.3)', 1, '4,4');
+            
+            // 3. Water Level Line and Label (aligned with visual edges)
+            // Determine if there is extra/displaced water to draw two distinct level markers
+            let baseWaterHeight = paramWaterH;
+            let extraWaterHeight = 0;
+
+            if (currentMode === 'rod') {
+                const r = dim;
+                const H_out = paramWaterH * (1 - (r * r) / (R * R));
+                baseWaterHeight = H_out;
+                extraWaterHeight = isObjectIn ? Math.max(visualH - H_out, 0) : 0;
+            } else {
+                baseWaterHeight = paramWaterH;
+                extraWaterHeight = isObjectIn ? Math.max(visualH - paramWaterH, 0) : 0;
+            }
+
+            const pLabelX = Math.max(pWaterLeft.x, pWaterRight.x);
+            const pLabelY = pLabelX === pWaterLeft.x ? pWaterLeft.y : pWaterRight.y;
+
+            if (extraWaterHeight > 0) {
+                // Drawing 2 levels!
+                const baseSurfaceY = -10.0 + baseWaterHeight;
+                const pBaseLeft = projectPoint(new THREE.Vector3(-R, baseSurfaceY, 0));
+                const pBaseRight = projectPoint(new THREE.Vector3(R, baseSurfaceY, 0));
+
+                // A. Base Water Level (Original, darker blue-cyan dash line)
+                drawLine(pBaseLeft.x, pBaseLeft.y, pBaseRight.x, pBaseRight.y, '#0284c7', 1.5, '4,3');
+                
+                // Base label - drawn on the LEFT side of the tank to completely avoid overlap
+                const pBaseLabelX = Math.min(pBaseLeft.x, pBaseRight.x);
+                const pBaseLabelY = pBaseLabelX === pBaseLeft.x ? pBaseLeft.y : pBaseRight.y;
+                drawLabel(pBaseLabelX - 45, pBaseLabelY, `H_orig = ${baseWaterHeight.toFixed(1)}cm`, '#38bdf8', 'rgba(15, 23, 42, 0.9)');
+
+                // B. Top/Final Water Level (Vivid glowing green solid line)
+                drawLine(pWaterLeft.x, pWaterLeft.y, pWaterRight.x, pWaterRight.y, '#34d399', 2);
+                
+                // Final label - drawn on the RIGHT side of the tank
+                drawLabel(pLabelX + 45, pLabelY, `H_final = ${visualH.toFixed(2)}cm`, '#34d399', 'rgba(6, 78, 59, 0.9)');
+
+                // C. Connecting Dimension bracket to visually emphasize the delta change Δh!
+                // Offset the bracket further to the right to prevent overlapping with H_final
+                const bracketOffset = 115;
+                const bX = pLabelX + bracketOffset;
+                const pRightBaseY = pBaseLabelX === pBaseLeft.x ? pBaseRight.y : pBaseLeft.y; // Y coordinate of base level on the right edge
+                
+                // Draw elegant dimension brace / ticks
+                drawLine(bX, pRightBaseY, bX, pLabelY, '#a78bfa', 1.5); // vertical line
+                drawLine(bX - 5, pRightBaseY, bX + 5, pRightBaseY, '#a78bfa', 1.5); // bottom tick
+                drawLine(bX - 5, pLabelY, bX + 5, pLabelY, '#a78bfa', 1.5); // top tick
+                
+                // Draw Δh label in the middle of bracket
+                const midY = (pRightBaseY + pLabelY) / 2;
+                drawLabel(bX + 22, midY, `Δh = ${(visualH - baseWaterHeight).toFixed(2)}cm`, '#a78bfa', 'rgba(46, 16, 101, 0.95)');
+
+            } else {
+                // Single Level (Normal mode or Rod mode)
+                drawLine(pWaterLeft.x, pWaterLeft.y, pWaterRight.x, pWaterRight.y, '#34d399', 1.5);
+                drawLabel(pLabelX + 35, pLabelY, `H = ${visualH.toFixed(2)}cm`, '#34d399', 'rgba(6, 78, 59, 0.9)');
+            }
+
+            // 4. Object Dimensions (r / d / a)
+            if (pObjCenter.z <= 1) {
+                let objColor = '#a78bfa'; // violet for cube
+                let dimTxt = '';
+                
+                if (currentMode === 'rod') {
+                    objColor = '#38bdf8'; // High contrast sky blue
+                    drawLine(pObjCenter.x, pObjCenter.y, pObjEdge.x, pObjEdge.y, objColor, 1.5);
+                    dimTxt = `r = ${paramObjDim.toFixed(1)}cm`;
+                    drawLabel((pObjCenter.x + pObjEdge.x) / 2, (pObjCenter.y + pObjEdge.y) / 2 - 10, dimTxt, objColor);
+                } else if (currentMode === 'sphere') {
+                    objColor = '#f97316';
+                    drawLine(pObjCenter.x, pObjCenter.y, pObjEdge.x, pObjEdge.y, objColor, 1.5);
+                    dimTxt = `r_s = ${paramObjDim.toFixed(1)}cm`;
+                    drawLabel((pObjCenter.x + pObjEdge.x) / 2, (pObjCenter.y + pObjEdge.y) / 2 - 10, dimTxt, objColor);
+                } else if (currentMode === 'cube') {
+                    objColor = '#a78bfa';
+                    drawLine(pObjCenter.x - (pObjEdge.x - pObjCenter.x), pObjCenter.y, pObjEdge.x, pObjEdge.y, objColor, 1.5);
+                    dimTxt = `a = ${paramObjDim.toFixed(1)}cm`;
+                    drawLabel(pObjCenter.x, pObjCenter.y - 12, dimTxt, objColor);
+                }
+            }
+        }
+
+        // -------------------------------------------------------------
+        // ANIMATION & PHYSICS SIMULATION TRIGGERS
+        // -------------------------------------------------------------
+        function triggerActionAnimation() {
+            if (isAnimating) return;
+            isAnimating = true;
+            
+            const nextState = !isObjectIn;
+            const state = calculateState();
+            const waterHeightIn = currentMode === 'rod' ? paramWaterH : (state.vWater + state.vObj) / (Math.PI * paramTankR * paramTankR);
+            const waterHeightOut = currentMode === 'rod' ? (state.vWater) / (Math.PI * paramTankR * paramTankR) : paramWaterH;
+            
+            // Clamp heights to tank top limit
+            const clampedWaterHIn = Math.min(waterHeightIn, TANK_HEIGHT);
+            const clampedWaterHOut = Math.min(waterHeightOut, TANK_HEIGHT);
+
+            const rScale = paramTankR / 10.0;
+            const duration = 1.2; // seconds
+
+            if (currentMode === 'rod') {
+                if (nextState) { // Rod inserting
+                    // 1. Move rod mesh from sky to bottom
+                    gsap.to(rodMesh.position, {
+                        y: 2.5,
+                        duration: duration,
+                        ease: "power2.inOut",
+                        onUpdate: () => {
+                            // Rise water level proportionally to immersion depth
+                            const progress = (21.0 - rodMesh.position.y) / (21.0 - 2.5);
+                            const currentWaterH = clampedWaterHOut + (clampedWaterHIn - clampedWaterHOut) * progress;
+                            
+                            const baseH = Math.min(clampedWaterHOut, currentWaterH);
+                            const extraH = Math.max(currentWaterH - clampedWaterHOut, 0);
+
+                            waterMesh.scale.y = Math.max(baseH, 0.01);
+                            waterMesh.position.y = -10.0 + baseH / 2;
+                            wireframeWaterMesh.scale.y = Math.max(baseH, 0.01);
+                            wireframeWaterMesh.position.y = -10.0 + baseH / 2;
+
+                            if (extraH > 0) {
+                                extraWaterMesh.visible = true;
+                                wireframeExtraWaterMesh.visible = true;
+                                extraWaterMesh.scale.y = extraH;
+                                extraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                                wireframeExtraWaterMesh.scale.y = extraH;
+                                wireframeExtraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                            } else {
+                                extraWaterMesh.visible = false;
+                                wireframeExtraWaterMesh.visible = false;
+                            }
+                        },
+                        onComplete: () => {
+                            triggerSplash(0, clampedWaterHIn - 10.0);
+                            isObjectIn = true;
+                            isAnimating = false;
+                            updateActionButtons();
+                            updateSimulation();
+                        }
+                    });
+                } else { // Rod removing
+                    // 1. Pull rod mesh from bottom to sky
+                    gsap.to(rodMesh.position, {
+                        y: 21.0,
+                        duration: duration,
+                        ease: "power2.inOut",
+                        onUpdate: () => {
+                            // Drop water level proportionally
+                            const progress = (rodMesh.position.y - 2.5) / (21.0 - 2.5);
+                            const currentWaterH = clampedWaterHIn - (clampedWaterHIn - clampedWaterHOut) * progress;
+                            
+                            const baseH = Math.min(clampedWaterHOut, currentWaterH);
+                            const extraH = Math.max(currentWaterH - clampedWaterHOut, 0);
+
+                            waterMesh.scale.y = Math.max(baseH, 0.01);
+                            waterMesh.position.y = -10.0 + baseH / 2;
+                            wireframeWaterMesh.scale.y = Math.max(baseH, 0.01);
+                            wireframeWaterMesh.position.y = -10.0 + baseH / 2;
+
+                            if (extraH > 0) {
+                                extraWaterMesh.visible = true;
+                                wireframeExtraWaterMesh.visible = true;
+                                extraWaterMesh.scale.y = extraH;
+                                extraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                                wireframeExtraWaterMesh.scale.y = extraH;
+                                wireframeExtraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                            } else {
+                                extraWaterMesh.visible = false;
+                                wireframeExtraWaterMesh.visible = false;
+                            }
+                        },
+                        onComplete: () => {
+                            triggerSplash(0, clampedWaterHOut - 10.0);
+                            isObjectIn = false;
+                            isAnimating = false;
+                            updateActionButtons();
+                            updateSimulation();
+                        }
+                    });
+                }
+            } else if (currentMode === 'sphere') {
+                const targetYIn = -10.0 + paramObjDim;
+                if (nextState) { // Sphere dropping in
+                    // Gravity acceleration feel
+                    gsap.to(sphereMesh.position, {
+                        y: targetYIn,
+                        duration: duration,
+                        ease: "bounce.out",
+                        onUpdate: () => {
+                            // Scale water as it sinks under surface
+                            const surfY = -10.0 + clampedWaterHOut;
+                            let currentWaterH = clampedWaterHOut;
+                            if (sphereMesh.position.y < surfY) {
+                                const overlap = (surfY - sphereMesh.position.y) / (surfY - targetYIn);
+                                currentWaterH = clampedWaterHOut + (clampedWaterHIn - clampedWaterHOut) * Math.min(overlap, 1.0);
+                            }
+                            
+                            const baseH = Math.min(clampedWaterHOut, currentWaterH);
+                            const extraH = Math.max(currentWaterH - clampedWaterHOut, 0);
+
+                            waterMesh.scale.y = Math.max(baseH, 0.01);
+                            waterMesh.position.y = -10.0 + baseH / 2;
+                            wireframeWaterMesh.scale.y = Math.max(baseH, 0.01);
+                            wireframeWaterMesh.position.y = -10.0 + baseH / 2;
+
+                            if (extraH > 0) {
+                                extraWaterMesh.visible = true;
+                                wireframeExtraWaterMesh.visible = true;
+                                extraWaterMesh.scale.y = extraH;
+                                extraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                                wireframeExtraWaterMesh.scale.y = extraH;
+                                wireframeExtraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                            } else {
+                                extraWaterMesh.visible = false;
+                                wireframeExtraWaterMesh.visible = false;
+                            }
+                        },
+                        onComplete: () => {
+                            triggerSplash(0, clampedWaterHIn - 10.0);
+                            isObjectIn = true;
+                            isAnimating = false;
+                            updateActionButtons();
+                            updateSimulation();
+                        }
+                    });
+                } else { // Sphere lifting out
+                    gsap.to(sphereMesh.position, {
+                        y: 22.0,
+                        duration: duration,
+                        ease: "power1.out",
+                        onUpdate: () => {
+                            const surfY = -10.0 + clampedWaterHIn;
+                            let currentWaterH = clampedWaterHIn;
+                            if (sphereMesh.position.y > targetYIn) {
+                                const progress = (sphereMesh.position.y - targetYIn) / (surfY - targetYIn);
+                                currentWaterH = clampedWaterHIn - (clampedWaterHIn - clampedWaterHOut) * Math.min(progress, 1.0);
+                            }
+                            
+                            const baseH = Math.min(clampedWaterHOut, currentWaterH);
+                            const extraH = Math.max(currentWaterH - clampedWaterHOut, 0);
+
+                            waterMesh.scale.y = Math.max(baseH, 0.01);
+                            waterMesh.position.y = -10.0 + baseH / 2;
+                            wireframeWaterMesh.scale.y = Math.max(baseH, 0.01);
+                            wireframeWaterMesh.position.y = -10.0 + baseH / 2;
+
+                            if (extraH > 0) {
+                                extraWaterMesh.visible = true;
+                                wireframeExtraWaterMesh.visible = true;
+                                extraWaterMesh.scale.y = extraH;
+                                extraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                                wireframeExtraWaterMesh.scale.y = extraH;
+                                wireframeExtraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                            } else {
+                                extraWaterMesh.visible = false;
+                                wireframeExtraWaterMesh.visible = false;
+                            }
+                        },
+                        onComplete: () => {
+                            triggerSplash(0, clampedWaterHOut - 10.0);
+                            isObjectIn = false;
+                            isAnimating = false;
+                            updateActionButtons();
+                            updateSimulation();
+                        }
+                    });
+                }
+            } else if (currentMode === 'cube') {
+                const targetYIn = -10.0 + paramObjDim / 2;
+                if (nextState) { // Cube dropping in
+                    gsap.to(cubeMesh.position, {
+                        y: targetYIn,
+                        duration: duration,
+                        ease: "bounce.out",
+                        onUpdate: () => {
+                            const surfY = -10.0 + clampedWaterHOut;
+                            let currentWaterH = clampedWaterHOut;
+                            if (cubeMesh.position.y < surfY) {
+                                const overlap = (surfY - cubeMesh.position.y) / (surfY - targetYIn);
+                                currentWaterH = clampedWaterHOut + (clampedWaterHIn - clampedWaterHOut) * Math.min(overlap, 1.0);
+                            }
+                            
+                            const baseH = Math.min(clampedWaterHOut, currentWaterH);
+                            const extraH = Math.max(currentWaterH - clampedWaterHOut, 0);
+
+                            waterMesh.scale.y = Math.max(baseH, 0.01);
+                            waterMesh.position.y = -10.0 + baseH / 2;
+                            wireframeWaterMesh.scale.y = Math.max(baseH, 0.01);
+                            wireframeWaterMesh.position.y = -10.0 + baseH / 2;
+
+                            if (extraH > 0) {
+                                extraWaterMesh.visible = true;
+                                wireframeExtraWaterMesh.visible = true;
+                                extraWaterMesh.scale.y = extraH;
+                                extraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                                wireframeExtraWaterMesh.scale.y = extraH;
+                                wireframeExtraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                            } else {
+                                extraWaterMesh.visible = false;
+                                wireframeExtraWaterMesh.visible = false;
+                            }
+                        },
+                        onComplete: () => {
+                            triggerSplash(0, clampedWaterHIn - 10.0);
+                            isObjectIn = true;
+                            isAnimating = false;
+                            updateActionButtons();
+                            updateSimulation();
+                        }
+                    });
+                } else { // Cube lifting out
+                    gsap.to(cubeMesh.position, {
+                        y: 22.0,
+                        duration: duration,
+                        ease: "power1.out",
+                        onUpdate: () => {
+                            const surfY = -10.0 + clampedWaterHIn;
+                            let currentWaterH = clampedWaterHIn;
+                            if (cubeMesh.position.y > targetYIn) {
+                                const progress = (cubeMesh.position.y - targetYIn) / (surfY - targetYIn);
+                                currentWaterH = clampedWaterHIn - (clampedWaterHIn - clampedWaterHOut) * Math.min(progress, 1.0);
+                            }
+                            
+                            const baseH = Math.min(clampedWaterHOut, currentWaterH);
+                            const extraH = Math.max(currentWaterH - clampedWaterHOut, 0);
+
+                            waterMesh.scale.y = Math.max(baseH, 0.01);
+                            waterMesh.position.y = -10.0 + baseH / 2;
+                            wireframeWaterMesh.scale.y = Math.max(baseH, 0.01);
+                            wireframeWaterMesh.position.y = -10.0 + baseH / 2;
+
+                            if (extraH > 0) {
+                                extraWaterMesh.visible = true;
+                                wireframeExtraWaterMesh.visible = true;
+                                extraWaterMesh.scale.y = extraH;
+                                extraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                                wireframeExtraWaterMesh.scale.y = extraH;
+                                wireframeExtraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                            } else {
+                                extraWaterMesh.visible = false;
+                                wireframeExtraWaterMesh.visible = false;
+                            }
+                        },
+                        onComplete: () => {
+                            triggerSplash(0, clampedWaterHOut - 10.0);
+                            isObjectIn = false;
+                            isAnimating = false;
+                            updateActionButtons();
+                            updateSimulation();
+                        }
+                    });
+                }
+            }
+        }
+
+        // Particle splash triggers
+        function triggerSplash(centerX, centerY) {
+            particlesActive = true;
+            const positions = particleGeometry.attributes.position.array;
+            particleVelocities = [];
+
+            // Activate ripple
+            rippleMesh.position.set(centerX, centerY + 0.1, 0);
+            rippleMesh.scale.set(0.1, 0.1, 0.1);
+            rippleMesh.material.opacity = 0.8;
+
+            gsap.to(rippleMesh.scale, {
+                x: paramTankR / 4.0,
+                y: paramTankR / 4.0,
+                z: paramTankR / 4.0,
+                duration: 1.0,
+                ease: "power1.out"
+            });
+            gsap.to(rippleMesh.material, {
+                opacity: 0,
+                duration: 1.0,
+                ease: "power1.out"
+            });
+
+            // Initialize splash particles
+            for (let i = 0; i < splashCount; i++) {
+                const idx = i * 3;
+                positions[idx] = centerX + (Math.random() - 0.5) * paramObjDim;
+                positions[idx + 1] = centerY;
+                positions[idx + 2] = (Math.random() - 0.5) * paramObjDim;
+
+                // Speed vectors: upwards cylinder blast
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 0.1 + Math.random() * 0.15;
+                particleVelocities.push({
+                    x: Math.cos(angle) * speed * 0.4,
+                    y: 0.15 + Math.random() * 0.25, // Upwards blast
+                    z: Math.sin(angle) * speed * 0.4
+                });
+            }
+            particleGeometry.attributes.position.needsUpdate = true;
+        }
+
+        // Particle dynamics solver
+        function updateParticles() {
+            if (!particlesActive) return;
+
+            const positions = particleGeometry.attributes.position.array;
+            let stillActive = false;
+
+            for (let i = 0; i < splashCount; i++) {
+                const idx = i * 3;
+                if (positions[idx + 1] > -10.0) { // Still above bottom rim
+                    stillActive = true;
+                    // Apply velocity
+                    positions[idx] += particleVelocities[i].x;
+                    positions[idx + 1] += particleVelocities[i].y;
+                    positions[idx + 2] += particleVelocities[i].z;
+
+                    // Apply gravity
+                    particleVelocities[i].y -= 0.012;
+                } else {
+                    positions[idx + 1] = -100; // Bury dead ones
+                }
+            }
+
+            particleGeometry.attributes.position.needsUpdate = true;
+            if (!stillActive) particlesActive = false;
+        }
+
+        // -------------------------------------------------------------
+        // UI & EVENT BINDINGS
+        // -------------------------------------------------------------
+        function setupEventListeners() {
+            // Mode buttons
+            document.getElementById('mode-rod').addEventListener('click', () => switchMode('rod'));
+            document.getElementById('mode-sphere').addEventListener('click', () => switchMode('sphere'));
+            document.getElementById('mode-cube').addEventListener('click', () => switchMode('cube'));
+
+            // Param sliders
+            const sliderTankR = document.getElementById('param-tank-r');
+            const sliderWaterH = document.getElementById('param-water-h');
+            const sliderObjDim = document.getElementById('param-obj-dim');
+
+            sliderTankR.addEventListener('input', (e) => {
+                paramTankR = parseFloat(e.target.value);
+                document.getElementById('val-tank-r-lbl').innerText = paramTankR.toFixed(1) + ' cm';
+                updateSimulation();
+            });
+
+            sliderWaterH.addEventListener('input', (e) => {
+                paramWaterH = parseFloat(e.target.value);
+                document.getElementById('val-water-h-lbl').innerText = paramWaterH.toFixed(1) + ' cm';
+                updateSimulation();
+            });
+
+            sliderObjDim.addEventListener('input', (e) => {
+                paramObjDim = parseFloat(e.target.value);
+                document.getElementById('val-obj-dim-lbl').innerText = paramObjDim.toFixed(1) + ' cm';
+                updateSimulation();
+            });
+
+            // Action button
+            document.getElementById('btn-action').addEventListener('click', triggerActionAnimation);
+
+            // Reset button
+            document.getElementById('btn-reset').addEventListener('click', resetParameters);
+
+            // Layer/View controls
+            document.getElementById('btn-toggle-wireframe').addEventListener('click', () => {
+                wireframeMode = !wireframeMode;
+                const icon = document.getElementById('wireframe-icon');
+                if (wireframeMode) {
+                    icon.className = 'fa-solid fa-square-poll-vertical text-brand-400';
+                    // Enable transparent line frame
+                    tankMesh.material.wireframe = true;
+                    waterMesh.material.wireframe = true;
+                    if (extraWaterMesh) extraWaterMesh.material.wireframe = true;
+                } else {
+                    icon.className = 'fa-solid fa-border-none text-brand-400';
+                    tankMesh.material.wireframe = false;
+                    waterMesh.material.wireframe = false;
+                    if (extraWaterMesh) extraWaterMesh.material.wireframe = false;
+                }
+            });
+
+            document.getElementById('btn-toggle-labels').addEventListener('click', () => {
+                showLabels = !showLabels;
+                const icon = document.getElementById('labels-icon');
+                if (showLabels) {
+                    icon.className = 'fa-solid fa-ruler-combined text-brand-400';
+                } else {
+                    icon.className = 'fa-solid fa-ruler text-slate-500';
+                    elSvg.innerHTML = '';
+                }
+            });
+
+            const forceBtn = document.getElementById('btn-toggle-force');
+            forceBtn.addEventListener('click', () => {
+                showForceVectors = !showForceVectors;
+                if (showForceVectors) {
+                    forceBtn.classList.add('bg-amber-500/20', 'text-white');
+                } else {
+                    forceBtn.classList.remove('bg-amber-500/20', 'text-white');
+                    forceArrowGravity.visible = false;
+                    forceArrowBuoyancy.visible = false;
+                }
+                updateSimulation();
+            });
+
+            // Help Modal handlers
+            document.getElementById('btn-intro').addEventListener('click', () => toggleModal(true));
+            document.getElementById('btn-close-modal').addEventListener('click', () => toggleModal(false));
+            document.getElementById('btn-start-exp').addEventListener('click', () => toggleModal(false));
+
+            // Theme Toggle
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            themeToggleBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('light');
+                document.documentElement.classList.toggle('dark');
+                if (document.documentElement.classList.contains('light')) {
+                    renderer.setClearColor(0xf1f5f9, 1);
+                    scene.fog.color.setHex(0xf1f5f9);
+                } else {
+                    renderer.setClearColor(0x0b1329, 1);
+                    scene.fog.color.setHex(0x0b1329);
+                }
+            });
+
+            // Resize observer for perfect alignment of canvas & SVG
+            const resizeObserver = new ResizeObserver(() => {
+                onWindowResize();
+            });
+            resizeObserver.observe(elContainer);
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('intro-modal');
+            const content = document.getElementById('intro-modal-content');
+            if (show) {
+                modal.classList.remove('pointer-events-none', 'opacity-0');
+                modal.classList.add('opacity-100');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            } else {
+                modal.classList.add('pointer-events-none', 'opacity-0');
+                modal.classList.remove('opacity-100');
+                content.classList.add('scale-95');
+                content.classList.remove('scale-100');
+            }
+        }
+
+        function switchMode(mode) {
+            if (isAnimating) return;
+            currentMode = mode;
+            isObjectIn = true; // reset placement
+
+            // UI Visual Button Toggles
+            document.getElementById('mode-rod').className = "py-2.5 px-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all duration-300 text-slate-400 hover:text-slate-200 border border-transparent";
+            document.getElementById('mode-sphere').className = "py-2.5 px-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all duration-300 text-slate-400 hover:text-slate-200 border border-transparent";
+            document.getElementById('mode-cube').className = "py-2.5 px-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all duration-300 text-slate-400 hover:text-slate-200 border border-transparent";
+
+            const cardGlow = document.getElementById('card-glow-indicator');
+            const actBtn = document.getElementById('btn-action');
+            const forceWrapper = document.getElementById('btn-toggle-force');
+
+            // Slider configs depending on geometric mode
+            const sliderObjDim = document.getElementById('param-obj-dim');
+            const lblObjDim = document.getElementById('lbl-obj-dim');
+            const symObjDim = document.getElementById('sym-obj-dim');
+            const dotObjColor = document.getElementById('dot-obj-color');
+
+            if (mode === 'rod') {
+                document.getElementById('mode-rod').classList.add('active-btn-rod');
+                cardGlow.className = "absolute top-0 left-0 w-full h-[3px] bg-sky-500 transition-colors duration-300";
+                actBtn.className = "px-5 py-2 rounded-xl text-xs font-bold text-white shadow-md active-btn-rod transition flex items-center gap-1.5";
+                forceWrapper.classList.add('hidden'); // No forces for rod (fits tight to cylinder)
+                
+                // Configure Slider
+                lblObjDim.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-sky-400/30 inline-block border border-sky-400"></span> 圓柱棒半徑 <span class="font-mono font-semibold text-sky-400">r</span>`;
+                sliderObjDim.className = "w-full range-cyan";
+                sliderObjDim.min = "1.0";
+                sliderObjDim.max = "8.0";
+                sliderObjDim.step = "0.1";
+                sliderObjDim.value = "3.0";
+                paramObjDim = 3.0;
+
+                // Sync headers of step formulas
+                document.getElementById('lbl-step1').innerText = "步驟 1: 拔出前的水體積";
+                document.getElementById('lbl-step2').innerText = "步驟 2: 計算拔出後的水位";
+                document.getElementById('lbl-result-title').innerText = "最終結論：水位下降高度 (h)";
+                document.getElementById('lbl-result-badge').innerText = "★ 精簡比例法";
+                document.getElementById('result-box-glow').className = "p-4 bg-brand-950/20 rounded-xl border border-brand-800/40 space-y-3 glow-cyan";
+
+            } else if (mode === 'sphere') {
+                document.getElementById('mode-sphere').classList.add('active-btn-sphere');
+                cardGlow.className = "absolute top-0 left-0 w-full h-[3px] bg-orange-500 transition-colors duration-300";
+                actBtn.className = "px-5 py-2 rounded-xl text-xs font-bold text-white shadow-md active-btn-sphere transition flex items-center gap-1.5";
+                forceWrapper.classList.remove('hidden');
+
+                // Configure Slider
+                lblObjDim.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-orange-400/30 inline-block border border-orange-400"></span> 球體半徑 <span class="font-mono font-semibold text-orange-400">r_s</span>`;
+                sliderObjDim.className = "w-full range-orange";
+                sliderObjDim.min = "1.0";
+                sliderObjDim.max = "8.0";
+                sliderObjDim.step = "0.1";
+                sliderObjDim.value = "4.0";
+                paramObjDim = 4.0;
+
+                document.getElementById('lbl-step1').innerText = "步驟 1: 計算球體與水的體積";
+                document.getElementById('lbl-step2').innerText = "步驟 2: 計算完全沉入後的水位";
+                document.getElementById('lbl-result-title').innerText = "最終結論：水位上升高度 (Δh)";
+                document.getElementById('lbl-result-badge').innerText = "★ 排水比例法";
+                document.getElementById('result-box-glow').className = "p-4 bg-orange-950/20 rounded-xl border border-orange-800/40 space-y-3 glow-orange";
+
+            } else if (mode === 'cube') {
+                document.getElementById('mode-cube').classList.add('active-btn-cube');
+                cardGlow.className = "absolute top-0 left-0 w-full h-[3px] bg-violet-600 transition-colors duration-300";
+                actBtn.className = "px-5 py-2 rounded-xl text-xs font-bold text-white shadow-md active-btn-cube transition flex items-center gap-1.5";
+                forceWrapper.classList.remove('hidden');
+
+                // Configure Slider
+                lblObjDim.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-violet-400/30 inline-block border border-violet-400"></span> 立方體邊長 <span class="font-mono font-semibold text-violet-400">a</span>`;
+                sliderObjDim.className = "w-full range-violet";
+                sliderObjDim.min = "2.0";
+                sliderObjDim.max = "12.0";
+                sliderObjDim.step = "0.2";
+                sliderObjDim.value = "6.0";
+                paramObjDim = 6.0;
+
+                document.getElementById('lbl-step1').innerText = "步驟 1: 計算立方體與水體積";
+                document.getElementById('lbl-step2').innerText = "步驟 2: 計算完全沉入後的水位";
+                document.getElementById('lbl-result-title').innerText = "最終結論：水位上升高度 (Δh)";
+                document.getElementById('lbl-result-badge').innerText = "★ 立方體排水法";
+                document.getElementById('result-box-glow').className = "p-4 bg-violet-950/20 rounded-xl border border-violet-800/40 space-y-3 glow-violet";
+            }
+
+            document.getElementById('val-obj-dim-lbl').innerText = paramObjDim.toFixed(1) + ' cm';
+            updateActionButtons();
+            updateSimulation();
+        }
+
+        function updateActionButtons() {
+            const btnTxt = document.getElementById('btn-action-txt');
+            const btnIcon = document.getElementById('btn-action-icon');
+            const statusTxt = document.getElementById('anim-status-txt');
+            const animIcon = document.getElementById('anim-indicator-icon');
+
+            if (currentMode === 'rod') {
+                animIcon.className = "fa-solid fa-person-running text-sky-400";
+                if (isObjectIn) {
+                    btnTxt.innerText = "拔出圓柱棒";
+                    btnIcon.className = "fa-solid fa-arrow-up-from-bracket";
+                    statusTxt.innerText = "圓柱棒已垂直放入";
+                    statusTxt.className = "font-semibold text-sky-400";
+                } else {
+                    btnTxt.innerText = "放入圓柱棒";
+                    btnIcon.className = "fa-solid fa-arrow-down-to-bracket";
+                    statusTxt.innerText = "圓柱棒已安全拔出";
+                    statusTxt.className = "font-semibold text-slate-400";
+                }
+            } else if (currentMode === 'sphere') {
+                animIcon.className = "fa-solid fa-person-running text-orange-400";
+                if (isObjectIn) {
+                    btnTxt.innerText = "取出球體";
+                    btnIcon.className = "fa-solid fa-circle-arrow-up";
+                    statusTxt.innerText = "球體已沉入底部";
+                    statusTxt.className = "font-semibold text-orange-400";
+                } else {
+                    btnTxt.innerText = "投入球體";
+                    btnIcon.className = "fa-solid fa-circle-arrow-down";
+                    statusTxt.innerText = "球體懸掛在空中";
+                    statusTxt.className = "font-semibold text-slate-400";
+                }
+            } else if (currentMode === 'cube') {
+                animIcon.className = "fa-solid fa-person-running text-violet-400";
+                if (isObjectIn) {
+                    btnTxt.innerText = "取出立方體";
+                    btnIcon.className = "fa-solid fa-square-arrow-up";
+                    statusTxt.innerText = "立方體已沉入底部";
+                    statusTxt.className = "font-semibold text-violet-400";
+                } else {
+                    btnTxt.innerText = "投入立方體";
+                    btnIcon.className = "fa-solid fa-square-arrow-down";
+                    statusTxt.innerText = "立方體懸掛在空中";
+                    statusTxt.className = "font-semibold text-slate-400";
+                }
+            }
+        }
+
+        function resetParameters() {
+            if (isAnimating) return;
+
+            paramTankR = 10.0;
+            paramWaterH = 12.0;
+            
+            document.getElementById('param-tank-r').value = 10.0;
+            document.getElementById('val-tank-r-lbl').innerText = '10.0 cm';
+
+            document.getElementById('param-water-h').value = 12.0;
+            document.getElementById('val-water-h-lbl').innerText = '12.0 cm';
+
+            // Set object defaults
+            if (currentMode === 'rod') {
+                paramObjDim = 3.0;
+                document.getElementById('param-obj-dim').value = 3.0;
+                document.getElementById('val-obj-dim-lbl').innerText = '3.0 cm';
+            } else if (currentMode === 'sphere') {
+                paramObjDim = 4.0;
+                document.getElementById('param-obj-dim').value = 4.0;
+                document.getElementById('val-obj-dim-lbl').innerText = '4.0 cm';
+            } else if (currentMode === 'cube') {
+                paramObjDim = 6.0;
+                document.getElementById('param-obj-dim').value = 6.0;
+                document.getElementById('val-obj-dim-lbl').innerText = '6.0 cm';
+            }
+
+            isObjectIn = true;
+            updateActionButtons();
+            updateSimulation();
+        }
+
+        function onWindowResize() {
+            const width = elContainer.clientWidth;
+            const height = elContainer.clientHeight || 450;
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        // -------------------------------------------------------------
+        // ANIMATION LOOP (TICK FEEDS)
+        // -------------------------------------------------------------
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Orbit controls updating
+            controls.update();
+
+            // Run particles physics
+            updateParticles();
+
+            // Synced mesh tracking during animations
+            if (isAnimating) {
+                const state = calculateState();
+                // Determine animation-driven dimensions
+                let animatingH = 12.0;
+                const waterHeightIn = currentMode === 'rod' ? paramWaterH : (state.vWater + state.vObj) / (Math.PI * paramTankR * paramTankR);
+                const waterHeightOut = currentMode === 'rod' ? (state.vWater) / (Math.PI * paramTankR * paramTankR) : paramWaterH;
+                const clampedWaterHIn = Math.min(waterHeightIn, TANK_HEIGHT);
+                const clampedWaterHOut = Math.min(waterHeightOut, TANK_HEIGHT);
+
+                const rScale = paramTankR / 10.0;
+
+                // Dynamically sync heights based on current visual Y locations
+                if (currentMode === 'rod') {
+                    // Handled inside GSAP's onUpdate
+                } else if (currentMode === 'sphere') {
+                    const targetYIn = -10.0 + paramObjDim;
+                    const surfY = -10.0 + clampedWaterHOut;
+                    if (sphereMesh.position.y < surfY) {
+                        const overlap = (surfY - sphereMesh.position.y) / (surfY - targetYIn);
+                        animatingH = clampedWaterHOut + (clampedWaterHIn - clampedWaterHOut) * Math.min(overlap, 1.0);
+                    } else {
+                        animatingH = clampedWaterHOut;
+                    }
+
+                    // Dynamically split water columns during GSAP transition
+                    const baseH = Math.min(clampedWaterHOut, animatingH);
+                    const extraH = Math.max(animatingH - clampedWaterHOut, 0);
+
+                    waterMesh.scale.y = Math.max(baseH, 0.01);
+                    waterMesh.position.y = -10.0 + baseH / 2;
+                    wireframeWaterMesh.scale.y = Math.max(baseH, 0.01);
+                    wireframeWaterMesh.position.y = -10.0 + baseH / 2;
+
+                    if (extraH > 0) {
+                        extraWaterMesh.visible = true;
+                        wireframeExtraWaterMesh.visible = true;
+                        extraWaterMesh.scale.y = extraH;
+                        extraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                        wireframeExtraWaterMesh.scale.y = extraH;
+                        wireframeExtraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                    } else {
+                        extraWaterMesh.visible = false;
+                        wireframeExtraWaterMesh.visible = false;
+                    }
+                } else if (currentMode === 'cube') {
+                    const targetYIn = -10.0 + paramObjDim / 2;
+                    const surfY = -10.0 + clampedWaterHOut;
+                    if (cubeMesh.position.y < surfY) {
+                        const overlap = (surfY - cubeMesh.position.y) / (surfY - targetYIn);
+                        animatingH = clampedWaterHOut + (clampedWaterHIn - clampedWaterHOut) * Math.min(overlap, 1.0);
+                    } else {
+                        animatingH = clampedWaterHOut;
+                    }
+
+                    // Dynamically split water columns during GSAP transition
+                    const baseH = Math.min(clampedWaterHOut, animatingH);
+                    const extraH = Math.max(animatingH - clampedWaterHOut, 0);
+
+                    waterMesh.scale.y = Math.max(baseH, 0.01);
+                    waterMesh.position.y = -10.0 + baseH / 2;
+                    wireframeWaterMesh.scale.y = Math.max(baseH, 0.01);
+                    wireframeWaterMesh.position.y = -10.0 + baseH / 2;
+
+                    if (extraH > 0) {
+                        extraWaterMesh.visible = true;
+                        wireframeExtraWaterMesh.visible = true;
+                        extraWaterMesh.scale.y = extraH;
+                        extraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                        wireframeExtraWaterMesh.scale.y = extraH;
+                        wireframeExtraWaterMesh.position.y = -10.0 + baseH + extraH / 2;
+                    } else {
+                        extraWaterMesh.visible = false;
+                        wireframeExtraWaterMesh.visible = false;
+                    }
+                }
+
+                // Keep markers synced while GSAP shifts elements
+                markers.waterSurface.y = -10.0 + (waterMesh.scale.y + (extraWaterMesh.visible ? extraWaterMesh.scale.y : 0));
+                if (currentMode === 'rod') {
+                    markers.objectCenter.copy(rodMesh.position);
+                    markers.objectEdge.set(paramObjDim, rodMesh.position.y, 0);
+                } else if (currentMode === 'sphere') {
+                    markers.objectCenter.copy(sphereMesh.position);
+                    markers.objectEdge.set(sphereMesh.position.x + paramObjDim, sphereMesh.position.y, 0);
+                } else if (currentMode === 'cube') {
+                    markers.objectCenter.copy(cubeMesh.position);
+                    markers.objectEdge.set(cubeMesh.position.x + paramObjDim / 2, cubeMesh.position.y, 0);
+                }
+            }
+
+            // Draw smart annotations on SVG
+            drawAnnotations();
+
+            // Render
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>

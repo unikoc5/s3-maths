@@ -1,0 +1,1367 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Factorization — KOC S3 Math</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
+  <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
+  <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
+  <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
+  <script defer src="factorization-tools.js?v=20260711-summary-zoom"></script>
+  <script defer src="factorization-game.js?v=20260719-ipad-snake"></script>
+  <script defer src="factorization-quiz.js?v=20260725-fixes6"></script>
+  <style>
+    :root {
+      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
+      /* Text colours (readable on light bg) */
+      --a: #0277BD; --b: #9A7209; --ab: #2E7D32;
+      /* Cell / chip fills (keep Manim-bright swatches) */
+      --a-fill: #4FC3F7; --b-fill: #FFD54F; --ab-fill: #81C784;
+      --line: rgba(0, 0, 0, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg); color: var(--ink);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+    }
+    header {
+      padding: 14px 28px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: baseline; gap: 14px;
+    }
+    header h1 { font-size: 22px; margin: 0; font-weight: 700; }
+    header .crumb { color: var(--dim); font-size: 13px; }
+    html.in-embed header { display: none; }
+    .tab-row {
+      display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap;
+      padding: 10px 24px 0; flex: none;
+    }
+    html.in-embed .tab-row { padding-top: 6px; }
+    .tabs { display: flex; gap: 6px; padding: 0; flex: none; }
+    .tab {
+      background: none; border: none; color: var(--dim); font: inherit; font-weight: 600;
+      padding: 10px 16px; cursor: pointer; border-radius: 8px 8px 0 0; font-size: 15px;
+    }
+    .tab.active { color: var(--ink); background: var(--panel); box-shadow: inset 0 -2px 0 var(--a-fill); }
+    .subnav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .chip {
+      background: var(--panel); border: 1px solid var(--line); color: var(--ink);
+      font: inherit; font-weight: 600; padding: 10px 16px; border-radius: 999px; cursor: pointer;
+      font-size: 16px; transition: all .15s; line-height: 1.3;
+    }
+    .chip .katex { font-size: 1.08em; }
+    .chip:hover { color: var(--a); border-color: rgba(2, 119, 189, 0.35); }
+    .chip.active { color: #06283d; background: var(--a-fill); border-color: var(--a-fill); }
+    /* Tab 1: slide deck — height from topic-shell.css */
+    .deck-wrap {
+      background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    }
+    .hint { color: var(--dim); font-size: 13px; text-align: center; margin-top: 10px; }
+    /* Tab 2: tools */
+    .tool-layout {
+      display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(260px, 1fr);
+      gap: 22px; align-items: stretch;
+    }
+    @media (max-width: 960px) {
+      .tool-layout { grid-template-columns: 1fr; gap: 16px; }
+    }
+    .figure-card, .control-stack {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+      min-width: 0;
+    }
+    .tool-sliders, .tool-meta { min-width: 0; }
+    #tool-svg { width: 100%; height: auto; display: block; max-height: min(62vh, 520px); }
+    .control-card h3, .tool-sliders h3 { margin: 2px 0 14px; font-size: 13px; color: var(--ink); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; }
+    .slider-row { display: grid; grid-template-columns: 32px 1fr 40px; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .slider-name { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 20px; }
+    .slider-val { font-family: "JetBrains Mono", monospace; text-align: right; color: var(--ink); font-weight: 700; font-size: 16px; }
+    input[type=range] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 999px;
+      background: #e8e0d4; outline: none; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+      background: var(--a-fill); cursor: pointer; border: 2px solid #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--a-fill);
+      cursor: pointer; border: 2px solid #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    .tool-action { margin-top: 6px; width: 100%; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+      font: inherit; font-weight: 600; padding: 10px; border-radius: 9px; cursor: pointer; }
+    .tool-action:hover { border-color: var(--a); }
+    #tool-eq { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .eq-line { font-size: 24px; margin: 14px 0; line-height: 1.55; color: var(--ink); overflow-wrap: anywhere; }
+    .eq-line .katex { font-size: 1.12em; }
+    .legend { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .legend-title { margin: 0 0 10px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink); font-weight: 700; }
+    .lg-item { display: flex; align-items: center; gap: 10px; margin: 8px 0; font-size: 15px; color: var(--ink); }
+    .lg-item .sw { width: 16px; height: 16px; border-radius: 4px; flex: none; border: 1px solid var(--line); }
+    .lg-item .lg-sym { min-width: 36px; font-weight: 700; }
+    .lg-item .lg-sym[data-tex="a"] { color: var(--a); }
+    .lg-item .lg-sym[data-tex="b"] { color: var(--b); }
+    .lg-item .lg-sym[data-tex="ab"] { color: var(--ab); }
+    .lg-item em { font-style: normal; color: var(--dim); font-size: 14px; }
+    /* ── Cross method lab (wizard) ── */
+    .tool-layout.hidden { display: none; }
+    .cross-lab.hidden { display: none; }
+    .cross-lab { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; }
+    .cross-steps { display: flex; gap: 8px; margin-bottom: 18px; }
+    .cross-step-dot {
+      width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+    }
+    .cross-step-dot.active { background: var(--a-fill); color: #06283d; border-color: var(--a-fill); }
+    .cross-step-dot.done { color: var(--ab); border-color: var(--ab-fill); background: rgba(129,199,132,.18); }
+    .cross-step-panel.hidden { display: none; }
+    .cross-step-panel h3 { margin: 0 0 8px; font-size: 15px; color: var(--ink); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; }
+    #cross-step-2 h3, #cross-step-3 h3 { font-size: 24px; color: var(--ink); margin-bottom: 12px; }
+    .cross-step-note { color: var(--dim); font-size: 15px; margin: 0 0 14px; line-height: 1.55; }
+    #cross-step-2 .cross-step-note, #cross-step-3 .cross-step-note {
+      font-size: 21px; color: var(--ink); line-height: 1.55; margin-bottom: 18px;
+    }
+    #cross-step-2 .cross-math, #cross-step-3 .cross-math { font-size: 28px; margin: 16px 0 20px; line-height: 1.7; }
+    #cross-step-2 .cross-math .katex, #cross-step-3 .cross-math .katex { font-size: 1.15em; }
+    .cross-form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .cross-num { width: 64px; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+      border-radius: 9px; padding: 10px 8px; font: inherit; font-size: 18px; font-weight: 700; text-align: center;
+      font-family: "JetBrains Mono", monospace; }
+    .cross-num:focus { outline: none; border-color: var(--a); }
+    .cross-term { font-size: 19px; min-width: 26px; color: var(--ink); }
+    .cross-op { font-size: 20px; color: var(--ink); font-weight: 700; }
+    .cross-preview { font-size: 22px; margin: 8px 0 16px; min-height: 32px; color: var(--ink); }
+    .cross-math { font-size: 20px; margin: 12px 0; line-height: 1.6; color: var(--ink); }
+    .cross-err { background: rgba(198,40,40,.1); border: 1px solid #C62828; border-radius: 10px;
+      padding: 12px 14px; color: #C62828; font-size: 14px; margin-bottom: 12px; }
+    .cross-err.hidden { display: none; }
+    .cross-nav { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+    .cross-btn { background: var(--panel2); border: 1px solid var(--line); color: var(--ink); font: inherit;
+      font-weight: 600; padding: 10px 20px; border-radius: 9px; cursor: pointer; font-size: 14px; }
+    .cross-btn:hover { border-color: var(--a); }
+    .cross-btn.primary { background: var(--a-fill); color: #06283d; border-color: var(--a-fill); }
+    .cross-lab-layout { display: grid; grid-template-columns: minmax(180px, 280px) minmax(0, 1fr); gap: 18px; align-items: start; }
+    @media (max-width: 860px) { .cross-lab-layout { grid-template-columns: 1fr; } }
+    .cross-pair-bank { background: var(--panel2); border: 1px solid var(--line); border-radius: 12px;
+      padding: 12px; max-height: 520px; overflow-y: auto; }
+    .cross-bank-section { margin-bottom: 14px; }
+    .cross-bank-section:last-child { margin-bottom: 0; }
+    .cross-bank-section h4 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink); font-weight: 700; }
+    .pair-group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;
+      padding: 8px 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 9px; }
+    .pair-group-sep { color: var(--dim); font-size: 13px; font-weight: 700; }
+    .drag-chip {
+      display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 34px;
+      padding: 0 10px; border-radius: 8px; font-family: "JetBrains Mono", monospace; font-weight: 700;
+      font-size: 15px; cursor: grab; user-select: none; border: 1px solid var(--line);
+    }
+    .drag-chip.x-chip { background: rgba(79,195,247,.22); color: var(--a); border-color: rgba(2,119,189,.4); }
+    .drag-chip.y-chip { background: rgba(255,213,79,.28); color: var(--b); border-color: rgba(154,114,9,.4); }
+    .drag-chip:active { cursor: grabbing; opacity: .85; }
+    .cross-board { background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+    .cross-board-inner { max-width: 460px; margin: 0 auto 8px; }
+    .cross-grid {
+      display: grid; grid-template-columns: minmax(64px, 84px) 26px 52px minmax(64px, 84px) 26px;
+      grid-template-rows: auto auto; align-items: center; justify-content: center; gap: 10px 4px;
+    }
+    .cross-grid [data-slot="tl"] { grid-column: 1; grid-row: 1; }
+    .cross-grid [data-slot="bl"] { grid-column: 1; grid-row: 2; }
+    .cross-grid [data-slot="tr"] { grid-column: 4; grid-row: 1; }
+    .cross-grid [data-slot="br"] { grid-column: 4; grid-row: 2; }
+    .cross-grid .cv-r1c2 { grid-column: 2; grid-row: 1; }
+    .cross-grid .cv-r2c2 { grid-column: 2; grid-row: 2; }
+    .cross-grid .cv-r1c5 { grid-column: 5; grid-row: 1; }
+    .cross-grid .cv-r2c5 { grid-column: 5; grid-row: 2; }
+    .cross-bridge { grid-column: 3; grid-row: 1 / span 2; display: flex; align-items: center; justify-content: center;
+      align-self: stretch; min-height: 120px; }
+    .cross-bridge svg { width: 52px; height: 100%; max-height: 130px; display: block; }
+    .cross-bridge line { stroke: #2E7D32; stroke-width: 3; stroke-linecap: round; opacity: .9; }
+    .cross-var { text-align: center; font-weight: 700; font-size: 18px; color: var(--ink); }
+    .drop-slot {
+      min-height: 56px; border: 2px dashed rgba(0,0,0,.22); border-radius: 10px; display: flex; align-items: center;
+      justify-content: center; position: relative; background: #fff; transition: border-color .15s, background .15s;
+      z-index: 1; box-shadow: inset 0 0 0 1px rgba(0,0,0,.03);
+    }
+    .drop-slot.drag-over { border-color: var(--a); background: rgba(79,195,247,.12); }
+    .drop-slot.filled { border-style: solid; background: #fff; }
+    .drop-slot.filled.x-slot { border-color: rgba(2,119,189,.55); background: rgba(79,195,247,.12); }
+    .drop-slot.filled.y-slot { border-color: rgba(154,114,9,.55); background: rgba(255,213,79,.18); }
+    .drop-slot.correct { box-shadow: 0 0 0 1px var(--ab) inset; border-color: var(--ab); }
+    .drop-slot.wrong { box-shadow: 0 0 0 1px #C62828 inset; border-color: #C62828; }
+    .slot-val { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 18px; color: var(--ink); }
+    .slot-val.x-val { color: var(--a); }
+    .slot-val.y-val { color: var(--b); }
+    .slot-clear { position: absolute; top: 2px; right: 4px; background: none; border: none; color: var(--dim);
+      font-size: 16px; cursor: pointer; line-height: 1; padding: 2px 4px; }
+    .slot-clear:hover { color: var(--ink); }
+    .cross-equation { font-size: 28px; text-align: center; margin: 0 0 10px; line-height: 1.5; min-height: 42px; color: var(--ink); }
+    .cross-equation .katex { font-size: 1.15em; }
+    .cross-target { font-size: 16px; color: var(--ink); text-align: center; margin-bottom: 12px; font-weight: 600; }
+    .cross-products {
+      display: grid; grid-template-columns: minmax(64px, 84px) 26px 52px minmax(64px, 84px) 26px;
+      align-items: center; justify-content: center; gap: 10px 4px;
+      margin-top: 8px; padding-top: 12px; border-top: 2px solid var(--line); min-height: 44px;
+    }
+    .cross-products.empty { border-top-color: transparent; padding-top: 0; margin-top: 4px; min-height: 0; }
+    .cross-products.empty > * { display: none; }
+    .cross-prod-bl { grid-column: 1; text-align: center; font-size: 24px; color: var(--b); }
+    .cross-prod-bl .katex { color: var(--b); }
+    .cross-prod-tr { grid-column: 4; text-align: center; font-size: 24px; color: var(--a); }
+    .cross-prod-tr .katex { color: var(--a); }
+    .cross-prod-op { grid-column: 3; text-align: center; font-size: 28px; font-weight: 700; color: var(--ink); }
+    .cross-prod-sum-row {
+      text-align: center; font-size: 24px; margin-top: 10px; min-height: 36px;
+      display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+    }
+    .cross-prod-sum-row.hidden { display: none; }
+    .cross-check { display: flex; align-items: center; justify-content: center; min-height: 28px; margin-top: 6px; }
+    .cross-check-math { font-size: 17px; color: var(--ink); }
+    .cross-mark { font-size: 26px; font-weight: 700; line-height: 1; }
+    .cross-mark.ok { color: var(--ab); }
+    .cross-mark.bad { color: #C62828; }
+    .cross-answer { font-size: 20px; text-align: center; margin-top: 10px; color: var(--ink); }
+    .cross-hint { font-size: 14px; color: var(--dim); text-align: center; margin-top: 8px; }
+    @media (max-width: 640px) {
+      .chip { font-size: 15px; padding: 9px 12px; }
+      .eq-line { font-size: 18px; }
+      .eq-line .katex { font-size: 1.05em; }
+      .cross-equation { font-size: 22px; }
+      .cross-grid {
+        grid-template-columns: minmax(56px, 72px) 22px 44px minmax(56px, 72px) 22px;
+        gap: 8px 2px;
+      }
+      .cross-products { grid-template-columns: minmax(56px, 72px) 22px 44px minmax(56px, 72px) 22px; }
+      .drop-slot { min-height: 48px; }
+      .control-card, .control-stack, .figure-card, .cross-lab { padding: 14px; }
+    }
+    /* ── Game ── */
+    .game-hud { display: flex; align-items: center; gap: 18px; max-width: 1000px; margin: 0 auto 12px; flex-wrap: wrap; }
+    .hud-item { color: var(--dim); font-size: 14px; font-weight: 600; }
+    .hud-item b { color: var(--ink); font-family: "JetBrains Mono", monospace; font-size: 20px; margin-left: 6px; }
+    .hud-speed { color: var(--dim); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .hud-speed input { width: 110px; }
+    .hud-toggle { background: var(--panel); border: 1px solid var(--line); color: var(--ink);
+      font-size: 18px; width: 42px; height: 38px; border-radius: 9px; cursor: pointer; }
+    .hud-toggle:hover { border-color: var(--a); }
+    #game-stage { position: relative; max-width: 1000px; height: 560px; margin: 0 auto; overflow: hidden;
+      border: 1px solid var(--line); border-radius: 16px;
+      background: radial-gradient(120% 80% at 50% -10%, #1b2c52 0%, #0b1224 55%, #070d1c 100%); }
+    #game-stage.shake { animation: shake .3s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+    #game-prompt { position: absolute; top: 0; left: 0; right: 0; height: 66px; display: flex; align-items: center;
+      justify-content: center; font-size: 30px; color: var(--ink); text-shadow: 0 0 18px rgba(79,195,247,.35); z-index: 3;
+      background: linear-gradient(180deg, rgba(11,18,36,.95), rgba(11,18,36,0)); border-bottom: 1px solid rgba(79,195,247,.15); }
+    #game-enemies { position: absolute; inset: 0; }
+    .enemy { position: absolute; min-height: 52px; display: flex; align-items: center; justify-content: center;
+      padding: 8px 10px; border-radius: 12px; cursor: pointer; font-size: 17px; color: #06122a;
+      background: linear-gradient(180deg, #9fe0ff, #4FC3F7); border: 2px solid #bfeaff;
+      box-shadow: 0 6px 16px rgba(0,0,0,.45), inset 0 0 10px rgba(255,255,255,.4); text-align: center; }
+    .enemy:hover { filter: brightness(1.08); }
+    .laser-beam { position: absolute; bottom: 84px; width: 6px; height: 460px; border-radius: 3px;
+      background: linear-gradient(180deg, rgba(129,231,160,0), #b9ffce 40%, #6cff9a);
+      box-shadow: 0 0 16px #81e7a0; z-index: 2; }
+    #game-cannon { position: absolute; bottom: 18px; width: 58px; height: 58px; z-index: 4;
+      background: conic-gradient(from 180deg at 50% 50%, #4FC3F7, #2b8fcf, #4FC3F7);
+      clip-path: polygon(50% 0, 100% 78%, 78% 100%, 22% 100%, 0 78%);
+      box-shadow: 0 0 18px rgba(79,195,247,.6); transition: left .07s linear; }
+    .boom { position: absolute; height: 52px; border-radius: 12px; z-index: 5; pointer-events: none;
+      animation: boom .42s ease-out forwards; }
+    .boom-ok { background: radial-gradient(circle, #d7ffe6, #81e7a0 50%, rgba(129,231,160,0)); }
+    .boom-bad { background: radial-gradient(circle, #ffd9d9, #E57373 50%, rgba(229,115,115,0)); }
+    @keyframes boom { 0%{transform:scale(.6);opacity:1} 100%{transform:scale(1.6);opacity:0} }
+    .game-countdown { position: absolute; inset: 0; z-index: 8; display: flex; align-items: center; justify-content: center;
+      font-size: 120px; font-weight: 800; color: var(--a); text-shadow: 0 0 30px rgba(79,195,247,.6); pointer-events: none; }
+    .game-countdown.hidden { display: none; }
+    .cd-pop { animation: cdpop .5s ease-out; }
+    @keyframes cdpop { 0%{transform:scale(.4);opacity:0} 40%{transform:scale(1.15);opacity:1} 100%{transform:scale(1);opacity:.85} }
+    .game-overlay { position: absolute; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center;
+      background: rgba(7,13,28,.72); backdrop-filter: blur(2px); }
+    .game-overlay.hidden { display: none; }
+    .ov-card {
+      text-align: center; max-width: 560px; width: 92%; padding: 24px;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, .28);
+    }
+    .ov-card.hidden { display: none; }
+    .ov-card h2 { font-size: 30px; margin: 0 0 14px; color: var(--a); letter-spacing: .02em; }
+    .ov-card p { color: var(--ink); margin: 8px 0; }
+    .ov-keys-phone { display: none; }
+    .ov-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 12px 0; flex-wrap: wrap; }
+    .ov-row.ov-center { gap: 14px; }
+    .ov-label { color: var(--ink); font-weight: 700; min-width: 76px; text-align: right; }
+    .ov-row input[type=range] { width: 180px; }
+    .ov-row b { color: var(--a); font-family: "JetBrains Mono", monospace; min-width: 24px; }
+    .ov-note { font-size: 13px; color: #4a5568; margin: 2px 0 6px; }
+    .ov-keys { color: var(--ink); font-size: 13px; }
+    .modebtn { background: var(--panel2); border: 1px solid var(--line); color: var(--ink); font: inherit; font-weight: 600;
+      padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+    .modebtn.active { background: var(--a-fill); color: #06283d; border-color: var(--a); }
+    .play-btn { margin-top: 12px; background: var(--a-fill); color: #06283d; border: none; font: inherit; font-weight: 700;
+      font-size: 18px; padding: 12px 28px; border-radius: 999px; cursor: pointer; box-shadow: 0 6px 18px rgba(79,195,247,.4); }
+    .play-btn:hover { filter: brightness(1.06); }
+    .play-btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); box-shadow: none; }
+    #sum-stats { color: var(--ink); font-size: 16px; margin: 4px 0 12px; }
+    .sum-list { max-height: 320px; overflow-y: auto; text-align: left; border: 1px solid var(--line); border-radius: 12px;
+      padding: 6px 10px; background: rgba(7,13,28,.5); }
+    .sum-row { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 1px solid rgba(40,54,92,.5); font-size: 15px; }
+    .sum-row:last-child { border-bottom: none; }
+    .sum-mark { font-size: 18px; width: 22px; flex: none; text-align: center; }
+    .sum-ok { color: var(--ab); } .sum-bad { color: #E57373; }
+    .sum-q { flex: none; min-width: 96px; color: var(--ink); }
+    .sum-arrow { color: var(--dim); }
+    .sum-ans { color: var(--ink); }
+    .sum-correct { color: var(--ab); margin-left: auto; }
+    #game-blaster.hidden, #snake-game.hidden { display: none; }
+    .snake-wrap { max-width: 1120px; margin: 0 auto; }
+    .snake-how {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      padding: 14px 18px; margin-bottom: 14px; color: #cdd6e4; line-height: 1.55;
+    }
+    .snake-how summary {
+      font-weight: 700; color: var(--ab); font-size: 17px; margin-bottom: 6px;
+      list-style: none;
+    }
+    .snake-how[open] summary { margin-bottom: 8px; }
+    .snake-how p { margin: 0 0 8px; }
+    .snake-how p:last-child { margin-bottom: 0; }
+    .snake-hud { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .snake-stat {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 11px;
+      padding: 9px 13px; color: var(--dim); font-weight: 700;
+    }
+    .snake-stat b { color: var(--ink); font-family: "JetBrains Mono", monospace; margin-left: 5px; }
+    .snake-modes {
+      display: inline-flex; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 999px; overflow: hidden;
+    }
+    .snake-mode { background: none; border: 0; color: var(--dim); font: inherit; font-weight: 800; padding: 9px 14px; cursor: pointer; }
+    .snake-mode.active { background: var(--ab); color: #06283d; }
+    .snake-btn {
+      background: var(--a-fill); color: #06283d; border: 0; font: inherit;
+      font-weight: 800; padding: 10px 18px; border-radius: 999px; cursor: pointer;
+      width: 100%; text-align: center;
+    }
+    .snake-btn:hover { filter: brightness(1.06); }
+    .snake-play { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 16px; align-items: center; }
+    .snake-controls {
+      display: flex; flex-direction: column; align-items: stretch; gap: 12px;
+      justify-content: center;
+    }
+    @media (max-width: 840px) {
+      .snake-play { grid-template-columns: 1fr; }
+      .snake-controls { margin: 0 auto; width: min(100%, 220px); }
+    }
+    .snake-board-wrap { background: #07101f; border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
+    #snake-board {
+      width: min(100%, 760px); aspect-ratio: 1 / 1; max-height: 78vh; display: block; margin: 0 auto;
+      border-radius: 12px; background: radial-gradient(circle at 50% 0%, #142442, #07101f 62%);
+    }
+    .snake-prompt {
+      margin: 0 0 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      padding: 14px 16px; text-align: center; font-size: 20px; min-height: 58px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .snake-msg { min-height: 24px; color: var(--dim); font-size: 14px; margin-left: auto; }
+    .snake-msg.ok { color: var(--ab); font-weight: 800; }
+    .snake-msg.bad { color: #E57373; font-weight: 800; }
+    .snake-pad {
+      display: grid; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(3, 56px); gap: 8px;
+      justify-content: center; align-content: center; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 16px; padding: 14px; touch-action: none;
+    }
+    .snake-pad button {
+      border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg,#e2e8f0,#94a3b8);
+      color: #0f172a; font: 900 24px "JetBrains Mono", monospace; cursor: pointer;
+      box-shadow: 0 7px 15px rgba(0,0,0,.22);
+    }
+    .snake-pad button:active { transform: translateY(2px); box-shadow: 0 3px 8px rgba(0,0,0,.24); }
+    .snake-pad .up { grid-column: 2; grid-row: 1; }
+    .snake-pad .left { grid-column: 1; grid-row: 2; }
+    .snake-pad .right { grid-column: 3; grid-row: 2; }
+    .snake-pad .down { grid-column: 2; grid-row: 3; }
+    /* ── Summary slideshow ── */
+    .summary-slideshow {
+      max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
+    }
+    .summary-arrow {
+      flex: none; width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid var(--line); background: var(--panel2); color: var(--ink);
+      font: inherit; font-size: 20px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .15s, background .15s;
+    }
+    .summary-arrow:hover:not(:disabled) { border-color: var(--a); color: var(--a); }
+    .summary-arrow:disabled { opacity: .35; cursor: default; }
+    .summary-stage {
+      flex: 1; min-width: 0; position: relative; aspect-ratio: 16 / 9;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    }
+    .summary-slide {
+      position: absolute; inset: 0; margin: 0; opacity: 0; visibility: hidden;
+      transition: opacity .22s ease;
+    }
+    .summary-slide.active { opacity: 1; visibility: visible; }
+    .summary-slide img {
+      width: 100%; height: 100%; display: block; object-fit: contain; background: #000;
+    }
+    .summary-placeholder {
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      padding: 24px; text-align: center; color: var(--dim); font-size: 14px; line-height: 1.5;
+    }
+    .summary-placeholder code { font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--a); }
+    .summary-meta {
+      max-width: 1100px; margin: 10px auto 0; text-align: center;
+      font-size: 13px; font-weight: 600; color: var(--dim);
+    }
+    .summary-meta b { color: var(--ink); font-family: "JetBrains Mono", monospace; }
+    .summary-set { position: absolute; inset: 0; }
+    .summary-set.hidden { display: none; }
+    /* Phone-only summary image zoom (desktop & iPad unchanged) */
+    .summary-zoom-overlay { display: none; }
+    .summary-zoom-overlay.hidden { display: none; }
+    html.phone-compact #panel-summary .summary-slide.active img:not([hidden]) {
+      cursor: zoom-in;
+      touch-action: manipulation;
+    }
+    html.phone-compact .summary-zoom-overlay:not(.hidden) {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      background: rgba(0, 0, 0, 0.94);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+        max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
+    html.phone-compact .summary-zoom-overlay.hidden { display: none; }
+    html.phone-compact .summary-zoom-img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      border-radius: 6px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    }
+    html.phone-compact .summary-zoom-close {
+      position: absolute;
+      top: max(10px, env(safe-area-inset-top));
+      right: max(10px, env(safe-area-inset-right));
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+    /* ── Quiz ── */
+    .quiz-wrap { max-width: 720px; margin: 0 auto; }
+    .quiz-progress-wrap { margin-bottom: 18px; }
+    .quiz-progress-label {
+      font-size: 14px; font-weight: 600; color: var(--dim); margin-bottom: 8px; text-align: center;
+    }
+    .quiz-progress-track {
+      height: 8px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); overflow: hidden;
+    }
+    .quiz-progress-fill {
+      height: 100%; width: 0; border-radius: 999px; background: var(--a-fill);
+      transition: width .25s ease;
+    }
+    .quiz-nav {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px;
+    }
+    .quiz-nav-btn {
+      font: inherit; font-weight: 700; padding: 12px 24px; border-radius: 999px; cursor: pointer;
+      border: 1px solid var(--line); background: var(--panel2); color: var(--ink); min-width: 100px;
+    }
+    .quiz-nav-btn.hidden { visibility: hidden; pointer-events: none; }
+    .quiz-nav-btn.primary { background: var(--a-fill); color: #06283d; border-color: var(--a);
+      box-shadow: 0 6px 18px rgba(79,195,247,.35); margin-left: auto; }
+    .quiz-nav-btn.retry { background: transparent; color: var(--ink); border: 1px solid var(--line); box-shadow: none; }
+    .quiz-review-header { text-align: center; margin-bottom: 16px; }
+    .quiz-review-header h2 { margin: 0; font-size: 22px; color: var(--a); }
+    .quiz-card-review { margin-bottom: 12px; }
+    .quiz-card-review .quiz-head { justify-content: flex-start; }
+    .quiz-card-review .quiz-mark { margin-left: auto; }
+    .quiz-yours { margin-top: 10px; font-size: 15px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .quiz-yours-lbl { font-weight: 600; }
+    .quiz-card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .quiz-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .quiz-num { font-weight: 700; font-size: 18px; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    .quiz-prompt { font-size: 16px; font-weight: 600; color: var(--dim); }
+    .quiz-stem { font-size: 22px; margin-bottom: 14px; }
+    .quiz-stem .katex { font-size: 1.05em; }
+    .quiz-mc { display: flex; flex-direction: column; gap: 8px; }
+    .quiz-mc-opt {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+      border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s;
+    }
+    .quiz-mc-opt:hover:not(.locked) { border-color: var(--a); }
+    .quiz-mc-opt.locked { cursor: default; }
+    .quiz-mc-opt.reveal-ok { border-color: var(--ab); background: rgba(129,199,132,.12); }
+    .quiz-mc-opt.reveal-bad { border-color: #E57373; background: rgba(229,115,115,.1); }
+    .quiz-mc-opt input { flex: none; accent-color: var(--a-fill); }
+    .quiz-mc-letter { font-weight: 700; color: var(--dim); min-width: 22px; font-family: "JetBrains Mono", monospace; }
+    .quiz-mc-tex { font-size: 18px; }
+    .quiz-sym-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .quiz-sym-btn {
+      min-width: 36px; height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line);
+      background: var(--panel2); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer;
+    }
+    .quiz-sym-btn:hover:not(:disabled) { border-color: var(--a); color: var(--a); }
+    .quiz-sym-btn:disabled { opacity: .4; cursor: default; }
+    .quiz-short-input {
+      width: 100%; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+      border-radius: 10px; padding: 10px 12px; font-family: "JetBrains Mono", monospace; font-size: 15px;
+      resize: vertical; min-height: 52px;
+    }
+    .quiz-short-input:focus { outline: none; border-color: var(--a); }
+    .quiz-preview {
+      margin-top: 10px; min-height: 36px; padding: 8px 12px; border-radius: 8px;
+      background: rgba(8,16,32,.55); font-size: 20px;
+    }
+    .quiz-preview.empty { color: var(--dim); font-size: 14px; font-family: "Hanken Grotesk", sans-serif; }
+    .quiz-result {
+      display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px;
+      border-top: 1px solid var(--line); flex-wrap: wrap;
+    }
+    .quiz-mark { font-size: 28px; font-weight: 800; line-height: 1; }
+    .quiz-mark.ok { color: var(--ab); }
+    .quiz-mark.bad { color: #E57373; }
+    .quiz-result-msg { font-size: 15px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .quiz-ans-tex { font-size: 18px; color: var(--ink); }
+    .quiz-item-list { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+    .quiz-item-row { display: flex; align-items: baseline; gap: 8px; font-size: 18px; }
+    .quiz-item-tag { font-weight: 700; color: var(--dim); min-width: 28px; font-family: "JetBrains Mono", monospace; }
+    .quiz-part { margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+    .quiz-part:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .quiz-part-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .quiz-part-label { font-weight: 700; font-size: 16px; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    .quiz-part-mark { font-size: 22px; }
+    .quiz-part-stem { font-size: 20px; margin-bottom: 10px; }
+    .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
+    .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    /* ── iPad / tablet touch (standard iPad landscape; desktop unchanged) ── */
+    /* Identities tools: graph | equations+key ; sliders full-width below */
+    html.tablet-touch #panel-tools .tool-layout {
+      grid-template-columns: minmax(0, 1.25fr) minmax(240px, 1fr);
+      grid-template-areas:
+        "figure meta"
+        "sliders sliders";
+      gap: 14px;
+      align-items: start;
+    }
+    html.tablet-touch #panel-tools .figure-card {
+      grid-area: figure;
+      padding-bottom: 12px;
+      align-self: stretch;
+    }
+    html.tablet-touch #panel-tools .control-stack {
+      display: contents;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    html.tablet-touch #panel-tools .tool-sliders {
+      grid-area: sliders;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    html.tablet-touch #panel-tools .tool-meta {
+      grid-area: meta;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      align-self: stretch;
+    }
+    html.tablet-touch #panel-tools #tool-eq {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+    html.tablet-touch #panel-tools .legend {
+      margin-top: 16px;
+      padding-top: 14px;
+    }
+    html.tablet-touch #panel-tools .eq-line { font-size: 20px; margin: 10px 0; }
+    html.tablet-touch #panel-tools .eq-line .katex { font-size: 1.06em; }
+    html.tablet-touch #tool-svg { max-width: 100%; margin: 0; max-height: min(52vh, 480px); }
+    /* ── iPhone only — identities tools label sizing (desktop & iPad unchanged) ── */
+    html.phone-compact #panel-tools .figure-card {
+      padding: 12px 10px 14px;
+    }
+    html.phone-compact #tool-svg {
+      width: 100%;
+      max-height: min(46vh, 400px);
+    }
+    html.phone-compact #panel-tools .eq-line {
+      font-size: clamp(15px, 4.2vw, 20px);
+      margin: 8px 0;
+      line-height: 1.45;
+    }
+    html.phone-compact #panel-tools .eq-line .katex {
+      font-size: 1em;
+    }
+    html.phone-compact #panel-tools .legend {
+      margin-top: 14px;
+      padding-top: 12px;
+    }
+    html.phone-compact #panel-tools .legend .lg-item {
+      font-size: 14px;
+      margin: 6px 0;
+    }
+    html.phone-compact #panel-tools .legend .lg-item em {
+      font-size: 13px;
+    }
+    html.phone-compact #panel-tools .legend .lg-sym .katex {
+      font-size: 1.05em;
+    }
+    html.phone-compact #panel-tools .slider-name .katex {
+      font-size: 1.15em;
+    }
+    html.phone-compact #panel-tools .slider-val {
+      font-size: 15px;
+    }
+    html.phone-compact #panel-tools .control-card h3,
+    html.phone-compact #panel-tools .tool-sliders h3 {
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    /* Cross method: phone-only label sizing */
+    html.phone-compact .cross-equation .katex {
+      font-size: clamp(1em, 4.5vw, 1.2em);
+    }
+    html.phone-compact .cross-var {
+      font-size: clamp(16px, 4.5vw, 18px);
+    }
+    html.phone-compact .cross-bank-section h4 {
+      font-size: 12px;
+    }
+    /* Cross method: keep pair bank left, cross board right on iPad */
+    html.tablet-touch .cross-lab-layout {
+      grid-template-columns: minmax(180px, 260px) minmax(0, 1fr);
+      gap: 14px;
+    }
+    html.tablet-touch .cross-pair-bank { max-height: 480px; }
+    html.tablet-touch .drag-chip {
+      min-width: 44px; min-height: 44px; padding: 0 14px; font-size: 17px;
+      touch-action: manipulation; -webkit-user-select: none; user-select: none; cursor: pointer;
+    }
+    html.tablet-touch .drag-chip.chip-selected {
+      box-shadow: 0 0 0 2px var(--a-fill), 0 0 12px rgba(79,195,247,.35);
+      transform: scale(1.06);
+    }
+    html.tablet-touch .drop-slot { min-height: 64px; touch-action: manipulation; cursor: pointer; }
+    html.tablet-touch .chip-pick-active .drop-slot.slot-targetable {
+      border-color: var(--a); background: rgba(79,195,247,.1);
+    }
+    html.tablet-touch .pair-group { padding: 10px 12px; gap: 10px; }
+    html.tablet-touch input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; }
+    html.tablet-touch input[type=range]::-moz-range-thumb { width: 26px; height: 26px; }
+
+    /* ── Phone only (< 768px) — desktop & tablet-touch unchanged ── */
+    @media (max-width: 767px) {
+      header { flex-direction: column; align-items: flex-start; padding: 12px 16px; gap: 4px; }
+      header .crumb { font-size: 11px; line-height: 1.4; }
+      .tab-row { padding: 8px 12px 0; }
+      .tabs {
+        overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; max-width: 100%;
+      }
+      .tabs::-webkit-scrollbar { display: none; }
+      .tab { font-size: 13px; padding: 8px 12px; white-space: nowrap; flex-shrink: 0; }
+      .panel { padding: 10px 12px 14px; }
+      .chip { font-size: 13px; padding: 7px 12px; }
+      .figure-card, .control-card, .control-stack, .cross-lab { padding: 14px; }
+      input[type=range]::-webkit-slider-thumb { width: 22px; height: 22px; }
+      input[type=range]::-moz-range-thumb { width: 22px; height: 22px; }
+      #cross-step-2 h3, #cross-step-3 h3 { font-size: clamp(18px, 4.5vw, 24px); }
+      #cross-step-2 .cross-step-note, #cross-step-3 .cross-step-note {
+        font-size: clamp(16px, 4vw, 21px);
+      }
+      #cross-step-2 .cross-math, #cross-step-3 .cross-math { font-size: clamp(18px, 4.5vw, 28px); }
+      .cross-grid {
+        grid-template-columns: minmax(52px, 1fr) 18px 32px minmax(52px, 1fr) 18px;
+        gap: 6px 2px;
+      }
+      .cross-products {
+        grid-template-columns: minmax(52px, 1fr) 18px 32px minmax(52px, 1fr) 18px;
+        gap: 6px 2px;
+      }
+      .cross-equation { font-size: clamp(18px, 5vw, 24px); }
+      .cross-pair-bank { max-height: 40vh; }
+      .cross-num { width: 56px; font-size: 16px; padding: 8px 6px; }
+      #game-stage { height: min(50vh, 380px); border-radius: 12px; }
+      #game-stage:has(.game-overlay:not(.hidden)) {
+        height: min(72vh, 520px);
+      }
+      #game-prompt { font-size: clamp(14px, 3.5vw, 20px); height: 48px; }
+      #game-stage:not(.game-stage--phone-identity) .enemy {
+        min-height: 36px; font-size: 11px; padding: 3px 5px; border-radius: 10px;
+      }
+      #game-stage:not(.game-stage--phone-identity) .enemy .katex { font-size: 0.85em; }
+      #game-cannon { width: 44px; height: 44px; bottom: 14px; }
+      .laser-beam { width: 5px; }
+      .boom { height: 36px; border-radius: 10px; }
+      .game-countdown { font-size: clamp(64px, 22vw, 96px); }
+      .game-hud { gap: 8px 10px; padding: 0 2px; }
+      .hud-item { font-size: 12px; }
+      .hud-item b { font-size: 16px; margin-left: 4px; }
+      .hud-speed { width: 100%; margin-left: 0; font-size: 12px; }
+      .hud-speed input { flex: 1; min-width: 0; }
+      .hud-toggle { width: 40px; height: 36px; font-size: 16px; }
+      #game-stage .game-overlay {
+        align-items: flex-start;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 10px 8px 14px;
+      }
+      #game-stage .ov-card {
+        width: 100%;
+        max-width: none;
+        padding: 16px 14px 18px;
+        margin: auto 0;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, .28);
+        text-align: left;
+      }
+      #game-stage .ov-card h2 {
+        font-size: 22px;
+        margin: 0 0 12px;
+        text-align: center;
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(2) {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin: 0 0 10px;
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(2) .ov-label {
+        min-width: 0;
+        text-align: left;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--dim);
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(2) .modebtn {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 0;
+        padding: 10px 12px;
+        font-size: 13px;
+        min-height: 44px;
+        text-align: center;
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(4),
+      #game-stage #ov-setup > .ov-row:nth-child(5) {
+        display: grid;
+        grid-template-columns: 82px 1fr 30px;
+        gap: 8px;
+        align-items: center;
+        margin: 8px 0;
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(4) .ov-label,
+      #game-stage #ov-setup > .ov-row:nth-child(5) .ov-label {
+        min-width: 0;
+        text-align: left;
+        font-size: 13px;
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(4) input,
+      #game-stage #ov-setup > .ov-row:nth-child(5) input {
+        width: 100%;
+        min-width: 0;
+      }
+      #game-stage .ov-note {
+        font-size: 13px;
+        line-height: 1.45;
+        margin: 0 0 10px;
+        text-align: center;
+      }
+      #game-stage .ov-keys {
+        display: block;
+        font-size: 12px;
+        line-height: 1.45;
+        text-align: center;
+        margin: 8px 0 4px;
+        color: var(--dim);
+      }
+      #game-stage .ov-keys-desktop { display: none; }
+      #game-stage .ov-keys-phone { display: block; }
+      #game-stage .play-btn {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+        font-size: 16px;
+        padding: 14px 18px;
+        min-height: 48px;
+        text-align: center;
+      }
+      #game-stage #ov-summary .ov-row.ov-center {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      #game-stage #ov-summary .play-btn.ghost {
+        width: 100%;
+      }
+      #game-stage .sum-list {
+        max-height: 36vh;
+        font-size: 13px;
+      }
+      #game-stage .sum-row {
+        flex-wrap: wrap;
+        font-size: 13px;
+        gap: 6px;
+      }
+      #game-stage .sum-q { min-width: 72px; }
+      .modebtn { padding: 6px 10px; font-size: 12px; }
+      .snake-how summary { cursor: pointer; font-size: 17px; font-weight: 700; color: var(--ab); }
+      .snake-how summary::-webkit-details-marker { display: none; }
+      .snake-hud { gap: 10px; }
+      .snake-prompt { font-size: clamp(14px, 4vw, 18px); padding: 10px 12px; min-height: 48px; }
+      .quiz-wrap { min-width: 0; width: 100%; }
+      .quiz-stem .katex, .quiz-stem .katex-display { max-width: 100%; overflow-wrap: anywhere; }
+      .quiz-nav-btn { min-height: 44px; }
+    }
+    html.phone-compact .drag-chip {
+      min-width: 44px; min-height: 44px; padding: 0 12px; font-size: 15px;
+      touch-action: manipulation; -webkit-user-select: none; user-select: none; cursor: pointer;
+    }
+    html.phone-compact .drag-chip.chip-selected {
+      box-shadow: 0 0 0 2px var(--a-fill), 0 0 12px rgba(79,195,247,.35);
+      transform: scale(1.06);
+    }
+    html.phone-compact .drop-slot {
+      min-height: 52px; touch-action: manipulation; cursor: pointer;
+    }
+    html.phone-compact .chip-pick-active .drop-slot.slot-targetable {
+      border-color: var(--a); background: rgba(79,195,247,.1);
+    }
+    html.phone-compact .pair-group { padding: 10px 12px; gap: 10px; }
+
+    /* Cross Method Snake — phone only (desktop & iPad unchanged) */
+    html.phone-compact #panel-game:has(#snake-game:not(.hidden)) {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+    html.phone-compact #panel-game:has(#snake-game:not(.hidden)) .subnav {
+      margin-bottom: 4px;
+    }
+    html.phone-compact #snake-game {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 0;
+    }
+    html.phone-compact #snake-game .snake-hud {
+      display: contents;
+    }
+    html.phone-compact #snake-game .snake-how {
+      display: none;
+    }
+    html.phone-compact #snake-game .snake-prompt {
+      order: 1;
+      font-size: clamp(15px, 4.2vw, 18px);
+      padding: 6px 8px;
+      min-height: 30px;
+      margin: 0 0 4px;
+      border-radius: 10px;
+    }
+    html.phone-compact #snake-game .snake-play {
+      order: 2;
+      gap: 4px;
+    }
+    html.phone-compact #snake-game .snake-board-wrap {
+      padding: 6px;
+      border-radius: 12px;
+    }
+    html.phone-compact #snake-game #snake-board {
+      width: 100%;
+      height: auto;
+      max-height: none;
+      aspect-ratio: 1 / 1;
+      display: block;
+      margin: 0 auto;
+    }
+    html.phone-compact #snake-game .snake-controls {
+      width: min(100%, 168px);
+      gap: 6px;
+      flex-direction: column-reverse;
+      margin: 0 auto;
+    }
+    html.phone-compact #snake-game .snake-btn {
+      padding: 8px 12px;
+      font-size: 13px;
+      min-height: 36px;
+    }
+    html.phone-compact #snake-game .snake-pad {
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(3, 44px);
+      gap: 5px;
+      padding: 8px;
+      border-radius: 12px;
+    }
+    html.phone-compact #snake-game .snake-pad button {
+      font-size: 17px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
+      min-height: 0;
+      touch-action: manipulation;
+    }
+    html.phone-compact #snake-game .snake-hud-stats {
+      order: 4;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      margin: 4px 0 0;
+    }
+    html.phone-compact #snake-game .snake-modes {
+      order: 3;
+      flex: none;
+      width: 100%;
+      min-width: 0;
+      margin: 4px 0 0;
+    }
+    html.phone-compact #snake-game .snake-mode {
+      flex: 1;
+      padding: 5px 10px;
+      font-size: 13px;
+      min-height: 0;
+      line-height: 1.2;
+      text-align: center;
+    }
+    html.phone-compact #snake-game .snake-stat {
+      padding: 5px 9px;
+      font-size: 11px;
+    }
+    html.phone-compact #snake-game .snake-stat b { font-size: 12px; }
+    html.phone-compact #snake-game .snake-msg {
+      order: 5;
+      flex: none;
+      width: 100%;
+      text-align: center;
+      font-size: 11px;
+      min-height: 14px;
+      margin: 2px 0 0;
+    }
+    html.phone-compact #snake-game > .hint { display: none; }
+
+    /* Factor Blaster — phone identities: expanded prompt, 3 falling factorized options */
+    #game-stage.game-stage--phone-identity {
+      height: min(64vh, 440px);
+    }
+    #game-stage.game-stage--phone-identity #game-prompt {
+      height: auto;
+      min-height: 52px;
+      max-height: 28%;
+      font-size: clamp(17px, 4.8vw, 26px);
+      padding: 10px 12px;
+      line-height: 1.2;
+    }
+    #game-stage.game-stage--phone-identity #game-prompt .katex {
+      font-size: 1em;
+    }
+    #game-stage.game-stage--phone-identity .enemy {
+      min-height: 46px;
+      padding: 6px 4px;
+      border-radius: 12px;
+    }
+    #game-stage.game-stage--phone-identity .enemy.enemy-split {
+      min-height: 64px;
+      padding: 8px 4px;
+    }
+    #game-stage.game-stage--phone-identity .enemy .enemy-tex-split {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      width: 100%;
+    }
+    #game-stage.game-stage--phone-identity .enemy .enemy-tex-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      line-height: 1.05;
+    }
+    #game-stage.game-stage--phone-identity .enemy .enemy-tex-line .katex {
+      font-size: 1em !important;
+    }
+    #game-stage.game-stage--phone-identity .enemy .katex {
+      max-width: 100%;
+    }
+    #game-stage.game-stage--phone-identity #game-cannon {
+      width: 48px;
+      height: 48px;
+      bottom: 10px;
+    }
+    #game-stage.game-stage--phone-identity .laser-beam {
+      width: 6px;
+    }
+  </style>
+  <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
+</head>
+<body>
+  <header>
+    <img class="topic-logo" src="../../shared/uniplus-logo.png" alt="Uni+ logo">
+    <div class="topic-headings">
+      <div class="topic-brand">Uni<span class="plus">+</span> · Mathematics</div>
+      <h1>Factorization</h1>
+      <span class="crumb">KOC S3 Math · Summer 2026 · L01–02 More about Factorization</span>
+    </div>
+  </header>
+
+  <div class="tab-row">
+    <nav class="tabs">
+      <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
+      <button class="tab" data-tab="tools">Interactive Tools</button>
+      <button class="tab" data-tab="game">Game</button>
+      <button class="tab" data-tab="summary">Summary</button>
+      <button class="tab" data-tab="quiz">Quiz</button>
+    </nav>
+  </div>
+
+  <!-- TAB 1: slide decks -->
+  <section id="panel-slides" class="panel">
+    <div class="subnav">
+      <button class="chip active" data-deck="../../slides/factorization/perfect-square-sum/index.html" data-tex="(a+b)^2"></button>
+      <button class="chip" data-deck="../../slides/factorization/perfect-square-diff/index.html" data-tex="(a-b)^2"></button>
+      <button class="chip" data-deck="../../slides/factorization/difference-of-squares/index.html" data-tex="a^2-b^2"></button>
+    </div>
+    <div class="deck-slideshow">
+      <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
+      <div class="deck-wrap">
+        <iframe id="deck-frame" src="../../slides/factorization/perfect-square-sum/index.html" title="Algebraic proof slides"></iframe>
+      </div>
+      <button type="button" class="deck-nav-btn deck-next" id="deck-next" aria-label="Next slide">&rarr;</button>
+    </div>
+    <p class="hint hint-deck-desktop">Use &rarr; / Enter / click to advance, &larr; to go back. Each slide animates the algebraic (expansion) proof.</p>
+    <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide animates the algebraic (expansion) proof.</p>
+    <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide animates the algebraic (expansion) proof.</p>
+  </section>
+
+  <!-- TAB 2: interactive tools -->
+  <section id="panel-tools" class="panel hidden">
+    <div class="subnav">
+      <button class="chip active" data-tool="sum" data-tex="(a+b)^2"></button>
+      <button class="chip" data-tool="diff" data-tex="(a-b)^2"></button>
+      <button class="chip" data-tool="dos" data-tex="a^2-b^2"></button>
+      <button class="chip" data-tool="cross">Cross method</button>
+    </div>
+    <div class="tool-layout">
+      <div class="figure-card">
+        <svg id="tool-svg" viewBox="0 0 400 380" role="img" aria-label="interactive area model"></svg>
+      </div>
+      <div class="control-stack">
+        <div class="tool-sliders">
+          <h3>Drag the variables</h3>
+          <div id="tool-controls"></div>
+        </div>
+        <div class="tool-meta">
+          <div id="tool-eq"></div>
+          <div class="legend">
+            <p class="legend-title">Colour key</p>
+            <div class="lg-item"><i class="sw" style="background:var(--a-fill)"></i><span class="lg-sym" data-tex="a"></span><em>variable</em></div>
+            <div class="lg-item"><i class="sw" style="background:var(--b-fill)"></i><span class="lg-sym" data-tex="b"></span><em>constant number</em></div>
+            <div class="lg-item"><i class="sw" style="background:var(--ab-fill)"></i><span class="lg-sym" data-tex="ab"></span><em>product / middle term</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="cross-lab" class="cross-lab hidden">
+      <div class="cross-steps" id="cross-steps">
+        <span class="cross-step-dot active" data-step="1">1</span>
+        <span class="cross-step-dot" data-step="2">2</span>
+        <span class="cross-step-dot" data-step="3">3</span>
+        <span class="cross-step-dot" data-step="4">4</span>
+      </div>
+
+      <div class="cross-step-panel" id="cross-step-1">
+        <h3>Step 1 — Enter coefficients</h3>
+        <p class="cross-step-note">Enter the coefficients of the trinomial in x and y.</p>
+        <div class="cross-form">
+          <input id="cross-a" class="cross-num" type="number" value="2" aria-label="x squared coefficient">
+          <span class="cross-term" data-tex="x^2"></span>
+          <span class="cross-op">+</span>
+          <input id="cross-b" class="cross-num" type="number" value="7" aria-label="xy coefficient">
+          <span class="cross-term" data-tex="xy"></span>
+          <span class="cross-op">+</span>
+          <input id="cross-c" class="cross-num" type="number" value="3" aria-label="y squared coefficient">
+          <span class="cross-term" data-tex="y^2"></span>
+        </div>
+        <div id="cross-preview" class="cross-preview"></div>
+        <div id="cross-step1-err" class="cross-err hidden"></div>
+        <div class="cross-nav">
+          <button type="button" class="cross-btn primary" id="cross-next-1">Next</button>
+        </div>
+      </div>
+
+      <div class="cross-step-panel hidden" id="cross-step-2">
+        <h3>Step 2 — Extract negative sign</h3>
+        <p class="cross-step-note" id="cross-step2-note"></p>
+        <div id="cross-step2-math" class="cross-math"></div>
+        <div class="cross-nav">
+          <button type="button" class="cross-btn" id="cross-back-2">Back</button>
+          <button type="button" class="cross-btn primary" id="cross-next-2">Next</button>
+        </div>
+      </div>
+
+      <div class="cross-step-panel hidden" id="cross-step-3">
+        <h3>Step 3 — Extract common factor</h3>
+        <p class="cross-step-note" id="cross-step3-note"></p>
+        <div id="cross-step3-math" class="cross-math"></div>
+        <div class="cross-nav">
+          <button type="button" class="cross-btn" id="cross-back-3">Back</button>
+          <button type="button" class="cross-btn primary" id="cross-next-3">Next</button>
+        </div>
+      </div>
+
+      <div class="cross-step-panel hidden" id="cross-step-4">
+        <h3>Step 4 — Cross method</h3>
+        <p class="cross-step-note">Drag numbers from the factor pairs into the four slots, then check whether the cross products give the correct xy term.</p>
+        <div class="cross-lab-layout">
+          <aside class="cross-pair-bank">
+            <div class="cross-bank-section">
+              <h4>x² pairs (<span id="cross-a2-label"></span>)</h4>
+              <div id="cross-x-pairs"></div>
+            </div>
+            <div class="cross-bank-section">
+              <h4>y² pairs (<span id="cross-c2-label"></span>)</h4>
+              <div id="cross-y-pairs"></div>
+            </div>
+          </aside>
+          <div class="cross-board">
+            <div class="cross-equation" id="cross-equation"></div>
+            <div class="cross-target">Target xy coefficient: <span id="cross-target-b"></span></div>
+            <div class="cross-board-inner" id="cross-board-inner">
+              <div class="cross-grid">
+                <div class="drop-slot x-slot" data-slot="tl" data-kind="x"><span class="slot-placeholder">?</span></div>
+                <span class="cross-var cv-r1c2">x</span>
+                <div class="cross-bridge" aria-hidden="true">
+                  <svg viewBox="0 0 52 120" preserveAspectRatio="xMidYMid meet">
+                    <line x1="6" y1="18" x2="46" y2="102"/>
+                    <line x1="6" y1="102" x2="46" y2="18"/>
+                  </svg>
+                </div>
+                <div class="drop-slot y-slot" data-slot="tr" data-kind="y"><span class="slot-placeholder">?</span></div>
+                <span class="cross-var cv-r1c5">y</span>
+                <div class="drop-slot x-slot" data-slot="bl" data-kind="x"><span class="slot-placeholder">?</span></div>
+                <span class="cross-var cv-r2c2">x</span>
+                <div class="drop-slot y-slot" data-slot="br" data-kind="y"><span class="slot-placeholder">?</span></div>
+                <span class="cross-var cv-r2c5">y</span>
+              </div>
+              <div class="cross-products empty" id="cross-products">
+                <div class="cross-prod-bl" id="cross-prod-bl"></div>
+                <span class="cross-prod-op">+</span>
+                <div class="cross-prod-tr" id="cross-prod-tr"></div>
+              </div>
+              <div class="cross-prod-sum-row hidden" id="cross-prod-sum"></div>
+            </div>
+            <div class="cross-check" id="cross-check">
+              <span class="cross-hint">Fill all four slots to test a combination.</span>
+            </div>
+            <div class="cross-answer" id="cross-answer"></div>
+          </div>
+        </div>
+        <div class="cross-nav">
+          <button type="button" class="cross-btn" id="cross-back-4">Back</button>
+          <button type="button" class="cross-btn" id="cross-clear-slots">Clear slots</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 3: game -->
+  <section id="panel-game" class="panel hidden">
+    <div class="subnav">
+      <button type="button" class="chip active" data-factor-game="blaster">Factor Blaster</button>
+      <button type="button" class="chip" data-factor-game="snake">Cross Method Snake</button>
+    </div>
+
+    <div id="game-blaster">
+    <div class="game-hud">
+      <div class="hud-item">Score <b id="g-score">0</b></div>
+      <div class="hud-item">Q <b id="g-qnum">0/0</b></div>
+      <div class="hud-item">Accuracy <b id="g-acc">100%</b></div>
+      <div class="hud-item">Streak <b id="g-streak">0</b></div>
+      <label class="hud-speed">Speed <input id="g-speed" type="range" min="1" max="10" value="2"></label>
+      <button id="g-restart" class="hud-toggle" title="restart round">&#8635;</button>
+      <button id="g-sound" class="hud-toggle" title="toggle sound">&#128266;</button>
+    </div>
+    <div id="game-stage">
+      <div id="game-prompt"></div>
+      <div id="game-enemies"></div>
+      <div id="game-cannon"></div>
+      <div id="game-countdown" class="game-countdown hidden"></div>
+      <div id="game-overlay" class="game-overlay">
+        <div class="ov-card" id="ov-setup">
+          <h2>Factor&nbsp;Blaster</h2>
+          <div class="ov-row">
+            <span class="ov-label">Mode</span>
+            <button class="modebtn active" data-mode="expand">Expand</button>
+            <button class="modebtn" data-mode="factorize">Factorize</button>
+            <button class="modebtn" data-mode="identify">Identify (x, y)</button>
+          </div>
+          <p class="ov-note" id="ov-mode-note">Expand: match the factored form to its expansion (4 answers).</p>
+          <div class="ov-row">
+            <span class="ov-label">Questions</span>
+            <input id="ov-count" type="range" min="3" max="15" value="10">
+            <b id="ov-count-val">10</b>
+          </div>
+          <div class="ov-row">
+            <span class="ov-label">Speed</span>
+            <input id="ov-speed" type="range" min="1" max="10" value="2">
+            <b id="ov-speed-val">2</b>
+          </div>
+          <p class="ov-keys ov-keys-desktop"><b>&larr; &rarr;</b> move &nbsp;·&nbsp; <b>Space / &uarr;</b> shoot &nbsp;·&nbsp; or <b>click</b> an answer</p>
+          <p class="ov-keys ov-keys-phone">Tap an answer, or move the cannon and tap to shoot.</p>
+          <button id="g-start" class="play-btn">&#9654; Start</button>
+        </div>
+        <div class="ov-card hidden" id="ov-summary">
+          <h2>Round complete</h2>
+          <p id="sum-stats"></p>
+          <div id="sum-list" class="sum-list"></div>
+          <div class="ov-row ov-center">
+            <button id="g-again" class="play-btn">&#9654; Play again</button>
+            <button id="g-settings" class="play-btn ghost">Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="hint">One shot per question — the round ends after your chosen number of questions, then you get a summary.</p>
+    </div>
+
+    <div id="snake-game" class="snake-wrap hidden">
+      <details class="snake-how">
+        <summary>How to play</summary>
+        <p>Use arrow keys or WASD to guide the snake. Eat the correct factorization for the trinomial shown above the board. There is no time limit. You have 3 lives, clear 5 levels to win, and avoid walls or your own body.</p>
+        <p><b>Normal:</b> eat the correct factor pair in one step. <b>Advanced:</b> first eat the common factor, then eat both correct linear factors.</p>
+      </details>
+      <div class="snake-hud">
+        <div class="snake-hud-stats">
+          <div class="snake-stat">Level <b id="sn-level">1</b>/5</div>
+          <div class="snake-stat">Lives <b id="sn-lives">3</b></div>
+          <div class="snake-stat">Score <b id="sn-score">0</b></div>
+        </div>
+        <div class="snake-modes" aria-label="Snake mode">
+          <button class="snake-mode active" data-snake-mode="normal" type="button">Normal</button>
+          <button class="snake-mode" data-snake-mode="advanced" type="button">Advanced</button>
+        </div>
+        <span id="sn-msg" class="snake-msg"></span>
+      </div>
+      <div id="sn-prompt" class="snake-prompt"></div>
+      <div class="snake-play">
+        <div class="snake-board-wrap">
+          <canvas id="snake-board" width="520" height="520"></canvas>
+        </div>
+        <div class="snake-controls">
+          <button id="sn-start" class="snake-btn" type="button">Start Snake</button>
+          <div class="snake-pad" aria-label="Snake direction controls">
+            <button class="up" data-snake-dir="up" type="button" aria-label="up">&#8593;</button>
+            <button class="left" data-snake-dir="left" type="button" aria-label="left">&#8592;</button>
+            <button class="right" data-snake-dir="right" type="button" aria-label="right">&#8594;</button>
+            <button class="down" data-snake-dir="down" type="button" aria-label="down">&#8595;</button>
+          </div>
+        </div>
+      </div>
+      <p class="hint">Controls: Arrow keys / WASD · Mobile: use the direction pad · Click <b>Start Snake</b> to begin</p>
+    </div>
+  </section>
+
+  <!-- TAB 4: summary sheets -->
+  <section id="panel-summary" class="panel hidden">
+    <div class="subnav" id="summary-style-nav">
+      <button type="button" class="chip active" data-summary-style="style-1">Style 1</button>
+      <button type="button" class="chip" data-summary-style="style-2">Style 2</button>
+      <button type="button" class="chip" data-summary-style="style-3">Style 3</button>
+    </div>
+    <div class="summary-slideshow">
+      <button type="button" class="summary-arrow" id="summary-prev" aria-label="Previous page">&larr;</button>
+      <div class="summary-stage" id="summary-stage">
+        <div class="summary-set" data-summary-set="style-1">
+          <figure class="summary-slide active">
+            <img src="summary/style-1/summary-1.png?v=20260708" alt="Factorization summary — Style 1, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/style-1/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/style-1/summary-2.png?v=20260708" alt="Factorization summary — Style 1, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/style-1/summary-2.png</code></div>
+          </figure>
+        </div>
+        <div class="summary-set hidden" data-summary-set="style-2">
+          <figure class="summary-slide active">
+            <img src="summary/style-2/summary-1.png?v=20260708" alt="Factorization summary — Style 2, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/style-2/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/style-2/summary-2.png?v=20260708" alt="Factorization summary — Style 2, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/style-2/summary-2.png</code></div>
+          </figure>
+        </div>
+        <div class="summary-set hidden" data-summary-set="style-3">
+          <figure class="summary-slide active">
+            <img src="summary/style-3/summary-1.png?v=20260708" alt="Factorization summary — Style 3, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/style-3/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/style-3/summary-2.png?v=20260708" alt="Factorization summary — Style 3, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/style-3/summary-2.png</code></div>
+          </figure>
+        </div>
+      </div>
+      <button type="button" class="summary-arrow" id="summary-next" aria-label="Next page">&rarr;</button>
+    </div>
+    <p class="summary-meta">Page <b id="summary-page-num">1</b> of <b id="summary-page-total">2</b></p>
+    <p class="hint">L01–02 More about Factorization — pick a style, then use &larr; &rarr; or the arrows to switch pages.</p>
+    <div id="summary-zoom-overlay" class="summary-zoom-overlay hidden" role="dialog" aria-modal="true" aria-label="Zoomed summary image">
+      <button type="button" class="summary-zoom-close" aria-label="Close">&times;</button>
+      <img class="summary-zoom-img" alt="">
+    </div>
+  </section>
+
+  <!-- TAB 5: quiz -->
+  <section id="panel-quiz" class="panel hidden">
+    <div class="quiz-wrap">
+      <div class="quiz-progress-wrap" id="quiz-progress-wrap">
+        <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
+        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
+      </div>
+      <div id="quiz-root"></div>
+      <div class="quiz-nav" id="quiz-nav">
+        <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
+        <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
+      </div>
+    </div>
+    <p class="hint">Answer each question, use Next to move on. Submit on the last question to see all results.</p>
+  </section>
+
+
+  <script>
+    if (window.self !== window.top) document.documentElement.classList.add("in-embed");
+  </script>
+</body>
+</html>

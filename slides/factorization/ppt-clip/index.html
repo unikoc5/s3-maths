@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../../shared/ppt-deck-viewer.css">
+</head>
+<body>
+  <script>
+    (function () {
+      var p = new URLSearchParams(location.search);
+      var body = document.body;
+      var title = p.get("title") || "PPT clip";
+      var video = p.get("v") || "../l01-02-main-deck/l01-02-main.mp4";
+      var source = p.get("source") || "";
+      var start = p.get("start");
+      var end = p.get("end");
+      body.setAttribute("data-ppt-title", title);
+      body.setAttribute("data-ppt-video", video);
+      if (source) body.setAttribute("data-ppt-source", source);
+      if (start != null && start !== "") body.setAttribute("data-ppt-start", start);
+      if (end != null && end !== "") body.setAttribute("data-ppt-end", end);
+      body.setAttribute("data-ppt-embed", "1");
+    })();
+  </script>
+  <script src="../../../shared/ppt-deck-viewer.js"></script>
+</body>
+</html>

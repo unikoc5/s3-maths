@@ -1,0 +1,5 @@
+# CF deploys strip slide mp4s. External 200 rewrites are not supported on Pages;
+# use 302 so missing /slides/*.mp4 requests land on GitHub Pages.
+# Primary fix is shared/video-cdn.js (rewrites Reveal data-background-video).
+/slides/:a/:b/index_assets/:file  https://unipluseducationact-ctrl.github.io/math-s3/dashboard/slides/:a/:b/index_assets/:file  302
+/slides/:a/:b/:c/index_assets/:file  https://unipluseducationact-ctrl.github.io/math-s3/dashboard/slides/:a/:b/:c/index_assets/:file  302

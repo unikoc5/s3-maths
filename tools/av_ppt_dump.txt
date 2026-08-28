@@ -1,0 +1,228 @@
+
+================================================================================
+FILE: Pre S3 Maths L07-09 Area and Volume (2025).pptx
+================================================================================
+
+--- slide 1 ---
+Area and Volume 1 Area of different shape Area of square l l l 2 l w Area of rectangle l w b h Area of triangle b h 2 b h Area of parallelogram b h b 1 b 2 h Area of trapezium b 1 b 2 2 Area of rhombus d 1 d 2 2
+
+--- slide 2 ---
+r Area of circle r 2 r Area of Sector r 2 360 Volume of Prism Volume of Prism base area h Volume of cylinder r 2 h
+
+--- slide 3 ---
+Base area 1 2 ( 4 ) 4 cm 2 22 cm 2 Volume of Prism 22 10 220 cm 3 cm 3 2 base area 2 22 cm 2 44 cm 2 Total area of all lateral faces ( 4 4 5 ) 10 cm 2 200 cm 2 Total surface area of the prism ( 200 ) cm 2 244 cm 2
+
+--- slide 4 ---
+16 Let r mm be the base radius of the cylinder (a) Circumference of its base 32 mm 2 32 32 2 16 The base radius of the cylinder is 16 mm Let h mm be the height of the cylinder Total surface area 1312 mm 2 2 16 h 2 16 2 1312 32 512 1312 32 800 h 25 25 The height of the cylinder is 25 mm (b) Volume of the cylinder 16 2 25 mm 3 6400 mm 3
+
+--- slide 5 ---
+Volume of Pyramid Volume of Pyramid 1 3 base area h Volume of Cone 1 3 r 2 h
+
+--- slide 6 ---
+9 cm 14 cm Total capacity of the eight cups 1 3 9 2 2 cm 3 8 2375 cm 3 (cor. to the nearest ) cm 3 2250 cm 3 The eight cups can hold orange juice of volume 2250 cm 3
+
+--- slide 7 ---
+B C D 12 cm 16 cm (a) In BD BC 2 CD 2 2 20 cm 2 cm N ND 1 2 BD 1 2 20 cm 10 cm 26 cm N A D 10 cm In AN AD 2 ND 2 2 24 cm 2 cm 24 cm (b) Volume of the pyramid 1 3 area of rectangle BCDE AN 1 3 ( 16 24 cm 3 1536 cm 3 10 cm
+
+--- slide 8 ---
+12 cm 6 cm 6 cm 6 cm y 3 cm 2 2 2 2 27 Base area 1 2 54 3 cm 2 Volume 1 3 54 3 12 216 3 cm 3 ( ) 374 cm 3
+
+--- slide 9 ---
+Surface area of cone Curved surface area of cone r l Total surface area of cone base area Curved surface area of cone r 2 r l
+
+--- slide 10 ---
+(a) Let r cm be the base radius of the circular cone 1 3 2 2 Th e base radius of the circular cone is 6 cm (b) Slant height of the circular cone 2 2 cm 10 cm 10 (c) Total surface area of the circular cone ( 2 ) cm 2 96 cm 2
+
+--- slide 11 ---
+h 1 Let r cm be the length of a side of the square base of pyramid A and the base radius of cone B h 2 Let h 1 cm and h 2 cm be the heights of pyramid A and cone B respectively Volume of pyramid A volume of cone B 1 3 2 h 1 1 3 2 h 2 h 1 h 2 i.e. h 1 h 2 The height of pyramid A is greater
+
+--- slide 12 ---
+(a) Let r cm be the base radius of the paper cup 2 2 Capacity of the paper cup 1 3 2 cm 3 424 cm 3 (cor. to 3 sig. fig.) (bi) Area of the sector Curved surface area of the paper cup cm 2 92.25 cm 2 290 cm 2 (cor. to 3 sig. fig.) ( bii ) Let be the angle of the sector Radius of the sector Slant height of the paper cup 360 o 2 92.25 79.0 o (cor. to 3 sig. fig.) The angle of the sector is 79.0 o 20.5 cm
+
+--- slide 13 ---
+Area and Volume 2 Sphere Volume of Sphere 4 3 r 3 Surface area of Sphere 4 r 2
+
+--- slide 14 ---
+(a) Let r cm be the radius of the basketball 4 r 2 r 2 925 2 r 925 2 12.1 (cor. to 3 sig. fig.) r The radius of the basketball is 12.1 cm (b) Volume 4 3 3 925 2 cm 3 cm 3 (cor. to 3 sig. fig.)
+
+--- slide 15 ---
+Let r cm be the radius of each small sphere (a) Volume of the large sphere Total volume of the 27 small spheres 4 3 3 4 3 3 3 The radius of each small sphere is (b) Surface area of each small sphere 2 cm 2 100 cm 2
+
+--- slide 16 ---
+16 cm 15.6 cm Internal radius 1 2 15.6 cm 7.8 cm External radius 0.2 ) cm 8 cm ( 7.8 Volume of steel for each bowl 1 2 4 3 3 1 2 4 3 3 cm 3 cm 3 (cor. to 5 sig. fig.) Let n be the number of bowls that can be made n n (cor. to 3 sig. fig.) At most bowls can be made
+
+--- slide 17 ---
+30 15 15 15 Let h cm be the height of the cylinder h Capacity of the vessel Volume of the hemisphere Volume of the cylinder 1 2 4 3 30 2 3 30 2 2 h cm 3 ( 2250 225 cm 3 2250 225 9000 225 6750 30 30 The height of the vessel The height of the cylinder The radius of the hemisphere 30 30 2 cm 45 cm 40 cm The height of the vessel is not less than 40 cm
+
+--- slide 18 ---
+(a) Let l cm be the slant height of the cone l Total surface area of the cone ( 14.4 l 14.4 ) 2 cm 2 ( 14.4 207.36 ) cm 2 Total surface area of the hemisphere 1 2 4 2 2 cm 2 432 cm 2 14.4 207.36 432 14.4 224.64 15.6 The slant height of the cone is 15.6 cm
+
+--- slide 19 ---
+(b) 15.6 15.6 cm 2 2 Height of the cone cm cm Volume of the cone 1 3 14.4 2 cm 3 414.72 cm 3 Volume of the hemisphere 1 2 4 3 3 cm 3 1152 cm 3 414.72 cm 3 The volume of the hemisphere is greater
+
+--- slide 20 ---
+h 14 h h (a) Let h cm be the original water level Total volume of the three stones Volume of water that has risen 3 4 3 3 2 ( 14 3 14 The original water level is cm
+
+--- slide 21 ---
+cm (b) Total volume of water and the new stone 4 3 3 2 cm 3 517.5 cm 3 Capacity of the cup 2 cm 3 540 cm 3 517.5 540 The water will not overflow
+
+--- slide 22 ---
+O B C A (a) Refer to the notations in the figure Let r cm be the radius of the sphere, then r r 8 r OA OC r cm and OB ( 8 r) cm In OB 2 OC 2 BC 2 ( Pyth . theorem) ( 8 r) 2 2 2 2 2 The radius of the sphere is cm (b) Volume of the cone 1 3 2 cm 3 28 cm 3 Volume of the sphere 4 3 3 cm 3 00 cm 3 The required percentage 28 00 100% 25.6%
+
+--- slide 23 ---
+Let h be the height of the right cylinder h r r r 2 r 4 5 ( r h ) (a) Drop in water level ( r h ) 20% 1 5 r 1 5 h Volume of the solid Volume of water that has dropped 2 ( 2 1 5 r 1 5 h 1 2 4 3 3 2 h 4 3 3 4 5 2 h 2 3 3 2 h h 2 3 r The height of the right cylinder 2 3 r ( r h )
+
+--- slide 24 ---
+h r r r 2 r 4 5 ( r h ) ( r h ) h 2 3 r (b) Total surface area of the solid cm 2 975 h 2 3 r 1 2 4 2 2 2 975 cm 2 3 2 2 2 3 r 975 cm 2 975 cm 2 13 3 2 15 cm Volume of water in the tank 2 ( 2 4 5 r 4 5 h 2 ( 2 4 5 4 5 15 2 3 15 cm 3 18000 cm 3
+
+--- slide 25 ---
+Area and Volume 3 If And AB XY BC YZ CA ZX
+
+--- slide 26 ---
+Similar Solid Area ratio L 1 L 2 ( ) 2 A 1 A 2 Volume ratio L 1 L 2 ( ) 3 V 1 V 2
+
+--- slide 27 ---
+Let x cm be the height of the building in the drawing x cm 126 m 1 cm 9 m x cm 126 m 1 cm 9 m x 1 9 126 14 The height of the building in the drawing is 14 cm
+
+--- slide 28 ---
+cm 2 T 2.7 cm 2 5 3 2 T 2.7 25 9 T 25 9 2.7 7.5
+
+--- slide 29 ---
+cm 2 x 200 cm 2 3 4 2 9 16 x 9 16 200 112.5
+
+--- slide 30 ---
+Volume of water in the vessel 1 2 ( ) 3 Volume of water in the vessel 1 8 Volume of water that the vessel can hold 480 cm 3 Volume of water in the vessel 1 8 480 cm 3 60 cm 3
+
+--- slide 31 ---
+(a) AP A Q PC Q E AP 10.5 14 48 cm 36 cm 36 cm (b) Volume of the frustum Volume of the larger circular cone Volume of the smaller circular cone 1 3 14 2 cm 3 1 3 10.5 2 ( 3136 1323 cm 3 1813 cm 3 P C A
+
+--- slide 32 ---
+36 cm (c) 2 2 2 2 cm 50 cm 50 cm 2 2 2 2 cm 37.5 cm 37.5 cm Total surface area of the frustum 14 2 2 14 ( 50 37.5 ) cm 2 cm 2 cm 2
+
+--- slide 33 ---
+(a) Let h cm be the height of the vessel 1 3 2 h 324 h 12 The height of the vessel is 12 cm A B C D B C D A V (b) Refer to the notations in the figure AB 1 2 XY 1 2 9 cm 4.5 cm CD AB VC VA 12 8 4.5 CD 8 12 4.5 cm 3 cm 3 P Q CD 3 cm 6 cm 2 2 Volume of water in the vessel 6 cm 1 3 2 cm 3 cm 3 The additional volume of water 324 cm 3 228 cm 3 12 cm
+
+--- slide 34 ---
+Pyramid VSP Q R and VTUXY are similar area of area of VS VT 2 VS VT 2 4 4 5 VS VT 2 4 9 VS VT 2 3 Let K cm be the volume of pyramid VSP Q R 3 K cm 1080 cm 3 3 VS VT 3 K 1080 2 3 3 K 1080 8 27 K 8 27 1080 320 Volume of P Q RSTUXY Volume of VTUXY Volume of VSP Q R 1080 cm 3 760 cm 3
+
+--- slide 35 ---
+A B P C Q D E R F V Let A 0 , A 1 and A 2 be the curved surface areas of cones VEF , VCD and VAB respectively Let x cm be the circumference of the water surface Cones VEF , VCD and VAB are similar A 1 A 0 x 12 2 x 144 2 A 2 A 0 20 12 2 25 9 According to the question, we have A 2 A 1 256 81 A 2 A 0 A 0 A 0 A 1 A 0 A 0 A 0 256 81 25 9 1 x 144 2 1 256 81 9 16 x 144 2 1 x 2 225 x 15 The circumference of the water surface is 15 cm
+
+--- slide 36 ---
+A B P C Q D E R F V 15 cm (b) Let V cm be the volume of cone VEF 3 Volume of cone VAB 20 12 3 V cm 3 8000 V 1728 cm 3 Volume of cone VCD 15 12 3 V cm 3 3375 V 1728 cm 3 Capacity of the cup Volume of water 8000 V 1728 V 3375 V 1728 V 3.81 (cor. to 3 sig. fig.) 16 9 3 5.618 … 3.81 The claim is disagreed
+
+================================================================================
+FILE: pre S3 Maths L07-09 Area and Volume Quiz (ANS) (Simson) v2.pptx
+================================================================================
+
+--- slide 1 ---
+Area and Volume 1 Area of different shape Area of square l l l 2 l w Area of rectangle l w b h Area of triangle b h 2 b h Area of parallelogram b h b 1 b 2 h Area of trapezium b 1 b 2 2 Area of rhombus d 1 d 2 2
+
+--- slide 2 ---
+r Area of circle r 2 r Area of Sector r 2 360 Volume of Prism Volume of Prism base area h Volume of cylinder r 2 h
+
+--- slide 3 ---
+Volume of Pyramid Volume of Pyramid 1 3 base area h Volume of Cone 1 3 r 2 h
+
+--- slide 4 ---
+Surface area of cone Curved surface area of cone r l Total surface area of cone base area Curved surface area of cone r 2 r l
+
+--- slide 5 ---
+Area and Volume 2 Sphere Volume of Sphere 4 3 r 3 Surface area of Sphere 4 r 2
+
+--- slide 6 ---
+Area and Volume 3 If And AB XY BC YZ CA ZX
+
+--- slide 7 ---
+Similar Solid Area ratio L 1 L 2 ( ) 2 A 1 A 2 Volume ratio L 1 L 2 ( ) 3 V 1 V 2
+
+--- slide 8 ---
+Base area of pyramid 30 cm 2 Volume of Pyramid 160 cm 3 1 3 Base area of pyramid Height 30 16 1 3 The volume of pyramid is 160 . The answer is C. cm 3 1 2 ( 5 ) 12
+
+--- slide 9 ---
+Base area of circular cone 2 2 cm 2 Volume of circular cone 1 3 Base area of cone height cm 3 Let h cm be the height of the cylinder. Volume of circular cone Volume of cylinder Base area of cylinder 2 2 cm 2 The height of cylinder is 3 . The answer is B. cm 4 1 3 h eight base area h h cm h cm
+
+--- slide 10 ---
+Total volume of the 27 small spheres 4 3 3 4 3 3 Let p cm be the radius of large sphere. Volume of the large sphere Total volume of the 27 small spheres 4 3 3 3 Surface area of large sphere 2 324 cm 2 2 The surface area of large sphere is 324 𝛑 . The answer is C. cm 2 cm 3 cm p r r r r r
+
+--- slide 11 ---
+Let r cm be the radius of the sphere. Surface area of the sphere 2 2 2 Volume of the sphere 4 3 3 4 3 3 256 3 cm 3 cm The surface area of large sphere is . The answer is D. cm 3 256 3 r
+
+--- slide 12 ---
+Let x and h cm be the capacity and height of the vessel. cm 3 Volume ratio L 1 L 2 ( ) 3 V 1 V 2 height of the vessel d epth of water ( ) 3 capacity of the vessel v olume of water h ( ) 3 3 5 h x 324 5 3 ( ) 3 x 324 125 27 x 324 x 1500 cm 3 The surface area of large sphere is 1500 . The answer is D. cm 3 h depth of water h depth of water
+
+--- slide 13 ---
+Volume of the hemisphere 3 1 2 ( ) 4 3 4 3 3 1 2 ( ) 4 3 1 2 128 3 cm 3 Volume of the cylinder Base area Height 2 Height 2 10 160 cm 3 Volume of the component Volume of the hemisphere Volume of the cylinder 128 3 160 637 cm 3 (correct to 3 sig. fig.) The volume of the component is 637 . cm 3 10 m m 4 m m 4 m m
+
+--- slide 14 ---
+The base of the right pyramid (ABCD) is a square. OM CD 2 OM 10 2 OM 5 cm In VM OM 2 VO 2 2 ( Pyth . theorem) 2 2 VM 2 VM 25 144 VM 169 13 VM cm ABCDV is a right pyramid. Total surface area of pyramid ABCDV Area of (square ABCD ) Area of (square ABCD 4 ) CD AD 4 1 2 AD VM 4 1 2 10 10 10 13 360 cm 2 The total surface area of pyramid is 360 . cm 2 A D B C M O V A D V M
+
+--- slide 15 ---
+Area ratio L 1 L 2 ( ) 2 A 1 A 2 Radius of water surface ( ) 2 Curved surface area of vessel Area of surface of vessel in contact with water Base radius of vessel Radius of water surface ( ) 2 Base radius of vessel 36 25 Radius of water surface Base radius of vessel 36 25 Radius of water surface Base radius of vessel 6 5 The ratio of base radius of vessel to radius of water surface is 6 : 5 . radius radius
+
+--- slide 16 ---
+Radius of water surface ( ) 3 Volume of vessel Volume of water Base radius of vessel Volume ratio L 1 L 2 ( ) V 1 V 2 3 6 5 ( ) 3 Volume of vessel 600 Volume of vessel 600 216 125 Volume of vessel 1036.8 cm 3 Volume of water after addition 600 300 < 1036.8 cm 3 900 cm 3 The water will not overflow. Alex’s claim is not correct.
+
+================================================================================
+FILE: Pre S3 Maths L07-09 Area and Volume.pptx
+================================================================================
+
+--- slide 1 ---
+Area and Volume 1 Area of different shape Area of square l l l 2 l w Area of rectangle l w b h Area of triangle b h 2 b h Area of parallelogram b h b 1 b 2 h Area of trapezium b 1 b 2 2 Area of rhombus d 1 d 2 2
+
+--- slide 2 ---
+r Area of circle r 2 r Area of Sector r 2 360 Volume of Prism Volume of Prism base area h Volume of cylinder r 2 h
+
+--- slide 3 ---
+Volume of Prism base area h 8 6 2 9 Volume of cylinder r 2 h ( 6 ) 2 10 216 cm 3 360
+
+--- slide 4 ---
+Volume of Pyramid Volume of Pyramid 1 3 base area h Volume of Cone 1 3 r 2 h
+
+--- slide 5 ---
+Volume of Pyramid 1 3 base area h 1 3 ( 8 ) 2 9 192 cm 3 Volume of Cone 1 3 r 2 h 1 3 ( 3 ) 2 4 12 cm 3
+
+--- slide 6 ---
+Surface area of cone Curved surface area of cone r l Total surface area of cone base area Curved surface area of cone r 2 r l
+
+--- slide 7 ---
+Curved surface area of cone r l ( 3 ) ( 5 ) 15 cm 2 Total surface area of cone r 2 r l ( 6 ) 2 ( 6 ) ( 10 ) 96 cm 2 6 2 8 2 l 2 r 2 h 2 l 2 ( )
+
+--- slide 8 ---
+(a) Since P Q R is a right-angled isosceles triangle Q R PR Q R 2 P R 2 20 2 ( ) 2 Q R 2 20 2 Q R 200 ( b ) Volume of Pyramid 1 3 1 2 200 2 12 400 cm 3 Q R 2 cm 10
+
+--- slide 9 ---
+Let h cm be the water level of the cylindrical vessel 1 3 ( 6 ) 2 13 ( 6 ) 2 h h 13 3 The water level of the cylindrical vessel is cm 13 3
+
+--- slide 10 ---
+Area and Volume 2 Sphere Volume of Sphere 4 3 r 3 Surface area of Sphere 4 r 2
+
+--- slide 11 ---
+r 18 2 9 4 3 ( 9 ) 3 972 cm 3 Surface area of Sphere 4 r 2 Volume of Sphere 4 3 r 3 4 ( 6 ) 2 144 cm 3
+
+--- slide 12 ---
+Old radius 30 New radius r Old volume 4 3 r 3 New volume 4 3 r 3 ( 1 20 % ) Let r cm be the new radius 4 3 ( 30 ) 3 ( 1 20 % ) 4 3 r 3 r 3 32400 r (cor. to 3 sig. fig.) 31.9
+
+--- slide 13 ---
+Let r cm be the radius of each small spheres 4 3 ( 10 ) 3 4 3 r 3 8 r 5 Surface area of large sphere 4 ( 10 ) 2 1256.6 Surface area of 8 small sphere 4 ( 5 ) 2 8 2513.3 Percentage change 2513.3 1256.6 1256.6 100% 100%
+
+--- slide 14 ---
+Area and Volume 3 If And AB XY BC YZ CA ZX
+
+--- slide 15 ---
+( ) 2 x 80 o x 40 o BD CE AD AE ( ) y 3 18 5 15 y 3 9 2 y 27 2
+
+--- slide 16 ---
+Similar Solid Area ratio L 1 L 2 ( ) 2 A 1 A 2 Volume ratio L 1 L 2 ( ) 3 V 1 V 2
+
+--- slide 17 ---
+(a) r 1 r 2 2 a 3 a 2 3 ( b ) Ratio of areas 2 2 3 2 4 9 Ratio of volumes 2 3 3 3 8 27
+
+--- slide 18 ---
+Volume of water in the vessel 64 1 2 ( ) 3 Volume of water in the vessel 1 8 64 8 cm 3
+
+--- slide 19 ---
+Volume of water in the cylindrical vessel 30 2 ( ) 2 10 2250 cm 3 Volume of water in the bowl Volume of water in the cylindrical vessel 1 2 1 3 36 2 x 2 ( ) 3 2250 36 2 x 2 ( ) 3 3375 x 3
+
+--- slide 20 ---
+r 3 Let h cm be the original depth of water 5.36 ( ) 2 4 3 ( 3 ) 3 ( ) ( ) 2 Volume of the water inside the container Volume of the cylindrical part in contact with water Volume of the sphere Volume of the sphere Volume of water that has risen 增體 全水體 增體 水體 水體 全水體 全水體 增體 水體

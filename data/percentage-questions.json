@@ -1,0 +1,2673 @@
+{
+ "topic": "Percentages",
+ "questions": [
+  {
+   "id": "PCT-L04-Q1a",
+   "source": "L04 Percentages (A)",
+   "number": "1(a)",
+   "prompt_latex": "200 \\text{ increases by } 30\\%,\\ \\text{then } 40\\%",
+   "type": "percentage-change",
+   "answer_latex": "364",
+   "steps_latex": [
+    "\\text{New value} = \\text{Original}\\times(1+30\\%)\\times(1+40\\%)",
+    "= 200(1+30\\%)(1+40\\%)",
+    "= 364"
+   ],
+   "params": {
+    "original": 200.0,
+    "changes": [
+     30.0,
+     40.0
+    ],
+    "result": 364.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q1b",
+   "source": "L04 Percentages (A)",
+   "number": "1(b)",
+   "prompt_latex": "8\\,\\text{m decreases by }50\\%,\\ \\text{then }10\\%",
+   "type": "percentage-change",
+   "answer_latex": "3.6\\,\\text{m}",
+   "steps_latex": [
+    "\\text{New value} = \\text{Original}\\times(1-50\\%)\\times(1-10\\%)",
+    "= 8(1-50\\%)(1-10\\%)",
+    "= 3.6\\,\\text{m}"
+   ],
+   "params": {
+    "original": 8.0,
+    "changes": [
+     -50.0,
+     -10.0
+    ],
+    "result": 3.6
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q1c",
+   "source": "L04 Percentages (A)",
+   "number": "1(c)",
+   "prompt_latex": "\\$1600 \\text{ decreases by }25\\%,\\ \\text{then increases }60\\%",
+   "type": "percentage-change",
+   "answer_latex": "1920",
+   "steps_latex": [
+    "\\text{New value} = \\text{Original}\\times(1-25\\%)\\times(1+60\\%)",
+    "= 1600(1-25\\%)(1+60\\%)",
+    "= 1920"
+   ],
+   "params": {
+    "original": 1600.0,
+    "changes": [
+     -25.0,
+     60.0
+    ],
+    "result": 1920.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q2",
+   "source": "L04 Percentages (A)",
+   "number": "2",
+   "prompt_latex": "2200\\,\\text{mm rainfall}:\\ -18\\%\\ \\text{then}\\ +2\\%",
+   "type": "percentage-change",
+   "answer_latex": "1840.08\\,\\text{mm}",
+   "steps_latex": [
+    "\\text{New value} = \\text{Original}\\times(1-18\\%)\\times(1+2\\%)",
+    "= 2200(1-18\\%)(1+2\\%)",
+    "= 1840.08\\,\\text{mm}"
+   ],
+   "params": {
+    "original": 2200.0,
+    "changes": [
+     -18.0,
+     2.0
+    ],
+    "result": 1840.08
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q3a",
+   "source": "L04 Percentages (A)",
+   "number": "3(a)",
+   "prompt_latex": "200 \\text{ books, }60\\% \\text{ fiction; fiction }+10\\%.\\ \\text{Fiction now?}",
+   "type": "percentage-change",
+   "answer_latex": "132",
+   "steps_latex": [
+    "\\text{Fiction} = 200\\times60\\%\\times(1+10\\%)",
+    "= 120\\times1.1",
+    "= 132"
+   ],
+   "params": {
+    "result": 132.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q3b",
+   "source": "L04 Percentages (A)",
+   "number": "3(b)",
+   "prompt_latex": "\\text{Non-fiction }(40\\%)\\ +20\\%.\\ \\text{Non-fiction now?}",
+   "type": "percentage-change",
+   "answer_latex": "96",
+   "steps_latex": [
+    "\\text{Non-fiction} = 200\\times40\\%\\times(1+20\\%)",
+    "= 80\\times1.2",
+    "= 96"
+   ],
+   "params": {
+    "result": 96.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q3c",
+   "source": "L04 Percentages (A)",
+   "number": "3(c)",
+   "prompt_latex": "\\text{Increase in total number of books?}",
+   "type": "percentage-change",
+   "answer_latex": "28",
+   "steps_latex": [
+    "\\text{Increase} = (132+96)-200",
+    "= 228-200",
+    "= 28"
+   ],
+   "params": {
+    "result": 28.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q4",
+   "source": "L04 Percentages (A)",
+   "number": "4",
+   "prompt_latex": "\\text{Table }\\$697\\text{ now}=18\\%\\text{ below last yr}=15\\%\\text{ below 2 yr ago. Value 2 yr ago?}",
+   "type": "reverse-percentage",
+   "answer_latex": "1000",
+   "steps_latex": [
+    "x\\times(1-15\\%)(1-18\\%) = 697",
+    "0.697\\,x = 697",
+    "x = 1000"
+   ],
+   "params": {
+    "final": 697.0,
+    "changes": [
+     -15.0,
+     -18.0
+    ],
+    "result": 1000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q5",
+   "source": "L04 Percentages (A)",
+   "number": "5",
+   "prompt_latex": "x:\\ +15\\%\\ \\text{then}\\ -30\\% = 241.5.\\ \\text{Find }x",
+   "type": "reverse-percentage",
+   "answer_latex": "300",
+   "steps_latex": [
+    "x\\times(1+15\\%)(1-30\\%) = 241.5",
+    "0.805\\,x = 241.5",
+    "x = 300"
+   ],
+   "params": {
+    "final": 241.5,
+    "changes": [
+     15.0,
+     -30.0
+    ],
+    "result": 300.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q6",
+   "source": "L04 Percentages (A)",
+   "number": "6",
+   "prompt_latex": "x:\\ +25\\%\\ \\text{then}\\ -10\\% = 99.\\ \\text{Find }x",
+   "type": "reverse-percentage",
+   "answer_latex": "88",
+   "steps_latex": [
+    "x\\times(1+25\\%)(1-10\\%) = 99",
+    "1.125\\,x = 99",
+    "x = 88"
+   ],
+   "params": {
+    "final": 99.0,
+    "changes": [
+     25.0,
+     -10.0
+    ],
+    "result": 88.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q7",
+   "source": "L04 Percentages (A)",
+   "number": "7",
+   "prompt_latex": "\\text{Salary }+12\\%,+25\\%\\to\\$17500.\\ \\text{Salary 2 years ago?}",
+   "type": "reverse-percentage",
+   "answer_latex": "12500",
+   "steps_latex": [
+    "x\\times(1+12\\%)(1+25\\%) = 17500",
+    "1.4\\,x = 17500",
+    "x = 12500"
+   ],
+   "params": {
+    "final": 17500.0,
+    "changes": [
+     12.0,
+     25.0
+    ],
+    "result": 12500.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q8a",
+   "source": "L04 Percentages (A)",
+   "number": "8(a)",
+   "prompt_latex": "+6\\%\\text{ then }+7\\% = 90736.\\ \\text{Original?}",
+   "type": "reverse-percentage",
+   "answer_latex": "80000",
+   "steps_latex": [
+    "x\\times(1+6\\%)(1+7\\%) = 90736",
+    "1.1342\\,x = 90736",
+    "x = 80000"
+   ],
+   "params": {
+    "final": 90736.0,
+    "changes": [
+     6.0,
+     7.0
+    ],
+    "result": 80000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q8b",
+   "source": "L04 Percentages (A)",
+   "number": "8(b)",
+   "prompt_latex": "+30\\%\\text{ then }-20\\% = 208\\,\\text{g}.\\ \\text{Original?}",
+   "type": "reverse-percentage",
+   "answer_latex": "200\\,\\text{g}",
+   "steps_latex": [
+    "x\\times(1+30\\%)(1-20\\%) = 208",
+    "1.04\\,x = 208",
+    "x = 200\\,\\text{g}"
+   ],
+   "params": {
+    "final": 208.0,
+    "changes": [
+     30.0,
+     -20.0
+    ],
+    "result": 200.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q8c",
+   "source": "L04 Percentages (A)",
+   "number": "8(c)",
+   "prompt_latex": "-40\\%\\text{ then }+60\\% = 76.8\\,\\text{cm}^3.\\ \\text{Original?}",
+   "type": "reverse-percentage",
+   "answer_latex": "80\\,\\text{cm}^{3}",
+   "steps_latex": [
+    "x\\times(1-40\\%)(1+60\\%) = 76.8",
+    "0.96\\,x = 76.8",
+    "x = 80\\,\\text{cm}^{3}"
+   ],
+   "params": {
+    "final": 76.8,
+    "changes": [
+     -40.0,
+     60.0
+    ],
+    "result": 80.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q9",
+   "source": "L04 Percentages (A)",
+   "number": "9",
+   "prompt_latex": "\\text{Car }\\$125000:\\ -15\\%\\text{ then }-8\\%.\\ \\text{Overall change?}",
+   "type": "percentage-change",
+   "answer_latex": "-21.8\\%",
+   "steps_latex": [
+    "\\text{Overall change} = \\left[(1-15\\%)(1-8\\%)-1\\right]\\times100\\%",
+    "= \\left[0.782-1\\right]\\times100\\%",
+    "= -21.8\\%"
+   ],
+   "params": {
+    "changes": [
+     -15.0,
+     -8.0
+    ],
+    "overall_pct": -21.8,
+    "factor": 0.782
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q10",
+   "source": "L04 Percentages (A)",
+   "number": "10",
+   "prompt_latex": "\\text{Water }1.25\\,\\text{L}:\\ +22\\%\\text{ then }-30\\%.\\ \\text{Overall change?}",
+   "type": "percentage-change",
+   "answer_latex": "-14.6\\%",
+   "steps_latex": [
+    "\\text{Overall change} = \\left[(1+22\\%)(1-30\\%)-1\\right]\\times100\\%",
+    "= \\left[0.854-1\\right]\\times100\\%",
+    "= -14.6\\%"
+   ],
+   "params": {
+    "changes": [
+     22.0,
+     -30.0
+    ],
+    "overall_pct": -14.6,
+    "factor": 0.854
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q11",
+   "source": "L04 Percentages (A)",
+   "number": "11",
+   "prompt_latex": "\\text{Revenue }+20\\%,+10\\%,+35\\%,-45\\%.\\ \\text{Overall change?}",
+   "type": "percentage-change",
+   "answer_latex": "-1.99\\%",
+   "steps_latex": [
+    "\\text{Overall change} = \\left[(1+20\\%)(1+10\\%)(1+35\\%)(1-45\\%)-1\\right]\\times100\\%",
+    "= \\left[0.9801-1\\right]\\times100\\%",
+    "= -1.99\\%"
+   ],
+   "params": {
+    "changes": [
+     20.0,
+     10.0,
+     35.0,
+     -45.0
+    ],
+    "overall_pct": -1.99,
+    "factor": 0.9801
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q12",
+   "source": "L04 Percentages (A)",
+   "number": "12",
+   "prompt_latex": "-90\\%\\text{ then }+x\\%\\Rightarrow\\text{overall }-83\\%.\\ \\text{Find }x",
+   "type": "percentage-change",
+   "answer_latex": "70\\%",
+   "steps_latex": [
+    "(1-90\\%)(1+x\\%) - 1 = -83\\%",
+    "0.1(1+x\\%) = 0.17",
+    "x = 70"
+   ],
+   "params": {
+    "x": 70.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q13",
+   "source": "L04 Percentages (A)",
+   "number": "13",
+   "prompt_latex": "\\text{Block: }l\\,(1+20\\%),\\ w\\,(1+15\\%),\\ V\\,(1-10\\%).\\ \\%\\text{ change in }h?",
+   "type": "percentage-change",
+   "answer_latex": "-34.782609\\%",
+   "steps_latex": [
+    "V = l\\,w\\,h \\Rightarrow \\text{factor}_h = \\frac{\\text{factor}_V}{\\text{factor}_l\\,\\text{factor}_w}",
+    "= \\frac{0.9}{1.2\\times1.15} = 0.652174",
+    "\\%\\text{ change} = (0.652174-1)\\times100\\% = -34.782609\\%"
+   ],
+   "params": {
+    "height_pct": -34.78260869565217
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q14",
+   "source": "L04 Percentages (A)",
+   "number": "14",
+   "prompt_latex": "\\text{Block: }l\\,(1-15\\%),\\ w\\,(1+16\\%),\\ V\\,(1+6\\%).\\ \\%\\text{ change in }h?",
+   "type": "percentage-change",
+   "answer_latex": "+7.505071\\%",
+   "steps_latex": [
+    "V = l\\,w\\,h \\Rightarrow \\text{factor}_h = \\frac{\\text{factor}_V}{\\text{factor}_l\\,\\text{factor}_w}",
+    "= \\frac{1.06}{0.85\\times1.16} = 1.075051",
+    "\\%\\text{ change} = (1.075051-1)\\times100\\% = +7.505071\\%"
+   ],
+   "params": {
+    "height_pct": 7.505070993914807
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q15a",
+   "source": "L04 Percentages (A)",
+   "number": "15(a)",
+   "prompt_latex": "\\text{Circle radius }r\\text{ cm, decreased by }20\\%.\\ \\text{Original area?}",
+   "type": "percentage-change",
+   "answer_latex": "\\pi r^2",
+   "steps_latex": [
+    "\\text{Original radius} = r",
+    "A = \\pi r^2"
+   ],
+   "params": {
+    "expression": "pi r^2"
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q15b",
+   "source": "L04 Percentages (A)",
+   "number": "15(b)",
+   "prompt_latex": "\\text{Circle radius }-20\\%.\\ \\text{New area in terms of }r?",
+   "type": "percentage-change",
+   "answer_latex": "0.64\\pi r^2",
+   "steps_latex": [
+    "r' = r(1-20\\%) = 0.8r",
+    "A' = \\pi (r')^2 = \\pi(0.8r)^2",
+    "= 0.64\\pi r^2"
+   ],
+   "params": {
+    "expression": "0.64 pi r^2"
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q15c",
+   "source": "L04 Percentages (A)",
+   "number": "15(c)",
+   "prompt_latex": "\\text{Circle radius }-20\\%.\\ \\%\\text{ change in area?}",
+   "type": "percentage-change",
+   "answer_latex": "-36\\%",
+   "steps_latex": [
+    "\\text{area factor} = \\left(\\frac{r'}{r}\\right)^2 = (0.8)^2 = 0.64",
+    "\\%\\text{ change} = (0.64 - 1)\\times100\\%",
+    "= -36\\%"
+   ],
+   "params": {
+    "area_pct": -36.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q16a",
+   "source": "L04 Percentages (A)",
+   "number": "16(a)",
+   "prompt_latex": "\\text{Square side }l\\text{ cm, }+20\\%\\text{ then }+20\\%.\\ \\text{New area?}",
+   "type": "percentage-change",
+   "answer_latex": "2.0736l^2",
+   "steps_latex": [
+    "\\text{new side} = l(1+20\\%)(1+20\\%) = 1.44l",
+    "\\text{new area} = (1.44l)^2 = 2.0736l^2"
+   ],
+   "params": {
+    "expression": "2.0736 l^2"
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q16b",
+   "source": "L04 Percentages (A)",
+   "number": "16(b)",
+   "prompt_latex": "\\text{Square side }+20\\%\\text{ then }+20\\%.\\ \\%\\text{ change in area?}",
+   "type": "percentage-change",
+   "answer_latex": "+107.36\\%",
+   "steps_latex": [
+    "\\text{side factor} = (1.2)(1.2) = 1.44",
+    "\\text{area factor} = (1.44)^2 = 2.0736",
+    "\\%\\text{ change} = (2.0736-1)\\times100\\% = +107.36\\%"
+   ],
+   "params": {
+    "area_pct": 107.36
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q17",
+   "source": "L04 Percentages (A)",
+   "number": "17",
+   "prompt_latex": "\\text{Pocket money }+10\\%\\text{ then }-10\\%.\\ \\text{Overall change?}",
+   "type": "percentage-change",
+   "answer_latex": "-1\\%",
+   "steps_latex": [
+    "\\text{Overall change} = \\left[(1+10\\%)(1-10\\%)-1\\right]\\times100\\%",
+    "= \\left[0.99-1\\right]\\times100\\%",
+    "= -1\\%"
+   ],
+   "params": {
+    "changes": [
+     10.0,
+     -10.0
+    ],
+    "overall_pct": -1.0,
+    "factor": 0.99
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q18a",
+   "source": "L04 Percentages (A)",
+   "number": "18(a)",
+   "prompt_latex": "\\text{Rectangle }l\\times w,\\ l\\,+10\\%,\\ w\\,-30\\%.\\ \\text{New area?}",
+   "type": "percentage-change",
+   "answer_latex": "0.77lw",
+   "steps_latex": [
+    "l' = l(1+10\\%) = 1.1l,\\quad w' = w(1-30\\%) = 0.7w",
+    "A' = l'w' = (1.1l)(0.7w) = 0.77lw"
+   ],
+   "params": {
+    "expression": "0.77 lw"
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q18b",
+   "source": "L04 Percentages (A)",
+   "number": "18(b)",
+   "prompt_latex": "\\text{Rectangle }l\\,+10\\%,\\ w\\,-30\\%.\\ \\%\\text{ change in area?}",
+   "type": "percentage-change",
+   "answer_latex": "-23\\%",
+   "steps_latex": [
+    "\\text{area factor} = (1+10\\%)(1-30\\%) = 0.77",
+    "\\%\\text{ change} = (0.77-1)\\times100\\%",
+    "= -23\\%"
+   ],
+   "params": {
+    "area_pct": -23.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q19",
+   "source": "L04 Percentages (A)",
+   "number": "19",
+   "prompt_latex": "\\text{Sector angle }-20\\%,\\ \\text{radius }+k\\%,\\ \\text{arc unchanged. Find }k",
+   "type": "percentage-change",
+   "answer_latex": "25",
+   "steps_latex": [
+    "\\text{arc} = r\\theta \\Rightarrow (1-20\\%)(1+k\\%) = 1",
+    "0.8(1+k\\%) = 1",
+    "k = 25"
+   ],
+   "params": {
+    "k": 25.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q20a",
+   "source": "L04 Percentages (A)",
+   "number": "20(a)",
+   "prompt_latex": "\\text{Sleep }37.5\\%,\\ \\text{study }10\\%\\text{ of rest. Time for other purposes?}",
+   "type": "percentage-change",
+   "answer_latex": "56.25\\%",
+   "steps_latex": [
+    "\\text{remaining} = 1-37.5\\% = 62.5\\%",
+    "\\text{study} = 62.5\\%\\times10\\% = 6.25\\%",
+    "\\text{other} = 62.5\\%-6.25\\% = 56.25\\%"
+   ],
+   "params": {
+    "other_pct": 56.25
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q20bi",
+   "source": "L04 Percentages (A)",
+   "number": "20(b)(i)",
+   "prompt_latex": "\\text{Sleep \\& other each }-5\\%;\\ \\text{that time goes to study. \\% change in study time?}",
+   "type": "percentage-change",
+   "answer_latex": "+75\\%",
+   "steps_latex": [
+    "\\text{freed} = 37.5\\%\\times5\\% + 56.25\\%\\times5\\% = 4.6875\\%",
+    "\\text{new study} = 6.25\\% + 4.6875\\% = 10.9375\\%",
+    "\\%\\text{ change} = \\tfrac{10.9375-6.25}{6.25}\\times100\\% = +75\\%"
+   ],
+   "params": {
+    "study_pct": 75.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q20bii",
+   "source": "L04 Percentages (A)",
+   "number": "20(b)(ii)",
+   "prompt_latex": "\\text{Reading speed }+4\\%.\\ \\%\\text{ increase in reading material?}",
+   "type": "percentage-change",
+   "answer_latex": "+82\\%",
+   "steps_latex": [
+    "\\text{material} = \\text{time}\\times\\text{speed}",
+    "\\text{factor} = 1.75\\times1.04 = 1.82",
+    "\\%\\text{ increase} = +82\\%"
+   ],
+   "params": {
+    "material_pct": 82.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q21",
+   "source": "L04 Percentages (A)",
+   "number": "21",
+   "prompt_latex": "\\text{Ad }10000\\,(+10\\%),\\ \\text{Rent }40000\\,(-20\\%),\\ \\text{Wage }200000\\,(+5\\%).\\ \\%\\text{ change?}",
+   "type": "percentage-change",
+   "answer_latex": "1.2\\%",
+   "steps_latex": [
+    "\\text{old} = 10000 + 40000 + 200000 = 250000",
+    "\\text{Ad}' = 10000(1+10\\%) = 11000,\\ \\text{Rent}' = 40000(1-20\\%) = 32000",
+    "\\text{Wage}' = 200000(1+5\\%) = 210000,\\ \\text{new} = 253000",
+    "\\%\\text{ change} = \\tfrac{253000-250000}{250000}\\times100\\% = 1.2\\%"
+   ],
+   "params": {
+    "overall_pct": 1.2
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q22",
+   "source": "L04 Percentages (A)",
+   "number": "22",
+   "prompt_latex": "\\text{Books }P\\,150(-2\\%),\\,Q\\,240(+5\\%),\\,R\\,320.\\ \\%\\text{ change in total (3 s.f.)?}",
+   "type": "percentage-change",
+   "answer_latex": "1.268\\%",
+   "steps_latex": [
+    "\\text{old total} = 150 + 240 + 320 = 710",
+    "P' = 150(1-2\\%) = 147,\\ Q' = 240(1+5\\%) = 252,\\ R' = 320",
+    "\\text{new total} = 147 + 252 + 320 = 719",
+    "\\%\\text{ change} = \\tfrac{719-710}{710}\\times100\\% = 1.268\\%"
+   ],
+   "params": {
+    "overall_pct": 1.267605633802817
+   },
+   "verified": true,
+   "note": "corrected to 3 significant figures"
+  },
+  {
+   "id": "PCT-L04-Q23",
+   "source": "L04 Percentages (A)",
+   "number": "23",
+   "prompt_latex": "\\text{Male:Female}=1:3.\\ \\text{Male }+16\\%,\\ \\text{Female }-12\\%.\\ \\text{Increase overall?}",
+   "type": "percentage-change",
+   "answer_latex": "-5\\%\\ (\\text{decrease})",
+   "steps_latex": [
+    "\\text{old} = 1+3 = 4",
+    "\\text{new} = 1.16 + 3(0.88) = 3.8",
+    "\\%\\text{ change} = \\tfrac{3.8-4}{4}\\times100\\% = -5\\%"
+   ],
+   "params": {
+    "overall_pct": -5.0,
+    "verdict": "decrease"
+   },
+   "verified": true,
+   "note": "net decrease in total customers"
+  },
+  {
+   "id": "PCT-L04-Q24",
+   "source": "L04 Percentages (A)",
+   "number": "24",
+   "prompt_latex": "\\text{Tourists }A2500,B900(+40\\%),C1600(+20\\%),\\ \\text{total }+4\\%.\\ \\%\\text{ change in }A?",
+   "type": "percentage-change",
+   "answer_latex": "-19.2\\%",
+   "steps_latex": [
+    "\\text{new total} = 5000\\times1.04 = 5200",
+    "A' = 5200 - 1260 - 1920 = 2020",
+    "\\%\\text{ change} = \\tfrac{2020-2500}{2500}\\times100\\% = -19.2\\%"
+   ],
+   "params": {
+    "A_pct": -19.2
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q25",
+   "source": "L04 Percentages (A)",
+   "number": "25",
+   "prompt_latex": "2:5:3 \\text{ fruits; apples }-40\\%,\\text{ oranges }+15\\%,\\text{ peaches }-5\\%.\\ \\%\\text{ change?}",
+   "type": "percentage-change",
+   "answer_latex": "-2\\%",
+   "steps_latex": [
+    "\\text{old} = 10",
+    "\\text{new} = 1.2 + 5.75 + 2.85 = 9.8",
+    "\\%\\text{ change} = \\tfrac{9.8-10}{10}\\times100\\% = -2\\%"
+   ],
+   "params": {
+    "overall_pct": -2.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L04-Q26",
+   "source": "L04 Percentages (A)",
+   "number": "26",
+   "prompt_latex": "\\text{Cylinder }h\\,+60\\%,\\ \\text{CSA}=2\\pi r h\\text{ unchanged}.\\ \\%\\text{ change in }V?",
+   "type": "percentage-change",
+   "answer_latex": "-37.5\\%",
+   "steps_latex": [
+    "\\text{CSA}=2\\pi rh\\text{ const}\\Rightarrow r\\text{ factor}=\\tfrac{1}{1.6}=0.625",
+    "V=\\pi r^2h\\Rightarrow\\text{factor}=0.625^2\\times1.6 = 0.625",
+    "\\%\\text{ change} = (0.625-1)\\times100\\% = -37.5\\%"
+   ],
+   "params": {
+    "vol_pct": -37.5
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q1",
+   "source": "L05 Percentages (B)",
+   "number": "1",
+   "prompt_latex": "\\text{Population }200000,\\ +2\\%/\\text{yr. After 2 years?}",
+   "type": "growth-decay",
+   "answer_latex": "208080",
+   "steps_latex": [
+    "Growth\\ \\text{factor} = 1+2\\% = 1.02",
+    "V = P \\times (\\text{factor})^{n} = 200000\\times1.02^{2}",
+    "= 208080"
+   ],
+   "params": {
+    "P0": 200000.0,
+    "rate": 2.0,
+    "n": 2,
+    "direction": "+",
+    "result": 208080.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q2",
+   "source": "L05 Percentages (B)",
+   "number": "2",
+   "prompt_latex": "80\\,\\text{kg},\\ +5.5\\%/\\text{yr (2008}\\to\\text{2011). Weight in 2011?}",
+   "type": "growth-decay",
+   "answer_latex": "93.93931\\,\\text{kg}",
+   "steps_latex": [
+    "Growth\\ \\text{factor} = 1+5.5\\% = 1.055",
+    "V = P \\times (\\text{factor})^{n} = 80\\times1.055^{3}",
+    "= 93.93931\\,\\text{kg}"
+   ],
+   "params": {
+    "P0": 80.0,
+    "rate": 5.5,
+    "n": 3,
+    "direction": "+",
+    "result": 93.93931
+   },
+   "verified": true,
+   "note": "correct to nearest 0.1 kg"
+  },
+  {
+   "id": "PCT-L05-Q3a",
+   "source": "L05 Percentages (B)",
+   "number": "3(a)",
+   "prompt_latex": "\\text{Photocopier }\\$180000,\\ -15\\%/\\text{yr. Value after 3 yr?}",
+   "type": "growth-decay",
+   "answer_latex": "110542.5",
+   "steps_latex": [
+    "Decay\\ \\text{factor} = 1-15\\% = 0.85",
+    "V = P \\times (\\text{factor})^{n} = 180000\\times0.85^{3}",
+    "= 110542.5"
+   ],
+   "params": {
+    "P0": 180000.0,
+    "rate": 15.0,
+    "n": 3,
+    "direction": "-",
+    "result": 110542.5
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q3b",
+   "source": "L05 Percentages (B)",
+   "number": "3(b)",
+   "prompt_latex": "\\text{Depreciation of photocopier after 3 years?}",
+   "type": "growth-decay",
+   "answer_latex": "69457.5",
+   "steps_latex": [
+    "\\text{Dep} = 180000 - 180000(1-15\\%)^3",
+    "= 180000 - 110542.5"
+   ],
+   "params": {
+    "result": 69457.5
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q4",
+   "source": "L05 Percentages (B)",
+   "number": "4",
+   "prompt_latex": "\\text{Bacteria }+100\\%\\text{ every 2 min, start }10.\\ \\text{After 12 min?}",
+   "type": "growth-decay",
+   "answer_latex": "640",
+   "steps_latex": [
+    "\\text{periods} = 12\\div2 = 6",
+    "N = 10\\times(1+100\\%)^6 = 10\\times2^6",
+    "= 640"
+   ],
+   "params": {
+    "result": 640
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q5",
+   "source": "L05 Percentages (B)",
+   "number": "5",
+   "prompt_latex": "\\text{Phone }\\$2580,\\ -30\\%\\text{ every half-year. After 2 years (4 periods)?}",
+   "type": "growth-decay",
+   "answer_latex": "619.458",
+   "steps_latex": [
+    "Decay\\ \\text{factor} = 1-30\\% = 0.7",
+    "V = P \\times (\\text{factor})^{n} = 2580\\times0.7^{4}",
+    "= 619.458"
+   ],
+   "params": {
+    "P0": 2580.0,
+    "rate": 30.0,
+    "n": 4,
+    "direction": "-",
+    "result": 619.458
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q6a",
+   "source": "L05 Percentages (B)",
+   "number": "6(a)",
+   "prompt_latex": "\\text{Tree grows at }20\\%/\\text{yr. Growth factor?}",
+   "type": "growth-decay",
+   "answer_latex": "1.2",
+   "steps_latex": [
+    "\\text{Growth factor} = 1 + \\frac{r}{100}",
+    "= 1 + 20\\%",
+    "= 1.2"
+   ],
+   "params": {
+    "rate": 20.0,
+    "factor": 1.2
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q6b",
+   "source": "L05 Percentages (B)",
+   "number": "6(b)",
+   "prompt_latex": "\\text{Tree }3\\,\\text{m},\\ +20\\%/\\text{yr. Height after 4 years?}",
+   "type": "growth-decay",
+   "answer_latex": "6.2208\\,\\text{m}",
+   "steps_latex": [
+    "Growth\\ \\text{factor} = 1+20\\% = 1.2",
+    "V = P \\times (\\text{factor})^{n} = 3\\times1.2^{4}",
+    "= 6.2208\\,\\text{m}"
+   ],
+   "params": {
+    "P0": 3.0,
+    "rate": 20.0,
+    "n": 4,
+    "direction": "+",
+    "result": 6.2208
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q7a",
+   "source": "L05 Percentages (B)",
+   "number": "7(a)",
+   "prompt_latex": "\\text{TV depreciates }20\\%/\\text{yr. Decay factor?}",
+   "type": "growth-decay",
+   "answer_latex": "0.8",
+   "steps_latex": [
+    "\\text{Decay factor} = 1 - \\frac{r}{100}",
+    "= 1 - 20\\%",
+    "= 0.8"
+   ],
+   "params": {
+    "rate": 20.0,
+    "factor": 0.8
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q7b",
+   "source": "L05 Percentages (B)",
+   "number": "7(b)",
+   "prompt_latex": "\\text{TV }\\$12000,\\ -20\\%/\\text{yr. Value after 4 years?}",
+   "type": "growth-decay",
+   "answer_latex": "4915.2",
+   "steps_latex": [
+    "Decay\\ \\text{factor} = 1-20\\% = 0.8",
+    "V = P \\times (\\text{factor})^{n} = 12000\\times0.8^{4}",
+    "= 4915.2"
+   ],
+   "params": {
+    "P0": 12000.0,
+    "rate": 20.0,
+    "n": 4,
+    "direction": "-",
+    "result": 4915.2
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q8",
+   "source": "L05 Percentages (B)",
+   "number": "8",
+   "prompt_latex": "\\text{Computer }-25\\%/\\text{yr}=\\$3940\\text{ now. Value 2 years ago?}",
+   "type": "reverse-percentage",
+   "answer_latex": "7004.444444",
+   "steps_latex": [
+    "x\\times(1-25\\%)(1-25\\%) = 3940",
+    "0.5625\\,x = 3940",
+    "x = 7004.444444"
+   ],
+   "params": {
+    "final": 3940.0,
+    "changes": [
+     -25.0,
+     -25.0
+    ],
+    "result": 7004.444444444444
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q9a",
+   "source": "L05 Percentages (B)",
+   "number": "9(a)",
+   "prompt_latex": "\\text{Machine }\\$120000,\\ -10\\%/\\text{yr. Value after 2 years?}",
+   "type": "growth-decay",
+   "answer_latex": "97200",
+   "steps_latex": [
+    "Decay\\ \\text{factor} = 1-10\\% = 0.9",
+    "V = P \\times (\\text{factor})^{n} = 120000\\times0.9^{2}",
+    "= 97200"
+   ],
+   "params": {
+    "P0": 120000.0,
+    "rate": 10.0,
+    "n": 2,
+    "direction": "-",
+    "result": 97200.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q9b",
+   "source": "L05 Percentages (B)",
+   "number": "9(b)",
+   "prompt_latex": "\\text{Machine value 2 years ago?}",
+   "type": "reverse-percentage",
+   "answer_latex": "148148.148148",
+   "steps_latex": [
+    "x\\times(1-10\\%)(1-10\\%) = 120000",
+    "0.81\\,x = 120000",
+    "x = 148148.148148"
+   ],
+   "params": {
+    "final": 120000.0,
+    "changes": [
+     -10.0,
+     -10.0
+    ],
+    "result": 148148.14814814815
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q10a",
+   "source": "L05 Percentages (B)",
+   "number": "10(a)",
+   "prompt_latex": "\\text{Note bought }\\$350000\\text{ 2 mo ago},\\ +8\\%/\\text{mo. Value now?}",
+   "type": "growth-decay",
+   "answer_latex": "408240",
+   "steps_latex": [
+    "Growth\\ \\text{factor} = 1+8\\% = 1.08",
+    "V = P \\times (\\text{factor})^{n} = 350000\\times1.08^{2}",
+    "= 408240"
+   ],
+   "params": {
+    "P0": 350000.0,
+    "rate": 8.0,
+    "n": 2,
+    "direction": "+",
+    "result": 408240.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q10b",
+   "source": "L05 Percentages (B)",
+   "number": "10(b)",
+   "prompt_latex": "\\text{Value of the note 5 months ago (3 mo before purchase)?}",
+   "type": "reverse-percentage",
+   "answer_latex": "277841.284357",
+   "steps_latex": [
+    "x\\times(1+8\\%)(1+8\\%)(1+8\\%) = 350000",
+    "1.259712\\,x = 350000",
+    "x = 277841.284357"
+   ],
+   "params": {
+    "final": 350000.0,
+    "changes": [
+     8.0,
+     8.0,
+     8.0
+    ],
+    "result": 277841.2843570594
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q11a",
+   "source": "L05 Percentages (B)",
+   "number": "11(a)",
+   "prompt_latex": "\\text{Profit }-10\\%/\\text{yr before 2011};\\ 2011=\\$145800.\\ \\text{Profit in 2008?}",
+   "type": "reverse-percentage",
+   "answer_latex": "200000",
+   "steps_latex": [
+    "x\\times(1-10\\%)(1-10\\%)(1-10\\%) = 145800",
+    "0.729\\,x = 145800",
+    "x = 200000"
+   ],
+   "params": {
+    "final": 145800.0,
+    "changes": [
+     -10.0,
+     -10.0,
+     -10.0
+    ],
+    "result": 200000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q11b",
+   "source": "L05 Percentages (B)",
+   "number": "11(b)",
+   "prompt_latex": "\\text{Profit }+10\\%/\\text{yr after 2011. Profit in 2014?}",
+   "type": "growth-decay",
+   "answer_latex": "194059.8",
+   "steps_latex": [
+    "Growth\\ \\text{factor} = 1+10\\% = 1.1",
+    "V = P \\times (\\text{factor})^{n} = 145800\\times1.1^{3}",
+    "= 194059.8"
+   ],
+   "params": {
+    "P0": 145800.0,
+    "rate": 10.0,
+    "n": 3,
+    "direction": "+",
+    "result": 194059.8
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q12a",
+   "source": "L05 Percentages (B)",
+   "number": "12(a)",
+   "prompt_latex": "\\text{Salary }\\$22000,\\ +8\\%/\\text{yr. Salary 4 years ago?}",
+   "type": "reverse-percentage",
+   "answer_latex": "16170.656762",
+   "steps_latex": [
+    "x\\times(1+8\\%)(1+8\\%)(1+8\\%)(1+8\\%) = 22000",
+    "1.360489\\,x = 22000",
+    "x = 16170.656762"
+   ],
+   "params": {
+    "final": 22000.0,
+    "changes": [
+     8.0,
+     8.0,
+     8.0,
+     8.0
+    ],
+    "result": 16170.656761521976
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q12b",
+   "source": "L05 Percentages (B)",
+   "number": "12(b)",
+   "prompt_latex": "\\text{Overall increase in salary over these 4 years?}",
+   "type": "reverse-percentage",
+   "answer_latex": "5829.343238",
+   "steps_latex": [
+    "\\text{increase} = 22000 - 16170.656762",
+    "= 5829.343238"
+   ],
+   "params": {
+    "result": 5829.343238478024
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q13a",
+   "source": "L05 Percentages (B)",
+   "number": "13(a)",
+   "prompt_latex": "\\text{Phone }-12\\%/\\text{mo}=\\$3700\\text{ now. Value 3 months ago?}",
+   "type": "reverse-percentage",
+   "answer_latex": "5429.423366",
+   "steps_latex": [
+    "x\\times(1-12\\%)(1-12\\%)(1-12\\%) = 3700",
+    "0.681472\\,x = 3700",
+    "x = 5429.423366"
+   ],
+   "params": {
+    "final": 3700.0,
+    "changes": [
+     -12.0,
+     -12.0,
+     -12.0
+    ],
+    "result": 5429.423365890308
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q13b",
+   "source": "L05 Percentages (B)",
+   "number": "13(b)",
+   "prompt_latex": "\\text{Overall decrease over these 3 months?}",
+   "type": "reverse-percentage",
+   "answer_latex": "1729.423366",
+   "steps_latex": [
+    "\\text{decrease} = 5429.423366 - 3700",
+    "= 1729.423366"
+   ],
+   "params": {
+    "result": 1729.423365890308
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q14a",
+   "source": "L05 Percentages (B)",
+   "number": "14(a)",
+   "prompt_latex": "\\text{Flat }\\$4200000,\\ +8\\%\\text{ first year. Value after 1 year?}",
+   "type": "growth-decay",
+   "answer_latex": "4536000",
+   "steps_latex": [
+    "V_1 = 4200000(1+8\\%)",
+    "= 4536000"
+   ],
+   "params": {
+    "result": 4536000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q14b",
+   "source": "L05 Percentages (B)",
+   "number": "14(b)",
+   "prompt_latex": "\\text{Then }+5\\%\\text{ each subsequent year. Value after 3 years?}",
+   "type": "growth-decay",
+   "answer_latex": "5000940",
+   "steps_latex": [
+    "V_3 = 4200000(1+8\\%)(1+5\\%)^2",
+    "= 4536000\\times1.1025",
+    "= 5000940"
+   ],
+   "params": {
+    "result": 5000940.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q15a",
+   "source": "L05 Percentages (B)",
+   "number": "15(a)",
+   "prompt_latex": "\\text{Index }\\$28000,\\ +15\\%\\text{ first yr},\\ -4\\%\\text{ each later yr. After 4 years?}",
+   "type": "growth-decay",
+   "answer_latex": "28488.4992",
+   "steps_latex": [
+    "V_4 = 28000(1+15\\%)(1-4\\%)^3",
+    "= 28488.4992"
+   ],
+   "params": {
+    "result": 28488.4992
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q15b",
+   "source": "L05 Percentages (B)",
+   "number": "15(b)",
+   "prompt_latex": "\\text{Change in value of the index over these 4 years?}",
+   "type": "growth-decay",
+   "answer_latex": "488.4992",
+   "steps_latex": [
+    "\\text{change} = 28488.4992 - 28000",
+    "= 488.4992"
+   ],
+   "params": {
+    "result": 488.4992
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q16a",
+   "source": "L05 Percentages (B)",
+   "number": "16(a)",
+   "prompt_latex": "\\text{Profit }-12\\%/\\text{yr 2010-2012},\\ +10\\%/\\text{yr after};\\ 2015=\\$5000000.\\ \\text{2010?}",
+   "type": "reverse-percentage",
+   "answer_latex": "4850947.8364",
+   "steps_latex": [
+    "5000000 = P(1-12\\%)^2(1+10\\%)^3",
+    "P = \\frac{5000000}{0.7744\\times1.331}",
+    "= 4850947.8364"
+   ],
+   "params": {
+    "result": 4850947.83639965
+   },
+   "verified": true,
+   "note": "nearest dollar"
+  },
+  {
+   "id": "PCT-L05-Q16b",
+   "source": "L05 Percentages (B)",
+   "number": "16(b)",
+   "prompt_latex": "\\text{Overall \\% change in profit 2010}\\to\\text{2015?}",
+   "type": "percentage-change",
+   "answer_latex": "+3.07\\%",
+   "steps_latex": [
+    "\\%\\text{ change} = \\left(\\tfrac{5000000}{4850947.8364}-1\\right)\\times100\\%",
+    "= +3.07\\%"
+   ],
+   "params": {
+    "overall_pct": 3.07264
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q17",
+   "source": "L05 Percentages (B)",
+   "number": "17",
+   "prompt_latex": "\\text{Savings }-10\\%/\\text{mo; May+Jun+Jul}=\\$40650.\\ \\text{May saving?}",
+   "type": "reverse-percentage",
+   "answer_latex": "15000",
+   "steps_latex": [
+    "x + 0.9x + 0.81x = 40650",
+    "2.71x = 40650",
+    "x = 15000"
+   ],
+   "params": {
+    "result": 15000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q18",
+   "source": "L05 Percentages (B)",
+   "number": "18",
+   "prompt_latex": "\\text{Electricity May }500,\\text{ Jun }575\\text{ units (const rate)},\\ \\$0.7/\\text{unit. Aug bill?}",
+   "type": "simple-interest",
+   "answer_latex": "\\$532",
+   "steps_latex": [
+    "\\text{rate} = \\tfrac{575}{500}-1 = 15\\%",
+    "\\text{Aug units} = 500(1.15)^3 = 760.4375",
+    "\\text{bill} = 760.4375\\times0.7 \\approx \\$532"
+   ],
+   "params": {
+    "units": 760.4375,
+    "bill": 532.30625
+   },
+   "verified": true,
+   "note": "nearest dollar"
+  },
+  {
+   "id": "PCT-L05-Q19a",
+   "source": "L05 Percentages (B)",
+   "number": "19(a)",
+   "prompt_latex": "\\text{Town }108000\\text{ last yr}\\to110000\\text{ now. Annual growth rate?}",
+   "type": "growth-decay",
+   "answer_latex": "1.85\\%",
+   "steps_latex": [
+    "108000(1+r) = 110000",
+    "1+r = \\tfrac{110000}{108000}",
+    "r = 1.85\\%"
+   ],
+   "params": {
+    "rate_pct": 1.8518518518518519
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q19b",
+   "source": "L05 Percentages (B)",
+   "number": "19(b)",
+   "prompt_latex": "\\text{Population 4 years later?}",
+   "type": "growth-decay",
+   "answer_latex": "118377",
+   "steps_latex": [
+    "P = 110000(1+r)^4",
+    "= 118377"
+   ],
+   "params": {
+    "result": 118377.29282272162
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q20",
+   "source": "L05 Percentages (B)",
+   "number": "20",
+   "prompt_latex": "\\text{Printer }\\$5120\\to\\$4500\\text{ in 2 yr. Depreciation rate/yr?}",
+   "type": "growth-decay",
+   "answer_latex": "6.25\\%",
+   "steps_latex": [
+    "5120(1-r)^2 = 4500",
+    "(1-r)^2 = 0.87890625",
+    "r = 6.25\\%"
+   ],
+   "params": {
+    "rate_pct": 6.25
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q21",
+   "source": "L05 Percentages (B)",
+   "number": "21",
+   "prompt_latex": "\\text{Car }\\$12500\\to\\$18000\\text{ in 2 yr. Increase rate/yr?}",
+   "type": "growth-decay",
+   "answer_latex": "20\\%",
+   "steps_latex": [
+    "12500(1+r)^2 = 18000",
+    "(1+r)^2 = 1.44",
+    "r = 20\\%"
+   ],
+   "params": {
+    "rate_pct": 20.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q22",
+   "source": "L05 Percentages (B)",
+   "number": "22",
+   "prompt_latex": "\\text{Mask pack(50) }\\$50\\to\\$312.5\\text{ in 2 mo. Rate/piece/mo \\& pack price after 2 mo?}",
+   "type": "growth-decay",
+   "answer_latex": "150\\%,\\ \\$312.5",
+   "steps_latex": [
+    "\\text{per piece: }1(1+r)^2 = \\tfrac{312.5}{50} = 6.25",
+    "(1+r)^2 = 6.25,\\ 1+r = 2.5",
+    "r = 150\\%"
+   ],
+   "params": {
+    "rate_pct": 150.0,
+    "pack": 312.5
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q23",
+   "source": "L05 Percentages (B)",
+   "number": "23",
+   "prompt_latex": "\\text{City }1000000\\to988000\\text{ in 9 mo. Decreased rate/quarter?}",
+   "type": "growth-decay",
+   "answer_latex": "0.402\\%",
+   "steps_latex": [
+    "\\text{3 quarters: }1000000(1-r)^3 = 988000",
+    "(1-r)^3 = 0.988",
+    "r = 0.402\\%"
+   ],
+   "params": {
+    "rate_pct": 0.40161075275801084
+   },
+   "verified": true,
+   "note": "3 quarters in 9 months"
+  },
+  {
+   "id": "PCT-L05-Q24a",
+   "source": "L05 Percentages (B)",
+   "number": "24(a)",
+   "prompt_latex": "\\text{Fish }115\\,\\text{g (start 2018)},\\ +2\\%/\\text{yr. Weight end of 2021?}",
+   "type": "growth-decay",
+   "answer_latex": "124\\,\\text{g}",
+   "steps_latex": [
+    "w = 115(1+2\\%)^4",
+    "= 124\\,\\text{g}"
+   ],
+   "params": {
+    "result": 124.4796984
+   },
+   "verified": true,
+   "note": "nearest g; 4 yearly increases to end 2021"
+  },
+  {
+   "id": "PCT-L05-Q24b",
+   "source": "L05 Percentages (B)",
+   "number": "24(b)",
+   "prompt_latex": "\\text{Then }+4\\%/\\text{yr. Weight end of 2023?}",
+   "type": "growth-decay",
+   "answer_latex": "135\\,\\text{g}",
+   "steps_latex": [
+    "w = 124(1+4\\%)^2",
+    "= 135\\,\\text{g}"
+   ],
+   "params": {
+    "result": 134.63724178944
+   },
+   "verified": true,
+   "note": "nearest g"
+  },
+  {
+   "id": "PCT-L05-Q25a",
+   "source": "L05 Percentages (B)",
+   "number": "25(a)",
+   "prompt_latex": "\\text{Piano }\\$64000,\\ -6\\%\\text{ every 6 mo. Value in 2022 (4 periods)?}",
+   "type": "growth-decay",
+   "answer_latex": "\\$49968",
+   "steps_latex": [
+    "V = 64000(1-6\\%)^4",
+    "= \\$49968"
+   ],
+   "params": {
+    "result": 49967.93344
+   },
+   "verified": true,
+   "note": "nearest dollar"
+  },
+  {
+   "id": "PCT-L05-Q25b",
+   "source": "L05 Percentages (B)",
+   "number": "25(b)",
+   "prompt_latex": "\\text{If }-12\\%/\\text{yr instead. Same value? Difference?}",
+   "type": "growth-decay",
+   "answer_latex": "\\$49562,\\ \\text{diff }\\$406",
+   "steps_latex": [
+    "V = 64000(1-12\\%)^2 = \\$49562",
+    "\\text{not equal; diff} = \\$49968 - \\$49562 = \\$406"
+   ],
+   "params": {
+    "a": 49967.93344,
+    "b": 49561.6,
+    "diff": 406.33344
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q26a",
+   "source": "L05 Percentages (B)",
+   "number": "26(a)",
+   "prompt_latex": "\\text{Ebook }-x\\%\\text{ every 8 mo};\\ \\$1100\\to\\$770\\text{ after 8 mo. Find }x",
+   "type": "growth-decay",
+   "answer_latex": "30",
+   "steps_latex": [
+    "1100(1-x\\%) = 770",
+    "1-x\\% = 0.7",
+    "x = 30"
+   ],
+   "params": {
+    "x": 30.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q26b",
+   "source": "L05 Percentages (B)",
+   "number": "26(b)",
+   "prompt_latex": "\\text{Depreciation after 2 years vs present value?}",
+   "type": "growth-decay",
+   "answer_latex": "\\$722.7",
+   "steps_latex": [
+    "\\text{2 yr} = 3\\text{ periods: }V = 1100(0.7)^3 = 377.3",
+    "\\text{dep} = 1100 - 377.3 = \\$722.7"
+   ],
+   "params": {
+    "result": 722.7
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q27a",
+   "source": "L05 Percentages (B)",
+   "number": "27(a)",
+   "prompt_latex": "\\text{A }+3\\%/\\text{yr, B }+4\\%/\\text{yr, equal profit in 2021. Higher in 2019?}",
+   "type": "growth-decay",
+   "answer_latex": "\\text{Company A}",
+   "steps_latex": [
+    "\\text{Let 2021 profit of each} = X",
+    "A_{2019} = \\tfrac{X}{1.03^2} = \\tfrac{X}{1.0609},\\ B_{2019} = \\tfrac{X}{1.04^2} = \\tfrac{X}{1.0816}",
+    "\\text{Smaller divisor } \\Rightarrow \\text{ larger starting value: Company A}"
+   ],
+   "params": {
+    "verdict": "A"
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L05-Q27b",
+   "source": "L05 Percentages (B)",
+   "number": "27(b)",
+   "prompt_latex": "\\text{2019 profit diff }=\\$40000.\\ \\text{2021 profit of each company?}",
+   "type": "growth-decay",
+   "answer_latex": "\\$2217332",
+   "steps_latex": [
+    "A_{2019} - B_{2019} = \\tfrac{X}{1.0609} - \\tfrac{X}{1.0816} = 40000",
+    "X\\left(\\tfrac{1}{1.0609}-\\tfrac{1}{1.0816}\\right) = 40000",
+    "X = \\\\2217332\\ \\text{(each company's 2021 profit)}"
+   ],
+   "params": {
+    "result": 2217332.2512077293
+   },
+   "verified": true,
+   "note": "nearest dollar"
+  },
+  {
+   "id": "PCT-L06-Q1a",
+   "source": "L06 Percentages (C)",
+   "number": "1(a)",
+   "prompt_latex": "\\text{SI: }P=\\$2000,\\ R=4\\%,\\ T=3\\text{ yr}",
+   "type": "simple-interest",
+   "answer_latex": "240",
+   "steps_latex": [
+    "I = P\\times R\\times T",
+    "= 2000\\times4\\%\\times3",
+    "= 240"
+   ],
+   "params": {
+    "P": 2000.0,
+    "R": 4.0,
+    "T": 3.0,
+    "I": 240.0,
+    "A": 2240.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q1b",
+   "source": "L06 Percentages (C)",
+   "number": "1(b)",
+   "prompt_latex": "\\text{SI: }P=\\$300,\\ R=3.5\\%,\\ T=1.5\\text{ yr}",
+   "type": "simple-interest",
+   "answer_latex": "15.75",
+   "steps_latex": [
+    "I = P\\times R\\times T",
+    "= 300\\times3.5\\%\\times1.5",
+    "= 15.75"
+   ],
+   "params": {
+    "P": 300.0,
+    "R": 3.5,
+    "T": 1.5,
+    "I": 15.75,
+    "A": 315.75
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q1c",
+   "source": "L06 Percentages (C)",
+   "number": "1(c)",
+   "prompt_latex": "\\text{SI: }P=\\$60000,\\ R=2\\%,\\ T=8\\text{ mo}",
+   "type": "simple-interest",
+   "answer_latex": "800",
+   "steps_latex": [
+    "I = P\\times R\\times T",
+    "= 60000\\times2\\%\\times0.666667",
+    "= 800"
+   ],
+   "params": {
+    "P": 60000.0,
+    "R": 2.0,
+    "T": 0.6666666666666666,
+    "I": 800.0,
+    "A": 60800.0
+   },
+   "verified": true,
+   "note": "T = 8/12 year"
+  },
+  {
+   "id": "PCT-L06-Q2a",
+   "source": "L06 Percentages (C)",
+   "number": "2(a)",
+   "prompt_latex": "\\text{Johnny }\\$2000\\text{ in A at }10\\%.\\ \\text{SI per year?}",
+   "type": "simple-interest",
+   "answer_latex": "200",
+   "steps_latex": [
+    "I = 2000\\times10\\%\\times1",
+    "= 200"
+   ],
+   "params": {
+    "I": 200.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q2b",
+   "source": "L06 Percentages (C)",
+   "number": "2(b)",
+   "prompt_latex": "\\$3500\\text{ in B at }7\\%.\\ \\text{SI per year?}",
+   "type": "simple-interest",
+   "answer_latex": "245",
+   "steps_latex": [
+    "I = 3500\\times7\\%\\times1",
+    "= 245"
+   ],
+   "params": {
+    "I": 245.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q2c",
+   "source": "L06 Percentages (C)",
+   "number": "2(c)",
+   "prompt_latex": "\\text{Total interest per year?}",
+   "type": "simple-interest",
+   "answer_latex": "445",
+   "steps_latex": [
+    "= 200 + 245",
+    "= 445"
+   ],
+   "params": {
+    "I": 445.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q3",
+   "source": "L06 Percentages (C)",
+   "number": "3",
+   "prompt_latex": "\\$24000\\text{ at }3\\%;\\ \\text{period }2\\to5\\text{ yr. Increase in interest?}",
+   "type": "simple-interest",
+   "answer_latex": "2160",
+   "steps_latex": [
+    "I_5-I_2 = 24000\\times3\\%\\times(5-2)",
+    "= 2160"
+   ],
+   "params": {
+    "result": 2160.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q4",
+   "source": "L06 Percentages (C)",
+   "number": "4",
+   "prompt_latex": "\\$50000\\text{ for 4 yr; rate }4\\%\\to9\\%.\\ \\text{Increase in interest?}",
+   "type": "simple-interest",
+   "answer_latex": "10000",
+   "steps_latex": [
+    "\\Delta I = 50000\\times(9\\%-4\\%)\\times4",
+    "= 10000"
+   ],
+   "params": {
+    "result": 10000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q5",
+   "source": "L06 Percentages (C)",
+   "number": "5",
+   "prompt_latex": "\\$8000\\text{ at }2\\%;\\ I=\\$960.\\ \\text{Find }T",
+   "type": "simple-interest",
+   "answer_latex": "6\\text{ years}",
+   "steps_latex": [
+    "T = \\tfrac{I}{PR} = \\tfrac{960}{8000\\times2\\%}",
+    "= 6\\text{ years}"
+   ],
+   "params": {
+    "T": 6.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q6",
+   "source": "L06 Percentages (C)",
+   "number": "6",
+   "prompt_latex": "\\text{Borrow }\\$20000,\\text{ repay }\\$21200\\text{ after 2 yr. Rate?}",
+   "type": "simple-interest",
+   "answer_latex": "3\\%",
+   "steps_latex": [
+    "I = 21200-20000 = 1200",
+    "R = \\tfrac{I}{PT} = \\tfrac{1200}{20000\\times2}",
+    "= 3\\%"
+   ],
+   "params": {
+    "R": 3.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q7",
+   "source": "L06 Percentages (C)",
+   "number": "7",
+   "prompt_latex": "\\$32000\\text{ at }3\\%;\\ A=\\$34880.\\ \\text{Find }T",
+   "type": "simple-interest",
+   "answer_latex": "3\\text{ years}",
+   "steps_latex": [
+    "I = 34880-32000 = 2880",
+    "T = \\tfrac{2880}{32000\\times3\\%}",
+    "= 3\\text{ years}"
+   ],
+   "params": {
+    "T": 3.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q8",
+   "source": "L06 Percentages (C)",
+   "number": "8",
+   "prompt_latex": "\\text{Borrow }P\\text{ at }5\\%;\\ A=\\$19550\\text{ after 3 yr. Find }P",
+   "type": "simple-interest",
+   "answer_latex": "\\$17000",
+   "steps_latex": [
+    "A = P(1+RT)",
+    "19550 = P(1+5\\%\\times3) = 1.15P",
+    "P = \\$17000"
+   ],
+   "params": {
+    "P": 17000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q9a",
+   "source": "L06 Percentages (C)",
+   "number": "9(a)",
+   "prompt_latex": "\\$12000\\text{ at }3\\%\\text{ for }2.5\\text{ yr: SI \\& amount?}",
+   "type": "simple-interest",
+   "answer_latex": "I=900,\\ A=12900",
+   "steps_latex": [
+    "I = 12000\\times3\\%\\times2.5 = 900",
+    "A = 12000 + 900 = 12900"
+   ],
+   "params": {
+    "I": 900.0,
+    "A": 12900.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q9b",
+   "source": "L06 Percentages (C)",
+   "number": "9(b)",
+   "prompt_latex": "\\$12000\\text{ at }3\\%\\text{ for }18\\text{ mo: SI \\& amount?}",
+   "type": "simple-interest",
+   "answer_latex": "I=540,\\ A=12540",
+   "steps_latex": [
+    "T = \\tfrac{18}{12} = 1.5",
+    "I = 12000\\times3\\%\\times1.5 = 540",
+    "A = 12540"
+   ],
+   "params": {
+    "I": 540.0,
+    "A": 12540.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q10a",
+   "source": "L06 Percentages (C)",
+   "number": "10(a)",
+   "prompt_latex": "\\text{At }3\\%;\\ \\$600\\text{ SI for first quarter. Principal?}",
+   "type": "simple-interest",
+   "answer_latex": "\\$80000",
+   "steps_latex": [
+    "600 = P\\times3\\%\\times\\tfrac14",
+    "P = \\$80000"
+   ],
+   "params": {
+    "P": 80000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q10b",
+   "source": "L06 Percentages (C)",
+   "number": "10(b)",
+   "prompt_latex": "\\text{Rate }+3\\%\\to6\\%.\\ \\text{SI for remaining 3 quarters?}",
+   "type": "simple-interest",
+   "answer_latex": "3600",
+   "steps_latex": [
+    "I = 80000\\times6\\%\\times\\tfrac34",
+    "= 3600"
+   ],
+   "params": {
+    "I": 3600.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q11",
+   "source": "L06 Percentages (C)",
+   "number": "11",
+   "prompt_latex": "\\text{Rate }12\\%;\\ \\text{SI after 15 mo}=\\$1500.\\ \\text{Principal?}",
+   "type": "simple-interest",
+   "answer_latex": "\\$10000",
+   "steps_latex": [
+    "1500 = P\\times12\\%\\times\\tfrac{15}{12}",
+    "P = \\$10000"
+   ],
+   "params": {
+    "P": 10000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q12a",
+   "source": "L06 Percentages (C)",
+   "number": "12(a)",
+   "prompt_latex": "\\$15000\\text{ in A at }6\\%\\text{ for }1.5\\text{ yr. Amount?}",
+   "type": "simple-interest",
+   "answer_latex": "\\$16350",
+   "steps_latex": [
+    "A = 15000(1+6\\%\\times1.5)",
+    "= \\$16350"
+   ],
+   "params": {
+    "A": 16350.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q12b",
+   "source": "L06 Percentages (C)",
+   "number": "12(b)",
+   "prompt_latex": "\\text{Then in B at }3\\%\\text{ for 2 yr. Amount?}",
+   "type": "simple-interest",
+   "answer_latex": "\\$17331",
+   "steps_latex": [
+    "A = 16350(1+3\\%\\times2)",
+    "= \\$17331"
+   ],
+   "params": {
+    "A": 17331.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q12c",
+   "source": "L06 Percentages (C)",
+   "number": "12(c)",
+   "prompt_latex": "\\text{Total interest earned from both banks?}",
+   "type": "simple-interest",
+   "answer_latex": "\\$2331",
+   "steps_latex": [
+    "\\text{interest} = 17331 - 15000",
+    "= \\$2331"
+   ],
+   "params": {
+    "result": 2331.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q13a",
+   "source": "L06 Percentages (C)",
+   "number": "13(a)",
+   "prompt_latex": "\\$10000\\text{ at }10\\%\\text{ p.a. yearly, 3 yr. Amount?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$13310",
+   "steps_latex": [
+    "A = P\\left(1+\\frac{R}{m}\\right)^{mt}",
+    "= 10000\\left(1+\\frac{10\\%}{1}\\right)^{3}",
+    "A = 13310"
+   ],
+   "params": {
+    "P": 10000.0,
+    "R": 10.0,
+    "m": 1,
+    "t": 3.0,
+    "A": 13310.0,
+    "CI": 3310.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q13b",
+   "source": "L06 Percentages (C)",
+   "number": "13(b)",
+   "prompt_latex": "\\text{Compound interest after 3 years?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$3310",
+   "steps_latex": [
+    "\\text{CI} = A - P = 13310 - 10000",
+    "= \\$3310"
+   ],
+   "params": {
+    "CI": 3310.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q14",
+   "source": "L06 Percentages (C)",
+   "number": "14",
+   "prompt_latex": "\\$30000\\text{ at }3\\%\\text{ yearly, 4 yr. Compound interest?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$3765.26",
+   "steps_latex": [
+    "A = P\\left(1+\\frac{R}{m}\\right)^{mt}",
+    "= 30000\\left(1+\\frac{3\\%}{1}\\right)^{4}",
+    "A = 33765.2643",
+    "\\text{CI} = A - 30000 = \\$3765.26"
+   ],
+   "params": {
+    "P": 30000.0,
+    "R": 3.0,
+    "m": 1,
+    "t": 4.0,
+    "A": 33765.2643,
+    "CI": 3765.2643
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q15a",
+   "source": "L06 Percentages (C)",
+   "number": "15(a)",
+   "prompt_latex": "\\$8000\\text{ for 3 yr at }12\\%\\text{ compounded half-yearly. Amount?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$11348.15",
+   "steps_latex": [
+    "A = P\\left(1+\\frac{R}{m}\\right)^{mt}",
+    "= 8000\\left(1+\\frac{12\\%}{2}\\right)^{6}",
+    "A = 11348.15"
+   ],
+   "params": {
+    "P": 8000.0,
+    "R": 12.0,
+    "m": 2,
+    "t": 3.0,
+    "A": 11348.152898048,
+    "CI": 3348.152898048
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q15b",
+   "source": "L06 Percentages (C)",
+   "number": "15(b)",
+   "prompt_latex": "\\$8000\\text{ for 3 yr at }12\\%\\text{ compounded quarterly. Amount?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$11406.09",
+   "steps_latex": [
+    "A = P\\left(1+\\frac{R}{m}\\right)^{mt}",
+    "= 8000\\left(1+\\frac{12\\%}{4}\\right)^{12}",
+    "A = 11406.09"
+   ],
+   "params": {
+    "P": 8000.0,
+    "R": 12.0,
+    "m": 4,
+    "t": 3.0,
+    "A": 11406.087094769431,
+    "CI": 3406.0870947694316
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q15c",
+   "source": "L06 Percentages (C)",
+   "number": "15(c)",
+   "prompt_latex": "\\$8000\\text{ for 3 yr at }12\\%\\text{ compounded monthly. Amount?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$11446.15",
+   "steps_latex": [
+    "A = P\\left(1+\\frac{R}{m}\\right)^{mt}",
+    "= 8000\\left(1+\\frac{12\\%}{12}\\right)^{36}",
+    "A = 11446.15"
+   ],
+   "params": {
+    "P": 8000.0,
+    "R": 12.0,
+    "m": 12,
+    "t": 3.0,
+    "A": 11446.150268732645,
+    "CI": 3446.1502687326442
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q16a",
+   "source": "L06 Percentages (C)",
+   "number": "16(a)",
+   "prompt_latex": "\\text{At }6\\%\\text{ half-yearly};\\ A=\\$23880\\text{ after 3 yr. Find }P",
+   "type": "compound-interest",
+   "answer_latex": "\\$19999",
+   "steps_latex": [
+    "23880 = P(1+\\tfrac{6\\%}{2})^6",
+    "P = \\tfrac{23880}{1.03^6}",
+    "= \\$19999"
+   ],
+   "params": {
+    "P": 19999.124049605667
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q16b",
+   "source": "L06 Percentages (C)",
+   "number": "16(b)",
+   "prompt_latex": "\\text{Compound interest earned?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$3881",
+   "steps_latex": [
+    "\\text{CI} = 23880 - 19999",
+    "= \\$3881"
+   ],
+   "params": {
+    "CI": 3880.875950394334
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q17a",
+   "source": "L06 Percentages (C)",
+   "number": "17(a)",
+   "prompt_latex": "\\text{At }8\\%\\text{ yearly};\\ A=\\$99144\\text{ after 2 yr. Principal?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$85000",
+   "steps_latex": [
+    "99144 = P(1.08)^2",
+    "P = \\$85000"
+   ],
+   "params": {
+    "P": 85000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q17b",
+   "source": "L06 Percentages (C)",
+   "number": "17(b)",
+   "prompt_latex": "\\text{Compounded monthly, CI after 9 months?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$5238.14",
+   "steps_latex": [
+    "A = 85000\\left(1+\\tfrac{8\\%}{12}\\right)^9",
+    "\\text{CI} = A - P = \\$5238.14"
+   ],
+   "params": {
+    "CI": 5238.136852776774
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q18a",
+   "source": "L06 Percentages (C)",
+   "number": "18(a)",
+   "prompt_latex": "\\$30000\\text{ at }6\\%\\text{ yearly, 3 yr (Bank A)?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$35730.48",
+   "steps_latex": [
+    "A = 30000(1.06)^3",
+    "= \\$35730.48"
+   ],
+   "params": {
+    "A": 35730.48
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q18b",
+   "source": "L06 Percentages (C)",
+   "number": "18(b)",
+   "prompt_latex": "\\$30000\\text{ at }6\\%\\text{ quarterly, 3 yr (Bank B)?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$35868.55",
+   "steps_latex": [
+    "A = 30000(1+\\tfrac{6\\%}{4})^{12}",
+    "= \\$35868.55"
+   ],
+   "params": {
+    "A": 35868.54514384606
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q18c",
+   "source": "L06 Percentages (C)",
+   "number": "18(c)",
+   "prompt_latex": "\\text{Difference in the two amounts?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$138.07",
+   "steps_latex": [
+    "\\text{diff} = 35868.55 - 35730.48",
+    "= \\$138.07"
+   ],
+   "params": {
+    "result": 138.06514384605754
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q19a",
+   "source": "L06 Percentages (C)",
+   "number": "19(a)",
+   "prompt_latex": "\\$50000\\text{ for 2 yr at }6\\%\\text{ compounded half-yearly. Amount?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$56275",
+   "steps_latex": [
+    "A = 50000\\left(1+\\tfrac{6\\%}{2}\\right)^{4}",
+    "= \\$56275"
+   ],
+   "params": {
+    "A": 56275.4405
+   },
+   "verified": true,
+   "note": "nearest dollar"
+  },
+  {
+   "id": "PCT-L06-Q19b",
+   "source": "L06 Percentages (C)",
+   "number": "19(b)",
+   "prompt_latex": "\\$50000\\text{ for 2 yr at }6\\%\\text{ compounded quarterly. Amount?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$56325",
+   "steps_latex": [
+    "A = 50000\\left(1+\\tfrac{6\\%}{4}\\right)^{8}",
+    "= \\$56325"
+   ],
+   "params": {
+    "A": 56324.62932976535
+   },
+   "verified": true,
+   "note": "nearest dollar"
+  },
+  {
+   "id": "PCT-L06-Q19c",
+   "source": "L06 Percentages (C)",
+   "number": "19(c)",
+   "prompt_latex": "\\$50000\\text{ for 2 yr at }6\\%\\text{ compounded monthly. Amount?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$56358",
+   "steps_latex": [
+    "A = 50000\\left(1+\\tfrac{6\\%}{12}\\right)^{24}",
+    "= \\$56358"
+   ],
+   "params": {
+    "A": 56357.988810269584
+   },
+   "verified": true,
+   "note": "nearest dollar"
+  },
+  {
+   "id": "PCT-L06-Q19d",
+   "source": "L06 Percentages (C)",
+   "number": "19(d)",
+   "prompt_latex": "\\$50000\\text{ for 2 yr at }6\\%\\text{ compounded daily. Amount?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$56374",
+   "steps_latex": [
+    "A = 50000\\left(1+\\tfrac{6\\%}{365}\\right)^{730}",
+    "= \\$56374"
+   ],
+   "params": {
+    "A": 56374.28661679243
+   },
+   "verified": true,
+   "note": "nearest dollar"
+  },
+  {
+   "id": "PCT-L06-Q20",
+   "source": "L06 Percentages (C)",
+   "number": "20",
+   "prompt_latex": "\\$48000\\text{, 2 yr monthly; rate }4\\%\\to5\\%.\\ \\text{Increase in amount?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$1046.32",
+   "steps_latex": [
+    "\\Delta = 48000\\left[(1+\\tfrac{5\\%}{12})^{24}-(1+\\tfrac{4\\%}{12})^{24}\\right]",
+    "= \\$1046.32"
+   ],
+   "params": {
+    "result": 1046.322067164621
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q21a",
+   "source": "L06 Percentages (C)",
+   "number": "21(a)",
+   "prompt_latex": "\\$5000\\text{ in A at }10\\%\\text{ half-yearly, 2 yr. Amount?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$6077.53",
+   "steps_latex": [
+    "A = 5000(1.05)^4",
+    "= \\$6077.53"
+   ],
+   "params": {
+    "A": 6077.53125
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q21b",
+   "source": "L06 Percentages (C)",
+   "number": "21(b)",
+   "prompt_latex": "\\text{Then in B at simple }5\\%\\text{ for }1.5\\text{ yr. Total interest from both?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$1533.35",
+   "steps_latex": [
+    "\\text{B interest} = 6077.53\\times5\\%\\times1.5 = 455.81",
+    "\\text{total} = (6077.53-5000) + 455.81",
+    "= \\$1533.35"
+   ],
+   "params": {
+    "result": 1533.34609375
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q22",
+   "source": "L06 Percentages (C)",
+   "number": "22",
+   "prompt_latex": "\\$3000\\text{ for 5 yr at }10\\%.\\ \\text{Difference between CI and SI?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$331.53",
+   "steps_latex": [
+    "\\text{SI} = 3000\\times10\\%\\times5 = 1500",
+    "\\text{CI} = 3000(1.1^5-1) = 1831.53",
+    "\\text{diff} = \\$331.53"
+   ],
+   "params": {
+    "SI": 1500.0,
+    "CI": 1831.53
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q23",
+   "source": "L06 Percentages (C)",
+   "number": "23",
+   "prompt_latex": "\\text{Borrow }\\$20000\\text{ at }10\\%;\\ \\text{repay }\\$5000/\\text{yr. Owed after 4th payment?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$6077",
+   "steps_latex": [
+    "\\text{each yr: }\\times1.1\\text{ then }-5000",
+    "20000\\to17000\\to13700\\to10070\\to6077",
+    "\\text{owed} = \\$6077"
+   ],
+   "params": {
+    "result": 6077.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q24",
+   "source": "L06 Percentages (C)",
+   "number": "24",
+   "prompt_latex": "\\text{Borrow }\\$5000\\text{ at }12\\%\\text{ monthly; repay }\\$500/\\text{mo. Owed after 2nd repay?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$4095.5",
+   "steps_latex": [
+    "\\text{each mo: }\\times1.01\\text{ then }-500",
+    "5000\\to4550\\to4095.5",
+    "\\text{owed} = \\$4095.5"
+   ],
+   "params": {
+    "result": 4095.5
+   },
+   "verified": true,
+   "note": "1 decimal place"
+  },
+  {
+   "id": "PCT-L06-Q25a",
+   "source": "L06 Percentages (C)",
+   "number": "25(a)",
+   "prompt_latex": "\\text{Borrow }\\$35000\\text{ at }18\\%\\text{ monthly; repay }\\$10000/\\text{mo. Owed at start of 3rd mo?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$15908",
+   "steps_latex": [
+    "\\text{each mo: }\\times1.015\\text{ then }-10000",
+    "35000\\to25525\\to15907.88",
+    "\\approx \\$15908"
+   ],
+   "params": {
+    "result": 15907.875
+   },
+   "verified": true,
+   "note": "nearest dollar"
+  },
+  {
+   "id": "PCT-L06-Q25b",
+   "source": "L06 Percentages (C)",
+   "number": "25(b)",
+   "prompt_latex": "\\text{How many repayments to settle the loan?}",
+   "type": "compound-interest",
+   "answer_latex": "4\\text{ repayments}",
+   "steps_latex": [
+    "\\text{iterate }\\times1.015,\\,-10000\\text{ until balance}\\le0",
+    "\\text{settles on the } 4\\text{th repayment}"
+   ],
+   "params": {
+    "count": 4
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q26",
+   "source": "L06 Percentages (C)",
+   "number": "26",
+   "prompt_latex": "\\text{Net chargeable income }\\$155000.\\ \\text{Salaries tax?}",
+   "type": "tax",
+   "answer_latex": "\\$9700",
+   "steps_latex": [
+    "\\text{Tax} = \\sum(\\text{band}\\times\\text{rate})",
+    "= 50000\\times2\\%+50000\\times6\\%+50000\\times10\\%+5000\\times14\\%",
+    "= 9700"
+   ],
+   "params": {
+    "nci": 155000.0,
+    "tax": 9700.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q27a",
+   "source": "L06 Percentages (C)",
+   "number": "27(a)",
+   "prompt_latex": "\\text{Allowance }\\$108000;\\ \\text{monthly income }\\$10000.\\ \\text{Salaries tax?}",
+   "type": "tax",
+   "answer_latex": "\\$240",
+   "steps_latex": [
+    "\\text{annual} = 10000\\times12 = 120000",
+    "\\text{NCI} = 120000 - 108000 = 12000",
+    "= 12000\\times2\\%",
+    "= 240"
+   ],
+   "params": {
+    "annual": 120000,
+    "nci": 12000,
+    "tax": 240.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q27b",
+   "source": "L06 Percentages (C)",
+   "number": "27(b)",
+   "prompt_latex": "\\text{Allowance }\\$108000;\\ \\text{monthly income }\\$63000.\\ \\text{Salaries tax?}",
+   "type": "tax",
+   "answer_latex": "\\$92160",
+   "steps_latex": [
+    "\\text{annual} = 63000\\times12 = 756000",
+    "\\text{NCI} = 756000 - 108000 = 648000",
+    "= 50000\\times2\\%+50000\\times6\\%+50000\\times10\\%+50000\\times14\\%+448000\\times17\\%",
+    "= 92160"
+   ],
+   "params": {
+    "annual": 756000,
+    "nci": 648000,
+    "tax": 92160.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-L06-Q28",
+   "source": "L06 Percentages (C)",
+   "number": "28",
+   "prompt_latex": "\\text{Tax }\\$240,\\ \\text{allowance }\\$216000.\\ \\text{Annual income?}",
+   "type": "tax",
+   "answer_latex": "\\$228000",
+   "steps_latex": [
+    "\\text{first band }2\\%:\\ \\text{NCI} = \\tfrac{240}{2\\%} = 12000",
+    "\\text{income} = 12000 + 216000",
+    "= \\$228000"
+   ],
+   "params": {
+    "nci": 12000.0,
+    "income": 228000.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-QZ-Q1",
+   "source": "L04-06 Quiz",
+   "number": "1",
+   "prompt_latex": "\\text{Panda }80\\,\\text{kg}:\\ -10\\%\\text{ then }+10\\%.\\ \\text{Change vs original?}",
+   "type": "percentage-change",
+   "answer_latex": "-0.8\\,\\text{kg (a decrease of }0.8\\,\\text{kg)}",
+   "steps_latex": [
+    "80(1-10\\%)(1+10\\%) = 80(0.99) = 79.2",
+    "\\text{change} = 79.2 - 80 = -0.8\\,\\text{kg}"
+   ],
+   "params": {
+    "change": -0.8
+   },
+   "verified": true,
+   "note": "answer C: a decrease of 0.8 kg"
+  },
+  {
+   "id": "PCT-QZ-Q2",
+   "source": "L04-06 Quiz",
+   "number": "2",
+   "prompt_latex": "\\text{Postcards: price }+30\\%,\\ \\text{quantity }-15\\%.\\ \\%\\text{ change in money?}",
+   "type": "percentage-change",
+   "answer_latex": "+10.5\\%",
+   "steps_latex": [
+    "\\text{Overall change} = \\left[(1+30\\%)(1-15\\%)-1\\right]\\times100\\%",
+    "= \\left[1.105-1\\right]\\times100\\%",
+    "= +10.5\\%"
+   ],
+   "params": {
+    "changes": [
+     30.0,
+     -15.0
+    ],
+    "overall_pct": 10.5,
+    "factor": 1.105
+   },
+   "verified": true,
+   "note": "answer D: +10.5%"
+  },
+  {
+   "id": "PCT-QZ-Q3",
+   "source": "L04-06 Quiz",
+   "number": "3",
+   "prompt_latex": "\\$50000\\text{ at }6\\%\\text{ SI}+\\$40000\\text{ at }7\\%\\text{ SI, 10 yr. Total amount?}",
+   "type": "simple-interest",
+   "answer_latex": "\\$148000",
+   "steps_latex": [
+    "A = 50000(1+6\\%\\times10)+40000(1+7\\%\\times10)",
+    "= 80000 + 68000",
+    "= \\$148000"
+   ],
+   "params": {
+    "A": 148000.0
+   },
+   "verified": true,
+   "note": "answer A: $148000"
+  },
+  {
+   "id": "PCT-QZ-Q4",
+   "source": "L04-06 Quiz",
+   "number": "4",
+   "prompt_latex": "\\text{At }12\\%\\text{ yearly};\\ \\text{CI after 7 yr}=\\$6000.\\ \\text{Principal (nearest }\\$1000)?",
+   "type": "compound-interest",
+   "answer_latex": "\\$5000",
+   "steps_latex": [
+    "6000 = P(1.12^7 - 1)",
+    "P = \\tfrac{6000}{1.12^7-1} \\approx 4956",
+    "\\approx \\$5000"
+   ],
+   "params": {
+    "P": 4955.886795069542
+   },
+   "verified": true,
+   "note": "answer C: $5000"
+  },
+  {
+   "id": "PCT-QZ-Q5",
+   "source": "L04-06 Quiz",
+   "number": "5",
+   "prompt_latex": "\\text{Allowance }\\$140000,\\ \\text{tax }\\$15300,\\ 150000<\\text{NCI}<200000.\\ \\text{Annual income?}",
+   "type": "tax",
+   "answer_latex": "\\$335000",
+   "steps_latex": [
+    "\\text{tax on first }150000 = 1000+3000+5000 = 9000",
+    "\\text{remainder} = \\tfrac{15300-9000}{14\\%} = 45000",
+    "\\text{NCI} = 195000,\\ \\text{income} = \\$335000"
+   ],
+   "params": {
+    "income": 335000.0
+   },
+   "verified": true,
+   "note": "answer D: $335000"
+  },
+  {
+   "id": "PCT-QZ-Q6a",
+   "source": "L04-06 Quiz",
+   "number": "6(a)",
+   "prompt_latex": "\\text{Painting }+25\\%\\text{ every 5 yr},\\ \\text{now }\\$150000.\\ \\text{Value 20 yr ago?}",
+   "type": "reverse-percentage",
+   "answer_latex": "\\$61440",
+   "steps_latex": [
+    "\\text{20 yr} = 4\\text{ periods}",
+    "150000 = V(1.25)^4 \\Rightarrow V = \\tfrac{150000}{1.25^4}",
+    "= \\$61440"
+   ],
+   "params": {
+    "result": 61440.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-QZ-Q6b",
+   "source": "L04-06 Quiz",
+   "number": "6(b)",
+   "prompt_latex": "\\text{Increase in value over the past 20 years?}",
+   "type": "reverse-percentage",
+   "answer_latex": "\\$88560",
+   "steps_latex": [
+    "\\text{increase} = 150000 - 61440",
+    "= \\$88560"
+   ],
+   "params": {
+    "result": 88560.0
+   },
+   "verified": true,
+   "note": ""
+  },
+  {
+   "id": "PCT-QZ-Q7",
+   "source": "L04-06 Quiz",
+   "number": "7",
+   "prompt_latex": "\\text{Borrow }\\$5000\\text{ at }7.8\\%\\text{ monthly. Repay after 3 yr?}",
+   "type": "compound-interest",
+   "answer_latex": "\\$6313",
+   "steps_latex": [
+    "A = 5000\\left(1+\\tfrac{7.8\\%}{12}\\right)^{36}",
+    "= \\$6313"
+   ],
+   "params": {
+    "A": 6313.43998450169
+   },
+   "verified": true,
+   "note": "nearest dollar"
+  },
+  {
+   "id": "PCT-QZ-Q8",
+   "source": "L04-06 Quiz",
+   "number": "8",
+   "prompt_latex": "\\text{Bank X }4\\%\\text{ half-yearly vs Bank Y }2\\%\\text{ quarterly, 10 yr. Which is more?}",
+   "type": "compound-interest",
+   "answer_latex": "X gives more",
+   "steps_latex": [
+    "X:\\ (1+\\tfrac{4\\%}{2})^{20} = 1.4859",
+    "Y:\\ (1+\\tfrac{2\\%}{4})^{40} = 1.2208",
+    "\\text{per \\$1, } X>Y \\Rightarrow \\text{X gives more}"
+   ],
+   "params": {
+    "X": 1.4859473959783542,
+    "Y": 1.220794236486799
+   },
+   "verified": true,
+   "note": "agree: Bank X yields more interest"
+  }
+ ]
+}

@@ -1,0 +1,1263 @@
+
+============================================================
+Pre S3 L03 - Inequality - 2025 (QUE).pdf
+============================================================
+
+--- page 1 ---
+1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Checkpoint 1 
+Checkpoint 2 
+ 
+5 < 2𝑥−1 
+6 < 2𝑥 
+3 < 𝑥 
+𝒙> 𝟑 
+Make subject 
+主角放左邊 
+唔好冇大冇細
+
+--- page 2 ---
+2 
+ 
+ 
+ 
+ 
+ 
+ 
+1. 
+𝑥+ 3 < 7 
+ 
+ 
+ 
+ 
+ 
+3. 
+𝑥+ 6 ≤10 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+5. 
+11 ≥3 + 𝑥 
+ 
+ 
+ 
+ 
+ 
+ 
+7. 
+10 < 15 −𝑥 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+9. 
+287 ≥106 + 𝑥 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+2. 
+𝑥−3 > 7 
+ 
+ 
+ 
+ 
+ 
+ 
+4. 
+7 < 𝑥−15 
+ 
+ 
+ 
+ 
+ 
+ 
+6. 
+10 + 𝑥< 27 
+ 
+ 
+ 
+ 
+ 
+ 
+8. 
+209 ≤300 −𝑥 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+10. 256 −𝑥< 96 
+ 
+ 
+ 
+ 
+ 
+ 
+Solve the following inequalities graphically. 
+Let’s get started!
+
+--- page 3 ---
+3 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Solve the following inequalities graphically. 
+11. 3𝑥< 15 
+ 
+ 
+ 
+13. 
+𝑥
+8 < 9 
+ 
+ 
+ 
+15. 15 < 𝑥
+6 
+ 
+ 
+ 
+17. 
+24𝑥
+5
+≥48 
+ 
+ 
+ 
+19. 9 < 3𝑥
+35 
+ 
+ 
+ 
+21. 
+5𝑥
+18 < 10 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+12. 2𝑥< 86 
+ 
+ 
+ 
+14. 
+𝑥
+7 ≤13 
+ 
+ 
+ 
+16. 32 ≥𝑥
+3 
+ 
+ 
+ 
+18. 258 < 3𝑥
+2  
+ 
+ 
+ 
+20. 
+3𝑥
+7 < 8 
+ 
+ 
+ 
+22. 
+216𝑥
+9
+≤24 
+ 
+ 
+ 
+Checkpoint 3 
+You have learnt more!
+
+--- page 4 ---
+4 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+23. −𝑥+ 3 > 7 
+ 
+ 
+ 
+25. 𝑥+ 2 ≥4 + 3𝑥 
+ 
+ 
+ 
+27. −4𝑥+ 7 > 5 
+ 
+ 
+ 
+29. 10 −2𝑥≥𝑥+ 1 
+ 
+ 
+ 
+ 
+31. 𝑥+ 4 > 4𝑥−8 
+ 
+ 
+ 
+ 
+33. 4(𝑥−1) ≥7𝑥−10 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+24. −2𝑥+ 5 < 17 
+ 
+ 
+ 
+26. 13 ≤9𝑥−5 
+ 
+ 
+ 
+28. 2𝑥+ 3 < 10𝑥−5 
+ 
+ 
+ 
+30. 5 −3𝑥≤−1 + 3𝑥 
+ 
+ 
+ 
+ 
+32. −30 + 12𝑥< 42 
+ 
+ 
+ 
+ 
+34. 6(3 −𝑥) ≤4(−2𝑥+ 3) 
+ 
+ 
+ 
+ 
+Checkpoint 4 
+−𝑥< 4 
+𝒙> −𝟒 
+乘除負數 
+大細調轉 
+Keep Fighting!
+
+--- page 5 ---
+5 
+ 
+ 
+35. 2𝑥+ 3 > 5(2𝑥−1) 
+ 
+ 
+ 
+ 
+ 
+ 
+37. 12 −2𝑥≥𝑥+ 3 
+ 
+ 
+ 
+ 
+ 
+ 
+39. 𝑥+ 4 > 4𝑥−8 
+ 
+ 
+ 
+ 
+ 
+ 
+41. 4𝑥−12 ≥10 −7𝑥 
+ 
+ 
+ 
+ 
+ 
+ 
+43. −6(5 −2𝑥) > 42 
+ 
+ 
+ 
+ 
+ 
+ 
+45. 
+1
+5 (−4 −𝑥) ≥8  
+ 
+ 
+ 
+36. 6(3 −𝑥) < 4(−2𝑥+ 3) 
+ 
+ 
+ 
+ 
+ 
+ 
+38. 4 −2𝑥≤−1 + 2𝑥 
+ 
+ 
+ 
+ 
+ 
+ 
+40. 5𝑥−1 < 3𝑥−7 
+ 
+ 
+ 
+ 
+ 
+ 
+42. 13 −5𝑥≤23 −7𝑥 
+ 
+ 
+ 
+ 
+ 
+ 
+44. 5(𝑥−8) < 10 
+ 
+ 
+ 
+ 
+ 
+ 
+46. 
+1
+3 (4𝑥−1) ≤1
+
+--- page 6 ---
+6 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Give it a try 
+一邊有分母 𝒏, 
+其他terms 全部 × 
+𝒏
+𝒏 
+Challenging!! 
+Case 1
+Case 2
+𝟗
+𝟗 × 
+𝟑
+𝟑
+
+--- page 7 ---
+7 
+ 
+ 
+ 
+ 
+ 
+1. 
+𝑥+1
+2
+≥
+9𝑥+5
+19  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+3. 
+6−𝑥
+11 −
+1−𝑥
+4
+< 0 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+5. 
+𝑥+ 16 > 2𝑥
+13 + 5 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+7. 
+4𝑥+ 16 + 𝑥
+2 < 13 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+2. 
+3𝑥+8
+2
+≥
+3−𝑥
+5  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+4. 
+5𝑥−3
+4
+−
+7𝑥−25
+3
+≤0 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+6. 
+5𝑥
+3 −2 <
+10𝑥
+9
++ 3 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+8. 
+7 −4𝑥> 𝑥+1
+3  
+ 
+ 
+ 
+ 
+ 
+ 
+Final Boss!
+
+--- page 8 ---
+8 
+ 
+ 
+9. 
+1 + 𝑥
+7 + 𝑥−3
+2
+≥3(𝑥+ 1) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+11. 3 −𝑥+1
+2
+≥5 −𝑥+2
+3  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+13.  
+−3𝑥+5
+2
+≥
+11−𝑥
+3
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+10. 5𝑥−2𝑥−9
+5
+≤𝑥−3 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+12. 
+1−2𝑥
+3
+−
+3−4𝑥
+5
+> −2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+14.  
+𝑥
+6 + 1 ≤
+5
+6 −𝑥
+
+============================================================
+Pre S3 L03 Inequality Quiz (QUE).pdf
+============================================================
+
+--- page 1 ---
+Pre S3 L03 Inequality Quiz 
+ 
+ 
+1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+A. −21𝜋 
+ 
+B. 
+−21  
+ 
+C. 
+−5 
+ 
+D. 0 
+1. 
+Find the sum of all the negative integers 𝑥 satisfying the inequality 𝑥> −2. 
+ 
+ 
+ 
+A. 𝑥≤𝑦< 𝑧  
+ 
+B. 
+𝑦−𝑥< 𝑧−𝑥 
+ 
+C. 
+𝑥𝑧< 𝑥𝑦 
+ 
+D. −
+𝑥
+4 < −
+𝑧
+4 
+ 
+3. 
+If 𝑥≤𝑦 and 𝑧> 𝑦, where 𝑧 is a negative number, which of the following is not true?  
+ 
+ 
+A. 4𝑥≤2𝑥+ 3 
+ 
+B. 
+1 −2𝑥≤−2  
+ 
+C. 
+2𝑥+ 3 ≤6 
+ 
+D. 
+2𝑥
+3 ≤1 
+ 
+2. 
+If 2𝑥≤3, which of the following is not true?  
+ 
+38 
+Name:                    
+Date:                     
+ 
+ 
+A. 𝑥> 3  
+ 
+B. 
+𝑥< 3 
+ 
+C. 
+𝑥> −3 
+ 
+D. 𝑥< −3 
+ 
+4. 
+Solve the inequality 3ሺ𝑥+ 2ሻ< 5ሺ6 −𝑥ሻ.
+
+--- page 2 ---
+Pre S3 L03 Inequality Quiz 
+ 
+ 
+2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+A. −1, 0, 1  
+ 
+B. 
+1, 3, 5 
+ 
+C. 
+2, 3, 4 
+ 
+D. 2.1, 3.2, 4.3 
+ 
+5. 
+Which of the following groups of numbers can all satisfy the inequality 7𝑥+ 3 > 17?  
+6. 
+(a)  Solve the inequality 
+𝑥
+4 −2 ≤0.8 −
+𝑥
+3.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ሺ3 marksሻ 
+(b)  Write down all positive integers satisfying the inequality in (a).   
+ 
+ 
+ 
+ 
+ሺ2 marksሻ 
+7. 
+Write down all positive integers satisfying the inequality 
+4𝑥+3
+5
+<
+1−3𝑥
+6
++ 4.               ሺ5 marksሻ
+
+--- page 3 ---
+Pre S3 L03 Inequality Quiz 
+ 
+ 
+3 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+*8. A non-negative number 𝑥 satisfies the equation 
+2𝑥−𝑘
+3
+=
+5𝑥−7
+4
++
+𝑥+𝑘
+6 , where 𝑘 is a positive integral 
+constant. How many possible values of 𝑘 are there?                                 ሺ8 marksሻ
+
+============================================================
+Pre S3 L03 Inequality Quiz (ANS).pdf
+============================================================
+
+--- page 1 ---
+Pre S3 L03 Inequality Quiz 
+ 
+(ANSWER) 
+1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+A. −21𝜋 
+ 
+B. 
+−21  
+ 
+C. 
+−5 
+ 
+D. 0 
+1. 
+Find the sum of all the negative integers 𝑥 satisfying the inequality 𝑥> −2. 
+B 
+ 
+ 
+A. 𝑥≤𝑦< 𝑧  
+ 
+B. 
+𝑦−𝑥< 𝑧−𝑥 
+ 
+C. 
+𝑥𝑧< 𝑥𝑦 
+ 
+D. −
+𝑥
+4 < −
+𝑧
+4 
+D 
+3. 
+If 𝑥≤𝑦 and 𝑧> 𝑦, where 𝑧 is a negative number, which of the following is not true?  
+ 
+ 
+A. 4𝑥≤2𝑥+ 3 
+ 
+B. 
+1 −2𝑥≤−2  
+ 
+C. 
+2𝑥+ 3 ≤6 
+ 
+D. 
+2𝑥
+3 ≤1 
+B 
+2. 
+If 2𝑥≤3, which of the following is not true?  
+ 
+38 
+Name:                    
+Date:                     
+ 
+ 
+A. 𝑥> 3  
+ 
+B. 
+𝑥< 3 
+ 
+C. 
+𝑥> −3 
+ 
+D. 𝑥< −3 
+B 
+4. 
+Solve the inequality 3ሺ𝑥+ 2ሻ< 5ሺ6 −𝑥ሻ.
+
+--- page 2 ---
+Pre S3 L03 Inequality Quiz 
+ 
+(ANSWER) 
+2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+A. −1, 0, 1  
+ 
+B. 
+1, 3, 5 
+ 
+C. 
+2, 3, 4 
+ 
+D. 2.1, 3.2, 4.3 
+D 
+5. 
+Which of the following groups of numbers can all satisfy the inequality 7𝑥+ 3 > 17?  
+6. 
+(a)  Solve the inequality 
+𝑥
+4 −2 ≤0.8 −
+𝑥
+3.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ሺ3 marksሻ 
+(b)  Write down all positive integers satisfying the inequality in (a).   
+ 
+ 
+ 
+ 
+ሺ2 marksሻ 
+7. 
+Write down all positive integers satisfying the inequality 
+4𝑥+3
+5
+<
+1−3𝑥
+6
++ 4.               ሺ5 marksሻ
+
+--- page 3 ---
+Pre S3 L03 Inequality Quiz 
+ 
+(ANSWER) 
+3 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+*8. A non-negative number 𝑥 satisfies the equation 
+2𝑥−𝑘
+3
+=
+5𝑥−7
+4
++
+𝑥+𝑘
+6 , where 𝑘 is a positive integral 
+constant. How many possible values of 𝑘 are there?                                 ሺ8 marksሻ

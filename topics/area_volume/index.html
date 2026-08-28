@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Area &amp; Volume — KOC S3 Math</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
+  <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
+  <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
+  <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
+  <script defer src="area-volume-tools.js?v=20260730-prejm"></script>
+  <script defer src="area-volume-game.js?v=20260730-builder"></script>
+  <script defer src="area-volume-comics.js?v=20260828-hd2"></script>
+  <script defer src="area-volume-quiz.js?v=20260730-prejm"></script>
+  <style>
+    :root {
+      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
+      --a: #4FC3F7; --b: #FFD54F; --ab: #81C784; --down: #F06292; --line: rgba(0, 0, 0, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg); color: var(--ink);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+    }
+    header {
+      padding: 18px 28px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: baseline; gap: 14px;
+    }
+    header h1 { font-size: 22px; margin: 0; font-weight: 700; }
+    header .crumb { color: var(--dim); font-size: 13px; }
+    html.in-embed header { display: none; }
+    .tabs { display: flex; gap: 6px; padding: 14px 28px 0; }
+    .tab {
+      background: none; border: none; color: var(--dim); font: inherit; font-weight: 600;
+      padding: 10px 16px; cursor: pointer; border-radius: 8px 8px 0 0; font-size: 15px;
+    }
+    .tab.active { color: var(--ink); background: var(--panel); box-shadow: inset 0 -2px 0 var(--a); }
+    .subnav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; align-items: center; }
+    .subnav .sep { width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
+    .subnav .grp-label { color: var(--dim); font-size: 12px; text-transform: uppercase;
+      letter-spacing: .05em; font-weight: 700; margin-right: 2px; }
+    .chip {
+      background: var(--panel); border: 1px solid var(--line); color: var(--dim);
+      font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer;
+      font-size: 14px; transition: all .15s;
+    }
+    .chip:hover { color: var(--ink); }
+    .chip.active { color: #06283d; background: var(--a); border-color: var(--a); }
+    /* Tab 1: slide deck — height from topic-shell.css */
+    .deck-wrap {
+      background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    }
+    .hint { color: var(--dim); font-size: 13px; text-align: center; margin-top: 10px; }
+    /* Tab 2: tools */
+    .tool-layout { display: grid; grid-template-columns: 1.35fr 1fr; gap: 22px; align-items: stretch; }
+    @media (max-width: 880px) { .tool-layout { grid-template-columns: 1fr; } }
+    .figure-card, .control-card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+    }
+    #tool-svg { width: 100%; height: auto; display: block; }
+    .control-card h3 { margin: 2px 0 14px; font-size: 15px; color: var(--dim); font-weight: 600;
+      text-transform: uppercase; letter-spacing: .05em; }
+    .tool-instr { font-size: 14px; color: var(--dim); line-height: 1.5; margin: 0 0 14px; }
+    .tool-instr b { color: var(--ink); }
+    .tool-action { margin-top: 14px; width: 100%; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+      font: inherit; font-weight: 600; padding: 10px; border-radius: 9px; cursor: pointer; }
+    .tool-action:hover { border-color: var(--a); }
+    #tool-svg .handle { cursor: ew-resize; }
+    #tool-svg { touch-action: none; }
+    /* step walkthrough */
+    .step-card { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+      background: var(--panel2); transition: border-color .2s, box-shadow .2s; }
+    .step-card.active { border-color: var(--a); box-shadow: 0 4px 16px -6px rgba(79,195,247,.45); }
+    .step-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .step-index { width: 24px; height: 24px; border-radius: 50%; background: var(--panel); color: var(--dim);
+      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex: none; }
+    .step-card.active .step-index { background: var(--a); color: #06283d; }
+    .step-title { font-weight: 700; font-size: 12px; color: var(--ink); text-transform: uppercase; letter-spacing: .04em; }
+    .step-body { font-size: 17px; }
+    .step-body .eq-line { margin: 6px 0; }
+    .given-row { margin: 5px 0; font-size: 16px; }
+    .tool-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
+    .nav-btn { background: var(--panel2); border: 1px solid var(--line); color: var(--ink); font: inherit;
+      font-weight: 600; padding: 8px 16px; border-radius: 9px; cursor: pointer; }
+    .nav-btn:hover:not(:disabled) { border-color: var(--a); }
+    .nav-btn:disabled { opacity: .4; cursor: default; }
+    .progress-label { color: var(--dim); font-size: 13px; font-weight: 700; }
+    .eq-line { font-size: 18px; margin: 12px 0; }
+    .legend { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .legend-title { margin: 0 0 10px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
+    .lg-item { display: flex; align-items: center; gap: 10px; margin: 7px 0; font-size: 14px; color: var(--ink); }
+    .lg-item .sw { width: 15px; height: 15px; border-radius: 4px; flex: none; }
+    .lg-item .lg-sym { min-width: 40px; }
+    .lg-item em { font-style: normal; color: var(--dim); }
+
+    /* ───────────────── Builder (game) tab ───────────────── */
+    .build-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+    .mode-switch { display: inline-flex; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 999px; padding: 4px; gap: 4px; }
+    .mode-btn { background: none; border: none; color: var(--dim); font: inherit; font-weight: 700;
+      padding: 8px 20px; border-radius: 999px; cursor: pointer; font-size: 14px; transition: all .15s; }
+    .mode-btn.active { background: var(--a); color: #06283d; }
+    .build-hint { color: var(--dim); font-size: 13px; }
+    .build-hint b { color: var(--ink); }
+    .build-layout { display: grid; grid-template-columns: 168px 1fr 340px; gap: 16px; align-items: start; }
+    @media (max-width: 1080px) { .build-layout { grid-template-columns: 150px 1fr; }
+      .calc-panel { grid-column: 1 / -1; } }
+    @media (max-width: 760px) { .build-layout { grid-template-columns: 1fr; } }
+
+    /* palette */
+    .palette { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+    .palette h3 { margin: 0 0 12px; font-size: 12px; color: var(--dim); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; }
+    .pal-item { display: flex; align-items: center; gap: 10px; width: 100%; background: var(--panel2);
+      border: 1px solid var(--line); border-radius: 11px; padding: 9px 11px; margin-bottom: 9px;
+      cursor: grab; transition: all .15s; color: var(--ink); font: inherit; font-weight: 600; font-size: 14px;
+      touch-action: none; /* iPad: otherwise Safari steals the drag for scrolling */ }
+    .pal-item:hover { border-color: var(--a); transform: translateY(-1px); }
+    .pal-item:active { cursor: grabbing; }
+    .pal-item svg { width: 34px; height: 34px; flex: none; }
+    .pal-hint { font-size: 11px; color: var(--dim); line-height: 1.5; margin: 6px 2px 0; }
+
+    /* canvas */
+    .canvas-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      padding: 12px; position: relative; }
+    .canvas-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .canvas-bar .cb-title { font-size: 12px; color: var(--dim); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em; }
+    .canvas-bar .cb-count { font-family: "JetBrains Mono", monospace; color: var(--ink); }
+    .canvas-bar .spacer { flex: 1; }
+    .icon-btn { background: var(--panel2); border: 1px solid var(--line); color: var(--ink);
+      font: inherit; font-weight: 600; font-size: 13px; padding: 7px 12px; border-radius: 9px; cursor: pointer; }
+    .icon-btn:hover { border-color: var(--a); }
+    .icon-btn.danger:hover { border-color: #E57373; color: #E57373; }
+    .icon-btn.hidden { display: none; }
+    .icon-btn.disabled, .icon-btn:disabled { opacity: .38; cursor: not-allowed; pointer-events: none; }
+    #build-canvas { width: 100%; height: auto; display: block; border-radius: 10px; touch-action: none;
+      background:
+        linear-gradient(rgba(79,195,247,.06) 1px, transparent 1px) 0 0 / 100% 32px,
+        linear-gradient(90deg, rgba(79,195,247,.06) 1px, transparent 1px) 0 0 / 32px 100%,
+        radial-gradient(120% 90% at 50% -10%, #15233f 0%, #0c1426 60%, #080f1f 100%); }
+    #build-canvas .shape-g { cursor: grab; }
+    #build-canvas .shape-g.dragging { cursor: grabbing; }
+    #build-canvas .shape-g.drop-ok { filter: drop-shadow(0 0 8px #81C784); }
+    #build-canvas .shape-g.drop-bad { filter: drop-shadow(0 0 8px #E57373); }
+    #build-canvas .shape-g.flash-ok { animation: flashOk .6s ease-out; }
+    #build-canvas .shape-g.flash-bad { animation: flashBad .5s ease-out; }
+    @keyframes flashOk { 0% { filter: drop-shadow(0 0 0 #81C784); } 30% { filter: drop-shadow(0 0 14px #81C784); } 100% { filter: none; } }
+    @keyframes flashBad { 0%,100% { filter: none; } 20% { filter: drop-shadow(0 0 12px #E57373); }
+      60% { filter: drop-shadow(0 0 12px #E57373); } }
+    .canvas-empty { fill: var(--dim); font-family: "Hanken Grotesk", sans-serif; }
+    .drag-ghost { position: fixed; z-index: 60; pointer-events: none; opacity: .9;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.5)); transform: translate(-50%, -50%); }
+    .drag-ghost.tray-ghost { background: var(--a); color: #06283d; padding: 8px 14px; border-radius: 999px;
+      font-size: 16px; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,.5); }
+
+    /* formula-label tray */
+    .tray { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .tray-label { font-size: 12px; color: var(--dim); font-weight: 700; text-transform: uppercase;
+      letter-spacing: .04em; margin-bottom: 10px; }
+    .tray-chips { display: flex; flex-wrap: wrap; gap: 10px; min-height: 30px; }
+    .tray-chip { background: linear-gradient(180deg,#1d2c4d,#16213a); border: 1px solid var(--a);
+      color: #fff; border-radius: 999px; padding: 9px 16px; cursor: grab; font: inherit; font-size: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.3); transition: transform .12s, box-shadow .12s; touch-action: none; }
+    .tray-chip:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(79,195,247,.3); }
+    .tray-chip.dragging { opacity: .35; }
+    .tray-chip .katex, .tray-chip .katex * { color: #fff !important; }
+    .tray-done { color: var(--ab); font-weight: 700; font-size: 15px; padding: 4px 2px; }
+
+    /* selected-shape controls */
+    .sel-controls { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .sel-controls.hidden { display: none; }
+    .sel-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .sel-swatch { width: 16px; height: 16px; border-radius: 5px; flex: none; }
+    .sel-name { font-weight: 700; font-size: 15px; }
+    .sel-head .icon-btn { margin-left: auto; }
+    .slider-row { display: grid; grid-template-columns: 80px 1fr 56px; align-items: center; gap: 12px; margin-bottom: 11px; }
+    .slider-row .sl-name { font-size: 14px; color: var(--ink); }
+    .slider-row .sl-val { font-family: "JetBrains Mono", monospace; text-align: right; color: var(--a); font-size: 14px; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 5px; border-radius: 999px;
+      background: var(--panel2); outline: none; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+      background: var(--a); cursor: pointer; border: 2px solid #ffffff; }
+    input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--a);
+      cursor: pointer; border: 2px solid #ffffff; }
+
+    /* calc panel */
+    .calc-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      display: flex; flex-direction: column; overflow: hidden; min-height: 0; max-height: 620px; }
+    .calc-head { padding: 14px 16px; border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg,#16233d,var(--panel)); border-radius: 14px 14px 0 0; flex: none; }
+    .calc-head h3 { margin: 0; font-size: 16px; color: var(--a); }
+    .calc-head p { margin: 4px 0 0; font-size: 12px; color: var(--dim); }
+    .calc-scroll { padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+      flex: 1; min-height: 0; }
+    .calc-empty { color: var(--dim); font-size: 14px; text-align: center; padding: 28px 10px; line-height: 1.6; }
+    .calc-card { background: var(--panel2); border: 1px solid var(--line); border-radius: 11px; padding: 11px 13px;
+      transition: all .15s; cursor: pointer; }
+    .calc-card.sel { border-color: var(--a); box-shadow: inset 3px 0 0 var(--a); }
+    .calc-card.locked { opacity: .7; }
+    .calc-card.done { border-color: rgba(129,231,160,.5); }
+    .calc-card .cc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+    .calc-card .cc-dot { width: 13px; height: 13px; border-radius: 4px; flex: none; }
+    .calc-card .cc-title { font-size: 13px; font-weight: 700; color: var(--ink); }
+    .calc-card .cc-idx { font-family: "JetBrains Mono", monospace; color: var(--dim); font-size: 12px; }
+    .calc-card.done .cc-idx::after { content: " \2713"; color: var(--ab); }
+    .cc-locked { font-size: 13px; color: var(--dim); line-height: 1.5; }
+    .formula-chip { display: block; width: 100%; text-align: left; background: var(--bg);
+      border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px 9px 13px; cursor: pointer; font: inherit;
+      color: var(--ink); transition: all .15s; position: relative; }
+    .formula-chip:hover { border-color: var(--a); background: var(--panel2); }
+    .formula-chip::after { content: "ⓘ"; position: absolute; top: 7px; right: 9px; font-size: 12px;
+      color: var(--dim); opacity: 0; transition: opacity .15s; }
+    .formula-chip:hover::after { opacity: 1; color: var(--a); }
+    .formula-chip .katex { color: var(--ink); }
+    .formula-chip .eq-line { margin: 3px 0; }
+    .formula-chip .eq-line + .eq-line { padding-left: 14px; }   /* indent continued "= ..." lines */
+    .calc-total { margin-top: auto; padding: 14px 16px; border-top: 1px solid var(--line);
+      background: linear-gradient(180deg, transparent, rgba(129,231,160,.06)); }
+    .calc-total .ct-label { font-size: 12px; text-transform: uppercase; letter-spacing: .05em;
+      color: var(--dim); font-weight: 700; margin-bottom: 6px; }
+    .calc-total .ct-val { font-size: 20px; }
+    .calc-total .ct-val .katex { color: var(--ab); }
+
+    /* formula popup modal */
+    .fx-modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
+      background: rgba(3,8,20,.74); backdrop-filter: blur(3px); padding: 20px; }
+    .fx-modal.hidden { display: none; }
+    .fx-card { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+      padding: 20px 22px; max-width: 380px; width: 100%; max-height: 88vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+    .fx-card .eq-line { margin: 5px 0; font-size: 18px; }
+    .fx-card .eq-line + .eq-line { padding-left: 18px; }
+    .fx-card .fx-row + .eq-line { padding-left: 18px; }
+    .fx-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--dim);
+      font-size: 26px; cursor: pointer; line-height: 1; }
+    .fx-close:hover { color: var(--ink); }
+    .fx-tag { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ab); font-weight: 700; }
+    .fx-card h3 { margin: 4px 0 10px; color: var(--a); font-size: 22px; }
+    .fx-svg { width: 100%; max-width: 320px; height: auto; display: block; margin: 6px auto 12px; }
+    .fx-row { font-size: 19px; margin: 10px 0; }
+    .fx-sub { font-size: 17px; margin: 8px 0; color: var(--ink); }
+    .fx-note { font-size: 14px; color: var(--dim); line-height: 1.6; margin-top: 12px;
+      padding-top: 12px; border-top: 1px solid var(--line); }
+
+    /* ── Quiz ── */
+    .quiz-wrap { max-width: 860px; margin: 0 auto; min-width: 0; }
+    .quiz-progress-wrap { margin-bottom: 18px; }
+    .quiz-progress-label { font-size: 14px; font-weight: 600; color: var(--dim); margin-bottom: 8px; text-align: center; }
+    .quiz-progress-track { height: 8px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); overflow: hidden; }
+    .quiz-progress-fill { height: 100%; width: 0; border-radius: 999px; background: var(--a); transition: width .25s ease; }
+    .quiz-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; }
+    .quiz-nav-btn { font: inherit; font-weight: 700; padding: 12px 24px; border-radius: 999px; cursor: pointer; border: 1px solid var(--line); background: var(--panel2); color: var(--ink); min-width: 100px; }
+    .quiz-nav-btn.hidden { visibility: hidden; pointer-events: none; }
+    .quiz-nav-btn.primary { background: var(--a); color: #06283d; border-color: var(--a); box-shadow: 0 6px 18px rgba(79,195,247,.35); margin-left: auto; }
+    .quiz-nav-btn.retry { background: transparent; color: var(--ink); border: 1px solid var(--line); box-shadow: none; }
+    .quiz-review-header { text-align: center; margin-bottom: 16px; }
+    .quiz-review-header h2 { margin: 0; font-size: 22px; color: var(--a); }
+    .quiz-card-review { margin-bottom: 12px; }
+    .quiz-card-review .quiz-head { justify-content: flex-start; }
+    .quiz-card-review .quiz-mark { margin-left: auto; }
+    .quiz-yours { margin-top: 10px; font-size: 15px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .quiz-yours-lbl { font-weight: 600; }
+    .quiz-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; min-width: 0; overflow: hidden; }
+    .quiz-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .quiz-num { font-weight: 700; font-size: 18px; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    .quiz-prompt { font-size: 16px; font-weight: 500; color: var(--ink); line-height: 1.55; flex: 1 1 100%; word-wrap: break-word; overflow-wrap: anywhere; white-space: pre-line; overflow: visible; }
+    .quiz-stem { font-size: 18px; margin-bottom: 14px; max-width: 100%; overflow: visible; line-height: 1.55; overflow-wrap: anywhere; word-wrap: break-word; -webkit-overflow-scrolling: touch; }
+    .quiz-stem .katex, .quiz-stem .katex-display { font-size: 1em; max-width: 100%; }
+    .quiz-stem .katex-display { margin: 0; text-align: left; overflow: visible; }
+    .quiz-mc { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .quiz-mc-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s; min-width: 0; overflow: visible; }
+    .quiz-mc-opt:hover:not(.locked) { border-color: var(--a); }
+    .quiz-mc-opt.locked { cursor: default; }
+    .quiz-mc-opt.reveal-ok { border-color: var(--ab); background: rgba(129,199,132,.12); }
+    .quiz-mc-opt.reveal-bad { border-color: #E57373; background: rgba(229,115,115,.1); }
+    .quiz-mc-opt input { flex: none; accent-color: var(--a); }
+    .quiz-mc-letter { font-weight: 700; color: var(--dim); min-width: 22px; font-family: "JetBrains Mono", monospace; }
+    .quiz-mc-tex { font-size: 18px; min-width: 0; flex: 1; overflow: visible; }
+    .quiz-mc-tex .katex { max-width: 100%; white-space: normal; }
+    .quiz-sym-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .quiz-sym-btn { min-width: 36px; height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel2); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+    .quiz-sym-btn:hover:not(:disabled) { border-color: var(--a); color: var(--a); }
+    .quiz-sym-btn:disabled { opacity: .4; cursor: default; }
+    .quiz-short-input { width: 100%; background: var(--panel2); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-family: "JetBrains Mono", monospace; font-size: 15px; resize: vertical; min-height: 52px; }
+    .quiz-short-input:focus { outline: none; border-color: var(--a); }
+    .quiz-preview { margin-top: 10px; min-height: 36px; padding: 8px 12px; border-radius: 8px; background: rgba(8,16,32,.55); font-size: 20px; }
+    .quiz-preview.empty { color: var(--dim); font-size: 14px; font-family: "Hanken Grotesk", sans-serif; }
+    .quiz-result { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+    .quiz-mark { font-size: 28px; font-weight: 800; line-height: 1; }
+    .quiz-mark.ok { color: var(--ab); }
+    .quiz-mark.bad { color: #E57373; }
+    .quiz-result-msg { font-size: 15px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .quiz-ans-tex { font-size: 18px; color: var(--ink); }
+    .quiz-part { margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+    .quiz-part:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .quiz-part-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .quiz-part-label { font-weight: 700; font-size: 16px; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    .quiz-part-mark { font-size: 22px; }
+    .quiz-part-stem { font-size: 20px; margin-bottom: 10px; max-width: 100%; overflow-x: auto; line-height: 1.5; }
+    .quiz-part-stem .katex, .quiz-part-stem .katex-display { max-width: 100%; }
+    .quiz-part-stem .katex-display { margin: 0; text-align: left; overflow-x: auto; }
+    .quiz-part .quiz-prompt { margin-bottom: 8px; }
+    .quiz-main { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; min-width: 0; }
+    .quiz-content { flex: 1 1 260px; min-width: 0; }
+    .quiz-figure { flex: 0 1 200px; max-width: 220px; min-width: 140px; }
+    .quiz-figure-stack { display: flex; flex-direction: column; gap: 10px; max-width: 180px; }
+    .quiz-figure-row { display: flex; flex-direction: row; gap: 12px; align-items: flex-end; max-width: 320px; flex: 0 1 320px; }
+    .quiz-figure-row img { flex: 1 1 0; min-width: 0; }
+    .quiz-figure img { width: 100%; height: auto; display: block; border-radius: 10px; background: #fff; padding: 8px; border: 1px solid var(--line); }
+    .quiz-card.has-figure .quiz-stem { font-size: 20px; }
+    .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
+    .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
+
+    /* ── Comics ── */
+    #panel-comics { max-width: 920px; margin: 0 auto; }
+    #comics-subnav { margin-bottom: 18px; }
+    .comic-page { display: grid; gap: 18px; }
+    .comic-page-head { text-align: center; }
+    .comic-chapter {
+      display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--dim); margin-bottom: 6px;
+    }
+    .comic-page-head h2 { margin: 0; font-size: 24px; color: var(--ink); }
+    .comic-figure {
+      margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+      overflow: hidden; box-shadow: 0 8px 28px rgba(0,0,0,.06);
+    }
+    .comic-figure img {
+      display: block; width: 100%; height: auto; background: #0f172a;
+    }
+    .comic-checks h3 {
+      margin: 4px 0 12px; font-size: 15px; letter-spacing: .04em; text-transform: uppercase;
+      color: var(--dim);
+    }
+    .comic-check-card .quiz-mark { margin-left: auto; }
+    .comic-chapter-nav {
+      display: flex; justify-content: flex-end; margin-top: 8px; padding-top: 4px;
+    }
+    .comic-chapter-next { margin-left: auto; }
+  </style>
+  <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
+</head>
+<body>
+  <header>
+    <img class="topic-logo" src="../../shared/uniplus-logo.png" alt="Uni+ logo">
+    <div class="topic-headings">
+      <div class="topic-brand">Uni<span class="plus">+</span> · Mathematics</div>
+      <h1>Area &amp; Volume</h1>
+      <span class="crumb">KOC S3 Math · Summer 2026 · L07–09 Area and Volume</span>
+    </div>
+  </header>
+
+  <div class="tab-row">
+  <nav class="tabs">
+    <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
+    <button class="tab" data-tab="tools">Interactive Tool</button>
+    <button class="tab" data-tab="game">Builder Game</button>
+    <button class="tab" data-tab="comics">Comics</button>
+    <button class="tab" data-tab="quiz">Quiz</button>
+  </nav>
+  </div>
+
+  <!-- TAB 1: slide decks -->
+  <section id="panel-slides" class="panel">
+    <div class="subnav">
+      <button class="chip active" data-deck="../../slides/area_volume/plane-shapes/index.html">2D Shapes — Area</button>
+      <button class="chip" data-deck="../../slides/area_volume/solids/index.html">3D Solids — Volume &amp; Surface Area</button>
+    </div>
+    <div class="deck-slideshow">
+      <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
+      <div class="deck-wrap">
+        <iframe id="deck-frame" src="../../slides/area_volume/plane-shapes/index.html" title="Area &amp; Volume concept slides"></iframe>
+      </div>
+      <button type="button" class="deck-nav-btn deck-next" id="deck-next" aria-label="Next slide">&rarr;</button>
+    </div>
+    <p class="hint hint-deck-desktop">Use &rarr; / Space to advance, &larr; to go back. Each slide builds the formula step by step from the figure.</p>
+    <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide builds the formula step by step from the figure.</p>
+    <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the formula step by step from the figure.</p>
+  </section>
+
+  <!-- TAB 2: interactive tool — similar shapes & solids -->
+  <section id="panel-tools" class="panel hidden">
+    <div class="subnav">
+      <button class="chip active" data-lab="square">Square + Prism</button>
+      <button class="chip" data-lab="triangle">Triangle + Pyramid</button>
+      <button class="chip" data-lab="circle">Circle + Sphere</button>
+    </div>
+    <div class="tool-layout">
+      <div class="figure-card">
+        <svg id="tool-svg" viewBox="0 0 520 440" role="img" aria-label="similar 2D shape and 3D solid"></svg>
+      </div>
+      <div class="control-card">
+        <h3>Worked steps</h3>
+        <p class="tool-instr">Drag the <b style="color:#FF8A65">orange dots</b> to set <b>L₁</b> and <b>L₂</b>. Then press <b>Next</b> to find the scale factor <b>k</b>, the <b>area</b> of ②, then its <b>volume</b>.</p>
+        <div id="tool-steps"></div>
+        <div class="tool-nav">
+          <button id="step-back" class="nav-btn">‹ Back</button>
+          <span id="step-progress" class="progress-label"></span>
+          <button id="step-next" class="nav-btn">Next ›</button>
+        </div>
+        <button id="tool-reset" class="tool-action">Reset</button>
+        <div class="legend">
+          <p class="legend-title">Colour key</p>
+          <div class="lg-item"><i class="sw" style="background:var(--a)"></i><span class="lg-sym">①</span><em>original figure (known)</em></div>
+          <div class="lg-item"><i class="sw" style="background:var(--b)"></i><span class="lg-sym">②</span><em>enlarged figure (find it)</em></div>
+          <div class="lg-item"><span class="lg-sym" data-tex="k"></span><em>= length ratio L₂ : L₁</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 3: builder game -->
+  <section id="panel-game" class="panel hidden">
+    <div class="build-top">
+      <div class="mode-switch">
+        <button class="mode-btn active" data-mode="2d">2D · Area</button>
+        <button class="mode-btn" data-mode="3d">3D · Volume</button>
+      </div>
+      <p class="build-hint">Build a figure: drag shapes from the palette onto the canvas and resize them.
+        Then <b>drag each formula label</b> onto the shape it belongs to — a correct match reveals that
+        shape's working and adds it to the <b>total</b>. Click any shape to peek at its formula.</p>
+    </div>
+    <div class="build-layout">
+      <!-- palette -->
+      <aside class="palette">
+        <h3 id="pal-title">2D Shapes</h3>
+        <div id="pal-list"></div>
+        <p class="pal-hint" id="pal-hint">Match a formula onto each shape to unlock adding more blocks here.</p>
+      </aside>
+
+      <!-- canvas -->
+      <div class="canvas-card" id="canvas-card">
+        <div class="canvas-bar">
+          <span class="cb-title">Canvas</span>
+          <span class="cb-count" id="canvas-count">0 shapes</span>
+          <span class="spacer"></span>
+          <button id="toggle-labels" class="icon-btn hidden">Hide labels</button>
+          <button id="build-screenshot" class="icon-btn hidden">Screenshot</button>
+          <button id="build-clear" class="icon-btn danger">Clear all</button>
+        </div>
+        <svg id="build-canvas" viewBox="0 0 640 460" role="img" aria-label="shape building canvas"></svg>
+        <div class="tray" id="formula-tray">
+          <div class="tray-label" id="tray-label">Drag each formula onto its matching shape:</div>
+          <div class="tray-chips" id="tray-chips"></div>
+        </div>
+        <div class="sel-controls hidden" id="sel-controls">
+          <div class="sel-head">
+            <span class="sel-swatch" id="sel-swatch"></span>
+            <span class="sel-name" id="sel-name">Shape</span>
+            <button id="sel-delete" class="icon-btn danger">Delete</button>
+          </div>
+          <div id="sel-sliders"></div>
+        </div>
+      </div>
+
+      <!-- step-by-step calculation -->
+      <section class="calc-panel" id="calc-panel">
+        <div class="calc-head">
+          <h3 id="calc-title">Total Area</h3>
+          <p id="calc-sub">Sum of every shape's area on the canvas</p>
+        </div>
+        <div class="calc-scroll" id="calc-scroll"></div>
+        <div class="calc-total">
+          <div class="ct-label" id="ct-label">Total area</div>
+          <div class="ct-val" id="ct-val"></div>
+        </div>
+      </section>
+    </div>
+    <p class="hint">Each formula is interactive — hover to highlight, click to open its full derivation with a labelled diagram.</p>
+  </section>
+
+  <!-- TAB: comics story + concept checks (separate from quiz DB) -->
+  <section id="panel-comics" class="panel hidden">
+    <div class="subnav" id="comics-subnav"></div>
+    <div id="comics-stage"></div>
+    <p class="hint">Read the comic page. Where there are concept checks below, answers stay on this tab only — they do not affect the Quiz.</p>
+  </section>
+
+  <!-- TAB: quiz -->
+  <section id="panel-quiz" class="panel hidden">
+    <div class="quiz-wrap">
+      <div class="quiz-progress-wrap" id="quiz-progress-wrap">
+        <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
+        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
+      </div>
+      <div id="quiz-root"></div>
+      <div class="quiz-nav" id="quiz-nav">
+        <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
+        <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
+      </div>
+    </div>
+    <p class="hint">Pre S3 L07–09 Area and Volume Quiz — answer each question, use Next to move on. Submit on Q8 to see all results. Diagrams are on the paper PDF.</p>
+  </section>
+
+
+  <!-- formula popup modal -->
+  <div id="formula-modal" class="fx-modal hidden">
+    <div class="fx-card">
+      <button id="fx-close" class="fx-close" title="close">&times;</button>
+      <div id="fx-body"></div>
+    </div>
+  </div>
+</body>
+</html>

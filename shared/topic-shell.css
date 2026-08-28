@@ -1,0 +1,351 @@
+/* Topic dashboard shell  Enatural one-page layout for slides/tools/game.
+   KOC flex fill applies only while Worked Solutions tab is active. */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  background: var(--bg, #fdfbf7);
+  overflow-x: hidden;
+}
+/* iPad embed: stop the rubber-band bounce from chaining into the hub page,
+   which left the topic page stuck once it over-scrolled past the bottom. */
+html.tablet-touch.in-embed,
+html.tablet-touch.in-embed body {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.panel {
+  padding: 12px 24px 16px;
+}
+.panel.hidden {
+  display: none;
+}
+
+/* ── Slides: classic 16:9 deck (sizes from width  Eworked well before) ── */
+#panel-slides .subnav {
+  margin-bottom: 12px;
+}
+#panel-slides .deck-wrap {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  display: block;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  border-radius: 12px;
+}
+#panel-slides .deck-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+#panel-slides .hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--dim, #5d544f);
+}
+
+/* iPad / tablet: swipe + arrow nav for embedded Reveal decks (desktop unchanged) */
+.deck-slideshow {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.deck-nav-btn,
+.hint-deck-tablet,
+.hint-deck-phone {
+  display: none;
+}
+html.tablet-touch .deck-slideshow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+html.tablet-touch .deck-nav-btn {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  background: var(--panel, #ffffff);
+  color: var(--ink, #2c2420);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+html.tablet-touch .deck-nav-btn:active {
+  border-color: var(--a, #4fc3f7);
+  color: var(--a, #4fc3f7);
+}
+html.tablet-touch #panel-slides .deck-wrap {
+  flex: 1;
+  min-width: 0;
+  touch-action: pan-y pinch-zoom;
+}
+html.phone-compact .deck-slideshow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 10px;
+  align-items: stretch;
+}
+html.phone-compact .deck-nav-btn {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  background: var(--panel, #ffffff);
+  color: var(--ink, #2c2420);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+html.phone-compact .deck-nav-btn:active {
+  border-color: var(--a, #4fc3f7);
+  color: var(--a, #4fc3f7);
+}
+html.phone-compact #panel-slides .deck-wrap {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  flex: none;
+  width: 100%;
+  min-width: 0;
+  touch-action: pan-y pinch-zoom;
+}
+html.phone-compact .deck-prev {
+  grid-column: 1;
+  grid-row: 2;
+}
+html.phone-compact .deck-next {
+  grid-column: 2;
+  grid-row: 2;
+}
+html.tablet-touch .hint-deck-desktop,
+html.phone-compact .hint-deck-desktop {
+  display: none;
+}
+html.tablet-touch .hint-deck-tablet {
+  display: block;
+}
+html.phone-compact .hint-deck-tablet {
+  display: none;
+}
+html.phone-compact .hint-deck-phone {
+  display: block;
+}
+
+/* ── Tools / game: natural block flow (no flex clip) ── */
+#panel-tools .subnav,
+#panel-game > .subnav:first-child,
+#panel-game .pg-game-subnav {
+  margin-bottom: 12px;
+}
+#panel-tools .tool-layout {
+  align-items: stretch;
+}
+#panel-tools .figure-card,
+#panel-tools .control-card,
+#panel-tools .control-stack {
+  min-height: 0;
+}
+#panel-game > .hint,
+#panel-game > .mg-done {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--dim, #5d544f);
+}
+
+/* ── Worked tab only: viewport-height flex shell ── */
+body:has(#panel-worked:not(.hidden)) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+body:has(#panel-worked:not(.hidden)) header,
+body:has(#panel-worked:not(.hidden)) .tab-row,
+body:has(#panel-worked:not(.hidden)) .tabs {
+  flex: none;
+}
+html.in-embed header {
+  display: none;
+}
+html.in-embed .tab-row {
+  padding-top: 6px;
+}
+body:has(#panel-worked:not(.hidden)) #panel-worked {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 2px 12px 6px;
+}
+/* Full PPT export deck in Worked Solutions */
+#panel-worked .ppt-worked-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#panel-worked .ppt-worked-wrap iframe {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  background: #000;
+}
+#panel-worked > .hint { flex: none; margin-top: 8px; }
+#koc-worked-mount {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.koc-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 24px;
+  color: var(--dim, #5d544f);
+  font-size: 15px;
+  line-height: 1.55;
+  border: 1px dashed var(--line, rgba(0, 0, 0, 0.08));
+  border-radius: 14px;
+  background: var(--panel, #ffffff);
+}
+.koc-empty strong {
+  display: block;
+  color: var(--ink, #2c2420);
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+
+/* ── iPad embed: keep shell compact; Concept deck stays classic 16:9 (width-sized) ── */
+html.tablet-touch.in-embed .panel:not(.hidden) {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* ── iPhone only (<=767px, html.phone-compact)  Edesktop & iPad unchanged ── */
+html.phone-compact header {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 16px;
+  gap: 4px;
+}
+html.phone-compact header h1 {
+  font-size: 20px;
+}
+html.phone-compact header .crumb {
+  font-size: 11px;
+  line-height: 1.4;
+}
+html.phone-compact .tab-row {
+  padding: 8px 12px 0;
+}
+html.phone-compact .tabs,
+html.phone-compact .tab-row .tabs {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+html.phone-compact .tabs::-webkit-scrollbar,
+html.phone-compact .tab-row .tabs::-webkit-scrollbar {
+  display: none;
+}
+html.phone-compact .tab {
+  font-size: 13px;
+  padding: 8px 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+html.phone-compact .panel {
+  padding: 10px 12px 14px;
+}
+html.phone-compact .subnav {
+  gap: 6px;
+  margin-bottom: 10px;
+}
+html.phone-compact .chip {
+  font-size: 13px;
+  padding: 7px 12px;
+}
+html.phone-compact #panel-slides .subnav {
+  margin-bottom: 8px;
+}
+html.phone-compact #panel-slides .deck-wrap {
+  border-radius: 10px;
+}
+html.phone-compact #panel-slides .hint {
+  margin-top: 8px;
+  font-size: 12px;
+}
+html.phone-compact .quiz-nav-btn,
+html.phone-compact .sf-check-btn,
+html.phone-compact .sf-nav-btn,
+html.phone-compact .mg-btn {
+  min-height: 44px;
+}
+
+/* Quiz results bar: green (correct) + red (incorrect); full width filled by score */
+.quiz-progress-fill {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow: hidden;
+}
+.quiz-progress-wrap:not(.done) .quiz-progress-ok,
+.quiz-progress-wrap:not(.done) .quiz-progress-bad {
+  display: none;
+}
+.quiz-progress-wrap.done .quiz-progress-fill {
+  width: 100% !important;
+  background: transparent !important;
+}
+.quiz-progress-wrap.done .quiz-progress-ok,
+.quiz-progress-wrap.done .quiz-progress-bad {
+  display: block !important;
+  height: 100%;
+  min-height: 8px;
+}
+.quiz-progress-ok {
+  height: 100%;
+  width: 0;
+  flex: 0 0 auto;
+  background: #81C784;
+  transition: width 0.25s ease;
+}
+.quiz-progress-bad {
+  height: 100%;
+  width: 0;
+  flex: 0 0 auto;
+  background: #F06292;
+  transition: width 0.25s ease;
+}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Square Frustum Explorer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <style>
+    :root { --bg:#0b1329; --panel:#121a33; --line:#2a3555; --ink:#e8ecf4; --dim:#8b95ad; --a:#64b5f6; --b:#81c784; --c:#ffb74d; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Segoe UI",system-ui,sans-serif; background:var(--bg); color:var(--ink); height:100vh; display:flex; overflow:hidden; }
+    body.embed #hdr { display:none; }
+    body.embed .layout { height:100vh; }
+    #hdr { padding:14px 18px; border-bottom:1px solid var(--line); background:var(--panel); }
+    #hdr h1 { margin:0; font-size:1.05rem; font-weight:700; }
+    .layout { display:flex; flex:1; min-height:0; height:calc(100vh - 52px); }
+    #steps { width:42%; min-width:280px; border-right:1px solid var(--line); display:flex; flex-direction:column; background:var(--panel); }
+    #steps-scroll { flex:1; overflow-y:auto; padding:14px 16px; }
+    .step-card { border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px; opacity:.45; transition:.2s; }
+    .step-card.active { opacity:1; border-color:var(--a); box-shadow:inset 3px 0 0 var(--a); }
+    .step-card.done { opacity:.75; }
+    .step-card h3 { margin:0 0 6px; font-size:.9rem; color:var(--a); }
+    .step-card p { margin:0; font-size:.85rem; line-height:1.55; color:var(--dim); }
+    .step-card.active p { color:var(--ink); }
+    .eq { margin:6px 0; overflow-x:auto; }
+    #nav { display:flex; gap:8px; padding:10px 14px; border-top:1px solid var(--line); }
+    #nav button { flex:1; padding:8px; border-radius:8px; border:1px solid var(--line); background:#1a2444; color:var(--ink); cursor:pointer; font-weight:600; }
+    #nav button:disabled { opacity:.35; cursor:default; }
+    #nav button.primary { background:var(--a); color:#0b1329; border-color:transparent; }
+    #viz { flex:1; display:flex; align-items:center; justify-content:center; padding:12px; }
+    svg { max-width:100%; max-height:100%; }
+    .lbl { font-size:13px; fill:var(--ink); font-family:"Segoe UI",sans-serif; }
+    .dim { stroke:var(--c); stroke-width:1.5; fill:none; }
+    .edge { stroke:#90caf9; stroke-width:2; fill:none; }
+    .face { fill:rgba(100,181,246,.12); stroke:#64b5f6; stroke-width:1.5; }
+    .hl { stroke:var(--b); stroke-width:2.5; }
+  </style>
+</head>
+<body>
+  <div id="hdr"><h1>Square Frustum Explorer</h1></div>
+  <div class="layout">
+    <div id="steps">
+      <div id="steps-scroll"></div>
+      <div id="nav">
+        <button type="button" id="prev">← Prev</button>
+        <button type="button" id="next" class="primary">Next →</button>
+      </div>
+    </div>
+    <div id="viz">
+      <svg id="svg" viewBox="0 0 420 360" width="420" height="360">
+        <g id="g-frust" transform="translate(210,200)">
+          <polygon class="face" points="-60,-80 60,-80 90,40 -90,40"/>
+          <polygon class="face" points="-90,40 90,40 75,55 -75,55" opacity=".5"/>
+          <line class="edge" x1="-60" y1="-80" x2="-90" y2="40"/><line class="edge" x1="60" y1="-80" x2="90" y2="40"/>
+          <line class="edge" x1="-60" y1="-80" x2="60" y2="-80"/><line class="edge" x1="-90" y1="40" x2="90" y2="40"/>
+          <line id="h-line" class="dim" x1="100" y1="-80" x2="100" y2="40" style="opacity:0"/>
+          <text id="lbl-top" class="lbl" x="0" y="-95" text-anchor="middle" style="opacity:0"></text>
+          <text id="lbl-bot" class="lbl" x="0" y="75" text-anchor="middle" style="opacity:0"></text>
+          <text id="lbl-h" class="lbl" x="118" y="-15" style="opacity:0"></text>
+          <text id="lbl-sl" class="lbl" x="25" y="-10" style="opacity:0"></text>
+        </g>
+      </svg>
+    </div>
+  </div>
+<script>
+(function () {
+  const qs = new URLSearchParams(location.search);
+  if (qs.get("embed") === "1") document.body.classList.add("embed");
+  const top = +qs.get("top") || 15;
+  const bottom = +qs.get("bottom") || 30;
+  const h = +qs.get("h") || 17;
+  const half = (bottom - top) / 2;
+  const slant = Math.sqrt(h * h + half * half);
+  const A1 = top * top, A2 = bottom * bottom;
+  const lat = 0.5 * (top + bottom) * slant;
+  const tsa = A1 + A2 + 4 * lat;
+  const vol = (h / 3) * (A1 + A2 + Math.sqrt(A1 * A2));
+
+  const fmt = (n, d) => (Math.abs(n - Math.round(n)) < 1e-6 ? String(Math.round(n)) : n.toFixed(d ?? 1));
+  const steps = [
+    { title: "Given (from figure)", html: `Top square side $a=${top}$ cm, bottom $b=${bottom}$ cm, vertical height $h=${h}$ cm.` },
+    { title: "Slant height of each face", html: `Half-difference $\\tfrac{b-a}{2}=${fmt(half)}$ cm.<br>$$l=\\sqrt{h^2+\\left(\\tfrac{b-a}{2}\\right)^2}=\\sqrt{${h}^2+${fmt(half)}^2}\\approx ${fmt(slant)}\\text{ cm}$$` },
+    { title: "(a) Lateral surface area", html: `Each trapezoid: $\\tfrac12(a+b)l=\\tfrac12(${top}+${bottom})(${fmt(slant)})\\approx ${fmt(lat)}$ cm².<br>Four faces: $4\\times ${fmt(lat)}\\approx ${fmt(4*lat)}$ cm².` },
+    { title: "(a) Total surface area", html: `$$\\text{TSA}=a^2+b^2+4\\times\\text{lateral}= ${top}^2+${bottom}^2+${fmt(4*lat)}\\approx ${fmt(tsa)}\\text{ cm}^2$$` },
+    { title: "(b) Volume", html: `$$V=\\tfrac{h}{3}(A_1+A_2+\\sqrt{A_1A_2})=\\tfrac{${h}}{3}(${A1}+${A2}+${Math.round(Math.sqrt(A1*A2))})\\approx ${fmt(vol)}\\text{ cm}^3$$` },
+  ];
+
+  let idx = 0;
+  const scroll = document.getElementById("steps-scroll");
+  const prev = document.getElementById("prev");
+  const next = document.getElementById("next");
+
+  steps.forEach((s, i) => {
+    const d = document.createElement("div");
+    d.className = "step-card" + (i === 0 ? " active" : "");
+    d.innerHTML = `<h3>Step ${i + 1}: ${s.title}</h3><p class="body"></p>`;
+    d.querySelector(".body").innerHTML = s.html;
+    scroll.appendChild(d);
+  });
+
+  function tex() {
+    scroll.querySelectorAll(".body").forEach((el) => {
+      el.innerHTML = el.innerHTML.replace(/\$\$([\s\S]+?)\$\$/g, (_, t) => {
+        try { return katex.renderToString(t.trim(), { displayMode: true, throwOnError: false }); } catch (e) { return t; }
+      }).replace(/\$([^$]+)\$/g, (_, t) => {
+        try { return katex.renderToString(t.trim(), { throwOnError: false }); } catch (e) { return t; }
+      });
+    });
+  }
+
+  function reveal() {
+    scroll.querySelectorAll(".step-card").forEach((c, i) => {
+      c.classList.toggle("active", i === idx);
+      c.classList.toggle("done", i < idx);
+    });
+    document.getElementById("lbl-top").textContent = `${top} cm`;
+    document.getElementById("lbl-bot").textContent = `${bottom} cm`;
+    document.getElementById("lbl-h").textContent = `h=${h}`;
+    document.getElementById("lbl-sl").textContent = `l≈${fmt(slant)}`;
+    document.getElementById("lbl-top").style.opacity = idx >= 0 ? 1 : 0;
+    document.getElementById("lbl-bot").style.opacity = idx >= 0 ? 1 : 0;
+    document.getElementById("h-line").style.opacity = idx >= 1 ? 1 : 0;
+    document.getElementById("lbl-h").style.opacity = idx >= 1 ? 1 : 0;
+    document.getElementById("lbl-sl").style.opacity = idx >= 1 ? 1 : 0;
+    prev.disabled = idx <= 0;
+    next.disabled = idx >= steps.length - 1;
+    next.textContent = idx >= steps.length - 1 ? "Done" : "Next →";
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: "av-tool-step", step: idx, total: steps.length }, "*");
+    }
+  }
+
+  prev.onclick = () => { if (idx > 0) { idx--; reveal(); scroll.children[idx].scrollIntoView({ block: "nearest" }); } };
+  next.onclick = () => { if (idx < steps.length - 1) { idx++; reveal(); scroll.children[idx].scrollIntoView({ block: "nearest" }); } };
+
+  window.addEventListener("message", (e) => {
+    if (e.data && e.data.type === "av-set-step" && typeof e.data.step === "number") {
+      idx = Math.max(0, Math.min(steps.length - 1, e.data.step));
+      reveal();
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", () => { tex(); reveal(); });
+  if (document.readyState !== "loading") { tex(); reveal(); }
+})();
+</script>
+</body>
+</html>
