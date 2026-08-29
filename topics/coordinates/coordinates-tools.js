@@ -5,6 +5,19 @@
   var ORIGIN = { x: 250, y: 250 };
   var SCALE = 22;
   var GRID = 10;
+  var COL = {
+    ink: "#1e2a32",
+    muted: "#5a6b74",
+    teal: "#0f7a7a",
+    mark: "#c47b16",
+    good: "#1a8f6a",
+    bad: "#c44b3c",
+    axis: "#7a8b92",
+    grid: "#e4eae4",
+    fill: "rgba(15,122,122,.10)",
+    b: "#0f7a7a",
+    c: "#6b5cbf",
+  };
 
   var LABS = [
     { id: "distance", label: "1 · Distance" },
@@ -152,7 +165,7 @@
       x: px.x, y: px.y - (h || 28), width: w || 130, height: h || 36,
     });
     var div = document.createElement("div");
-    div.style.cssText = "font-size:14px;color:#e2e8f0;line-height:1.2";
+    div.style.cssText = "font-size:14px;color:#1e2a32;line-height:1.2";
     div.innerHTML = K(tex);
     fo.appendChild(div);
     svg.appendChild(fo);
@@ -171,23 +184,23 @@
       var gy = ORIGIN.y + i * SCALE;
       svg.appendChild(E("line", {
         x1: gx, y1: 20, x2: gx, y2: 480,
-        stroke: i === 0 ? "#94a3b8" : "#334155",
+        stroke: i === 0 ? COL.axis : COL.grid,
         "stroke-width": i === 0 ? 1.5 : 0.5,
       }));
       svg.appendChild(E("line", {
         x1: 20, y1: gy, x2: 480, y2: gy,
-        stroke: i === 0 ? "#94a3b8" : "#334155",
+        stroke: i === 0 ? COL.axis : COL.grid,
         "stroke-width": i === 0 ? 1.5 : 0.5,
       }));
     }
-    svg.appendChild(E("text", { x: 462, y: ORIGIN.y - 6, fill: "#94a3b8", "font-size": 12 })).textContent = "x";
-    svg.appendChild(E("text", { x: ORIGIN.x + 6, y: 28, fill: "#94a3b8", "font-size": 12 })).textContent = "y";
+    svg.appendChild(E("text", { x: 462, y: ORIGIN.y - 6, fill: COL.muted, "font-size": 12 })).textContent = "x";
+    svg.appendChild(E("text", { x: ORIGIN.x + 6, y: 28, fill: COL.muted, "font-size": 12 })).textContent = "y";
   }
 
   function seg(p, q, col, w, dash) {
     var el = E("line", {
       x1: p.x, y1: p.y, x2: q.x, y2: q.y,
-      stroke: col || "#38bdf8", "stroke-width": w || 2.5, "stroke-linecap": "round",
+      stroke: col || COL.teal, "stroke-width": w || 2.5, "stroke-linecap": "round",
     });
     if (dash) el.setAttribute("stroke-dasharray", dash);
     return el;
@@ -202,7 +215,7 @@
     var c = { x: V.x + u2.x * size, y: V.y + u2.y * size };
     return E("polyline", {
       points: [a.x, a.y, b.x, b.y, c.x, c.y].join(" "),
-      fill: "none", stroke: "#fbbf24", "stroke-width": 1.8,
+      fill: "none", stroke: COL.mark, "stroke-width": 1.8,
     });
   }
 
@@ -212,13 +225,13 @@
   }
 
   function dot(p, col, r) {
-    return E("circle", { cx: p.x, cy: p.y, r: r || 6, fill: col || "#38bdf8" });
+    return E("circle", { cx: p.x, cy: p.y, r: r || 6, fill: col || COL.teal });
   }
 
   function label(p, text, col, dx, dy) {
     var t = E("text", {
       x: p.x + (dx || 10), y: p.y + (dy || -6),
-      fill: col || "#e2e8f0", "font-size": 14, "font-weight": 700,
+      fill: col || COL.ink, "font-size": 14, "font-weight": 700,
     });
     t.textContent = text;
     return t;
@@ -254,22 +267,22 @@
     var dy = B.y - A.y;
     var corner = toPx({ x: B.x, y: A.y });
 
-    svg.appendChild(seg(pa, corner, "#f472b6", 2, "6 4"));
-    svg.appendChild(seg(corner, pb, "#34d399", 2, "6 4"));
-    svg.appendChild(seg(pa, pb, "#38bdf8", 3.5));
+    svg.appendChild(seg(pa, corner, COL.c, 2, "6 4"));
+    svg.appendChild(seg(corner, pb, COL.good, 2, "6 4"));
+    svg.appendChild(seg(pa, pb, COL.teal, 3.5));
     svg.appendChild(rightAngle(corner, pa, pb, 12));
 
-    svg.appendChild(dot(pa, "#fbbf24", 8));
-    svg.appendChild(dot(pb, "#2dd4bf", 8));
-    svg.appendChild(labelAway(pa, corner, "A", "#fbbf24", 16));
-    svg.appendChild(labelAway(pb, corner, "B", "#2dd4bf", 16));
+    svg.appendChild(dot(pa, COL.mark, 8));
+    svg.appendChild(dot(pb, COL.b, 8));
+    svg.appendChild(labelAway(pa, corner, "A", COL.mark, 16));
+    svg.appendChild(labelAway(pb, corner, "B", COL.b, 16));
     svg.appendChild(label(
       { x: (pa.x + corner.x) / 2, y: pa.y + 28 },
-      "|Δx| = " + Math.abs(dx), "#f472b6", 0, 0
+      "|Δx| = " + Math.abs(dx), COL.c, 0, 0
     ));
     svg.appendChild(label(
       { x: corner.x + 8, y: (corner.y + pb.y) / 2 },
-      "|Δy| = " + Math.abs(dy), "#34d399", 0, 4
+      "|Δy| = " + Math.abs(dy), COL.good, 0, 4
     ));
 
     svg.appendChild(dragHandle(pa, "ab", 0));
@@ -287,10 +300,10 @@
 
   /* ── Lab 2: Slope ── */
   var STEEP_LINES = [
-    { id: "mh", m: 0.5, c: -1, col: "#38bdf8", tex: "m = \\tfrac{1}{2}", val: 0.5 },
-    { id: "p2", m: 2, c: 2, col: "#0284c7", tex: "m = 2", val: 2 },
-    { id: "mnh", m: -0.5, c: 3, col: "#f87171", tex: "m = -\\tfrac{1}{2}", val: -0.5 },
-    { id: "mn2", m: -2, c: -2, col: "#dc2626", tex: "m = -2", val: -2 },
+    { id: "mh", m: 0.5, c: -1, col: COL.teal, tex: "m = \\tfrac{1}{2}", val: 0.5 },
+    { id: "p2", m: 2, c: 2, col: COL.c, tex: "m = 2", val: 2 },
+    { id: "mnh", m: -0.5, c: 3, col: COL.bad, tex: "m = -\\tfrac{1}{2}", val: -0.5 },
+    { id: "mn2", m: -2, c: -2, col: COL.bad, tex: "m = -2", val: -2 },
   ];
   var STEEP_SORT_ORDER = ["mn2", "mnh", "mh", "p2"];
 
@@ -313,21 +326,21 @@
     var dy = SLOPE_B.y - SLOPE_A.y;
     var corner = toPx({ x: SLOPE_B.x, y: SLOPE_A.y });
 
-    svg.appendChild(seg(pa, corner, "#f472b6", 2, "5 4"));
-    svg.appendChild(seg(corner, pb, "#34d399", 2, "5 4"));
-    svg.appendChild(seg(pa, pb, "#38bdf8", 3.5));
+    svg.appendChild(seg(pa, corner, COL.c, 2, "5 4"));
+    svg.appendChild(seg(corner, pb, COL.good, 2, "5 4"));
+    svg.appendChild(seg(pa, pb, COL.teal, 3.5));
     svg.appendChild(rightAngle(corner, pa, pb, 12));
-    svg.appendChild(dot(pa, "#fbbf24", 8));
-    svg.appendChild(dot(pb, "#2dd4bf", 8));
-    svg.appendChild(labelAway(pa, corner, "A", "#fbbf24", 16));
-    svg.appendChild(labelAway(pb, corner, "B", "#2dd4bf", 16));
+    svg.appendChild(dot(pa, COL.mark, 8));
+    svg.appendChild(dot(pb, COL.b, 8));
+    svg.appendChild(labelAway(pa, corner, "A", COL.mark, 16));
+    svg.appendChild(labelAway(pb, corner, "B", COL.b, 16));
     svg.appendChild(label(
       { x: (pa.x + corner.x) / 2, y: pa.y + 28 },
-      "run = " + Math.abs(dx), "#f472b6", 0, 0
+      "run = " + Math.abs(dx), COL.c, 0, 0
     ));
     svg.appendChild(label(
       { x: corner.x + 10, y: (corner.y + pb.y) / 2 },
-      "rise = " + Math.abs(dy), "#34d399", 0, 4
+      "rise = " + Math.abs(dy), COL.good, 0, 4
     ));
 
     km(document.getElementById("slope-formula"),
@@ -376,10 +389,10 @@
     var pB = toPx({ x: GRID, y: m * GRID + c1 });
     var pC = toPx({ x: -GRID, y: m * (-GRID) + c2 });
     var pD = toPx({ x: GRID, y: m * GRID + c2 });
-    svg.appendChild(seg(pA, pB, "#38bdf8", 3));
-    svg.appendChild(seg(pC, pD, "#a78bfa", 3));
-    svg.appendChild(label(toPx({ x: 3, y: m * 3 + c1 }), "L₁: m = " + fmt(m), "#38bdf8"));
-    svg.appendChild(label(toPx({ x: 3, y: m * 3 + c2 }), "L₂: m = " + fmt(m), "#a78bfa"));
+    svg.appendChild(seg(pA, pB, COL.teal, 3));
+    svg.appendChild(seg(pC, pD, COL.c, 3));
+    svg.appendChild(label(toPx({ x: 3, y: m * 3 + c1 }), "L₁: m = " + fmt(m), COL.teal));
+    svg.appendChild(label(toPx({ x: 3, y: m * 3 + c2 }), "L₂: m = " + fmt(m), COL.c));
 
     km(document.getElementById("slope-formula"), "m_1 = m_2 \\Rightarrow \\text{parallel (or the same line if they coincide)}", true);
     setNote(document.getElementById("slope-note"),
@@ -399,21 +412,21 @@
       svg.appendChild(el);
     }
 
-    addLine(m1, "#38bdf8", 4, null, 1);
+    addLine(m1, COL.teal, 4, null, 1);
     svgTex(svg, toPx({ x: 4, y: m1 * 4 }), "L_1:\\; m_1 = \\tfrac{2}{3}", 120, 36);
 
     if (perpStep === 1) {
-      addLine(mRight, "#f87171", 2.5, "10 6", 0.95);
+      addLine(mRight, COL.bad, 2.5, "10 6", 0.95);
       svgTex(svg, toPx({ x: -5, y: mRight * (-5) }), "L_2:\\; m_2 < 0", 110, 36);
       var o = toPx({ x: 0, y: 0 });
       svg.appendChild(rightAngle(o, toPx({ x: 4, y: m1 * 4 }), toPx({ x: 4, y: mRight * 4 }), 14));
     }
     if (perpStep === 2) {
-      addLine(mWrong, "#f87171", 2.5, "10 6", 0.95);
+      addLine(mWrong, COL.bad, 2.5, "10 6", 0.95);
       svgTex(svg, toPx({ x: 5, y: mWrong * 5 }), "m_2 = -\\tfrac{2}{3}\\; \\text{✗}", 130, 36);
     }
     if (perpStep >= 3) {
-      addLine(mRight, "#34d399", 4, null, 1);
+      addLine(mRight, COL.good, 4, null, 1);
       svgTex(svg, toPx({ x: -5, y: mRight * (-5) }), "L_2:\\; m_2 = -\\tfrac{3}{2}\\; \\text{✓}", 140, 36);
       var o2 = toPx({ x: 0, y: 0 });
       svg.appendChild(rightAngle(o2, toPx({ x: 4, y: m1 * 4 }), toPx({ x: 4, y: mRight * 4 }), 14));
@@ -477,12 +490,12 @@
 
     var pa = toPx(A);
     var pb = toPx(B);
-    svg.appendChild(seg(pa, pb, "#64748b", 2, "4 4"));
-    svg.appendChild(dot(pa, "#fbbf24", 8));
-    svg.appendChild(dot(pb, "#2dd4bf", 8));
+    svg.appendChild(seg(pa, pb, COL.muted, 2, "4 4"));
+    svg.appendChild(dot(pa, COL.mark, 8));
+    svg.appendChild(dot(pb, COL.b, 8));
     var midCorner = toPx({ x: B.x, y: A.y });
-    svg.appendChild(labelAway(pa, midCorner, "A(" + A.x + "," + A.y + ")", "#fbbf24", 26));
-    svg.appendChild(labelAway(pb, midCorner, "B(" + B.x + "," + B.y + ")", "#2dd4bf", 26));
+    svg.appendChild(labelAway(pa, midCorner, "A(" + A.x + "," + A.y + ")", COL.mark, 26));
+    svg.appendChild(labelAway(pb, midCorner, "B(" + B.x + "," + B.y + ")", COL.b, 26));
     svg.appendChild(dragHandle(pa, "ab", 0));
     svg.appendChild(dragHandle(pb, "ab", 1));
 
@@ -492,8 +505,8 @@
     if (midMode === "mid") {
       var M = { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 };
       var pm = toPx(M);
-      svg.appendChild(dot(pm, "#a78bfa", 9));
-      svg.appendChild(label(pm, "M", "#a78bfa", 12, 4));
+      svg.appendChild(dot(pm, COL.c, 9));
+      svg.appendChild(label(pm, "M", COL.c, 12, 4));
       km(document.getElementById("mid-formula"),
         "M = \\left(\\dfrac{" + A.x + "+" + B.x + "}{2},\\; \\dfrac{" + A.y + "+" + B.y + "}{2}\\right) = "
         + pairFracTex(A.x + B.x, 2, A.y + B.y, 2), true);
@@ -507,8 +520,8 @@
         y: (n * A.y + m * B.y) / (m + n),
       };
       var pp = toPx(P);
-      svg.appendChild(dot(pp, "#f472b6", 9));
-      svg.appendChild(label(pp, "P", "#f472b6", 12, 4));
+      svg.appendChild(dot(pp, COL.c, 9));
+      svg.appendChild(label(pp, "P", COL.c, 12, 4));
       var pxNum = n * A.x + m * B.x;
       var pyNum = n * A.y + m * B.y;
       var den = m + n;
@@ -538,15 +551,15 @@
       var off = (i - (count - 1) / 2) * gap;
       var a = { x: c.x + u.x * off - n.x * len / 2, y: c.y + u.y * off - n.y * len / 2 };
       var b = { x: c.x + u.x * off + n.x * len / 2, y: c.y + u.y * off + n.y * len / 2 };
-      g.appendChild(seg(a, b, col || "#fbbf24", 2));
+      g.appendChild(seg(a, b, col || COL.mark, 2));
     }
     return g;
   }
 
   function halfSideTicks(p1, m, p2, count) {
     var g = E("g", {});
-    g.appendChild(hashMarks(p1, m, 0.5, count, "#fbbf24", 9));
-    g.appendChild(hashMarks(m, p2, 0.5, count, "#fbbf24", 9));
+    g.appendChild(hashMarks(p1, m, 0.5, count, COL.mark, 9));
+    g.appendChild(hashMarks(m, p2, 0.5, count, COL.mark, 9));
     return g;
   }
 
@@ -572,11 +585,11 @@
       var mid2 = aI + gap;
       g.appendChild(E("path", {
         d: shortArcPath(V, aP, mid1, r),
-        fill: "none", stroke: "#fbbf24", "stroke-width": 1.6,
+        fill: "none", stroke: COL.mark, "stroke-width": 1.6,
       }));
       g.appendChild(E("path", {
         d: shortArcPath(V, mid2, aQ, r),
-        fill: "none", stroke: "#fbbf24", "stroke-width": 1.6,
+        fill: "none", stroke: COL.mark, "stroke-width": 1.6,
       }));
     }
     return g;
@@ -706,7 +719,7 @@
     }
     var t = E("text", {
       x: x, y: y,
-      fill: col || "#e2e8f0", "font-size": 14, "font-weight": 700,
+      fill: col || COL.ink, "font-size": 14, "font-weight": 700,
       "text-anchor": anchor, "dominant-baseline": baseline,
     });
     t.textContent = text;
@@ -723,7 +736,7 @@
 
     svg.appendChild(E("polygon", {
       points: px.map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: "rgba(56,189,248,.08)", stroke: "#e2e8f0", "stroke-width": 2.5,
+      fill: COL.fill, stroke: COL.ink, "stroke-width": 2.5,
     }));
 
     var labelOff = [
@@ -732,10 +745,10 @@
       { dx: 20, dy: 20 },
     ];
     ["A", "B", "C"].forEach(function (name, i) {
-      svg.appendChild(dot(px[i], ["#fbbf24", "#2dd4bf", "#a78bfa"][i], 7));
+      svg.appendChild(dot(px[i], [COL.mark, COL.b, COL.c][i], 7));
       svg.appendChild(label(
         { x: px[i].x + labelOff[i].dx, y: px[i].y + labelOff[i].dy },
-        name, "#e2e8f0", 0, 0
+        name, COL.ink, 0, 0
       ));
     });
 
@@ -774,16 +787,16 @@
 
     if (centMode === "I") {
       v.forEach(function (vi, i) {
-        svg.appendChild(seg(px[i], { x: I.x, y: I.y }, "#a78bfa", 2, "6 4"));
+        svg.appendChild(seg(px[i], { x: I.x, y: I.y }, COL.c, 2, "6 4"));
         svg.appendChild(bisectorArcMarks(vi, v[(i + 1) % 3], v[(i + 2) % 3], I, arcPlan[i], 16));
       });
       var r = distPointToSeg(I, v[0], v[1]);
       svg.appendChild(E("circle", {
         cx: I.x, cy: I.y, r: r,
-        fill: "none", stroke: "#34d399", "stroke-width": 2,
+        fill: "none", stroke: COL.good, "stroke-width": 2,
       }));
-      svg.appendChild(dot({ x: I.x, y: I.y }, "#34d399", 7));
-      svg.appendChild(label({ x: I.x + 12, y: I.y - 10 }, "I", "#34d399", 0, 0));
+      svg.appendChild(dot({ x: I.x, y: I.y }, COL.good, 7));
+      svg.appendChild(label({ x: I.x + 12, y: I.y - 10 }, "I", COL.good, 0, 0));
       km(document.getElementById("cent-formula"), "\\text{In-centre } I", true);
       setNote(document.getElementById("cent-note"),
         "\\(I\\) = intersection of the three <strong>angle bisectors 角平分線</strong>. " +
@@ -799,16 +812,16 @@
           var towardM = (M.x - O.x) * n.x + (M.y - O.y) * n.y;
           if (towardM < 0) { n = { x: -n.x, y: -n.y }; }
           var onCircle = { x: O.x + n.x * rad, y: O.y + n.y * rad };
-          svg.appendChild(seg(O, onCircle, "#f87171", 2, "7 5"));
+          svg.appendChild(seg(O, onCircle, COL.bad, 2, "7 5"));
           markRightAt(M, { x: M.x + unit(p, q).x * 18, y: M.y + unit(p, q).y * 18 }, onCircle, 10);
           svg.appendChild(halfSideTicks(p, M, q, sideTicks[sideIdx]));
         });
         svg.appendChild(E("circle", {
           cx: O.x, cy: O.y, r: rad,
-          fill: "none", stroke: "#f87171", "stroke-width": 2,
+          fill: "none", stroke: COL.bad, "stroke-width": 2,
         }));
-        svg.appendChild(dot({ x: O.x, y: O.y }, "#f87171", 8));
-        svg.appendChild(labelAway(O, G, "O", "#f87171", 18));
+        svg.appendChild(dot({ x: O.x, y: O.y }, COL.bad, 8));
+        svg.appendChild(labelAway(O, G, "O", COL.bad, 18));
       }
       km(document.getElementById("cent-formula"), "\\text{Circumcentre } O", true);
       setNote(document.getElementById("cent-note"),
@@ -822,12 +835,12 @@
         var p2 = v[k];
         var M = midp(p1, p2);
         var sideIdx = (i + 1) % 3;
-        svg.appendChild(seg(px[i], M, "#fbbf24", 2.5));
-        svg.appendChild(dot(M, "#64748b", 4));
+        svg.appendChild(seg(px[i], M, COL.mark, 2.5));
+        svg.appendChild(dot(M, COL.muted, 4));
         svg.appendChild(halfSideTicks(p1, M, p2, sideTicks[sideIdx]));
       });
-      svg.appendChild(dot({ x: G.x, y: G.y }, "#fbbf24", 7));
-      svg.appendChild(label({ x: G.x + 12, y: G.y + 4 }, "G", "#fbbf24", 0, 0));
+      svg.appendChild(dot({ x: G.x, y: G.y }, COL.mark, 7));
+      svg.appendChild(label({ x: G.x + 12, y: G.y + 4 }, "G", COL.mark, 0, 0));
       km(document.getElementById("cent-formula"), "\\text{Centroid } G", true);
       setNote(document.getElementById("cent-note"),
         "\\(G\\) = intersection of the three <strong>medians 中線</strong>. " +
@@ -837,12 +850,12 @@
         var j = (i + 1) % 3;
         var k = (i + 2) % 3;
         var F = footOnLine(vi, v[j], v[k]);
-        svg.appendChild(seg(px[i], F, "#38bdf8", 2.5));
+        svg.appendChild(seg(px[i], F, COL.teal, 2.5));
         markRightAt(F, px[i], v[j], 10);
       });
       if (H) {
-        svg.appendChild(dot({ x: H.x, y: H.y }, "#2dd4bf", 8));
-        svg.appendChild(labelAway(H, G, "H", "#2dd4bf", 18));
+        svg.appendChild(dot({ x: H.x, y: H.y }, COL.b, 8));
+        svg.appendChild(labelAway(H, G, "H", COL.b, 18));
       }
       km(document.getElementById("cent-formula"), "\\text{Orthocentre } H", true);
       setNote(document.getElementById("cent-note"),

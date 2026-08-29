@@ -5,7 +5,7 @@
 :root {
   --ink: #1a1f2e;
   --muted: #5c6578;
-  --paper: #f4f7fb;
+  --paper: #f7f4ee;
   --card: #ffffff;
   --line: rgba(26, 31, 46, 0.08);
   --shadow: 0 12px 32px rgba(26, 31, 46, 0.08);
@@ -24,13 +24,15 @@
   --glow: var(--accent);
 }
 
+html { scroll-behavior: smooth; }
+
 body {
   font-family: var(--font) !important;
   color: var(--ink) !important;
   background:
-    radial-gradient(circle at 10% 0%, rgba(120, 180, 220, 0.22), transparent 40%),
-    radial-gradient(circle at 90% 5%, rgba(180, 160, 220, 0.12), transparent 35%),
-    var(--paper) !important;
+    radial-gradient(ellipse 70% 45% at 8% -5%, #cfece8 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 95% 0%, #ffe2c4 0%, transparent 50%),
+    linear-gradient(165deg, #e8f3f2 0%, var(--paper) 48%, #eef2ea 100%) !important;
   background-attachment: fixed;
 }
 
@@ -96,6 +98,13 @@ header {
   gap: 0.35rem;
   border-bottom: none !important;
   padding-bottom: 0 !important;
+}
+
+.tab,
+.main-tab,
+.chip,
+.tool-pill {
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
 .tab,

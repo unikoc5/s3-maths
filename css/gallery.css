@@ -1,10 +1,10 @@
 :root {
   --ink: #1a1f2e;
   --muted: #5c6578;
-  --paper: #f4f7fb;
+  --paper: #f7f4ee;
   --card: #ffffff;
-  --line: rgba(26, 31, 46, 0.08);
-  --shadow: 0 14px 40px rgba(26, 31, 46, 0.08);
+  --line: rgba(30, 42, 50, 0.1);
+  --shadow: 0 12px 32px rgba(30, 50, 60, 0.1);
   --radius: 18px;
   --font: "DM Sans", system-ui, sans-serif;
   --display: "Fraunces", Georgia, serif;
@@ -17,15 +17,18 @@
   box-sizing: border-box;
 }
 
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font);
   color: var(--ink);
   background:
-    radial-gradient(circle at 8% 0%, rgba(120, 180, 220, 0.2), transparent 42%),
-    radial-gradient(circle at 92% 8%, rgba(180, 160, 220, 0.14), transparent 38%),
-    var(--paper);
+    radial-gradient(ellipse 70% 45% at 8% -5%, #cfece8 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 95% 0%, #ffe2c4 0%, transparent 50%),
+    linear-gradient(165deg, #e8f3f2 0%, var(--paper) 48%, #eef2ea 100%);
+  background-attachment: fixed;
   line-height: 1.5;
 }
 
@@ -36,7 +39,7 @@ body {
   gap: 1rem;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--line);
-  background: rgba(244, 247, 251, 0.9);
+  background: rgba(247, 244, 238, 0.88);
   backdrop-filter: blur(10px);
   position: sticky;
   top: 0;

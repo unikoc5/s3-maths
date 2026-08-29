@@ -3,11 +3,11 @@
 
   var NS = "http://www.w3.org/2000/svg";
   var SW = 2.5;
-  var INK = "#e2e8f0";
-  var MUTED = "#64748b";
-  var ACCENT = "#38bdf8";
-  var TICK = "#f87171";
-  var MARK = "#fbbf24";
+  var INK = "#1e2a32";
+  var MUTED = "#5a6b74";
+  var ACCENT = "#0f7a7a";
+  var TICK = "#c44b3c";
+  var MARK = "#c47b16";
   var VB_W = 500;
   var VB_H = 400;
 
@@ -61,8 +61,8 @@
   };
 
   var PAD = 28;
-  var I_COLOR = "#34d399";
-  var I_LINE = "#a78bfa";
+  var I_COLOR = "#1a8f6a";
+  var I_LINE = "#6b5cbf";
 
   var CONG = [
     { id: "SSS", label: "SSS", cap: "**SSS** — three pairs of equal sides (same tick marks) ⇒ congruent." },
@@ -108,10 +108,10 @@
   var matchPulseOnce = false;
 
   var PAIR_COLORS = [
-    { fill: "rgba(56,189,248,.5)", stroke: "#38bdf8", text: "#7dd3fc" },
-    { fill: "rgba(251,191,36,.5)", stroke: "#fbbf24", text: "#fcd34d" },
-    { fill: "rgba(167,139,250,.5)", stroke: "#a78bfa", text: "#c4b5fd" },
-    { fill: "rgba(52,211,153,.5)", stroke: "#34d399", text: "#6ee7b7" },
+    { fill: "rgba(61,126,184,.22)", stroke: "#3d7eb8", text: "#1e2a32" },
+    { fill: "rgba(196,123,22,.22)", stroke: "#c47b16", text: "#1e2a32" },
+    { fill: "rgba(107,92,191,.22)", stroke: "#6b5cbf", text: "#1e2a32" },
+    { fill: "rgba(15,122,122,.22)", stroke: "#0f7a7a", text: "#1e2a32" },
   ];
 
 
@@ -609,7 +609,7 @@
   function drawTriOutline(g, v) {
     g.appendChild(E("polygon", {
       points: v.map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: "rgba(56,189,248,.12)", stroke: INK, "stroke-width": SW,
+      fill: "rgba(15,122,122,.10)", stroke: INK, "stroke-width": SW,
     }));
     vertexLabels(g, v);
   }
@@ -1070,7 +1070,7 @@
     opt = opt || {};
     var attrs = {
       points: v.map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: opt.fill || "rgba(56,189,248,.12)",
+      fill: opt.fill || "rgba(15,122,122,.10)",
       stroke: opt.stroke || INK,
       "stroke-width": opt.sw || SW,
     };
@@ -1095,7 +1095,7 @@
     var dist = 22;
     var t = E("text", {
       x: m.x + n.x * dist, y: m.y + n.y * dist + 4,
-      fill: col || "#f472b6", "font-size": 13, "font-weight": 700, "text-anchor": "middle",
+      fill: col || "#c44b7a", "font-size": 13, "font-weight": 700, "text-anchor": "middle",
     });
     t.textContent = text;
     g.appendChild(t);
@@ -1195,8 +1195,8 @@
   function highlightMatchPair(svg, A, D, def, pulse) {
     if (!def || !A || !D) return;
     var g = E("g", pulse ? { class: "match-pulse" } : {});
-    var stroke = "#38bdf8";
-    var fill = "rgba(56,189,248,.42)";
+    var stroke = "#0f7a7a";
+    var fill = "rgba(15,122,122,.28)";
     if (def.type === "side") {
       var la = seg(A[def.i0], A[def.i1], stroke, 5.5);
       var ld = seg(D[def.i0], D[def.i1], stroke, 5.5);
@@ -1357,8 +1357,8 @@
       var cD = triCenter(D);
       parts = [[0, 1], [1, 2], [2, 0]].map(function (s, i) {
         return function () {
-          sideRatioLabel(svg, A[s[0]], A[s[1]], names[i], "#f472b6", cA);
-          sideRatioLabel(svg, D[s[0]], D[s[1]], kSideLabel(names[i]), "#f472b6", cD);
+          sideRatioLabel(svg, A[s[0]], A[s[1]], names[i], "#c44b7a", cA);
+          sideRatioLabel(svg, D[s[0]], D[s[1]], kSideLabel(names[i]), "#c44b7a", cD);
         };
       });
     } else {
@@ -1366,16 +1366,16 @@
       var cD2 = triCenter(D);
       parts = [
         function () {
-          sideRatioLabel(svg, A[0], A[1], "a", "#f472b6", cA2);
-          sideRatioLabel(svg, D[0], D[1], kSideLabel("a"), "#f472b6", cD2);
+          sideRatioLabel(svg, A[0], A[1], "a", "#c44b7a", cA2);
+          sideRatioLabel(svg, D[0], D[1], kSideLabel("a"), "#c44b7a", cD2);
         },
         function () {
           svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
           svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
         },
         function () {
-          sideRatioLabel(svg, A[1], A[2], "b", "#f472b6", cA2);
-          sideRatioLabel(svg, D[1], D[2], kSideLabel("b"), "#f472b6", cD2);
+          sideRatioLabel(svg, A[1], A[2], "b", "#c44b7a", cA2);
+          sideRatioLabel(svg, D[1], D[2], kSideLabel("b"), "#c44b7a", cD2);
         },
       ];
     }
@@ -1402,9 +1402,9 @@
       A = placeShape(sh, s, MATCH_CENTER);
       D = A.map(function (p) { return { x: p.x + 0.01, y: p.y + 0.01 }; });
       lastMatchLayout = { A: A, D: D, sA: s, sD: s, sh: sh, overlay: true };
-      drawTri(svg, A, ["A", "B", "C"], { fill: "rgba(56,189,248,.18)" });
+      drawTri(svg, A, ["A", "B", "C"], { fill: "rgba(15,122,122,.12)" });
       drawTri(svg, D, ["D", "E", "F"], {
-        fill: "rgba(251,191,36,.12)",
+        fill: "rgba(196,123,22,.10)",
         stroke: MARK,
         sw: 2,
         dash: "7 5",
