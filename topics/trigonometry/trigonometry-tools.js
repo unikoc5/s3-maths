@@ -187,14 +187,14 @@
 
     // backdrop so empty cards never look blank
     svg.appendChild(E("rect", {
-      x: 0, y: 0, width: BOX, height: BOX, fill: "#0f172a",
+      x: 0, y: 0, width: BOX, height: BOX, fill: "none",
     }));
 
     var F = fitOf(t, opts.fitPad);
     svg._fit = F;
     var C = F.C, A = F.A, B = F.B;
-    var stroke = opts.stroke || "#38bdf8";
-    var fill = opts.fill || "rgba(56,189,248,.22)";
+    var stroke = opts.stroke || "#0f7a7a";
+    var fill = opts.fill || "rgba(15,122,122,.16)";
 
     // fill + three thick edges (edges guarantee visibility)
     svg.appendChild(E("polygon", {
@@ -218,7 +218,7 @@
       d: "M " + (C.x + ux * rs) + " " + (C.y + uy * rs) +
         " L " + (C.x + ux * rs + vx * rs) + " " + (C.y + uy * rs + vy * rs) +
         " L " + (C.x + vx * rs) + " " + (C.y + vy * rs),
-      fill: "none", stroke: "#cbd5e1", "stroke-width": 1.6,
+      fill: "none", stroke: "#8a9aa3", "stroke-width": 1.6,
     }));
 
     // θ arc + small green label near the arc (keep clear of the right-angle mark at C)
@@ -231,7 +231,7 @@
     var distVC = Math.hypot(C.x - V.x, C.y - V.y) || 1;
     var arcR = Math.min(18, Math.max(10, distVC * 0.22));
     var sweep = ((a2 - a1 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
-    var thetaInk = "#4ade80";
+    var thetaInk = "#0f7a7a";
     svg.appendChild(E("path", {
       d: "M " + (V.x + arcR * Math.cos(a1)) + " " + (V.y + arcR * Math.sin(a1)) +
         " A " + arcR + " " + arcR + " 0 0 " + (sweep > 0 ? 1 : 0) + " " +
@@ -269,7 +269,7 @@
       };
       /* Single-letter labels: no dark stroke halo (reads as a black box). */
       if (!shortLab) {
-        tAttrs.stroke = "#0f172a";
+        tAttrs.stroke = "#fffefb";
         tAttrs["stroke-width"] = 3;
         tAttrs["paint-order"] = "stroke fill";
       }
@@ -296,7 +296,7 @@
         var px = (-dy / len) * 8, py = (dx / len) * 8;
         svg.appendChild(E("line", {
           x1: mx - px, y1: my - py, x2: mx + px, y2: my + py,
-          stroke: "#4ade80", "stroke-width": 2.8, "stroke-linecap": "round",
+          stroke: "#059669", "stroke-width": 2.8, "stroke-linecap": "round",
         }));
       }
       tick(C, A);
@@ -304,7 +304,7 @@
     }
 
     if (opts.draggable) {
-      [["C", C, "#94a3b8"], ["A", A, "#fbbf24"], ["B", B, "#fbbf24"]].forEach(function (h) {
+      [["C", C, "#5a6b74"], ["A", A, "#d97706"], ["B", B, "#d97706"]].forEach(function (h) {
         svg.appendChild(E("circle", {
           cx: h[1].x, cy: h[1].y, r: 9,
           fill: h[2], stroke: "#fff", "stroke-width": 2,
@@ -581,8 +581,8 @@
       drawFreeRight(svg, t, {
         draggable: true,
         thetaAt: "A",
-        fill: "rgba(251,191,36,.18)",
-        stroke: "#fbbf24",
+        fill: "rgba(217,119,6,.16)",
+        stroke: "#d97706",
       });
       // live lengths OUTSIDE the triangle, small type
       var F = fitOf(t);
@@ -598,7 +598,7 @@
           x: x, y: y,
           fill: color, "font-size": 10, "font-weight": 700, "text-anchor": "middle",
           "dominant-baseline": "middle",
-          stroke: "#0f172a", "stroke-width": 2.5, "paint-order": "stroke fill",
+          stroke: "#fffefb", "stroke-width": 2.5, "paint-order": "stroke fill",
         }, text));
       }
       edgeLabel(F.C, F.B, F.A, fmt(opp / 40, 2), "#f472b6"); // opposite
@@ -678,8 +678,8 @@
         // Same triangles as step 0 — only thetaAt flips from A → B
         drawFreeRight(svg, t, {
           thetaAt: "B",
-          fill: "rgba(251,191,36,.18)",
-          stroke: "#fbbf24",
+          fill: "rgba(217,119,6,.16)",
+          stroke: "#d97706",
         });
         var F = fitOf(t);
         function edgeLabel(p1, p2, other, text, color) {
@@ -694,7 +694,7 @@
             x: x, y: y,
             fill: color, "font-size": 10, "font-weight": 700, "text-anchor": "middle",
             "dominant-baseline": "middle",
-            stroke: "#0f172a", "stroke-width": 2.5, "paint-order": "stroke fill",
+            stroke: "#fffefb", "stroke-width": 2.5, "paint-order": "stroke fill",
           }, text));
         }
         edgeLabel(F.C, F.A, F.B, fmt(adj / 40, 2), "#34d399"); // adjacent (to old θ)
@@ -1139,7 +1139,7 @@
       padB = 54;
       labelFs = 16;
       labelDy = 22;
-      labelFill = "#e2e8f0";
+      labelFill = "#1e2a32";
     } else {
       padL = pad;
       padR = Math.min(14, pad);
@@ -1147,13 +1147,13 @@
       padB = pad;
       labelFs = 9;
       labelDy = 16;
-      labelFill = "#94a3b8";
+      labelFill = "#5a6b74";
     }
     var x0 = padL, y0 = H - padB, x1 = W - padR, y1 = padT;
     var span = xMax - xMin || 1;
     var xS = function (d) { return x0 + ((d - xMin) / span) * (x1 - x0); };
     var yS = function (v) { return y0 - ((v - yMin) / (yMax - yMin)) * (y0 - y1); };
-    svg.appendChild(E("rect", { width: W, height: H, fill: "#0f172a" }));
+    svg.appendChild(E("rect", { width: W, height: H, fill: "none" }));
 
     var ticks = [];
     for (var t = Math.ceil(xMin / 90) * 90; t <= xMax; t += 90) ticks.push(t);
@@ -1163,7 +1163,7 @@
       var x = xS(d);
       svg.appendChild(E("line", {
         x1: x, y1: y1, x2: x, y2: y0,
-        stroke: d === 0 ? "#64748b" : "#334155",
+        stroke: d === 0 ? "#8a9aa3" : "rgba(30,42,50,0.12)",
         "stroke-width": d === 0 ? 1.3 : 1,
         "stroke-dasharray": d === 0 ? "none" : "3 3",
       }));
@@ -1183,7 +1183,7 @@
       var y = yS(v);
       svg.appendChild(E("line", {
         x1: x0, y1: y, x2: x1, y2: y,
-        stroke: v === 0 ? "#64748b" : "#334155",
+        stroke: v === 0 ? "#8a9aa3" : "rgba(30,42,50,0.12)",
         "stroke-width": v === 0 ? 1.3 : 1,
       }));
       svg.appendChild(E("text", {
@@ -1292,7 +1292,7 @@
     svg.appendChild(E("path", { d: curvePath(c2, S), fill: "none", stroke: "#f472b6", "stroke-width": 2.4 }));
     svg.appendChild(E("line", {
       x1: S.x0, y1: S.yS(1), x2: S.x1, y2: S.yS(1),
-      stroke: "#4ade80", "stroke-width": 1.6, "stroke-dasharray": "5 4",
+      stroke: "#059669", "stroke-width": 1.6, "stroke-dasharray": "5 4",
     }));
     var x = idn.x, a = s2(x), b = c2(x), mid = (a + b) / 2, sum = a + b;
     var xs = S.xS(x);
@@ -1315,7 +1315,7 @@
       "data-id-drag": "1", style: "cursor:ew-resize",
     }));
     svg.appendChild(E("circle", {
-      cx: xs, cy: S.yS(sum), r: 9, fill: "#4ade80", stroke: "#fff", "stroke-width": 2.5,
+      cx: xs, cy: S.yS(sum), r: 9, fill: "#059669", stroke: "#fff", "stroke-width": 2.5,
       "data-id-drag": "1", style: "cursor:ew-resize",
     }));
     var ro = $("id-readout");
@@ -1372,7 +1372,7 @@
         '<span><span class="dot" style="background:#38bdf8"></span>sin²</span>' +
         '<span><span class="dot" style="background:#f472b6"></span>cos²</span>' +
         '<span><span class="dot" style="background:#fbbf24"></span>mid</span>' +
-        '<span><span class="dot" style="background:#4ade80"></span>sum=1 (drag)</span>' +
+        '<span><span class="dot" style="background:#059669"></span>sum=1 (drag)</span>' +
         '<span class="status-line" id="id-readout" style="margin:0 0 0 8px"></span></p>';
       $("id-x").addEventListener("input", function (e) { setIdX(+e.target.value); });
       paintIdBig();
@@ -1420,8 +1420,8 @@
     drawFreeRight(svg, IDTAN_TRI, {
       thetaAt: "A",
       thetaLabel: "x",
-      stroke: "#fbbf24",
-      fill: "rgba(251,191,36,.18)",
+      stroke: "#d97706",
+      fill: "rgba(217,119,6,.16)",
       fitPad: 40,
     });
     var F = fitOf(IDTAN_TRI, 40);
@@ -1589,7 +1589,7 @@
       var yEq = Math.sin(rad(x));
       svg.appendChild(E("line", {
         x1: S.xS(x), y1: S.yS(yEq), x2: S.xS(x2), y2: S.yS(yEq),
-        stroke: "#4ade80", "stroke-width": 2.2,
+        stroke: "#059669", "stroke-width": 2.2,
       }));
     }
   }
@@ -1690,7 +1690,7 @@
       svg.appendChild(E("line", {
         x1: S.xS(x2), y1: S.yS(clamp(t2, -3.2, 3.2)),
         x2: S.xS(x), y2: S.yS(clamp(invT, -3.2, 3.2)),
-        stroke: "#4ade80", "stroke-width": 2.2,
+        stroke: "#059669", "stroke-width": 2.2,
       }));
     }
   }

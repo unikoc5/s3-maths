@@ -181,18 +181,18 @@
 
     var defs = E("defs", {});
     var sky = E("linearGradient", { id: "gb-sky", x1: "0", y1: "0", x2: "0", y2: "1" });
-    sky.appendChild(E("stop", { offset: "0%", "stop-color": "#1e3a5f" }));
-    sky.appendChild(E("stop", { offset: "100%", "stop-color": "#0f172a" }));
+    sky.appendChild(E("stop", { offset: "0%", "stop-color": "#cfece8" }));
+    sky.appendChild(E("stop", { offset: "100%", "stop-color": "#f7f0e0" }));
     defs.appendChild(sky);
     svg.appendChild(defs);
 
     svg.appendChild(E("rect", { x: 0, y: 0, width: VB_W, height: GROUND_Y, fill: "url(#gb-sky)" }));
-    svg.appendChild(E("rect", { x: 0, y: GROUND_Y, width: VB_W, height: VB_H - GROUND_Y, fill: "#292524" }));
+    svg.appendChild(E("rect", { x: 0, y: GROUND_Y, width: VB_W, height: VB_H - GROUND_Y, fill: "#e8dcc8" }));
 
     /* 圭 — long scale from left up to the 表 */
     svg.appendChild(E("rect", {
       x: GUI_LEFT, y: GROUND_Y - 12, width: POST_X - GUI_LEFT + 28, height: 20,
-      rx: 4, fill: "#78716c", stroke: "#a8a29e", "stroke-width": 2,
+      rx: 4, fill: "#c4b8a0", stroke: "#8a7a62", "stroke-width": 2,
     }));
 
     /* Season marks BELOW the 圭 (so they don't overlap s / θ) */
@@ -210,7 +210,7 @@
     });
     var guiLbl = E("text", {
       x: GUI_LEFT + 8, y: GROUND_Y + 58,
-      fill: "#d6d3d1", "font-size": 15, "font-weight": 700, "text-anchor": "start",
+      fill: "#5a6b74", "font-size": 15, "font-weight": 700, "text-anchor": "start",
     });
     guiLbl.textContent = "圭";
     svg.appendChild(guiLbl);
@@ -218,7 +218,7 @@
     /* Shadow on 圭 */
     svg.appendChild(E("rect", {
       x: tipX, y: GROUND_Y - 12, width: POST_X - tipX, height: 12,
-      fill: "rgba(15,23,42,.6)",
+      fill: "rgba(30,42,50,.18)",
     }));
     svg.appendChild(E("circle", {
       cx: tipX, cy: GROUND_Y - 6, r: 5, fill: "#f472b6",
@@ -227,14 +227,14 @@
     /* 表 */
     svg.appendChild(E("rect", {
       x: POST_X - 8, y: POST_TOP, width: 16, height: POST_H,
-      fill: "#cbd5e1", stroke: "#94a3b8", "stroke-width": 2,
+      fill: "#d4c4b0", stroke: "#8a7a62", "stroke-width": 2,
     }));
     svg.appendChild(E("circle", {
-      cx: POST_X, cy: POST_TOP, r: 5, fill: "#e2e8f0",
+      cx: POST_X, cy: POST_TOP, r: 5, fill: "#1e2a32",
     }));
     var biaoLbl = E("text", {
       x: POST_X + 20, y: POST_TOP + 18,
-      fill: "#e2e8f0", "font-size": 14, "font-weight": 700,
+      fill: "#1e2a32", "font-size": 14, "font-weight": 700,
     });
     biaoLbl.textContent = "表";
     svg.appendChild(biaoLbl);
@@ -285,7 +285,7 @@
     svg.appendChild(hl);
     var hlSub = E("text", {
       x: POST_X + 22, y: (POST_TOP + GROUND_Y - 12) / 2 + 20,
-      fill: "#6ee7b7", "font-size": 11, "font-weight": 600,
+      fill: "#0f7a7a", "font-size": 11, "font-weight": 600,
     });
     hlSub.textContent = "(height of 表)";
     svg.appendChild(hlSub);
@@ -317,7 +317,7 @@
     }));
     var sunLbl = E("text", {
       x: sun.x, y: sun.y - 28,
-      fill: "#fde047", "font-size": 13, "font-weight": 700, "text-anchor": "middle",
+      fill: "#b45309", "font-size": 13, "font-weight": 700, "text-anchor": "middle",
     });
     sunLbl.textContent = "Sun (drag ↑↓)";
     svg.appendChild(sunLbl);

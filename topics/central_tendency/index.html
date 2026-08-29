@@ -12,7 +12,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260813-jm31b">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260829h">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829h">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
@@ -44,11 +45,11 @@
     }
     .numline-svg {
       width: 100%; max-width: 640px; height: 100px; display: block; margin: 12px auto 0;
-      border-radius: 14px; border: 1px solid var(--line); background: #0f172a;
+      border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
     }
     .bar-chart-fixed {
       width: 100%; max-width: 640px; height: 140px; display: block; margin: 12px auto 0;
-      border-radius: 14px; border: 1px solid var(--line); background: #0f172a;
+      border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
     }
     .compare-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;
@@ -64,9 +65,9 @@
       padding: 6px 10px; border-radius: 999px; font-size: 13px; font-weight: 700;
       border: 1px solid var(--line); background: #fff;
     }
-    .stat-pill.mean { color: #fbbf24; border-color: rgba(251,191,36,.45); }
-    .stat-pill.median { color: #34d399; border-color: rgba(52,211,153,.45); }
-    .stat-pill.mode { color: #f472b6; border-color: rgba(244,114,182,.45); }
+    .stat-pill.mean { color: #d97706; border-color: rgba(217,119,6,.4); }
+    .stat-pill.median { color: #0d9488; border-color: rgba(13,148,136,.4); }
+    .stat-pill.mode { color: #db2777; border-color: rgba(219,39,119,.4); }
     .stat-card .lbl .katex { font-size: 1.05em; }
     .freq-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
     .freq-table th, .freq-table td {
@@ -106,7 +107,7 @@
     .section-gap { margin-top: 20px; padding-top: 4px; }
   </style>
 </head>
-<body>
+<body class="paper-labs">
   <main class="jm-page">
     <a class="jm-back" href="/s3-maths/#lessons">&larr; S3 Lessons</a>
     <p class="jm-eyebrow">JM31 · Lesson 31</p>
@@ -231,7 +232,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260813-jm31b"></script>
-  <script defer src="central-tendency-tools.js?v=20260828-jm31g"></script>
+  <script defer src="central-tendency-tools.js?v=20260829h"></script>
   <script defer src="central-tendency-comics.js?v=20260818-jm31d"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {

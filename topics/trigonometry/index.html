@@ -9,7 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260829-fu">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260829h">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829h">
   <style>
     body {
       margin: 0; min-height: 100vh; color: var(--text);
@@ -125,23 +126,23 @@
       position: relative;
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: #0f172a;
+      background: #fffaf3;
       min-height: 180px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
-    .tri-card.ready { box-shadow: inset 0 0 0 2px #22c55e; }
+    .tri-card.ready { box-shadow: inset 0 0 0 2px #0f7a7a; }
     .tri-card .badge {
       position: absolute; top: 8px; right: 8px; z-index: 2;
-      font-size: 13px; font-weight: 800; color: #f87171;
-      background: rgba(15, 23, 42, 0.82);
+      font-size: 13px; font-weight: 800; color: #c44b3c;
+      background: rgba(255, 250, 243, 0.92);
       padding: 3px 8px;
       border-radius: 6px;
       max-width: calc(100% - 16px);
       text-align: right;
     }
-    .tri-card.ready .badge { color: #4ade80; }
+    .tri-card.ready .badge { color: #0f7a7a; }
     .tri-card svg {
       flex: 1 1 auto;
       width: 100%;
@@ -149,7 +150,7 @@
       min-height: 180px;
       display: block;
       touch-action: none;
-      background: #0f172a;
+      background: transparent;
     }
     .status-line {
       flex: 0 0 auto;
@@ -188,7 +189,7 @@
     .q-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
     .mini-tri {
       width: 100%; max-width: 280px; height: 180px; margin: 0 auto;
-      border-radius: 12px; background: #0f172a; border: 1px solid var(--line);
+      border-radius: 12px; background: #fffaf3; border: 1px solid var(--line);
     }
     .mini-tri svg { width: 100%; height: 100%; display: block; }
     .hand-layout {
@@ -213,7 +214,7 @@
       position: relative;
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: #0f172a;
+      background: #fffaf3;
       min-height: 0;
       min-width: 0;
       overflow: hidden;
@@ -516,12 +517,12 @@
       display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     }
     .curve-box {
-      border: 1px solid var(--line); border-radius: 12px; background: #0f172a;
+      border: 1px solid var(--line); border-radius: 12px; background: #fffaf3;
       min-height: 0; overflow: hidden; display: flex; flex-direction: column;
     }
     .curve-box .ttl {
       flex: 0 0 auto; padding: 4px 8px; font-size: 11px; font-weight: 700;
-      color: #94a3b8; letter-spacing: .05em; text-transform: uppercase;
+      color: #5a6b74; letter-spacing: .05em; text-transform: uppercase;
     }
     .curve-box svg { flex: 1; width: 100%; min-height: 0; display: block; }
     .lab-svg-fill {
@@ -531,8 +532,10 @@
       align-self: stretch;
       border-radius: 12px;
       border: 1px solid var(--line);
-      background: #0f172a;
+      background: #fffaf3;
       display: block;
+      overflow: hidden;
+      clip-path: inset(0 round 12px);
     }
     #stage-cosin .stage-body,
     #stage-cotan .stage-body {
@@ -593,7 +596,7 @@
       height: auto;
       margin-inline: auto;
       align-self: center;
-      background: #0f172a;
+      background: #fffaf3;
     }
     .curve-pair { min-height: 220px; }
     .curve-box svg { min-height: 200px; }
@@ -644,7 +647,7 @@
     .idtan-tri {
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: #0f172a;
+      background: #fffaf3;
       min-height: 0;
       aspect-ratio: 1;
       max-height: 100%;
@@ -678,7 +681,7 @@
     }
   </style>
 </head>
-<body>
+<body class="paper-labs">
   <main class="jm-page">
     <a class="jm-back" href="/s3-maths/#lessons">&larr; S3 Lessons</a>
     <p class="jm-eyebrow">JM34 · Lesson 34</p>
@@ -810,7 +813,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260729-jm"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260829-fu"></script>
-  <script defer src="trigonometry-tools.js?v=20260815-idtan1"></script>
+  <script defer src="trigonometry-tools.js?v=20260829h"></script>
   <script defer src="trigo-relations-comics.js?v=20260829-fu"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {

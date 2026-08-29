@@ -3,12 +3,13 @@
 
   var NS = "http://www.w3.org/2000/svg";
   var SW = 2.5;
-  var INK = "#e2e8f0";
-  var ACCENT = "#38bdf8";
-  var GOOD = "#4ade80";
-  var MARK = "#fbbf24";
-  var TICK = "#f87171";
-  var VIOLET = "#a78bfa";
+  var INK = "#1e2a32";
+  var PAPER = "#fffefb";
+  var ACCENT = "#0f7a7a";
+  var GOOD = "#059669";
+  var MARK = "#d97706";
+  var TICK = "#e85d4c";
+  var VIOLET = "#6d5bbd";
   // One shared visual tolerance for //, ⊥, equal lengths, and equal angles.
   // ~1.25°: still a little fault-tolerant, but clearly skewed sides must not match.
   var EPS_DEG = 1.25;
@@ -140,7 +141,7 @@
   function handle(p, key, fill) {
     var g = E("g", {});
     g.appendChild(E("circle", {
-      cx: p.x, cy: p.y, r: 4, fill: fill || INK, stroke: "#0f172a", "stroke-width": 1,
+      cx: p.x, cy: p.y, r: 4, fill: fill || INK, stroke: PAPER, "stroke-width": 1,
     }));
     g.appendChild(E("circle", {
       cx: p.x, cy: p.y, r: 20, fill: "transparent", "data-drag": String(key),
@@ -1028,7 +1029,7 @@
       // Visible end dots = drag handles (same idea as blue/purple transversal ends)
       [[30, "y" + i + "L"], [490, "y" + i + "R"]].forEach(function (h) {
         svg.appendChild(E("circle", {
-          cx: h[0], cy: y, r: 7, fill: GOOD, stroke: "#0f172a", "stroke-width": 1.5,
+          cx: h[0], cy: y, r: 7, fill: GOOD, stroke: PAPER, "stroke-width": 1.5,
           "data-drag": "y" + i,
         }));
         svg.appendChild(E("circle", {
@@ -1383,7 +1384,7 @@
       pts.forEach(function (p) { cx += p.x; cy += p.y; });
       var cen = { x: cx / pts.length, y: cy / pts.length };
       pts.forEach(function (p, i) {
-        svg.appendChild(E("circle", { cx: p.x, cy: p.y, r: 5, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
+        svg.appendChild(E("circle", { cx: p.x, cy: p.y, r: 5, fill: MARK, stroke: PAPER, "stroke-width": 1.5 }));
         svg.appendChild(outwardLabel(p, cen, names[i]));
       });
     }
@@ -1470,7 +1471,7 @@
         svg.appendChild(E("circle", {
           cx: L[1].x, cy: L[1].y, r: 5,
           fill: L[0] === "D" || L[0] === "E" ? GOOD : MARK,
-          stroke: "#0f172a", "stroke-width": 1.5,
+          stroke: PAPER, "stroke-width": 1.5,
         }));
         var cen = { x: (TA.x + TB.x + TC.x) / 3, y: (TA.y + TB.y + TC.y) / 3 };
         // Push D,E slightly farther so ticks / DE don't cover letters

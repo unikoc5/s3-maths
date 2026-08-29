@@ -8,15 +8,16 @@
   var COL = {
     ink: "#1e2a32",
     muted: "#5a6b74",
-    teal: "#0f7a7a",
-    mark: "#c47b16",
-    good: "#1a8f6a",
-    bad: "#c44b3c",
-    axis: "#7a8b92",
-    grid: "#e4eae4",
-    fill: "rgba(15,122,122,.10)",
-    b: "#0f7a7a",
-    c: "#6b5cbf",
+    teal: "#0d9488",
+    mark: "#e07a1a",
+    good: "#059669",
+    bad: "#e85d4c",
+    axis: "#8a9aa3",
+    grid: "rgba(30,42,50,.08)",
+    fill: "rgba(13,148,136,.12)",
+    b: "#0d9488",
+    c: "#3d7eb8",
+    amber: "#d97706",
   };
 
   var LABS = [
@@ -160,12 +161,12 @@
     });
   }
 
-  function svgTex(svg, px, tex, w, h) {
+  function svgTex(svg, px, tex, w, h, col) {
     var fo = E("foreignObject", {
       x: px.x, y: px.y - (h || 28), width: w || 130, height: h || 36,
     });
     var div = document.createElement("div");
-    div.style.cssText = "font-size:14px;color:#1e2a32;line-height:1.2";
+    div.style.cssText = "font-size:15px;font-weight:700;color:" + (col || COL.ink) + ";line-height:1.2";
     div.innerHTML = K(tex);
     fo.appendChild(div);
     svg.appendChild(fo);
@@ -179,22 +180,34 @@
   function clr(g) { while (g.firstChild) g.removeChild(g.firstChild); }
 
   function drawGrid(svg) {
+    var clipId = (svg.id || "plot") + "-clip";
+    if (!svg.querySelector("#" + clipId)) {
+      var defs = E("defs", {});
+      var clip = E("clipPath", { id: clipId });
+      var vb = svg.viewBox && svg.viewBox.baseVal;
+      var w = vb && vb.width ? vb.width : 500;
+      var h = vb && vb.height ? vb.height : 500;
+      clip.appendChild(E("rect", { x: 0, y: 0, width: w, height: h, rx: 18, ry: 18 }));
+      defs.appendChild(clip);
+      svg.appendChild(defs);
+      svg.setAttribute("clip-path", "url(#" + clipId + ")");
+    }
     for (var i = -GRID; i <= GRID; i++) {
       var gx = ORIGIN.x + i * SCALE;
       var gy = ORIGIN.y + i * SCALE;
       svg.appendChild(E("line", {
-        x1: gx, y1: 20, x2: gx, y2: 480,
+        x1: gx, y1: 24, x2: gx, y2: 476,
         stroke: i === 0 ? COL.axis : COL.grid,
-        "stroke-width": i === 0 ? 1.5 : 0.5,
+        "stroke-width": i === 0 ? 1.6 : 1,
       }));
       svg.appendChild(E("line", {
-        x1: 20, y1: gy, x2: 480, y2: gy,
+        x1: 24, y1: gy, x2: 476, y2: gy,
         stroke: i === 0 ? COL.axis : COL.grid,
-        "stroke-width": i === 0 ? 1.5 : 0.5,
+        "stroke-width": i === 0 ? 1.6 : 1,
       }));
     }
-    svg.appendChild(E("text", { x: 462, y: ORIGIN.y - 6, fill: COL.muted, "font-size": 12 })).textContent = "x";
-    svg.appendChild(E("text", { x: ORIGIN.x + 6, y: 28, fill: COL.muted, "font-size": 12 })).textContent = "y";
+    svg.appendChild(E("text", { x: 458, y: ORIGIN.y - 8, fill: COL.muted, "font-size": 13, "font-weight": 600 })).textContent = "x";
+    svg.appendChild(E("text", { x: ORIGIN.x + 8, y: 32, fill: COL.muted, "font-size": 13, "font-weight": 600 })).textContent = "y";
   }
 
   function seg(p, q, col, w, dash) {
@@ -300,16 +313,17 @@
 
   /* ── Lab 2: Slope ── */
   var STEEP_LINES = [
-    { id: "mh", m: 0.5, c: -1, col: COL.teal, tex: "m = \\tfrac{1}{2}", val: 0.5 },
-    { id: "p2", m: 2, c: 2, col: COL.c, tex: "m = 2", val: 2 },
-    { id: "mnh", m: -0.5, c: 3, col: COL.bad, tex: "m = -\\tfrac{1}{2}", val: -0.5 },
-    { id: "mn2", m: -2, c: -2, col: COL.bad, tex: "m = -2", val: -2 },
+    { id: "mh", m: 0.5, c: -1, col: COL.teal, tex: "m = \\tfrac{1}{2}", val: 0.5, labelX: 3.2, lx: 10, ly: -6 },
+    { id: "p2", m: 2, c: 2, col: COL.c, tex: "m = 2", val: 2, labelX: -2.4, lx: 12, ly: 14 },
+    { id: "mnh", m: -0.5, c: 3, col: COL.amber, tex: "m = -\\tfrac{1}{2}", val: -0.5, labelX: -4, lx: 8, ly: 22 },
+    { id: "mn2", m: -2, c: -2, col: COL.bad, tex: "m = -2", val: -2, labelX: 2.2, lx: -92, ly: 10 },
   ];
   var STEEP_SORT_ORDER = ["mn2", "mnh", "mh", "p2"];
 
   function lineMC(m, c, col, w, opacity) {
-    var p1 = toPx({ x: -GRID, y: m * (-GRID) + c });
-    var p2 = toPx({ x: GRID, y: m * GRID + c });
+    var span = GRID - 0.2;
+    var p1 = toPx({ x: -span, y: m * (-span) + c });
+    var p2 = toPx({ x: span, y: m * span + c });
     var el = seg(p1, p2, col, w);
     if (opacity != null) el.setAttribute("opacity", opacity);
     return el;
@@ -359,15 +373,10 @@
   }
 
   function renderSlopeSteep(svg) {
-    var labelPos = [
-      { x: 4, y: STEEP_LINES[1].m * 4 + STEEP_LINES[1].c },
-      { x: -3, y: STEEP_LINES[0].m * (-3) + STEEP_LINES[0].c },
-      { x: 5, y: STEEP_LINES[2].m * 5 + STEEP_LINES[2].c },
-      { x: -4, y: STEEP_LINES[3].m * (-4) + STEEP_LINES[3].c },
-    ];
-    STEEP_LINES.forEach(function (L, i) {
-      svg.appendChild(lineMC(L.m, L.c, L.col, 3, 1));
-      svgTex(svg, toPx(labelPos[i]), L.tex, 100, 32);
+    STEEP_LINES.forEach(function (L) {
+      svg.appendChild(lineMC(L.m, L.c, L.col, 4, 1));
+      var p = toPx({ x: L.labelX, y: L.m * L.labelX + L.c });
+      svgTex(svg, { x: p.x + L.lx, y: p.y + L.ly }, L.tex, 112, 34, L.col);
     });
 
     setNote(document.getElementById("slope-note"),
@@ -948,6 +957,8 @@
       btn.type = "button";
       btn.className = "sort-card";
       btn.dataset.id = line.id;
+      btn.style.borderLeft = "5px solid " + line.col;
+      btn.style.color = line.col;
       btn.innerHTML = K(line.tex);
       btn.addEventListener("pointerdown", function (e) {
         e.preventDefault();

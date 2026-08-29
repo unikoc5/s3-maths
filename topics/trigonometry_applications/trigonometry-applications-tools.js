@@ -30,10 +30,10 @@
     var bx = gx + d * scale;
     var by = gy - h * scale;
 
-    svg.appendChild(E("rect", { x: bx - 40, y: by, width: 80, height: gy - by, fill: "#334155", stroke: "#64748b", "stroke-width": 2 }));
-    svg.appendChild(E("line", { x1: gx, y1: gy, x2: bx, y2: gy, stroke: "#94a3b8", "stroke-width": 2 }));
-    svg.appendChild(E("line", { x1: gx, y1: gy, x2: bx, y2: by, stroke: "#38bdf8", "stroke-width": 3, "stroke-dasharray": "8 4" }));
-    svg.appendChild(E("line", { x1: bx, y1: gy, x2: bx, y2: by, stroke: "#f472b6", "stroke-width": 2 }));
+    svg.appendChild(E("rect", { x: bx - 40, y: by, width: 80, height: gy - by, fill: "#d4c4b0", stroke: "#8a7a62", "stroke-width": 2 }));
+    svg.appendChild(E("line", { x1: gx, y1: gy, x2: bx, y2: gy, stroke: "#5a6b74", "stroke-width": 2 }));
+    svg.appendChild(E("line", { x1: gx, y1: gy, x2: bx, y2: by, stroke: "#0f7a7a", "stroke-width": 3, "stroke-dasharray": "8 4" }));
+    svg.appendChild(E("line", { x1: bx, y1: gy, x2: bx, y2: by, stroke: "#db2777", "stroke-width": 2 }));
 
     svg.appendChild(E("circle", { cx: gx, cy: gy, r: 8, fill: "#fbbf24" }));
     var eye = E("text", { x: gx - 8, y: gy + 24, fill: "#fbbf24", "font-size": 13, "font-weight": 700 });
@@ -48,7 +48,7 @@
     al.textContent = "θ";
     svg.appendChild(al);
 
-    var dl = E("text", { x: (gx + bx) / 2, y: gy + 22, fill: "#94a3b8", "font-size": 14 });
+    var dl = E("text", { x: (gx + bx) / 2, y: gy + 22, fill: "#5a6b74", "font-size": 14 });
     dl.textContent = "d = " + d + " m";
     svg.appendChild(dl);
     var hl = E("text", { x: bx + 12, y: (gy + by) / 2, fill: "#f472b6", "font-size": 14, "font-weight": 700 });

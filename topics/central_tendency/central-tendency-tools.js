@@ -2,11 +2,11 @@
   "use strict";
 
   var NS = "http://www.w3.org/2000/svg";
-  var INK = "#e2e8f0";
-  var MEAN = "#fbbf24";
-  var MEDIAN = "#34d399";
-  var MODE = "#f472b6";
-  var MUTED = "#64748b";
+  var INK = "#1e2a32";
+  var MEAN = "#d97706";
+  var MEDIAN = "#0d9488";
+  var MODE = "#db2777";
+  var MUTED = "#5a6b74";
   var INPUT_MIN = 0;
   var INPUT_MAX = 999;
   var BAR_MAX_H = 100;
@@ -183,7 +183,7 @@
 
     svg.appendChild(E("line", {
       x1: x0, y1: yAxis, x2: x1, y2: yAxis,
-      stroke: "#334155", "stroke-width": 2,
+      stroke: "#8a9aa3", "stroke-width": 2,
     }));
 
     var ticks = {};
@@ -198,7 +198,7 @@
         var tx = xScale(tv);
         svg.appendChild(E("line", {
           x1: tx, y1: yAxis - 4, x2: tx, y2: yAxis + 4,
-          stroke: tv === 0 ? "#94a3b8" : "#475569",
+          stroke: tv === 0 ? "#8a9aa3" : "#5a6b74",
           "stroke-width": tv === 0 ? 1.5 : 1,
         }));
         var lbl = E("text", {
@@ -224,8 +224,8 @@
         var cy = yAxis - 14 - i * 11;
         svg.appendChild(E("circle", {
           cx: cx, cy: cy, r: 5,
-          fill: opts.outlier && v >= 50 ? "#f87171" : "#38bdf8",
-          stroke: "#0ea5e9", "stroke-width": 1.2,
+          fill: opts.outlier && v >= 50 ? "#e85d4c" : "#0d9488",
+          stroke: "#0f7a7a", "stroke-width": 1.2,
         }));
       }
     });
@@ -323,7 +323,7 @@
       if (r.freq > 0) {
         svg.appendChild(E("rect", {
           x: bx, y: by, width: barW, height: h,
-          fill: isMode ? MODE : "#38bdf8", rx: 3,
+          fill: isMode ? MODE : "#0d9488", rx: 3,
         }));
         var ft = E("text", {
           x: cx, y: by - 4,
