@@ -4,7 +4,7 @@ window.JM24_COMICS = {
     label: "Rules",
     labelKey: "comic.rules",
     series: "Indices Club",
-    basePath: "../../comics/Law of index/rule of Law of index/",
+    basePath: "comics/rules/",
     chapters: [
       { id: "ch1", title: "Chapter 1 — Entry Trial", file: "indices-club-chapter-1-color.png" },
       { id: "ch2", title: "Chapter 2 — Zero's Ambush", file: "indices-club-chapter-2-color.png" },
@@ -17,7 +17,7 @@ window.JM24_COMICS = {
     label: "Scientific Notation",
     labelKey: "comic.sciNotation",
     series: "Magnitude Express",
-    basePath: "../../comics/Law of index/Law of index (scientific notation)/",
+    basePath: "comics/scientific-notation/",
     chapters: [
       { id: "ch1", title: "Chapter 1 — Label Shift", file: "magnitude-express-chapter-1-color.png" },
       { id: "ch2", title: "Chapter 2 — Cargo Merge", file: "magnitude-express-chapter-2-color.png" },
@@ -31,7 +31,7 @@ window.JM24_COMICS = {
     label: "Binary",
     labelKey: "comic.binary",
     series: "Bitspire Tower",
-    basePath: "../../comics/Law of index/Law of index( binary number)/",
+    basePath: "comics/binary/",
     chapters: [
       { id: "ch1", title: "Chapter 1 — Floor Ten", file: "bitspire-chapter-1-color.png" },
       { id: "ch2", title: "Chapter 2 — Radix Floors", file: "bitspire-chapter-2-color.png" },
