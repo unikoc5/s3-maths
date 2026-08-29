@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Area &amp; Volume ??KOC S3 Math</title>
+  <title>Area &amp; Volume â€” KOC S3 Math</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -50,7 +50,7 @@
     }
     .chip:hover { color: var(--ink); }
     .chip.active { color: #06283d; background: var(--a); border-color: var(--a); }
-    /* Tab 1: slide deck ??height from topic-shell.css */
+    /* Tab 1: slide deck â€” height from topic-shell.css */
     .deck-wrap {
       background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
     }
@@ -97,7 +97,7 @@
     .lg-item .lg-sym { min-width: 40px; }
     .lg-item em { font-style: normal; color: var(--dim); }
 
-    /* ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€ Builder (game) tab ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€ */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Builder (game) tab â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .build-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
     .mode-switch { display: inline-flex; background: var(--panel); border: 1px solid var(--line);
       border-radius: 999px; padding: 4px; gap: 4px; }
@@ -213,7 +213,7 @@
       border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px 9px 13px; cursor: pointer; font: inherit;
       color: var(--ink); transition: all .15s; position: relative; }
     .formula-chip:hover { border-color: var(--a); background: var(--panel2); }
-    .formula-chip::after { content: "??; position: absolute; top: 7px; right: 9px; font-size: 12px;
+    .formula-chip::after { content: "â“˜"; position: absolute; top: 7px; right: 9px; font-size: 12px;
       color: var(--dim); opacity: 0; transition: opacity .15s; }
     .formula-chip:hover::after { opacity: 1; color: var(--a); }
     .formula-chip .katex { color: var(--ink); }
@@ -247,7 +247,7 @@
     .fx-note { font-size: 14px; color: var(--dim); line-height: 1.6; margin-top: 12px;
       padding-top: 12px; border-top: 1px solid var(--line); }
 
-    /* ?€?€ Quiz ?€?€ */
+    /* â”€â”€ Quiz â”€â”€ */
     .quiz-wrap { max-width: 860px; margin: 0 auto; min-width: 0; }
     .quiz-progress-wrap { margin-bottom: 18px; }
     .quiz-progress-label { font-size: 14px; font-weight: 600; color: var(--dim); margin-bottom: 8px; text-align: center; }
@@ -316,7 +316,7 @@
     .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
     .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
 
-    /* ?€?€ Comics ?€?€ */
+    /* â”€â”€ Comics â”€â”€ */
     #panel-comics { max-width: 920px; margin: 0 auto; }
     #comics-subnav { margin-bottom: 18px; }
     .comic-page { display: grid; gap: 18px; }
@@ -351,7 +351,7 @@
     <div class="topic-headings">
       <div class="topic-brand">Uni<span class="plus">+</span> Â· Mathematics</div>
       <h1>Area &amp; Volume</h1>
-      <span class="crumb">KOC S3 Math Â· Summer 2026 Â· L07??9 Area and Volume</span>
+      <span class="crumb">KOC S3 Math Â· Summer 2026 Â· L07â€“09 Area and Volume</span>
     </div>
   </header>
 
@@ -368,8 +368,8 @@
   <!-- TAB 1: slide decks -->
   <section id="panel-slides" class="panel">
     <div class="subnav">
-      <button class="chip active" data-deck="../../slides/area_volume/plane-shapes/index.html">2D Shapes ??Area</button>
-      <button class="chip" data-deck="../../slides/area_volume/solids/index.html">3D Solids ??Volume &amp; Surface Area</button>
+      <button class="chip active" data-deck="../../slides/area_volume/plane-shapes/index.html">2D Shapes â€” Area</button>
+      <button class="chip" data-deck="../../slides/area_volume/solids/index.html">3D Solids â€” Volume &amp; Surface Area</button>
     </div>
     <div class="deck-slideshow">
       <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
@@ -383,7 +383,7 @@
     <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the formula step by step from the figure.</p>
   </section>
 
-  <!-- TAB 2: interactive tool ??similar shapes & solids -->
+  <!-- TAB 2: interactive tool â€” similar shapes & solids -->
   <section id="panel-tools" class="panel hidden">
     <div class="subnav">
       <button class="chip active" data-lab="square">Square + Prism</button>
@@ -396,19 +396,19 @@
       </div>
       <div class="control-card">
         <h3>Worked steps</h3>
-        <p class="tool-instr">Drag the <b style="color:#FF8A65">orange dots</b> to set <b>L??/b> and <b>L??/b>. Then press <b>Next</b> to find the scale factor <b>k</b>, the <b>area</b> of ?? then its <b>volume</b>.</p>
+        <p class="tool-instr">Drag the <b style="color:#FF8A65">orange dots</b> to set <b>Lâ‚</b> and <b>Lâ‚‚</b>. Then press <b>Next</b> to find the scale factor <b>k</b>, the <b>area</b> of â‘¡, then its <b>volume</b>.</p>
         <div id="tool-steps"></div>
         <div class="tool-nav">
-          <button id="step-back" class="nav-btn">??Back</button>
+          <button id="step-back" class="nav-btn">â€¹ Back</button>
           <span id="step-progress" class="progress-label"></span>
-          <button id="step-next" class="nav-btn">Next ??/button>
+          <button id="step-next" class="nav-btn">Next â€º</button>
         </div>
         <button id="tool-reset" class="tool-action">Reset</button>
         <div class="legend">
           <p class="legend-title">Colour key</p>
-          <div class="lg-item"><i class="sw" style="background:var(--a)"></i><span class="lg-sym">??/span><em>original figure (known)</em></div>
-          <div class="lg-item"><i class="sw" style="background:var(--b)"></i><span class="lg-sym">??/span><em>enlarged figure (find it)</em></div>
-          <div class="lg-item"><span class="lg-sym" data-tex="k"></span><em>= length ratio L??: L??/em></div>
+          <div class="lg-item"><i class="sw" style="background:var(--a)"></i><span class="lg-sym">â‘ </span><em>original figure (known)</em></div>
+          <div class="lg-item"><i class="sw" style="background:var(--b)"></i><span class="lg-sym">â‘¡</span><em>enlarged figure (find it)</em></div>
+          <div class="lg-item"><span class="lg-sym" data-tex="k"></span><em>= length ratio Lâ‚‚ : Lâ‚</em></div>
         </div>
       </div>
     </div>
@@ -422,7 +422,7 @@
         <button class="mode-btn" data-mode="3d">3D Â· Volume</button>
       </div>
       <p class="build-hint">Build a figure: drag shapes from the palette onto the canvas and resize them.
-        Then <b>drag each formula label</b> onto the shape it belongs to ??a correct match reveals that
+        Then <b>drag each formula label</b> onto the shape it belongs to â€” a correct match reveals that
         shape's working and adds it to the <b>total</b>. Click any shape to peek at its formula.</p>
     </div>
     <div class="build-layout">
@@ -471,14 +471,14 @@
         </div>
       </section>
     </div>
-    <p class="hint">Each formula is interactive ??hover to highlight, click to open its full derivation with a labelled diagram.</p>
+    <p class="hint">Each formula is interactive â€” hover to highlight, click to open its full derivation with a labelled diagram.</p>
   </section>
 
   <!-- TAB: comics story + concept checks (separate from quiz DB) -->
   <section id="panel-comics" class="panel hidden">
     <div class="subnav" id="comics-subnav"></div>
     <div id="comics-stage"></div>
-    <p class="hint">Read the comic page. Where there are concept checks below, answers stay on this tab only ??they do not affect the Quiz.</p>
+    <p class="hint">Read the comic page. Where there are concept checks below, answers stay on this tab only â€” they do not affect the Quiz.</p>
   </section>
 
   <!-- TAB: quiz -->
@@ -494,7 +494,7 @@
         <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
       </div>
     </div>
-    <p class="hint">Pre S3 L07??9 Area and Volume Quiz ??answer each question, use Next to move on. Submit on Q8 to see all results. Diagrams are on the paper PDF.</p>
+    <p class="hint">Pre S3 L07â€“09 Area and Volume Quiz â€” answer each question, use Next to move on. Submit on Q8 to see all results. Diagrams are on the paper PDF.</p>
   </section>
 
 

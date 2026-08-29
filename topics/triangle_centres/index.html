@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Special Line and Centres in Triangles ??JM28</title>
+  <title>Special Line and Centres in Triangles — JM28</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
@@ -41,10 +41,10 @@
 </head>
 <body>
   <main class="jm-page">
-    <a class="jm-back" href="/s3-maths/#lessons">??S3 Lessons</a>
+    <a class="jm-back" href="/s3-maths/#lessons">&larr; S3 Lessons</a>
     <p class="jm-eyebrow">JM28 · Lesson 28</p>
     <h1>Special Line and Centres in Triangles</h1>
-    <p class="lead">Special lines &amp; centres, angle pairs on parallel lines, then congruence and similarity ??with standard geometry markings.</p>
+    <p class="lead">Special lines &amp; centres, angle pairs on parallel lines, then congruence and similarity — with standard geometry markings.</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
@@ -55,7 +55,7 @@
       <div class="lab active" id="lab-lines">
         <p class="part-title">Lab 1 · Special lines &amp; centres</p>
         <section class="block">
-          <h2>Four special lines ??four centres</h2>
+          <h2>Four special lines → four centres</h2>
           <p class="hint">All construction lines are solid. Medians use tick marks on equal halves; altitudes show a right-angle symbol at the foot; angle bisectors use outward arc marks. Drag vertices to explore.</p>
           <p class="split-hint">Shape presets (click to load):</p>
           <div class="tool-toggle-row" id="tri-preset-btns"></div>
@@ -83,8 +83,8 @@
       <div class="lab" id="lab-match">
         <p class="part-title">Lab 3 · Congruence &amp; similarity</p>
         <section class="block">
-          <h2>Congruent ??· Similar ??/h2>
-          <p class="hint">Switch between congruence and similarity. Drag vertices of ?�ABC; ?�DEF follows. Markings show what must match for each condition.</p>
+          <h2>Congruent △ · Similar △</h2>
+          <p class="hint">Switch between congruence and similarity. Drag vertices of △ABC; △DEF follows. Markings show what must match for each condition.</p>
           <div class="tool-toggle-row" id="match-kind-btns"></div>
           <div class="tool-toggle-row" id="match-cond-btns"></div>
           <div class="tool-toggle-row" id="match-extra-btns"></div>
@@ -93,7 +93,7 @@
             <input id="match-k" type="range" min="0.5" max="1.5" step="0.1" value="0.8">
             <span id="match-k-val">0.8</span>
           </div>
-          <p class="split-hint" id="match-drag-hint">Drag A, B or C ??the second triangle updates with you.</p>
+          <p class="split-hint" id="match-drag-hint">Drag A, B or C — the second triangle updates with you.</p>
           <svg class="lab-svg" id="match-svg" viewBox="0 0 520 320" aria-label="Congruence and similarity lab"></svg>
           <p class="formula" id="match-caption"></p>
           <div class="note-box" id="match-note"></div>
@@ -108,7 +108,7 @@
       <div id="comics-quest" class="comics-pane">
         <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
         <div id="comics-stage"></div>
-        <p class="hint">The Triangle Centres Quest ??in-centre, circumcentre, centroid, orthocentre. Read each page. No follow-up questions on this tab.</p>
+        <p class="hint">The Triangle Centres Quest — in-centre, circumcentre, centroid, orthocentre. Read each page. No follow-up questions on this tab.</p>
       </div>
       <div id="comics-manga" class="comics-pane hidden">
         <div id="jm28-manga-root"></div>
@@ -144,7 +144,7 @@
           manga.classList.toggle("hidden", mode !== "manga");
           if (mode === "manga" && window.ComicsMount && !window.__jm28MangaReady) {
             window.ComicsMount.init("jm28-manga-root", {
-              intro: "Classroom manga ??special lines, centres, angle pairs, and similarity.",
+              intro: "Classroom manga — special lines, centres, angle pairs, and similarity.",
             });
             window.__jm28MangaReady = true;
           }

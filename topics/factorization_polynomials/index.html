@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Factorization &amp; Polynomials ¡X JM25</title>
+  <title>Factorization &amp; Polynomials â€” JM25</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -57,7 +57,7 @@
     .chip .katex { font-size: 1.08em; }
     .chip:hover { color: var(--a); border-color: rgba(2, 119, 189, 0.35); }
     .chip.active { color: #06283d; background: var(--a-fill); border-color: var(--a-fill); }
-    /* Tab 1: slide deck ¡X height from topic-shell.css */
+    /* Tab 1: slide deck â€” height from topic-shell.css */
     .deck-wrap {
       background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
     }
@@ -116,7 +116,7 @@
     .lg-item .lg-sym[data-tex="b"] { color: var(--b); }
     .lg-item .lg-sym[data-tex="ab"] { color: var(--ab); }
     .lg-item em { font-style: normal; color: var(--dim); font-size: 14px; }
-    /* ¢w¢w Cross method lab (wizard) ¢w¢w */
+    /* â”€â”€ Cross method lab (wizard) â”€â”€ */
     .tool-layout.hidden { display: none; }
     .cross-lab.hidden { display: none; }
     .cross-lab { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; }
@@ -303,7 +303,7 @@
     html.tablet-touch #panel-tools .eq-line .katex { font-size: 1.06em; }
     html.tablet-touch #panel-tools .eq-hint { font-size: 12px; margin-top: 2px; }
     html.tablet-touch #tool-svg { max-width: 100%; margin: 0; max-height: min(52vh, 480px); }
-    /* ¢w¢w iPhone only ¡X identities tools label sizing (desktop & iPad unchanged) ¢w¢w */
+    /* â”€â”€ iPhone only â€” identities tools label sizing (desktop & iPad unchanged) â”€â”€ */
     html.phone-compact #panel-tools .figure-card {
       padding: 12px 10px 14px;
     }
@@ -411,8 +411,8 @@
 </head>
 <body>
 <main class="page">
-    <a class="back" href="/s3-maths/#lessons">¡ö S3 Lessons</a>
-    <p class="eyebrow">JM25 ¡P Lesson 25</p>
+    <a class="back" href="/s3-maths/#lessons">&larr; S3 Lessons</a>
+    <p class="eyebrow">JM25 Â· Lesson 25</p>
     <h1>More about Factorization and Polynomials</h1>
     <p class="lead">Interactive tools and comics for factorization and polynomials.</p>
 
@@ -458,7 +458,7 @@
       </div>
 
       <div class="cross-step-panel" id="cross-step-1">
-        <h3>Step 1 ¡X Enter coefficients</h3>
+        <h3>Step 1 â€” Enter coefficients</h3>
         <p class="cross-step-note">Enter the coefficients of the trinomial in x and y.</p>
         <div class="cross-form">
           <input id="cross-a" class="cross-num" type="number" value="2" aria-label="x squared coefficient">
@@ -478,7 +478,7 @@
       </div>
 
       <div class="cross-step-panel hidden" id="cross-step-2">
-        <h3>Step 2 ¡X Extract negative sign</h3>
+        <h3>Step 2 â€” Extract negative sign</h3>
         <p class="cross-step-note" id="cross-step2-note"></p>
         <div id="cross-step2-math" class="cross-math"></div>
         <div class="cross-nav">
@@ -488,7 +488,7 @@
       </div>
 
       <div class="cross-step-panel hidden" id="cross-step-3">
-        <h3>Step 3 ¡X Extract common factor</h3>
+        <h3>Step 3 â€” Extract common factor</h3>
         <p class="cross-step-note" id="cross-step3-note"></p>
         <div id="cross-step3-math" class="cross-math"></div>
         <div class="cross-nav">
@@ -498,16 +498,16 @@
       </div>
 
       <div class="cross-step-panel hidden" id="cross-step-4">
-        <h3>Step 4 ¡X Cross method</h3>
+        <h3>Step 4 â€” Cross method</h3>
         <p class="cross-step-note">Drag numbers from the factor pairs into the four slots, then check whether the cross products give the correct xy term.</p>
         <div class="cross-lab-layout">
           <aside class="cross-pair-bank">
             <div class="cross-bank-section">
-              <h4>x2 pairs (<span id="cross-a2-label"></span>)</h4>
+              <h4>xÂ² pairs (<span id="cross-a2-label"></span>)</h4>
               <div id="cross-x-pairs"></div>
             </div>
             <div class="cross-bank-section">
-              <h4>y2 pairs (<span id="cross-c2-label"></span>)</h4>
+              <h4>yÂ² pairs (<span id="cross-c2-label"></span>)</h4>
               <div id="cross-y-pairs"></div>
             </div>
           </aside>
@@ -581,7 +581,7 @@
       history.replaceState(null, "", "#" + name);
       if (name === "comics" && window.ComicsMount && !window.__jm25ComicsReady) {
         window.ComicsMount.init("panel-comics", {
-          intro: "The Bracket Labyrinth and Cross Method series ¡X tap a chapter to read.",
+          intro: "The Bracket Labyrinth and Cross Method series â€” tap a chapter to read.",
         });
         window.__jm25ComicsReady = true;
       }

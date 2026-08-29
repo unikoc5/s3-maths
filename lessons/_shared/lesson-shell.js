@@ -130,7 +130,7 @@
     app.innerHTML =
       '<header class="topbar">' +
       '  <a class="back-link" href="/s3-maths/#lessons" data-i18n="lesson.back">' +
-      t("lesson.back", "← S3 Lessons") +
+      t("lesson.back", "\u2190 S3 Lessons") +
       "</a>" +
       '  <div class="lesson-brand">' +
       '    <p class="lesson-kicker">' +

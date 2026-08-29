@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-  
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829">
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coordinates of Straight Lines ??JM33</title>
+  <title>Coordinates of Straight Lines — JM33</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
@@ -82,10 +81,10 @@
 </head>
 <body>
   <main class="jm-page">
-    <a class="jm-back" href="/s3-maths/#lessons">??S3 Lessons</a>
+    <a class="jm-back" href="/s3-maths/#lessons">&larr; S3 Lessons</a>
     <p class="jm-eyebrow">JM33 · Lesson 33</p>
     <h1>Coordinates of Straight Lines</h1>
-    <p class="lead">Distance, slope, midpoint &amp; section formula, and triangle centres ??with coordinate diagrams.</p>
+    <p class="lead">Distance, slope, midpoint &amp; section formula, and triangle centres — with coordinate diagrams.</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
@@ -97,7 +96,7 @@
         <button type="button" class="chip" data-lab="midpt">3 · Mid-point</button>
         <button type="button" class="chip" data-lab="centres">4 · Centres</button>
       </div>
-      <p class="split-hint">Select a part above ??Parts 2?? have their own diagrams and mode buttons.</p>
+      <p class="split-hint">Select a part above — Parts 2–4 have their own diagrams and mode buttons.</p>
 
       <!-- Lab 1 · Distance -->
       <div class="lab active" id="lab-distance">
@@ -107,9 +106,9 @@
           <p class="hint">Drag A and B. The horizontal and vertical legs form a right triangle; the segment AB is the hypotenuse. Each grid square is 1 unit.</p>
           <svg class="lab-svg" id="dist-svg" viewBox="0 0 500 500" aria-label="Distance lab"></svg>
           <div class="stat-grid">
-            <div class="stat-card"><div class="val" id="dist-dx">??/div><div class="lbl" data-tex="|\Delta x|"></div></div>
-            <div class="stat-card"><div class="val" id="dist-dy">??/div><div class="lbl" data-tex="|\Delta y|"></div></div>
-            <div class="stat-card"><div class="val" id="dist-d">??/div><div class="lbl" data-tex="d"></div></div>
+            <div class="stat-card"><div class="val" id="dist-dx">—</div><div class="lbl" data-tex="|\Delta x|"></div></div>
+            <div class="stat-card"><div class="val" id="dist-dy">—</div><div class="lbl" data-tex="|\Delta y|"></div></div>
+            <div class="stat-card"><div class="val" id="dist-d">—</div><div class="lbl" data-tex="d"></div></div>
           </div>
           <div class="formula" id="dist-formula" data-tex="d = \sqrt{(\Delta x)^2 + (\Delta y)^2}" data-display></div>
           <div class="note-box" id="dist-note"></div>
@@ -124,13 +123,13 @@
           <p class="hint">Slope \(m = \dfrac{\Delta y}{\Delta x}\): how much \(y\) changes for each 1 unit step in \(x\).</p>
           <div class="tool-toggle-row" id="slope-mode-btns"></div>
           <div class="step-nav" id="perp-step-nav">
-            <button type="button" class="btn" id="perp-prev">??Back</button>
+            <button type="button" class="btn" id="perp-prev">← Back</button>
             <span class="step-label" id="perp-step-label">Step 1 / 4</span>
-            <button type="button" class="btn" id="perp-next">Next ??/button>
+            <button type="button" class="btn" id="perp-next">Next →</button>
           </div>
           <svg class="lab-svg" id="slope-svg" viewBox="0 0 500 500" aria-label="Slope lab"></svg>
           <div class="steep-sort" id="steep-sort">
-            <p class="split-hint">Drag each slope into order ??<strong>smallest ??largest</strong>.</p>
+            <p class="split-hint">Drag each slope into order — <strong>smallest → largest</strong>.</p>
             <div class="sort-pool" id="steep-pool"></div>
             <div class="sort-slots-row" id="steep-slots">
               <div class="sort-slot-wrap"><span class="sort-slot-label">1st · smallest</span><div class="sort-slot" data-slot="0"></div></div>
@@ -174,7 +173,7 @@
         <p class="part-title">Part 4 · Triangle centres</p>
         <section class="block">
           <h2>Four centres</h2>
-          <p class="hint">Standard geometry diagrams ??no coordinate axes. Switch centre to see each construction.</p>
+          <p class="hint">Standard geometry diagrams — no coordinate axes. Switch centre to see each construction.</p>
           <div class="tool-toggle-row" id="cent-mode-btns"></div>
           <svg class="lab-svg centre-fig" id="cent-svg" viewBox="0 0 500 500" aria-label="Triangle centres diagram"></svg>
           <div class="formula" id="cent-formula"></div>
@@ -185,7 +184,7 @@
     <section id="panel-comics" class="jm-panel hidden">
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
-      <p class="hint">The Coordinates Quest ??distance, slope, mid-point, section formula. Read each page. No follow-up questions on this tab.</p>
+      <p class="hint">The Coordinates Quest — distance, slope, mid-point, section formula. Read each page. No follow-up questions on this tab.</p>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>

@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829">
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Measures of Central Tendencies ¡X JM31</title>
+  <title>Measures of Central Tendencies â€” JM31</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
@@ -109,8 +108,8 @@
 </head>
 <body>
   <main class="jm-page">
-    <a class="jm-back" href="/s3-maths/#lessons">¡ö S3 Lessons</a>
-    <p class="jm-eyebrow">JM31 ¡P Lesson 31</p>
+    <a class="jm-back" href="/s3-maths/#lessons">&larr; S3 Lessons</a>
+    <p class="jm-eyebrow">JM31 Â· Lesson 31</p>
     <h1>Measures of Central Tendencies</h1>
     <p class="lead">Build a data set, compare mean, median and mode on the number line, explore frequency and weighted mean, then test which average fits each context.</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
@@ -121,10 +120,10 @@
       <div class="subnav" id="jm31-lab-nav" aria-label="Tool labs"></div>
 
       <div class="lab active" id="lab-averages">
-        <p class="part-title">Lab 1 ¡P Mean ¡P Median ¡P Mode</p>
+        <p class="part-title">Lab 1 Â· Mean Â· Median Â· Mode</p>
         <section class="block">
           <h2>Three averages on one data set</h2>
-          <p class="hint">Add values (0¡V999) or load the default set. Click a chip to remove it. Yellow = mean, green = median, pink = mode on the number line.</p>
+          <p class="hint">Add values (0â€“999) or load the default set. Click a chip to remove it. Yellow = mean, green = median, pink = mode on the number line.</p>
           <div class="count-row">
             <input id="avg-in" type="number" min="0" max="999" step="1" value="0">
             <button class="btn" type="button" id="avg-add">Add</button>
@@ -134,29 +133,29 @@
           <div class="chip-list" id="avg-chips"></div>
           <svg class="numline-svg" id="avg-numline" viewBox="0 0 640 100" aria-label="Number line with mean, median and mode"></svg>
           <div class="stat-grid">
-            <div class="stat-card"><div class="val" id="avg-mean">¡X</div><div class="lbl">Mean</div></div>
-            <div class="stat-card"><div class="val" id="avg-median">¡X</div><div class="lbl">Median</div></div>
-            <div class="stat-card"><div class="val" id="avg-mode">¡X</div><div class="lbl">Mode</div></div>
+            <div class="stat-card"><div class="val" id="avg-mean">â€”</div><div class="lbl">Mean</div></div>
+            <div class="stat-card"><div class="val" id="avg-median">â€”</div><div class="lbl">Median</div></div>
+            <div class="stat-card"><div class="val" id="avg-mode">â€”</div><div class="lbl">Mode</div></div>
             <div class="stat-card"><div class="val" id="avg-n">0</div><div class="lbl">Count n</div></div>
           </div>
           <p class="formula" id="avg-formula">\(\bar{x}\) = Mean, \(M_d\) = Median, \(M_o\) = Mode</p>
           <div class="note-box" id="avg-note">Mean uses every datum; median resists extreme values; mode is the most frequent value.</div>
 
           <div class="section-gap" id="avg-bar-section" style="display:none">
-            <p class="split-hint">Frequency bar chart (values 0¡V10 only)</p>
+            <p class="split-hint">Frequency bar chart (values 0â€“10 only)</p>
             <svg class="bar-chart-fixed" id="avg-bar-chart" viewBox="0 0 640 140" aria-label="Frequency bar chart from current data set"></svg>
           </div>
 
           <div class="section-gap">
             <h2 style="font-size:17px;margin:0 0 8px">Weighted mean</h2>
-            <p class="hint">Edit marks and weights (%). Weighted mean = £U(mark ¡Ñ weight) ¡Ò £Uweights.</p>
+            <p class="hint">Edit marks and weights (%). Weighted mean = Î£(mark Ã— weight) Ã· Î£weights.</p>
             <table class="freq-table" id="weight-table" aria-label="Weighted mean table"></table>
             <div class="stat-grid">
-              <div class="stat-card"><div class="val" id="weight-mean">¡X</div><div class="lbl">Weighted \(\bar{x}\)</div></div>
-              <div class="stat-card"><div class="val" id="weight-sum">¡X</div><div class="lbl">£U(weight ¡Ñ mark)</div></div>
-              <div class="stat-card"><div class="val" id="weight-wsum">¡X</div><div class="lbl">£U weights</div></div>
+              <div class="stat-card"><div class="val" id="weight-mean">â€”</div><div class="lbl">Weighted \(\bar{x}\)</div></div>
+              <div class="stat-card"><div class="val" id="weight-sum">â€”</div><div class="lbl">Î£(weight Ã— mark)</div></div>
+              <div class="stat-card"><div class="val" id="weight-wsum">â€”</div><div class="lbl">Î£ weights</div></div>
             </div>
-            <p class="formula" id="weight-formula">Weighted mean = (45%¡Ñ59 + 25%¡Ñ47 + ¡K) ¡Ò 100%</p>
+            <p class="formula" id="weight-formula">Weighted mean = (45%Ã—59 + 25%Ã—47 + â€¦) Ã· 100%</p>
           </div>
 
           <div class="section-gap task-box">
@@ -174,7 +173,7 @@
           <div id="more-questions-panel">
             <section class="block" style="margin-top:12px">
               <h2>Which average fits?</h2>
-              <p class="hint">Read the data and context ¡X pick the best average for each scenario.</p>
+              <p class="hint">Read the data and context â€” pick the best average for each scenario.</p>
               <div id="scenario-list"></div>
             </section>
           </div>
@@ -182,7 +181,7 @@
       </div>
 
       <div class="lab" id="lab-transform">
-        <p class="part-title">Lab 2 ¡P + / ¡Ñ constant</p>
+        <p class="part-title">Lab 2 Â· + / Ã— constant</p>
         <section class="block">
           <h2>Effect on \(\bar{x}\), \(M_d\) &amp; \(M_o\)</h2>
           <p class="hint">Move the sliders to add a constant or multiply every value. Data are shown in ascending order.</p>
@@ -199,7 +198,7 @@
               <span class="val" id="transform-add-val">0</span>
             </div>
             <div class="slider-row">
-              <label for="transform-mul">¡Ñk each datum</label>
+              <label for="transform-mul">Ã—k each datum</label>
               <input id="transform-mul" type="range" min="0.5" max="3" step="0.1" value="1">
               <span class="val" id="transform-mul-val">1</span>
             </div>
@@ -210,23 +209,23 @@
               <div class="stat-row" id="transform-orig"></div>
             </div>
             <div class="compare-col">
-              <h3>After ¡Ñk then +c</h3>
+              <h3>After Ã—k then +c</h3>
               <div class="stat-row" id="transform-new"></div>
             </div>
           </div>
           <div class="rule-box">
             <div class="rule-card"><strong>+c to every datum</strong>new \(\bar{x}\) = \(\bar{x}\) + c<br>new \(M_d\) = \(M_d\) + c<br>new \(M_o\) = \(M_o\) + c</div>
-            <div class="rule-card"><strong>¡Ñk every datum</strong>new \(\bar{x}\) = \(\bar{x}\) ¡Ñ k<br>new \(M_d\) = \(M_d\) ¡Ñ k<br>new \(M_o\) = \(M_o\) ¡Ñ k</div>
-            <div class="rule-card"><strong>Both (¡Ñk then +c)</strong>Each average follows the same transform.</div>
+            <div class="rule-card"><strong>Ã—k every datum</strong>new \(\bar{x}\) = \(\bar{x}\) Ã— k<br>new \(M_d\) = \(M_d\) Ã— k<br>new \(M_o\) = \(M_o\) Ã— k</div>
+            <div class="rule-card"><strong>Both (Ã—k then +c)</strong>Each average follows the same transform.</div>
           </div>
-          <div class="note-box" id="transform-note">Move the sliders ¡X +c shifts all three averages by c; ¡Ñk scales all three by k.</div>
+          <div class="note-box" id="transform-note">Move the sliders â€” +c shifts all three averages by c; Ã—k scales all three by k.</div>
         </section>
       </div>
     </section>
     <section id="panel-comics" class="jm-panel hidden">
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
-      <p class="hint">The Averages Quest ¡X mean, median, mode. Read each page. No follow-up questions on this tab.</p>
+      <p class="hint">The Averages Quest â€” mean, median, mode. Read each page. No follow-up questions on this tab.</p>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
