@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260828-sel1">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829">
   <style>
     :root {
       --surface: #ffffff;
@@ -937,6 +938,11 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script defer src="law-of-indices-binary.js?v=20260730-bin8"></script>
   <script defer src="law-of-indices-scientific.js?v=20260810-sci3"></script>
+  <script src="comics-manifest.js?v=20260829"></script>
+  <script src="comics-quiz.js?v=20260829"></script>
+  <script src="../../shared/comics-quiz-utils.js?v=20260829"></script>
+  <script src="../../shared/comics-reader.js?v=20260829"></script>
+  <script src="../../shared/comics-mount.js?v=20260829"></script>
   <script src="sci-notation-content.js?v=20260828-sel1"></script>
   <script src="sci-notation-tool.js?v=20260828-sel1"></script>
   <script>
@@ -1276,6 +1282,12 @@
       document.querySelectorAll(".mode-panel").forEach((panel) => {
         panel.classList.toggle("hidden", panel.id !== "panel-" + name);
       });
+      if (name === "comics" && window.ComicsMount && !window.__jm24ComicsReady) {
+        window.ComicsMount.init("panel-comics", {
+          intro: "Read the JM24 manga by sub-topic — Rules, Scientific Notation, and Binary.",
+        });
+        window.__jm24ComicsReady = true;
+      }
       if (name === "tools") {
         const activeLab = document.querySelector(".lab.active");
         if (activeLab) renderKatex(activeLab);

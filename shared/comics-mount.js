@@ -14,6 +14,9 @@
   }
 
   function detectBundle() {
+    if (window.JM24_COMICS) {
+      return { map: window.JM24_COMICS, order: window.JM24_COMIC_ORDER || Object.keys(window.JM24_COMICS) };
+    }
     if (window.JM25_COMICS) {
       return { map: window.JM25_COMICS, order: window.JM25_COMIC_ORDER || Object.keys(window.JM25_COMICS) };
     }
@@ -28,6 +31,7 @@
 
   function getQuizBank() {
     return (
+      window.JM24_COMICS_QUIZ ||
       window.JM25_COMICS_QUIZ ||
       window.JM26_COMICS_QUIZ ||
       window.JM28_COMICS_QUIZ ||

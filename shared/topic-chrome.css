@@ -1,0 +1,188 @@
+/**
+ * Restyle legacy KOC topic pages to match the comics gallery look.
+ * Content and behaviour stay the same — appearance only.
+ */
+:root {
+  --ink: #1a1f2e;
+  --muted: #5c6578;
+  --paper: #f4f7fb;
+  --card: #ffffff;
+  --line: rgba(26, 31, 46, 0.08);
+  --shadow: 0 12px 32px rgba(26, 31, 46, 0.08);
+  --radius: 16px;
+  --font: "DM Sans", system-ui, sans-serif;
+  --display: "Fraunces", Georgia, serif;
+  --accent: #3d7ea6;
+  --accent-soft: #e8f2f8;
+  --surface: var(--card);
+  --surface-2: var(--paper);
+  --text: var(--ink);
+  --dim: var(--muted);
+  --bg: var(--paper);
+  --panel: var(--card);
+  --panel2: var(--paper);
+  --glow: var(--accent);
+}
+
+body {
+  font-family: var(--font) !important;
+  color: var(--ink) !important;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(120, 180, 220, 0.22), transparent 40%),
+    radial-gradient(circle at 90% 5%, rgba(180, 160, 220, 0.12), transparent 35%),
+    var(--paper) !important;
+  background-attachment: fixed;
+}
+
+.page,
+main {
+  max-width: min(960px, 100%);
+}
+
+.back,
+a.back,
+.back-link {
+  display: inline-flex !important;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.45rem 0.85rem !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: var(--ink) !important;
+  text-decoration: none !important;
+  font: inherit !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+}
+
+.back:hover,
+a.back:hover,
+.back-link:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+.eyebrow,
+.lesson-kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent) !important;
+}
+
+h1 {
+  font-family: var(--display) !important;
+  letter-spacing: -0.02em;
+}
+
+.lead {
+  color: var(--muted) !important;
+}
+
+header {
+  border-bottom-color: var(--line) !important;
+  background: rgba(244, 247, 251, 0.92);
+}
+
+.tabs,
+.tab-row .tabs,
+.main-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
+
+.tab,
+.main-tab {
+  border: none !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  font: inherit !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  padding: 0.55rem 1rem !important;
+  border-radius: 999px !important;
+  cursor: pointer;
+  box-shadow: none !important;
+}
+
+.tab:hover,
+.main-tab:hover {
+  color: var(--ink) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+}
+
+.tab.active,
+.main-tab.is-active,
+.main-tab.active {
+  color: #fff !important;
+  background: var(--accent) !important;
+  box-shadow: none !important;
+}
+
+.subnav {
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.chip,
+.tool-pill {
+  background: #fff !important;
+  border: 1px solid var(--line) !important;
+  color: var(--muted) !important;
+  font: inherit !important;
+  font-weight: 600 !important;
+  padding: 0.45rem 0.9rem !important;
+  border-radius: 999px !important;
+  font-size: 0.88rem !important;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.chip:hover,
+.tool-pill:hover {
+  color: var(--accent) !important;
+  border-color: rgba(61, 126, 166, 0.35) !important;
+}
+
+.chip.active,
+.tool-pill.is-active {
+  color: #fff !important;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+section.block,
+.figure-card,
+.control-stack,
+.tool-layout > *,
+.soon,
+.coming-soon {
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  background: var(--card) !important;
+  box-shadow: var(--shadow);
+}
+
+.part-title,
+.section-label {
+  color: var(--accent) !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.78rem !important;
+}
+
+.btn,
+button.btn {
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+}
+
+.mode-panel.hidden {
+  display: none !important;
+}

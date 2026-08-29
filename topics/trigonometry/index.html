@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829">
+<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trigonometric Relations — JM34</title>
+  <title>Trigonometric Relations ??JM34</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
@@ -76,7 +78,7 @@
       flex: 1 1 auto;
       min-height: 0;
       padding: 10px 14px;
-      overflow: hidden; /* no scrollbars — content must fit the stage */
+      overflow: hidden; /* no scrollbars ??content must fit the stage */
       display: flex;
       flex-direction: column;
     }
@@ -538,7 +540,7 @@
       padding: 6px 10px 8px;
       overflow: visible;
     }
-    /* Tall chart — page may scroll a little; graph stays readable */
+    /* Tall chart ??page may scroll a little; graph stays readable */
     #stage-cosin, #stage-cotan {
       height: auto;
       min-height: 0;
@@ -586,7 +588,7 @@
     #stage-cosin .lab-svg-fill,
     #stage-cotan .lab-svg-fill {
       flex: 0 0 auto;
-      /* Fixed 5:3 box, centered — never stretch to full page width */
+      /* Fixed 5:3 box, centered ??never stretch to full page width */
       width: min(100%, 900px);
       aspect-ratio: 5 / 3;
       height: auto;
@@ -679,7 +681,7 @@
 </head>
 <body>
   <main class="jm-page">
-    <a class="jm-back" href="/s3-maths/#lessons">← S3 Lessons</a>
+    <a class="jm-back" href="/s3-maths/#lessons">??S3 Lessons</a>
     <p class="jm-eyebrow">JM34 · Lesson 34</p>
     <h1>Trigonometric Relations</h1>
     <p class="lead">Special triangles, the identity <span data-tex="\sin^2 x+\cos^2 x=1"></span>, and co-functions.</p>
@@ -710,31 +712,31 @@
           </div>
           <div class="stage-body" id="iso-body"></div>
           <div class="stage-foot">
-            <button class="btn" type="button" id="iso-prev" disabled>← Back</button>
+            <button class="btn" type="button" id="iso-prev" disabled>??Back</button>
             <span class="step-label" id="iso-step-label">Step 1 / 4</span>
-            <button class="btn primary" type="button" id="iso-next">Next →</button>
+            <button class="btn primary" type="button" id="iso-next">Next ??/button>
           </div>
         </div>
 
         <div class="stage" id="stage-half" style="display:none">
           <div class="stage-head">
-            <h2>Make <span data-tex="\theta=30^\circ"></span> via hyp = 2 × opposite</h2>
+            <h2>Make <span data-tex="\theta=30^\circ"></span> via hyp = 2 ? opposite</h2>
           </div>
           <div class="stage-body" id="half-body"></div>
           <div class="stage-foot">
-            <button class="btn" type="button" id="half-prev" disabled>← Back</button>
+            <button class="btn" type="button" id="half-prev" disabled>??Back</button>
             <span class="step-label" id="half-step-label">Step 1 / 3</span>
-            <button class="btn primary" type="button" id="half-next">Next →</button>
+            <button class="btn primary" type="button" id="half-next">Next ??/button>
           </div>
         </div>
 
         <div class="stage" id="stage-hand" style="display:none">
           <div class="stage-head">
-            <h2>Special values — hand trick</h2>
+            <h2>Special values ??hand trick</h2>
           </div>
           <div class="stage-body" id="hand-body"></div>
           <div class="stage-foot">
-            <button class="btn primary" type="button" id="hand-next-q">Next Question →</button>
+            <button class="btn primary" type="button" id="hand-next-q">Next Question ??/button>
           </div>
         </div>
       </div>
@@ -749,18 +751,18 @@
           <div class="stage-head"><h2>Why <span data-tex="\sin^2 x+\cos^2 x=1"></span>?</h2></div>
           <div class="stage-body" id="id-body"></div>
           <div class="stage-foot">
-            <button class="btn" type="button" id="id-prev" disabled>← Back</button>
+            <button class="btn" type="button" id="id-prev" disabled>??Back</button>
             <span class="step-label" id="id-step-label">Step 1 / 4</span>
-            <button class="btn primary" type="button" id="id-next">Next →</button>
+            <button class="btn primary" type="button" id="id-next">Next ??/button>
           </div>
         </div>
         <div class="stage" id="stage-idtan" style="display:none">
           <div class="stage-head"><h2>Why <span data-tex="\tan x=\dfrac{\sin x}{\cos x}"></span>?</h2></div>
           <div class="stage-body" id="idtan-body"></div>
           <div class="stage-foot">
-            <button class="btn" type="button" id="idtan-prev" disabled>← Back</button>
+            <button class="btn" type="button" id="idtan-prev" disabled>??Back</button>
             <span class="step-label" id="idtan-step-label">Step 1 / 4</span>
-            <button class="btn primary" type="button" id="idtan-next">Next →</button>
+            <button class="btn primary" type="button" id="idtan-next">Next ??/button>
           </div>
         </div>
       </div>
@@ -775,11 +777,11 @@
           <div class="stage-head"><h2><span data-tex="\cos(90^\circ-x)=\sin x"></span></h2></div>
           <div class="stage-body" id="co-sin-body"></div>
           <div class="stage-foot">
-            <button class="btn" type="button" id="co-sin-prev" disabled>← Back</button>
+            <button class="btn" type="button" id="co-sin-prev" disabled>??Back</button>
             <span class="step-label" id="co-sin-step-label">Step 1 / 4</span>
             <div style="display:flex;gap:8px">
               <button class="btn" type="button" id="co-sin-reset">Reset</button>
-              <button class="btn primary" type="button" id="co-sin-next">Next →</button>
+              <button class="btn primary" type="button" id="co-sin-next">Next ??/button>
             </div>
           </div>
         </div>
@@ -787,11 +789,11 @@
           <div class="stage-head"><h2><span data-tex="\tan(90^\circ-x)=\dfrac{1}{\tan x}"></span></h2></div>
           <div class="stage-body" id="co-tan-body"></div>
           <div class="stage-foot">
-            <button class="btn" type="button" id="co-tan-prev" disabled>← Back</button>
+            <button class="btn" type="button" id="co-tan-prev" disabled>??Back</button>
             <span class="step-label" id="co-tan-step-label">Step 1 / 4</span>
             <div style="display:flex;gap:8px">
               <button class="btn" type="button" id="co-tan-reset">Reset</button>
-              <button class="btn primary" type="button" id="co-tan-next">Next →</button>
+              <button class="btn primary" type="button" id="co-tan-next">Next ??/button>
             </div>
           </div>
         </div>
@@ -801,7 +803,7 @@
     <section id="panel-comics" class="jm-panel hidden">
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
-      <p class="hint">The Relations Quest — read each page. No follow-up questions on this tab.</p>
+      <p class="hint">The Relations Quest ??read each page. No follow-up questions on this tab.</p>
     </section>
   </main>
 
