@@ -44,8 +44,13 @@
     var state = { index: 0, answers: {} };
     var chips = [];
 
+    function hasChecks(comic) {
+      return !!(comic.checks && comic.checks.length);
+    }
+
     function complete(comic) {
-      return !comic.checks.length || comic.checks.every(function (q) {
+      if (!hasChecks(comic)) return true;
+      return comic.checks.every(function (q) {
         return Object.prototype.hasOwnProperty.call(state.answers, q.id);
       });
     }
@@ -61,7 +66,8 @@
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = "chip" + (i === 0 ? " active" : "");
-      btn.textContent = "P" + (i + 1) + " · " + comic.title;
+      btn.textContent = comic.chip || ("P" + (i + 1));
+      btn.title = comic.chapter + " \u2014 " + comic.title;
       btn.addEventListener("click", function () { go(i); });
       subnav.appendChild(btn);
       chips.push(btn);
@@ -114,7 +120,7 @@
         var letter = document.createElement("span");
         letter.textContent = String.fromCharCode(65 + ci) + ".";
         var tex = document.createElement("span");
-        renderTex(tex, choice);
+        renderMixed(tex, choice);
         label.appendChild(input);
         label.appendChild(letter);
         label.appendChild(tex);
@@ -148,16 +154,29 @@
       head.appendChild(title);
       article.appendChild(head);
 
-      var body = document.createElement("div");
-      body.className = "comic-body";
-      renderMixed(body, comic.text);
-      article.appendChild(body);
+      if (comic.image) {
+        var fig = document.createElement("figure");
+        fig.className = "comic-figure";
+        var img = document.createElement("img");
+        img.src = comic.image;
+        img.alt = comic.title + " \u2014 educational comic page";
+        img.loading = "lazy";
+        fig.appendChild(img);
+        article.appendChild(fig);
+      }
 
-      if (comic.checks && comic.checks.length) {
+      if (comic.text) {
+        var body = document.createElement("div");
+        body.className = "comic-body";
+        renderMixed(body, comic.text);
+        article.appendChild(body);
+      }
+
+      if (hasChecks(comic)) {
         var checks = document.createElement("div");
         checks.className = "comic-checks";
         var h3 = document.createElement("h3");
-        h3.textContent = "Concept check";
+        h3.textContent = "Concept checking";
         checks.appendChild(h3);
         comic.checks.forEach(function (q, qi) {
           checks.appendChild(buildCheck(q, qi));

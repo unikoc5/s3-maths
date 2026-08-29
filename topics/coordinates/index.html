@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260810-jm33">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260829-fu">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
@@ -184,14 +184,15 @@
     <section id="panel-comics" class="jm-panel hidden">
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
-      <p class="hint">The Coordinates Quest — distance, slope, mid-point, section formula. Read each page. No follow-up questions on this tab.</p>
+      <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260810-jm33"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260829-fu"></script>
   <script defer src="coordinates-tools.js?v=20260815-mid-label"></script>
-  <script defer src="coordinates-comics.js?v=20260827-jm33s"></script>
+  <script defer src="coordinates-comics.js?v=20260829-fu"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();

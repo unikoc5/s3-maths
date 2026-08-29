@@ -125,10 +125,24 @@ section.block h2 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; }
 .quiz-mark.ok { color: var(--good); }
 .quiz-mark.bad { color: var(--bad); }
 .quiz-mc { display: flex; flex-direction: column; gap: 8px; }
+.comic-figure {
+  margin: 0;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #0f172a;
+  overflow: hidden;
+}
+.comic-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
 .quiz-mc-opt {
   display: flex; align-items: center; gap: 10px; padding: 10px 12px;
   border: 1px solid var(--line); border-radius: 10px; cursor: pointer; font-size: 15px;
 }
+.quiz-mc-opt:hover:not(.locked) { border-color: var(--accent); }
 .quiz-mc-opt.locked { cursor: default; }
 .quiz-mc-opt.reveal-ok { border-color: var(--good); background: rgba(21, 128, 61, .08); }
 .quiz-mc-opt.reveal-bad { border-color: var(--bad); background: rgba(190, 18, 60, .06); }
