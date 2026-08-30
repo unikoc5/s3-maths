@@ -344,7 +344,7 @@
     var el = document.getElementById("view-comics");
     if (!el) return;
 
-    if (!hasComics()) {
+    if (!hasComics() && !window.LESSON_COMICS_SERIES) {
       el.innerHTML = renderComingSoon(
         "soon.comics.title",
         t("soon.comics.desc", "") +
@@ -356,57 +356,22 @@
       return;
     }
 
-    var manifest = getComicsManifest();
-    var order = getComicOrder();
-    var currentTopic = getActiveComicTopic();
-    var introKey = getComicsIntroKey();
-    var introText = t(introKey, t("comics.intro", ""));
-
-    var subtabsHtml = "";
-    if (order.length > 1) {
-      subtabsHtml =
-        '<div class="comic-subtabs" id="comic-subtabs">' +
-        order
-          .map(function (key) {
-            var comicTopic = manifest[key];
-            var label = comicTopic.labelKey
-              ? t(comicTopic.labelKey, comicTopic.label)
-              : comicTopic.label;
-            return (
-              '<button type="button" class="comic-subtab' +
-              (key === currentTopic ? " is-active" : "") +
-              '" data-comic-topic="' +
-              key +
-              '">' +
-              label +
-              "</button>"
-            );
-          })
-          .join("") +
-        "</div>";
-    }
-
     el.innerHTML =
-      '<div class="hero-panel"><p>' +
-      introText +
-      "</p></div>" +
-      subtabsHtml +
-      '<div id="comic-content"></div>';
+      '<div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>' +
+      '<div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>' +
+      '<div id="comics-stage"></div>' +
+      '<p class="hint jm-comics-hint">' +
+      t(
+        "comics.followupHint",
+        "Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only."
+      ) +
+      "</p>";
 
-    var subtabsEl = el.querySelector("#comic-subtabs");
-    if (subtabsEl) {
-      subtabsEl.addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-comic-topic]");
-        if (!btn) return;
-        activeComicTopic = btn.getAttribute("data-comic-topic");
-        el.querySelectorAll(".comic-subtab").forEach(function (b) {
-          b.classList.toggle("is-active", b === btn);
-        });
-        renderComicGrid(activeComicTopic);
-      });
+    if (typeof window.startJm26Comics === "function") {
+      window.startJm26Comics();
+    } else if (window.LESSON_COMICS_SERIES && window.initJmComicsBundle) {
+      window.initJmComicsBundle(window.LESSON_COMICS_SERIES);
     }
-
-    renderComicGrid(currentTopic);
   }
 
   function renderComicQuiz(topicKey) {

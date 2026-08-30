@@ -7,19 +7,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
   <link rel="stylesheet" href="sign-flip-doors.css?v=20260706-quiz2">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260828-sel1">
-  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script src="comics-manifest.js?v=20260828-sel1"></script>
-  <script src="comics-quiz.js?v=20260828-sel1"></script>
-  <script src="../../shared/comics-quiz-utils.js?v=20260828-sel1"></script>
-  <script src="../../shared/comics-reader.js?v=20260828-sel1"></script>
-  <script src="../../shared/comics-mount.js?v=20260828-sel1"></script>
+  <script src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script src="inequalities-comics.js?v=20260830-fu"></script>
   <script defer src="inequality-tools.js?v=20260828-eric-jm26"></script>
   <script defer src="inequality-game.js?v=20260706-quiz2"></script>
   <script defer src="sign-flip-doors.js?v=20260706-quiz2"></script>
@@ -440,6 +439,8 @@
     .summary-set.hidden { display: none; }
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
+  <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
 <body>
   <header>
@@ -488,7 +489,10 @@
 
   <!-- TAB 3: games -->
   <section id="panel-comics" class="panel hidden">
-    <div id="jm26-comics-root"></div>
+    <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
+    <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+    <div id="comics-stage"></div>
+    <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
   </section>
 
   <section id="panel-game" class="panel hidden">

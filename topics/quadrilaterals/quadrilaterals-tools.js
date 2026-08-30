@@ -5,11 +5,14 @@
   var SW = 2.5;
   var INK = "#1e2a32";
   var PAPER = "#fffefb";
-  var ACCENT = "#0f7a7a";
-  var GOOD = "#059669";
-  var MARK = "#d97706";
-  var TICK = "#e85d4c";
-  var VIOLET = "#6d5bbd";
+  var ACCENT = "#0a5c5c";
+  /* // arrows = deep blue; equal lengths = deep red; angles = deep orange; diags = deeper gray. */
+  var GOOD = "#0033cc";
+  var MARK = "#b45309";
+  var TICK = "#ff0000";
+  var VIOLET = "#5548a0";
+  var ANGLE = "#fb923c";
+  var DASH = "#64748b";
   // One shared visual tolerance for //, ⊥, equal lengths, and equal angles.
   // ~1.25°: still a little fault-tolerant, but clearly skewed sides must not match.
   var EPS_DEG = 1.25;
@@ -33,6 +36,13 @@
   function clr(svg) { while (svg && svg.firstChild) svg.removeChild(svg.firstChild); }
   function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
   function mid(a, b) { return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; }
+  /** Intersection of lines through a–b and c–d (not segment-clamped). */
+  function lineIntersect(a, b, c, d) {
+    var den = (a.x - b.x) * (c.y - d.y) - (a.y - b.y) * (c.x - d.x);
+    if (Math.abs(den) < 1e-9) return mid(a, b);
+    var t = ((a.x - c.x) * (c.y - d.y) - (a.y - c.y) * (c.x - d.x)) / den;
+    return { x: a.x + t * (b.x - a.x), y: a.y + t * (b.y - a.y) };
+  }
   function add(a, b) { return { x: a.x + b.x, y: a.y + b.y }; }
   function sub(a, b) { return { x: a.x - b.x, y: a.y - b.y }; }
   function scale(v, k) { return { x: v.x * k, y: v.y * k }; }
@@ -251,7 +261,7 @@
   }
 
   function dashedSeg(a, b, col, w) {
-    var el = seg(a, b, col || "#fb923c", w || 2);
+    var el = seg(a, b, col || DASH, w || 2);
     el.setAttribute("stroke-dasharray", "7 5");
     return el;
   }
@@ -305,15 +315,16 @@
     var n = 1;
     if (nOrDoubles === true) n = 2;
     else if (typeof nOrDoubles === "number") n = Math.max(1, Math.min(3, nOrDoubles | 0));
+    r = Math.max(10, Math.round((r || 22) * 0.7));
     function arc(rad) {
       var s = add(vertex, scale(u, rad));
       var e = add(vertex, scale(v, rad));
       return E("path", {
         d: "M " + s.x + " " + s.y + " A " + rad + " " + rad + " 0 " + large + " " + sweep + " " + e.x + " " + e.y,
-        fill: "none", stroke: color || VIOLET, "stroke-width": 2.4,
+        fill: "none", stroke: color || ANGLE, "stroke-width": 2.2,
       });
     }
-    for (var i = 0; i < n; i++) g.appendChild(arc(r + i * 5));
+    for (var i = 0; i < n; i++) g.appendChild(arc(r + i * 4));
     return g;
   }
 
@@ -325,7 +336,7 @@
     var p3 = add(corner, scale(v, size));
     return E("polyline", {
       points: [p1, p2, p3].map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: "none", stroke: MARK, "stroke-width": 2,
+      fill: "none", stroke: ANGLE, "stroke-width": 2,
     });
   }
 
@@ -629,11 +640,8 @@
     clr(svg);
     var info = analyseQuad(verts);
     var A = info.A, B = info.B, C = info.C, D = info.D;
-    var Oac = mid(A, C), Obd = mid(B, D);
-    // Only treat as a shared mid-point when diagonals actually bisect (same tolerance)
-    var O = info.diagsBisect
-      ? { x: (Oac.x + Obd.x) / 2, y: (Oac.y + Obd.y) / 2 }
-      : Oac;
+    // Exact crossing of the drawn diagonals (midpoint-average drifts off both lines).
+    var O = lineIntersect(A, C, B, D);
     var centroid = { x: (A.x + B.x + C.x + D.x) / 4, y: (A.y + B.y + C.y + D.y) / 4 };
     var primary = info.primary;
     var showDiags = primary === "parallelogram" || primary === "rhombus" ||
@@ -659,13 +667,14 @@
 
     // Diagonals (dashed) for special shapes — draw under marks
     if (showDiags) {
-      svg.appendChild(dashedSeg(A, C, "#fb923c", 2));
-      svg.appendChild(dashedSeg(B, D, "#fb923c", 2));
-      svg.appendChild(E("circle", { cx: O.x, cy: O.y, r: 3.5, fill: INK }));
-      svg.appendChild(labelAt(O, primary === "rhombus" || primary === "square" ? "E" : "O", -14, -8, INK));
+      svg.appendChild(dashedSeg(A, C, DASH, 2));
+      svg.appendChild(dashedSeg(B, D, DASH, 2));
       if (showDiagPerp) {
+        // Arms along the diagonals so ⊥ sits in one quadrant; circle drawn on top.
         svg.appendChild(rightAngleMark(O, A, B, 10));
       }
+      svg.appendChild(E("circle", { cx: O.x, cy: O.y, r: 3.5, fill: INK }));
+      svg.appendChild(labelAt(O, "O", 0, -14, INK, true));
     }
 
     // Side length ticks first (ascending 1, 2, … among sides only)
@@ -726,22 +735,22 @@
       svg.appendChild(rightAngleMark(D, C, A));
     } else if (info.oppAngEq && info.bothPar && !showAngleBisect) {
       // Two mark types only: A=C (1 arc), B=D (2 arcs)
-      svg.appendChild(angleArc(A, B, D, 28, VIOLET, 1));
-      svg.appendChild(angleArc(C, B, D, 28, VIOLET, 1));
-      svg.appendChild(angleArc(B, A, C, 24, MARK, 2));
-      svg.appendChild(angleArc(D, A, C, 24, MARK, 2));
+      svg.appendChild(angleArc(A, B, D, 28, ANGLE, 1));
+      svg.appendChild(angleArc(C, B, D, 28, ANGLE, 1));
+      svg.appendChild(angleArc(B, A, C, 24, ANGLE, 2));
+      svg.appendChild(angleArc(D, A, C, 24, ANGLE, 2));
     }
 
     // Rhombus only: diagonals bisect vertex angles (skip on square — right angles already shown)
     if (showAngleBisect && showDiags && !info.all90) {
-      svg.appendChild(angleArc(A, B, O, 18, VIOLET, 1));
-      svg.appendChild(angleArc(A, D, O, 18, VIOLET, 1));
-      svg.appendChild(angleArc(C, B, O, 18, VIOLET, 1));
-      svg.appendChild(angleArc(C, D, O, 18, VIOLET, 1));
-      svg.appendChild(angleArc(B, A, O, 18, MARK, 2));
-      svg.appendChild(angleArc(B, C, O, 18, MARK, 2));
-      svg.appendChild(angleArc(D, A, O, 18, MARK, 2));
-      svg.appendChild(angleArc(D, C, O, 18, MARK, 2));
+      svg.appendChild(angleArc(A, B, O, 18, ANGLE, 1));
+      svg.appendChild(angleArc(A, D, O, 18, ANGLE, 1));
+      svg.appendChild(angleArc(C, B, O, 18, ANGLE, 1));
+      svg.appendChild(angleArc(C, D, O, 18, ANGLE, 1));
+      svg.appendChild(angleArc(B, A, O, 18, ANGLE, 2));
+      svg.appendChild(angleArc(B, C, O, 18, ANGLE, 2));
+      svg.appendChild(angleArc(D, A, O, 18, ANGLE, 2));
+      svg.appendChild(angleArc(D, C, O, 18, ANGLE, 2));
     }
 
     ["A", "B", "C", "D"].forEach(function (name, i) {
@@ -1398,8 +1407,8 @@
       labs([A, B, C, D], ["A", "B", "C", "D"]);
     } else if (drawId === "paraAng") {
       poly([A, B, C, D]); outline([A, B, C, D]);
-      svg.appendChild(angleArc(A, B, D, 28, VIOLET, 1)); svg.appendChild(angleArc(C, B, D, 28, VIOLET, 1));
-      svg.appendChild(angleArc(B, A, C, 22, MARK, 2)); svg.appendChild(angleArc(D, A, C, 22, MARK, 2));
+      svg.appendChild(angleArc(A, B, D, 28, ANGLE, 1)); svg.appendChild(angleArc(C, B, D, 28, ANGLE, 1));
+      svg.appendChild(angleArc(B, A, C, 22, ANGLE, 2)); svg.appendChild(angleArc(D, A, C, 22, ANGLE, 2));
       labs([A, B, C, D], ["A", "B", "C", "D"]);
     } else if (drawId === "paraDiags" || drawId === "proveDiags") {
       poly([A, B, C, D]); outline([A, B, C, D]);
@@ -1434,8 +1443,8 @@
       } else {
         // Rectangle reason mentions equal diagonals
         var SO = mid(S[0], S[2]);
-        svg.appendChild(dashedSeg(S[0], S[2], "#fb923c", 2));
-        svg.appendChild(dashedSeg(S[1], S[3], "#fb923c", 2));
+        svg.appendChild(dashedSeg(S[0], S[2], DASH, 2));
+        svg.appendChild(dashedSeg(S[1], S[3], DASH, 2));
         svg.appendChild(tickMark(S[0], S[2], 1, TICK, 0.32));
         svg.appendChild(tickMark(S[0], S[2], 1, TICK, 0.68));
         svg.appendChild(tickMark(S[1], S[3], 1, TICK, 0.32));
@@ -1512,16 +1521,16 @@
       var down1 = T2, up2 = T1;
       if (drawId === "corr") {
         // F-shape: same side of transversal, both “below-right” of their intersection
-        svg.appendChild(angleArc(H1, right1, down1, 24, VIOLET));
-        svg.appendChild(angleArc(H2, right2, down1, 24, VIOLET));
+        svg.appendChild(angleArc(H1, right1, down1, 24, ANGLE));
+        svg.appendChild(angleArc(H2, right2, down1, 24, ANGLE));
       } else if (drawId === "alt") {
         // Z-shape: alternate interior (right below top, left above bottom)
-        svg.appendChild(angleArc(H1, right1, down1, 24, VIOLET));
-        svg.appendChild(angleArc(H2, left2, up2, 24, VIOLET));
+        svg.appendChild(angleArc(H1, right1, down1, 24, ANGLE));
+        svg.appendChild(angleArc(H2, left2, up2, 24, ANGLE));
       } else {
         // C-shape: consecutive interior (both right side, between the // lines)
-        svg.appendChild(angleArc(H1, right1, down1, 24, VIOLET));
-        svg.appendChild(angleArc(H2, right2, up2, 24, VIOLET));
+        svg.appendChild(angleArc(H1, right1, down1, 24, ANGLE));
+        svg.appendChild(angleArc(H2, right2, up2, 24, ANGLE));
       }
     } else {
       // Congruence: identical triangles (exact translate)
@@ -1544,16 +1553,16 @@
         svg.appendChild(tickMark(V0, V1, 1, TICK, 0.5));
         svg.appendChild(tickMark(U0, U2, 2, TICK, 0.5));
         svg.appendChild(tickMark(V0, V2, 2, TICK, 0.5));
-        svg.appendChild(angleArc(U0, U1, U2, 22, MARK));
-        svg.appendChild(angleArc(V0, V1, V2, 22, MARK));
+        svg.appendChild(angleArc(U0, U1, U2, 22, ANGLE));
+        svg.appendChild(angleArc(V0, V1, V2, 22, ANGLE));
       } else if (drawId === "ASA") {
         // ∠ at U0 (1 arc), included side, ∠ at U1 (2 arcs)
-        svg.appendChild(angleArc(U0, U1, U2, 22, MARK, 1));
-        svg.appendChild(angleArc(V0, V1, V2, 22, MARK, 1));
+        svg.appendChild(angleArc(U0, U1, U2, 22, ANGLE, 1));
+        svg.appendChild(angleArc(V0, V1, V2, 22, ANGLE, 1));
         svg.appendChild(tickMark(U0, U1, 1, TICK, 0.5));
         svg.appendChild(tickMark(V0, V1, 1, TICK, 0.5));
-        svg.appendChild(angleArc(U1, U0, U2, 22, VIOLET, 2));
-        svg.appendChild(angleArc(V1, V0, V2, 22, VIOLET, 2));
+        svg.appendChild(angleArc(U1, U0, U2, 22, ANGLE, 2));
+        svg.appendChild(angleArc(V1, V0, V2, 22, ANGLE, 2));
       } else if (drawId === "SSS") {
         svg.appendChild(tickMark(U0, U1, 1, TICK, 0.5));
         svg.appendChild(tickMark(V0, V1, 1, TICK, 0.5));
@@ -1563,10 +1572,10 @@
         svg.appendChild(tickMark(V2, V0, 3, TICK, 0.5));
       } else if (drawId === "AAS") {
         // ∠ U0 (1), ∠ U2 (2), non-included side
-        svg.appendChild(angleArc(U0, U1, U2, 22, MARK, 1));
-        svg.appendChild(angleArc(V0, V1, V2, 22, MARK, 1));
-        svg.appendChild(angleArc(U2, U0, U1, 22, VIOLET, 2));
-        svg.appendChild(angleArc(V2, V0, V1, 22, VIOLET, 2));
+        svg.appendChild(angleArc(U0, U1, U2, 22, ANGLE, 1));
+        svg.appendChild(angleArc(V0, V1, V2, 22, ANGLE, 1));
+        svg.appendChild(angleArc(U2, U0, U1, 22, ANGLE, 2));
+        svg.appendChild(angleArc(V2, V0, V1, 22, ANGLE, 2));
         svg.appendChild(tickMark(U0, U1, 1, TICK, 0.5));
         svg.appendChild(tickMark(V0, V1, 1, TICK, 0.5));
       } else if (drawId === "RHS") {
@@ -1586,12 +1595,12 @@
         svg.appendChild(tickMark(V2, V0, 3, TICK, 0.5));
       } else if (drawId === "corrA") {
         // only corresponding angles — 1 / 2 / 3 arcs
-        svg.appendChild(angleArc(U0, U1, U2, 22, MARK, 1));
-        svg.appendChild(angleArc(V0, V1, V2, 22, MARK, 1));
-        svg.appendChild(angleArc(U1, U0, U2, 22, VIOLET, 2));
-        svg.appendChild(angleArc(V1, V0, V2, 22, VIOLET, 2));
-        svg.appendChild(angleArc(U2, U0, U1, 22, ACCENT, 3));
-        svg.appendChild(angleArc(V2, V0, V1, 22, ACCENT, 3));
+        svg.appendChild(angleArc(U0, U1, U2, 22, ANGLE, 1));
+        svg.appendChild(angleArc(V0, V1, V2, 22, ANGLE, 1));
+        svg.appendChild(angleArc(U1, U0, U2, 22, ANGLE, 2));
+        svg.appendChild(angleArc(V1, V0, V2, 22, ANGLE, 2));
+        svg.appendChild(angleArc(U2, U0, U1, 22, ANGLE, 3));
+        svg.appendChild(angleArc(V2, V0, V1, 22, ANGLE, 3));
       }
     }
   }

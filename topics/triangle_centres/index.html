@@ -8,10 +8,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260829h">
-  <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260828-sel1">
-  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829g">
-  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829h">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260830-merge">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       user-select:none; }
@@ -39,6 +40,7 @@
     }
     .comics-mode.hidden, .comics-pane.hidden { display: none; }
   </style>
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
@@ -46,18 +48,28 @@
     <p class="jm-eyebrow">JM28 · Lesson 28</p>
     <h1>Special Line and Centres in Triangles</h1>
     <p class="lead">Special lines &amp; centres, angle pairs on parallel lines, then congruence and similarity — with standard geometry markings.</p>
-    <nav class="jm-tabs" aria-label="Lesson sections">
-      <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
+        <nav class="jm-tabs" aria-label="Lesson sections">
+      <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
+      <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+      <button class="jm-tab" type="button" data-tab="games">Games</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+      <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+      <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
     </nav>
-    <section id="panel-tools" class="jm-panel">
+        <section id="panel-concept" class="jm-panel">
+      <section class="block">
+        <h2>Concept &amp; Formula</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-tools" class="jm-panel hidden">
       <div class="subnav" id="jm28-lab-nav" aria-label="Tool labs"></div>
 
       <div class="lab active" id="lab-lines">
         <p class="part-title">Lab 1 · Special lines &amp; centres</p>
         <section class="block">
           <h2>Four special lines → four centres</h2>
-          <p class="hint">All construction lines are solid. Medians use tick marks on equal halves; altitudes show a right-angle symbol at the foot; angle bisectors use outward arc marks. Drag vertices to explore.</p>
+          <p class="hint">Construction lines are dashed. Side extensions beyond a vertex use dotted lines. Equal lengths use red ticks; equal angles and right angles use blue marks. Drag vertices to explore.</p>
           <p class="split-hint">Shape presets (click to load):</p>
           <div class="tool-toggle-row" id="tri-preset-btns"></div>
           <div class="tool-toggle-row" id="tri-mode-btns"></div>
@@ -101,56 +113,41 @@
         </section>
       </div>
     </section>
+        <section id="panel-games" class="jm-panel hidden">
+      <section class="block">
+        <h2>Games</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
     <section id="panel-comics" class="jm-panel hidden">
-      <div class="subnav" id="comics-mode-nav" aria-label="Comics mode">
-        <button type="button" class="chip active" data-comics-mode="quest">Centre Quest</button>
-        <button type="button" class="chip" data-comics-mode="manga">Manga series</button>
-      </div>
-      <div id="comics-quest" class="comics-pane">
-        <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
-        <div id="comics-stage"></div>
-        <p class="hint">The Triangle Centres Quest — in-centre, circumcentre, centroid, orthocentre. Read each page. No follow-up questions on this tab.</p>
-      </div>
-      <div id="comics-manga" class="comics-pane hidden">
-        <div id="jm28-manga-root"></div>
-      </div>
+      <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
+      <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+      <div id="comics-stage"></div>
+      <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+    </section>
+    <section id="panel-summary" class="jm-panel hidden">
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-quiz" class="jm-panel hidden">
+      <section class="block">
+        <h2>Quiz</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script src="comics-manifest.js?v=20260828-sel1"></script>
-  <script src="comics-quiz.js?v=20260828-sel1"></script>
-  <script src="../../shared/comics-quiz-utils.js?v=20260828-sel1"></script>
-  <script src="../../shared/comics-reader.js?v=20260828-sel1"></script>
-  <script src="../../shared/comics-mount.js?v=20260828-sel1"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260730-jm28j"></script>
-  <script defer src="triangle-centres-tools.js?v=20260829g"></script>
-  <script defer src="triangle-centres-comics.js?v=20260827-jm28w"></script>
+  <script src="comics-manifest.js?v=20260830-merge"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="triangle-centres-comics.js?v=20260830-fu"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
+  <script defer src="triangle-centres-tools.js?v=20260830j"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
-
-      var modeNav = document.getElementById("comics-mode-nav");
-      var quest = document.getElementById("comics-quest");
-      var manga = document.getElementById("comics-manga");
-      if (modeNav) {
-        modeNav.addEventListener("click", function (e) {
-          var btn = e.target.closest("[data-comics-mode]");
-          if (!btn) return;
-          var mode = btn.getAttribute("data-comics-mode");
-          modeNav.querySelectorAll(".chip").forEach(function (c) {
-            c.classList.toggle("active", c === btn);
-          });
-          quest.classList.toggle("hidden", mode !== "quest");
-          manga.classList.toggle("hidden", mode !== "manga");
-          if (mode === "manga" && window.ComicsMount && !window.__jm28MangaReady) {
-            window.ComicsMount.init("jm28-manga-root", {
-              intro: "Classroom manga — special lines, centres, angle pairs, and similarity.",
-            });
-            window.__jm28MangaReady = true;
-          }
-        });
-      }
     });
   </script>
 </body>

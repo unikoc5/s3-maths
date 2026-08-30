@@ -45,6 +45,28 @@ window.JM28_COMICS = {
         id: "ch8",
         title: "Chapter 8 — Circumcentre",
         file: "triangle-centres-chapter-8-circumcentre-color.png",
+        captionEn: "It looks like everyone has learned a lot about the four centres. So — did you know the four centres are also used in real life?",
+        captionZh: "看來大家已經學會了很多四心方面的相關知識，那麼，你知道現實生活中也有很多四心的運用嗎？",
+      },
+      {
+        id: "quest1",
+        title: "Real life 1 — Incentre: the biggest cake circle",
+        file: "quest-01-incentre-cake.png",
+      },
+      {
+        id: "quest2",
+        title: "Real life 2 — Circumcentre: a fair meeting point",
+        file: "quest-02-circumcentre-meet.png",
+      },
+      {
+        id: "quest3",
+        title: "Real life 3 — Centroid: where it balances",
+        file: "quest-03-centroid-balance.png",
+      },
+      {
+        id: "quest4",
+        title: "Real life 4 — Orthocentre: block all three paths",
+        file: "quest-04-orthocentre-block.png",
       },
     ],
     lawCard: {
@@ -155,6 +177,8 @@ window.buildComicFlatListForTopic = function buildComicFlatListForTopic(topicKey
       index: i,
       title: ch.title,
       src: topic.basePath + ch.file,
+      captionEn: ch.captionEn || "",
+      captionZh: ch.captionZh || "",
     };
   });
 

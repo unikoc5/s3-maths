@@ -29,6 +29,7 @@
       "  </header>" +
       '  <div class="reader-body">' +
       '    <img id="reader-image" alt="" />' +
+      '    <div class="reader-caption" id="reader-caption" hidden></div>' +
       "  </div>" +
       '  <footer class="reader-footer">' +
       '    <button type="button" class="reader-nav" data-action="prev" id="reader-prev"></button>' +
@@ -92,6 +93,23 @@
     var img = document.getElementById("reader-image");
     img.src = item.src;
     img.alt = item.title;
+
+    var captionEl = document.getElementById("reader-caption");
+    var lang = window.I18n && window.I18n.lang === "zh" ? "zh" : "en";
+    var caption = lang === "zh" ? (item.captionZh || item.captionEn) : (item.captionEn || item.captionZh);
+    if (captionEl) {
+      if (caption) {
+        captionEl.hidden = false;
+        captionEl.innerHTML =
+          '<p class="reader-caption-zh">' + (item.captionZh || caption) + "</p>" +
+          (item.captionEn && item.captionZh
+            ? '<p class="reader-caption-en">' + item.captionEn + "</p>"
+            : "");
+      } else {
+        captionEl.hidden = true;
+        captionEl.innerHTML = "";
+      }
+    }
 
     var prevBtn = el.querySelector('[data-action="prev"]');
     var nextBtn = el.querySelector('[data-action="next"]');

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Application of Trigonometry — JM35 · 圭表</title>
@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260829h">
-  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829h">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260830b">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
@@ -31,27 +31,48 @@
       vertical-align: middle;
     }
     .lab-svg { max-width: 640px; }
+    #gb-svg.lab-svg {
+      background: linear-gradient(180deg, #8ec8e8 0%, #c5e6f6 55%, #e4f3fb 100%) !important;
+    }
+    .guibiao-page .step-panel {
+      display: block;
+      flex: 0 0 100%;
+      min-width: 100%;
+      box-sizing: border-box;
+    }
   </style>
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830b">
 </head>
-<body class="paper-labs">
+<body class="paper-labs guibiao-page">
   <main class="jm-page">
     <a class="jm-back" href="/s3-maths/#lessons">&larr; S3 Lessons</a>
     <p class="jm-eyebrow">JM35 · Lesson 35</p>
     <h1>Application of Trigonometry</h1>
     <p class="lead">Ancient Chinese <strong>圭表</strong> (gnomon): seasons from noon shadow length — using \(\tan\theta\).</p>
-    <nav class="jm-tabs" aria-label="Lesson sections">
-      <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
+        <nav class="jm-tabs" aria-label="Lesson sections">
+      <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
+      <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+      <button class="jm-tab" type="button" data-tab="games">Games</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+      <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+      <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
     </nav>
 
-    <section id="panel-tools" class="jm-panel">
+        <section id="panel-concept" class="jm-panel">
+      <section class="block">
+        <h2>Concept &amp; Formula</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-tools" class="jm-panel hidden">
       <p class="part-title">圭表 · seasons from a noon shadow</p>
 
       <section class="block">
         <h2>1. Meet the 圭表</h2>
         <div class="step-frame" data-stepper="gb-intro">
           <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
-          <div class="step-body">
+          <div class="step-viewport">
+          <div class="step-track">
             <div class="step-panel active" data-step="0">
               <div class="step-label">Step 1 / 5</div>
               <p class="step-title">How did ancient China track the seasons?</p>
@@ -78,6 +99,7 @@
               <p class="step-title">Yes — it’s trigonometry!</p>
               <p class="step-text">Four marks on the 圭 match <strong>冬至</strong>, <strong>春分</strong>, <strong>秋分</strong>, and <strong>夏至</strong>. Drag the Sun and watch the single light ray and the shadow move together.</p>
             </div>
+          </div>
           </div>
           <button class="nav-btn next" type="button" aria-label="Next">→</button>
         </div>
@@ -111,17 +133,36 @@
       </section>
     </section>
 
-    <section id="panel-comics" class="jm-panel hidden">
+        <section id="panel-games" class="jm-panel hidden">
+      <section class="block">
+        <h2>Games</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-comics" class="jm-panel hidden">
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
       <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
     </section>
+    <section id="panel-summary" class="jm-panel hidden">
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-quiz" class="jm-panel hidden">
+      <section class="block">
+        <h2>Quiz</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260729-jm"></script>
-  <script defer src="../../shared/jm-comics-engine.js?v=20260829-fu"></script>
-  <script defer src="guibiao-tools.js?v=20260829h"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
+  <script defer src="../../shared/jm-stepper.js?v=20260830a"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="guibiao-tools.js?v=20260830a"></script>
   <script defer src="trigo-applications-comics.js?v=20260829-fu"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {

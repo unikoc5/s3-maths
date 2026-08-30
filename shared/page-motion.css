@@ -1,0 +1,172 @@
+/**
+ * Rate-and-ratio motion language: rise-in on enter, slide steppers, soft hover.
+ * Colours stay with each page — this file is timing and transform only.
+ */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes flashVal {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.jm-back,
+.back,
+a.back,
+.back-link,
+.jm-eyebrow,
+.eyebrow,
+.lesson-kicker,
+.hero,
+h1,
+.lead,
+.lede,
+.jm-tabs,
+.tabs,
+.main-tabs,
+.part-title {
+  animation: riseIn 0.35s ease both;
+}
+
+.jm-eyebrow,
+.eyebrow,
+.lesson-kicker { animation-delay: 0.04s; }
+h1 { animation-delay: 0.08s; }
+.lead,
+.lede { animation-delay: 0.12s; }
+.jm-tabs,
+.tabs,
+.main-tabs { animation-delay: 0.16s; }
+.part-title { animation-delay: 0.2s; }
+
+section.block {
+  animation: riseIn 0.4s ease both;
+}
+section.block:nth-of-type(1) { animation-delay: 0.18s; }
+section.block:nth-of-type(2) { animation-delay: 0.26s; }
+section.block:nth-of-type(3) { animation-delay: 0.32s; }
+section.block:nth-of-type(4) { animation-delay: 0.38s; }
+
+.jm-panel:not(.hidden),
+.jm-panel.is-entering,
+.lab.active,
+.view.active,
+.view.is-active,
+.cross-step-panel:not(.hidden),
+.mode-panel:not(.hidden) {
+  animation: riseIn 0.35s ease both;
+}
+
+.gallery .topic-card {
+  animation: riseIn 0.4s ease both;
+}
+.gallery .topic-card:nth-child(1) { animation-delay: 0.06s; }
+.gallery .topic-card:nth-child(2) { animation-delay: 0.1s; }
+.gallery .topic-card:nth-child(3) { animation-delay: 0.14s; }
+.gallery .topic-card:nth-child(4) { animation-delay: 0.18s; }
+.gallery .topic-card:nth-child(5) { animation-delay: 0.22s; }
+.gallery .topic-card:nth-child(6) { animation-delay: 0.26s; }
+.gallery .topic-card:nth-child(7) { animation-delay: 0.3s; }
+.gallery .topic-card:nth-child(8) { animation-delay: 0.34s; }
+.gallery .topic-card:nth-child(9) { animation-delay: 0.38s; }
+.gallery .topic-card:nth-child(10) { animation-delay: 0.42s; }
+.gallery .topic-card:nth-child(11) { animation-delay: 0.46s; }
+.gallery .topic-card:nth-child(12) { animation-delay: 0.5s; }
+
+.step-frame {
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  min-width: 0;
+}
+
+.step-viewport,
+.step-body,
+.step-body.step-viewport {
+  overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 170px;
+}
+
+.step-track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+.step-track > .step-panel {
+  display: block;
+  flex: 0 0 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.step-frame .nav-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.step-frame .nav-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.step-dots span,
+.step-dots button {
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.step-dots span.on,
+.step-dots button.on,
+.step-dots .on {
+  transform: scale(1.25);
+}
+
+.jm-page .btn,
+.jm-page .badge,
+.jm-page .stat-card,
+.jm-page .chip {
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.jm-page .btn:hover:not(:disabled),
+.jm-page .stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-card .val.flash {
+  animation: flashVal 0.35s ease;
+}
+
+@media (max-width: 640px) {
+  .step-frame { grid-template-columns: minmax(0, 1fr); }
+  .step-viewport,
+  .step-body,
+  .step-body.step-viewport { order: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jm-back, .back, a.back, .back-link,
+  .jm-eyebrow, .eyebrow, .lesson-kicker,
+  .hero, h1, .lead, .lede,
+  .jm-tabs, .tabs, .main-tabs, .part-title,
+  section.block,
+  .jm-panel:not(.hidden), .lab.active,
+  .view.active, .view.is-active,
+  .cross-step-panel:not(.hidden),
+  .gallery .topic-card,
+  .step-track {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

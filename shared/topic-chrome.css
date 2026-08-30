@@ -5,7 +5,7 @@
 :root {
   --ink: #1a1f2e;
   --muted: #5c6578;
-  --paper: #f7f4ee;
+  --paper: #f4f7fb;
   --card: #ffffff;
   --line: rgba(26, 31, 46, 0.08);
   --shadow: 0 12px 32px rgba(26, 31, 46, 0.08);
@@ -30,9 +30,9 @@ body {
   font-family: var(--font) !important;
   color: var(--ink) !important;
   background:
-    radial-gradient(ellipse 70% 45% at 8% -5%, #cfece8 0%, transparent 55%),
-    radial-gradient(ellipse 60% 40% at 95% 0%, #ffe2c4 0%, transparent 50%),
-    linear-gradient(165deg, #e8f3f2 0%, var(--paper) 48%, #eef2ea 100%) !important;
+    radial-gradient(circle at 8% 0%, rgba(120, 180, 220, 0.22), transparent 42%),
+    radial-gradient(circle at 92% 8%, rgba(180, 160, 220, 0.13), transparent 38%),
+    var(--paper) !important;
   background-attachment: fixed;
 }
 

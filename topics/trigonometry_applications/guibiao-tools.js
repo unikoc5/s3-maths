@@ -15,15 +15,28 @@
   /* Fixed noon azimuth: Sun only moves vertically on this line */
   var SUN_X = 470;
 
+  var COL = {
+    ink: "#27364a",
+    muted: "#5c6578",
+    line: "#234e70",
+    vertex: "#6b7280",
+    stone: "#c8d0d8",
+    stoneLight: "#d8dee5",
+    stoneEdge: "#6b7785",
+    ground: "#e6edf2",
+    shadow: "#3a4450",
+  };
+
   var SEASONS = [
-    { id: "xiazhi", label: "夏至", alt: 62, color: "#fbbf24" },
-    { id: "chunfen", label: "春分", alt: 45, color: "#34d399" },
-    { id: "qiufen", label: "秋分", alt: 45, color: "#a78bfa" },
-    { id: "dongzhi", label: "冬至", alt: 26, color: "#38bdf8" },
+    { id: "xiazhi", label: "夏至", alt: 62, color: COL.muted },
+    { id: "chunfen", label: "春分", alt: 45, color: COL.muted },
+    { id: "qiufen", label: "秋分", alt: 45, color: COL.muted },
+    { id: "dongzhi", label: "冬至", alt: 26, color: COL.muted },
   ];
 
   var sun = { x: SUN_X, y: 70 };
   var drag = null;
+  var sunAnim = null;
   var svg;
 
   function E(tag, attrs) {
@@ -172,165 +185,230 @@
       " L " + (x2 + size * Math.cos(a2)) + " " + (y2 + size * Math.sin(a2));
   }
 
-  function render() {
-    while (svg.firstChild) svg.removeChild(svg.firstChild);
+  var scene = null;
+  var formulaReady = false;
 
-    var m = metricsFromSun();
-    var tipX = m.tipX;
+  function setVal(id, text, flash) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (el.textContent === text) return;
+    el.textContent = text;
+    if (!flash) return;
+    el.classList.remove("flash");
+    void el.offsetWidth;
+    el.classList.add("flash");
+  }
+
+  function ensureScene() {
+    if (scene && svg.contains(scene.shadow)) return scene;
+
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
     var marks = seasonMarks();
 
     var defs = E("defs", {});
     var sky = E("linearGradient", { id: "gb-sky", x1: "0", y1: "0", x2: "0", y2: "1" });
-    sky.appendChild(E("stop", { offset: "0%", "stop-color": "#cfece8" }));
-    sky.appendChild(E("stop", { offset: "100%", "stop-color": "#f7f0e0" }));
+    sky.appendChild(E("stop", { offset: "0%", "stop-color": "#8ec8e8" }));
+    sky.appendChild(E("stop", { offset: "55%", "stop-color": "#c5e6f6" }));
+    sky.appendChild(E("stop", { offset: "100%", "stop-color": "#e4f3fb" }));
     defs.appendChild(sky);
     svg.appendChild(defs);
 
     svg.appendChild(E("rect", { x: 0, y: 0, width: VB_W, height: GROUND_Y, fill: "url(#gb-sky)" }));
-    svg.appendChild(E("rect", { x: 0, y: GROUND_Y, width: VB_W, height: VB_H - GROUND_Y, fill: "#e8dcc8" }));
+    svg.appendChild(E("rect", { x: 0, y: GROUND_Y, width: VB_W, height: VB_H - GROUND_Y, fill: COL.ground }));
 
-    /* 圭 — long scale from left up to the 表 */
     svg.appendChild(E("rect", {
       x: GUI_LEFT, y: GROUND_Y - 12, width: POST_X - GUI_LEFT + 28, height: 20,
-      rx: 4, fill: "#c4b8a0", stroke: "#8a7a62", "stroke-width": 2,
+      rx: 4, fill: COL.stone, stroke: COL.stoneEdge, "stroke-width": 1.6,
     }));
 
-    /* Season marks BELOW the 圭 (so they don't overlap s / θ) */
     marks.forEach(function (mk) {
       svg.appendChild(E("line", {
         x1: mk.x, y1: GROUND_Y + 8, x2: mk.x, y2: GROUND_Y + 22,
-        stroke: mk.color, "stroke-width": 3, opacity: 0.95,
+        stroke: COL.muted, "stroke-width": 2.5, opacity: 0.95,
       }));
       var t = E("text", {
         x: mk.x, y: GROUND_Y + 38,
-        fill: mk.color, "font-size": 12, "font-weight": 700, "text-anchor": "middle",
+        fill: COL.ink, "font-size": 12, "font-weight": 700, "text-anchor": "middle",
       });
       t.textContent = mk.label;
       svg.appendChild(t);
     });
     var guiLbl = E("text", {
       x: GUI_LEFT + 8, y: GROUND_Y + 58,
-      fill: "#5a6b74", "font-size": 15, "font-weight": 700, "text-anchor": "start",
+      fill: COL.ink, "font-size": 15, "font-weight": 700, "text-anchor": "start",
     });
     guiLbl.textContent = "圭";
     svg.appendChild(guiLbl);
 
-    /* Shadow on 圭 */
-    svg.appendChild(E("rect", {
-      x: tipX, y: GROUND_Y - 12, width: POST_X - tipX, height: 12,
-      fill: "rgba(30,42,50,.18)",
-    }));
-    svg.appendChild(E("circle", {
-      cx: tipX, cy: GROUND_Y - 6, r: 5, fill: "#f472b6",
-    }));
+    var shadow = E("rect", {
+      x: 0, y: GROUND_Y - 12, width: 1, height: 20,
+      fill: COL.shadow, opacity: "0.72",
+    });
+    var shadowHi = E("rect", {
+      x: 0, y: GROUND_Y - 12, width: 1, height: 6,
+      fill: "#1e2937", opacity: "0.28",
+    });
+    var tip = E("circle", {
+      cx: 0, cy: GROUND_Y - 2, r: 4, fill: COL.vertex, stroke: "#fff", "stroke-width": 1.2,
+    });
+    svg.appendChild(shadow);
+    svg.appendChild(shadowHi);
+    svg.appendChild(tip);
 
-    /* 表 */
     svg.appendChild(E("rect", {
       x: POST_X - 8, y: POST_TOP, width: 16, height: POST_H,
-      fill: "#d4c4b0", stroke: "#8a7a62", "stroke-width": 2,
+      fill: COL.stoneLight, stroke: COL.stoneEdge, "stroke-width": 1.6,
     }));
     svg.appendChild(E("circle", {
-      cx: POST_X, cy: POST_TOP, r: 5, fill: "#1e2a32",
+      cx: POST_X, cy: POST_TOP, r: 4, fill: COL.vertex, stroke: "#fff", "stroke-width": 1.2,
     }));
     var biaoLbl = E("text", {
       x: POST_X + 20, y: POST_TOP + 18,
-      fill: "#1e2a32", "font-size": 14, "font-weight": 700,
+      fill: COL.ink, "font-size": 14, "font-weight": 700,
     });
     biaoLbl.textContent = "表";
     svg.appendChild(biaoLbl);
 
-    /* ONE continuous light ray: Sun → 表 tip → shadow tip */
-    svg.appendChild(E("line", {
-      x1: sun.x, y1: sun.y, x2: tipX, y2: GROUND_Y - 6,
+    var ray = E("line", {
+      x1: SUN_X, y1: 70, x2: POST_X, y2: GROUND_Y - 2,
       stroke: "#fde047", "stroke-width": 2.5, opacity: 0.95,
-    }));
-    svg.appendChild(E("path", {
-      d: arrowHead(sun.x, sun.y, tipX, GROUND_Y - 6, 11),
-      stroke: "#fde047", "stroke-width": 2.5, fill: "none",
-    }));
-    /* Highlight that the ray passes through the tip of 表 */
+    });
+    var rayHead = E("path", {
+      d: "M 0 0", stroke: "#fde047", "stroke-width": 2.5, fill: "none",
+    });
+    svg.appendChild(ray);
+    svg.appendChild(rayHead);
     svg.appendChild(E("circle", {
       cx: POST_X, cy: POST_TOP, r: 7, fill: "none", stroke: "#fde047", "stroke-width": 1.5, opacity: 0.7,
     }));
 
-    /* Right triangle: H and s */
-    svg.appendChild(E("line", {
-      x1: tipX, y1: GROUND_Y - 12, x2: POST_X, y2: GROUND_Y - 12,
-      stroke: "#f472b6", "stroke-width": 2, "stroke-dasharray": "5 4",
-    }));
+    var sDash = E("line", {
+      x1: 0, y1: GROUND_Y - 12, x2: POST_X, y2: GROUND_Y - 12,
+      stroke: COL.line, "stroke-width": 2, "stroke-dasharray": "5 4",
+    });
+    svg.appendChild(sDash);
     svg.appendChild(E("line", {
       x1: POST_X, y1: GROUND_Y - 12, x2: POST_X, y2: POST_TOP,
-      stroke: "#34d399", "stroke-width": 2, "stroke-dasharray": "5 4",
+      stroke: COL.line, "stroke-width": 2, "stroke-dasharray": "5 4",
     }));
     svg.appendChild(E("path", {
       d: "M " + (POST_X - 14) + " " + (GROUND_Y - 12) +
         " L " + (POST_X - 14) + " " + (GROUND_Y - 26) +
         " L " + POST_X + " " + (GROUND_Y - 26),
-      fill: "none", stroke: "#fbbf24", "stroke-width": 1.8,
+      fill: "none", stroke: COL.line, "stroke-width": 1.8,
     }));
 
-    var sl = E("text", {
-      x: (tipX + POST_X) / 2, y: GROUND_Y - 22,
-      fill: "#f472b6", "font-size": 14, "font-weight": 700, "text-anchor": "middle",
+    var sLbl = E("text", {
+      x: POST_X, y: GROUND_Y - 22,
+      fill: COL.ink, "font-size": 14, "font-weight": 700, "text-anchor": "middle",
     });
-    sl.textContent = "s";
-    svg.appendChild(sl);
+    sLbl.textContent = "s";
+    svg.appendChild(sLbl);
 
-    /* Clear H label on the height of 表 */
     var hl = E("text", {
       x: POST_X + 22, y: (POST_TOP + GROUND_Y - 12) / 2 + 5,
-      fill: "#34d399", "font-size": 16, "font-weight": 800,
+      fill: COL.ink, "font-size": 16, "font-weight": 800,
     });
     hl.textContent = "H";
     svg.appendChild(hl);
     var hlSub = E("text", {
       x: POST_X + 22, y: (POST_TOP + GROUND_Y - 12) / 2 + 20,
-      fill: "#0f7a7a", "font-size": 11, "font-weight": 600,
+      fill: COL.muted, "font-size": 11, "font-weight": 600,
     });
     hlSub.textContent = "(height of 表)";
     svg.appendChild(hlSub);
 
-    /* Altitude arc near tip (optional visual of θ) */
-    var arcR = 36;
-    var th = rad(m.alt);
-    svg.appendChild(E("path", {
-      d: "M " + (tipX + arcR) + " " + (GROUND_Y - 6) +
-        " A " + arcR + " " + arcR + " 0 0 0 " +
-        (tipX + arcR * Math.cos(th)) + " " + (GROUND_Y - 6 - arcR * Math.sin(th)),
-      fill: "none", stroke: "#fbbf24", "stroke-width": 1.8,
-    }));
-    var tl = E("text", {
-      x: tipX + arcR + 8, y: GROUND_Y - 18,
-      fill: "#fbbf24", "font-size": 13, "font-weight": 700,
+    var thetaArc = E("path", {
+      d: "M 0 0", fill: "none", stroke: COL.line, "stroke-width": 1.8,
     });
-    tl.textContent = "θ";
-    svg.appendChild(tl);
+    var thetaLbl = E("text", {
+      x: 0, y: GROUND_Y - 18,
+      fill: COL.ink, "font-size": 13, "font-weight": 700,
+    });
+    thetaLbl.textContent = "θ";
+    svg.appendChild(thetaArc);
+    svg.appendChild(thetaLbl);
 
-    /* Sun */
-    svg.appendChild(E("circle", {
-      cx: sun.x, cy: sun.y, r: 30, fill: "rgba(253,224,71,.2)",
-    }));
-    svg.appendChild(E("circle", {
-      cx: sun.x, cy: sun.y, r: 18,
+    var sunGlow = E("circle", {
+      cx: SUN_X, cy: 70, r: 30, fill: "rgba(253,224,71,.2)",
+    });
+    var sunDisk = E("circle", {
+      cx: SUN_X, cy: 70, r: 18,
       fill: "#fde047", stroke: "#f59e0b", "stroke-width": 2,
       style: "cursor: grab",
-    }));
+    });
     var sunLbl = E("text", {
-      x: sun.x, y: sun.y - 28,
+      x: SUN_X, y: 42,
       fill: "#b45309", "font-size": 13, "font-weight": 700, "text-anchor": "middle",
     });
     sunLbl.textContent = "Sun (drag ↑↓)";
+    svg.appendChild(sunGlow);
+    svg.appendChild(sunDisk);
     svg.appendChild(sunLbl);
 
-    /* Stats */
-    document.getElementById("gb-alt").textContent = fmt(m.alt) + "°";
-    document.getElementById("gb-shadow").textContent = fmt(m.shadow / 10) + " units";
-    document.getElementById("gb-tan").textContent = fmt(Math.tan(rad(m.alt)));
+    scene = {
+      shadow: shadow,
+      shadowHi: shadowHi,
+      tip: tip,
+      ray: ray,
+      rayHead: rayHead,
+      sDash: sDash,
+      sLbl: sLbl,
+      thetaArc: thetaArc,
+      thetaLbl: thetaLbl,
+      sunGlow: sunGlow,
+      sunDisk: sunDisk,
+      sunLbl: sunLbl,
+    };
+    return scene;
+  }
 
-    var form = document.getElementById("gb-formula");
-    form.innerHTML =
-      "\\(\\tan\\theta = \\dfrac{H}{s} \\quad\\Rightarrow\\quad s = \\dfrac{H}{\\tan\\theta}\\)";
-    renderKatex(form);
+  function paint(flashStats) {
+    var s = ensureScene();
+    var m = metricsFromSun();
+    var tipX = m.tipX;
+    var shW = Math.max(POST_X - tipX, 0);
+
+    s.shadow.setAttribute("x", tipX);
+    s.shadow.setAttribute("width", shW);
+    s.shadowHi.setAttribute("x", tipX);
+    s.shadowHi.setAttribute("width", shW);
+    s.tip.setAttribute("cx", tipX);
+
+    s.ray.setAttribute("x1", sun.x);
+    s.ray.setAttribute("y1", sun.y);
+    s.ray.setAttribute("x2", tipX);
+    s.ray.setAttribute("y2", GROUND_Y - 2);
+    s.rayHead.setAttribute("d", arrowHead(sun.x, sun.y, tipX, GROUND_Y - 2, 11));
+
+    s.sDash.setAttribute("x1", tipX);
+    s.sLbl.setAttribute("x", (tipX + POST_X) / 2);
+
+    var arcR = 36;
+    var th = rad(m.alt);
+    s.thetaArc.setAttribute("d",
+      "M " + (tipX + arcR) + " " + (GROUND_Y - 6) +
+      " A " + arcR + " " + arcR + " 0 0 0 " +
+      (tipX + arcR * Math.cos(th)) + " " + (GROUND_Y - 6 - arcR * Math.sin(th)));
+    s.thetaLbl.setAttribute("x", tipX + arcR + 8);
+
+    s.sunGlow.setAttribute("cy", sun.y);
+    s.sunDisk.setAttribute("cy", sun.y);
+    s.sunLbl.setAttribute("y", sun.y - 28);
+
+    setVal("gb-alt", fmt(m.alt) + "°", flashStats);
+    setVal("gb-shadow", fmt(m.shadow / 10) + " units", flashStats);
+    setVal("gb-tan", fmt(Math.tan(rad(m.alt))), flashStats);
+
+    if (!formulaReady) {
+      var form = document.getElementById("gb-formula");
+      if (form) {
+        form.innerHTML =
+          "\\(\\tan\\theta = \\dfrac{H}{s} \\quad\\Rightarrow\\quad s = \\dfrac{H}{\\tan\\theta}\\)";
+        renderKatex(form);
+        formulaReady = true;
+      }
+    }
 
     var near = nearestSeason(tipX);
     var seasonEl = document.getElementById("gb-season");
@@ -349,13 +427,17 @@
       b.classList.toggle("on", on);
     });
     if (near) {
-      seasonEl.textContent = near.label;
-      fb.className = "feedback ok";
-      fb.textContent = "Shadow tip is on the “" + near.label + "” mark — that is how the 圭表 reads the season.";
+      if (seasonEl) seasonEl.textContent = near.label;
+      if (fb) {
+        fb.className = "feedback ok";
+        fb.textContent = "Shadow tip is on the “" + near.label + "” mark — that is how the 圭表 reads the season.";
+      }
     } else {
-      seasonEl.textContent = "—";
-      fb.className = "feedback";
-      fb.textContent = "Drag the Sun until the shadow tip lines up with a season mark.";
+      if (seasonEl) seasonEl.textContent = "—";
+      if (fb) {
+        fb.className = "feedback";
+        fb.textContent = "Drag the Sun until the shadow tip lines up with a season mark.";
+      }
     }
   }
 
@@ -372,6 +454,10 @@
     svg.addEventListener("pointerdown", function (e) {
       var p = pt(e);
       if (Math.hypot(p.x - sun.x, p.y - sun.y) > 36) return;
+      if (sunAnim) {
+        cancelAnimationFrame(sunAnim);
+        sunAnim = null;
+      }
       drag = { oy: p.y - sun.y };
       try { svg.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
       e.preventDefault();
@@ -382,34 +468,15 @@
       sun.x = SUN_X;
       sun.y = p.y - drag.oy;
       clampSun();
-      render();
+      paint(false);
     });
     function end() { drag = null; }
     svg.addEventListener("pointerup", end);
     svg.addEventListener("pointercancel", end);
   }
 
-  function initStepper(name) {
-    var frame = document.querySelector('[data-stepper="' + name + '"]');
-    var dotsWrap = document.querySelector('[data-dots="' + name + '"]');
-    if (!frame || !dotsWrap) return;
-    var panels = [].slice.call(frame.querySelectorAll(".step-panel"));
-    var prev = frame.querySelector(".prev");
-    var next = frame.querySelector(".next");
-    var idx = 0;
-    function show(i) {
-      idx = Math.max(0, Math.min(panels.length - 1, i));
-      panels.forEach(function (p, j) { p.classList.toggle("active", j === idx); });
-      [].slice.call(dotsWrap.querySelectorAll("span")).forEach(function (d, j) {
-        d.classList.toggle("on", j === idx);
-      });
-      if (prev) prev.disabled = idx === 0;
-      if (next) next.disabled = idx === panels.length - 1;
-      renderKatex(frame);
-    }
-    if (prev) prev.addEventListener("click", function () { show(idx - 1); });
-    if (next) next.addEventListener("click", function () { show(idx + 1); });
-    show(0);
+  function easeInOutCubic(p) {
+    return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
   }
 
   function initGuibiao() {
@@ -417,18 +484,38 @@
     if (!svg) return;
     sunFromAltitude(45);
     bindDrag();
-    render();
+    paint(false);
+
+    function animateSunToAlt(altDeg) {
+      var startTip = metricsFromSun().tipX;
+      var endTip = tipXFromAltitude(altDeg);
+      if (sunAnim) cancelAnimationFrame(sunAnim);
+      var t0 = performance.now();
+      var dur = 720;
+      function tick(now) {
+        var p = Math.min(1, (now - t0) / dur);
+        placeSunOnRay(startTip + (endTip - startTip) * easeInOutCubic(p));
+        paint(false);
+        if (p < 1) {
+          sunAnim = requestAnimationFrame(tick);
+        } else {
+          sunAnim = null;
+          placeSunOnRay(endTip);
+          paint(true);
+        }
+      }
+      sunAnim = requestAnimationFrame(tick);
+    }
 
     SEASONS.forEach(function (s) {
       var btn = document.getElementById("gb-preset-" + s.id);
       if (!btn) return;
       btn.addEventListener("click", function () {
-        sunFromAltitude(s.alt);
-        render();
+        animateSunToAlt(s.alt);
       });
     });
 
-    initStepper("gb-intro");
+    if (window.initJmStepper) window.initJmStepper("gb-intro");
     renderKatex(document.getElementById("panel-tools"));
   }
 

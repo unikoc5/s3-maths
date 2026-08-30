@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/gallery.css?v=20260829g" />
+  <link rel="stylesheet" href="css/gallery.css?v=20260830b" />
   <style>
     .view { display: none; }
     .view.active { display: block; }
@@ -28,8 +28,23 @@
       cursor: pointer;
     }
     .back-link:hover { border-color: var(--accent); color: var(--accent); }
+    #home .gallery {
+      grid-template-columns: minmax(260px, 340px);
+      justify-content: start;
+    }
+    .level-card {
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      width: 100%;
+      padding: 0;
+    }
     .level-card .card-art { height: 150px; }
+    .level-card .card-body h2 {
+      font-size: 1.55rem;
+    }
   </style>
+  <link rel="stylesheet" href="shared/page-motion.css?v=20260830a">
 </head>
 <body>
   <header class="site-header">
@@ -56,9 +71,8 @@
           </div>
           <div class="card-body">
             <p class="lesson-code">Secondary 3</p>
-            <h2>S3</h2>
-            <p>JM24–JM35 · interactive tools and comics</p>
-            <div class="tags"><span>JM24–JM35</span></div>
+            <h2>Mathematics</h2>
+            <p>12 lessons · JM24–JM35</p>
           </div>
         </button>
       </section>
@@ -69,7 +83,7 @@
       <section class="hero">
         <p class="eyebrow">Gallery</p>
         <h1>S3 Lessons</h1>
-        <p class="lede">Pick a topic to open its lesson — Interactive Tools, Comics, and more.</p>
+        <p class="lede">Each lesson has six sections: Concept &amp; Formula, Interactive Tool, Games, Comics, Summary, and Quiz.</p>
       </section>
 
       <section class="gallery" aria-label="S3 lesson topics">
@@ -118,7 +132,7 @@
           <div class="card-body">
             <p class="lesson-code">JM28 · Lesson 28</p>
             <h2>Special Line and Centres in Triangles</h2>
-            <p>Centre quest pages plus full classroom manga series.</p>
+            <p>Classroom manga, real-life four-centre pages, then summary cards.</p>
             <div class="tags"><span>Tools</span><span>Comics</span></div>
           </div>
         </a>

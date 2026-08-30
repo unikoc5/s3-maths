@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trigonometric Relations — JM34</title>
@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260829h">
-  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829h">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260830b">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829t">
   <style>
     body {
       margin: 0; min-height: 100vh; color: var(--text);
@@ -126,23 +126,23 @@
       position: relative;
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: #fffaf3;
+      background: #fff;
       min-height: 180px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
-    .tri-card.ready { box-shadow: inset 0 0 0 2px #0f7a7a; }
+    .tri-card.ready { box-shadow: inset 0 0 0 2px #234e70; }
     .tri-card .badge {
       position: absolute; top: 8px; right: 8px; z-index: 2;
-      font-size: 13px; font-weight: 800; color: #c44b3c;
-      background: rgba(255, 250, 243, 0.92);
+      font-size: 13px; font-weight: 800; color: #5c6578;
+      background: rgba(255, 255, 255, 0.94);
       padding: 3px 8px;
       border-radius: 6px;
       max-width: calc(100% - 16px);
       text-align: right;
     }
-    .tri-card.ready .badge { color: #0f7a7a; }
+    .tri-card.ready .badge { color: #234e70; }
     .tri-card svg {
       flex: 1 1 auto;
       width: 100%;
@@ -471,8 +471,8 @@
       z-index: 2;
       font-size: 13px;
       font-weight: 700;
-      color: #f8fafc;
-      background: rgba(15, 23, 42, 0.82);
+      color: #27364a;
+      background: rgba(244, 247, 251, 0.94);
       padding: 4px 8px;
       border-radius: 6px;
       pointer-events: none;
@@ -679,7 +679,102 @@
       flex: 0 0 auto;
       font-size: 15px;
     }
+    .method-nav {
+      margin: 0 0 8px;
+      padding: 0;
+    }
+    /* Let Part 3A/B grow with content — do not clip the graph */
+    #stage-cosin,
+    #stage-cotan {
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      overflow: visible !important;
+    }
+    #stage-cosin .cosin-method,
+    #stage-cotan .cosin-method {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #cosin-graph-wrap .stage-body,
+    #cotan-graph-wrap .stage-body {
+      overflow: visible !important;
+      display: flex;
+      flex-direction: column;
+    }
+    #cosin-geo-wrap .stage-body,
+    #cotan-geo-wrap .stage-body {
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 420px;
+    }
+    #stage-cosin .lab-svg-fill,
+    #stage-cotan .lab-svg-fill {
+      flex: 0 0 auto;
+      width: min(100%, 900px);
+      aspect-ratio: 5 / 3;
+      height: auto;
+      max-height: none;
+      margin-inline: auto;
+      align-self: center;
+    }
+    .geo-layout {
+      flex: 1 1 auto;
+      min-height: 280px;
+      display: grid;
+      grid-template-columns: minmax(240px, 1.15fr) minmax(220px, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+    @media (max-width: 720px) {
+      .geo-layout { grid-template-columns: 1fr; }
+    }
+    .geo-fig {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      min-height: 260px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .geo-fig svg {
+      width: 100%;
+      height: 100%;
+      min-height: 220px;
+      display: block;
+      flex: 1 1 auto;
+      touch-action: none;
+    }
+    .geo-proof.box {
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(61, 126, 166, 0.22);
+      background: rgba(61, 126, 166, 0.06);
+      font-size: 15px;
+      line-height: 1.55;
+      overflow: auto;
+      max-height: 100%;
+    }
+    .geo-proof .math-line { margin: 8px 0; }
+    .geo-proof .proof-step {
+      margin: 0 0 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed rgba(61, 126, 166, 0.18);
+    }
+    .geo-proof .proof-step:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .geo-proof .proof-step.dim {
+      opacity: 0.38;
+    }
   </style>
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
@@ -688,12 +783,22 @@
     <h1>Trigonometric Relations</h1>
     <p class="lead">Special triangles, the identity <span data-tex="\sin^2 x+\cos^2 x=1"></span>, and co-functions.</p>
 
-    <nav class="jm-tabs" aria-label="Lesson sections">
-      <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
+        <nav class="jm-tabs" aria-label="Lesson sections">
+      <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
+      <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+      <button class="jm-tab" type="button" data-tab="games">Games</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+      <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+      <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
     </nav>
 
-    <section id="panel-tools" class="jm-panel">
+        <section id="panel-concept" class="jm-panel">
+      <section class="block">
+        <h2>Concept &amp; Formula</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-tools" class="jm-panel hidden">
       <div class="subnav" id="trig-lab-nav" aria-label="Tool parts">
         <button class="chip active" type="button" data-lab="special">Part 1 · Special triangles</button>
         <button class="chip" type="button" data-lab="identity">Part 2 · Identity</button>
@@ -776,44 +881,100 @@
           <button class="chip" type="button" data-p3="tan">B · tan &amp; 1/tan</button>
         </div>
         <div class="stage" id="stage-cosin">
-          <div class="stage-head"><h2><span data-tex="\cos(90^\circ-x)=\sin x"></span></h2></div>
-          <div class="stage-body" id="co-sin-body"></div>
-          <div class="stage-foot">
-            <button class="btn" type="button" id="co-sin-prev" disabled>← Back</button>
-            <span class="step-label" id="co-sin-step-label">Step 1 / 4</span>
-            <div style="display:flex;gap:8px">
-              <button class="btn" type="button" id="co-sin-reset">Reset</button>
-              <button class="btn primary" type="button" id="co-sin-next">Next →</button>
+          <div class="stage-head">
+            <h2><span data-tex="\cos(90^\circ-x)=\sin x"></span></h2>
+            <div class="subnav method-nav" id="cosin-method-nav" aria-label="Part 3A methods">
+              <button class="chip active" type="button" data-cosin-m="geo">Geometric explanation</button>
+              <button class="chip" type="button" data-cosin-m="graph">Graphical explanation</button>
+            </div>
+          </div>
+          <div class="cosin-method" id="cosin-geo-wrap" style="display:flex">
+            <div class="stage-body" id="co-geo-body"></div>
+            <div class="stage-foot">
+              <button class="btn" type="button" id="co-geo-prev" disabled>← Back</button>
+              <span class="step-label" id="co-geo-step-label">Step 1 / 4</span>
+              <div style="display:flex;gap:8px">
+                <button class="btn" type="button" id="co-geo-reset">Reset</button>
+                <button class="btn primary" type="button" id="co-geo-next">Next →</button>
+              </div>
+            </div>
+          </div>
+          <div class="cosin-method" id="cosin-graph-wrap" style="display:none">
+            <div class="stage-body" id="co-sin-body"></div>
+            <div class="stage-foot">
+              <button class="btn" type="button" id="co-sin-prev" disabled>← Back</button>
+              <span class="step-label" id="co-sin-step-label">Step 1 / 4</span>
+              <div style="display:flex;gap:8px">
+                <button class="btn" type="button" id="co-sin-reset">Reset</button>
+                <button class="btn primary" type="button" id="co-sin-next">Next →</button>
+              </div>
             </div>
           </div>
         </div>
         <div class="stage" id="stage-cotan" style="display:none">
-          <div class="stage-head"><h2><span data-tex="\tan(90^\circ-x)=\dfrac{1}{\tan x}"></span></h2></div>
-          <div class="stage-body" id="co-tan-body"></div>
-          <div class="stage-foot">
-            <button class="btn" type="button" id="co-tan-prev" disabled>← Back</button>
-            <span class="step-label" id="co-tan-step-label">Step 1 / 4</span>
-            <div style="display:flex;gap:8px">
-              <button class="btn" type="button" id="co-tan-reset">Reset</button>
-              <button class="btn primary" type="button" id="co-tan-next">Next →</button>
+          <div class="stage-head">
+            <h2><span data-tex="\tan(90^\circ-x)=\dfrac{1}{\tan x}"></span></h2>
+            <div class="subnav method-nav" id="cotan-method-nav" aria-label="Part 3B methods">
+              <button class="chip active" type="button" data-cotan-m="geo">Geometric explanation</button>
+              <button class="chip" type="button" data-cotan-m="graph">Graphical explanation</button>
+            </div>
+          </div>
+          <div class="cosin-method" id="cotan-geo-wrap" style="display:flex">
+            <div class="stage-body" id="co-tan-geo-body"></div>
+            <div class="stage-foot">
+              <button class="btn" type="button" id="co-tan-geo-prev" disabled>← Back</button>
+              <span class="step-label" id="co-tan-geo-step-label">Step 1 / 4</span>
+              <div style="display:flex;gap:8px">
+                <button class="btn" type="button" id="co-tan-geo-reset">Reset</button>
+                <button class="btn primary" type="button" id="co-tan-geo-next">Next →</button>
+              </div>
+            </div>
+          </div>
+          <div class="cosin-method" id="cotan-graph-wrap" style="display:none">
+            <div class="stage-body" id="co-tan-body"></div>
+            <div class="stage-foot">
+              <button class="btn" type="button" id="co-tan-prev" disabled>← Back</button>
+              <span class="step-label" id="co-tan-step-label">Step 1 / 4</span>
+              <div style="display:flex;gap:8px">
+                <button class="btn" type="button" id="co-tan-reset">Reset</button>
+                <button class="btn primary" type="button" id="co-tan-next">Next →</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="panel-comics" class="jm-panel hidden">
+        <section id="panel-games" class="jm-panel hidden">
+      <section class="block">
+        <h2>Games</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-comics" class="jm-panel hidden">
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
       <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+    </section>
+    <section id="panel-summary" class="jm-panel hidden">
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-quiz" class="jm-panel hidden">
+      <section class="block">
+        <h2>Quiz</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
     </section>
   </main>
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260729-jm"></script>
-  <script defer src="../../shared/jm-comics-engine.js?v=20260829-fu"></script>
-  <script defer src="trigonometry-tools.js?v=20260829h"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="trigonometry-tools.js?v=20260830c"></script>
   <script defer src="trigo-relations-comics.js?v=20260829-fu"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {

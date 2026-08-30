@@ -8,14 +8,15 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
-  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="probability-tools.js?v=20260828-eric-jm30"></script>
   <script defer src="probability-game.js?v=20260730-apple"></script>
   <script defer src="probability-quiz.js?v=20260725-fixes6"></script>
-  <script defer src="probability-comics.js?v=20260720-comics"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="probability-comics.js?v=20260830-fu"></script>
   <style>
     :root {
       --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
@@ -418,6 +419,8 @@
     .comic-chapter-next { margin-left: auto; }
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
+  <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
 <body>
   <header>
@@ -433,8 +436,9 @@
   <nav class="tabs">
     <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
     <button class="tab" data-tab="tools">Interactive Tool</button>
-    <button class="tab" data-tab="game">Probability Game</button>
+    <button class="tab" data-tab="game">Games</button>
     <button class="tab" data-tab="comics">Comics</button>
+    <button class="tab" data-tab="summary">Summary</button>
     <button class="tab" data-tab="quiz">Quiz</button>
   </nav>
   </div>
@@ -712,7 +716,11 @@
   <section id="panel-comics" class="panel hidden">
     <div class="subnav" id="comics-subnav"></div>
     <div id="comics-stage"></div>
-    <p class="hint">Read the comic page, then answer the two concept checks below. Answers stay on this tab only — they do not affect the Quiz.</p>
+    <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+  </section>
+
+  <section id="panel-summary" class="panel hidden">
+    <p class="hint">Summary for this lesson is coming soon.</p>
   </section>
 
   <!-- TAB 5: quiz -->

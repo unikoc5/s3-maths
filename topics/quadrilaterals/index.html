@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quadrilaterals — JM29</title>
@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260829h">
-  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829h">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:
@@ -97,6 +97,7 @@
       vertical-align: middle;
     }
   </style>
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
@@ -104,12 +105,22 @@
     <p class="jm-eyebrow">JM29 · Lesson 29</p>
     <h1>Quadrilaterals</h1>
     <p class="lead">Drag freely to classify shapes, explore mid-pt. &amp; intercept theorems, then tap a reason to see it in a figure.</p>
-    <nav class="jm-tabs" aria-label="Lesson sections">
-      <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
+        <nav class="jm-tabs" aria-label="Lesson sections">
+      <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
+      <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+      <button class="jm-tab" type="button" data-tab="games">Games</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+      <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+      <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
     </nav>
 
-    <section id="panel-tools" class="jm-panel">
+        <section id="panel-concept" class="jm-panel">
+      <section class="block">
+        <h2>Concept &amp; Formula</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-tools" class="jm-panel hidden">
       <div class="subnav" id="jm29-lab-nav" aria-label="Tool labs"></div>
 
       <!-- Lab 1 -->
@@ -179,17 +190,36 @@
       </div>
     </section>
 
-    <section id="panel-comics" class="jm-panel hidden">
+        <section id="panel-games" class="jm-panel hidden">
+      <section class="block">
+        <h2>Games</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-comics" class="jm-panel hidden">
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
-      <p class="hint">The Quadrilaterals Quest — read each page. No follow-up questions on this tab.</p>
+      <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+    </section>
+    <section id="panel-summary" class="jm-panel hidden">
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-quiz" class="jm-panel hidden">
+      <section class="block">
+        <h2>Quiz</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260730-jm29m"></script>
-  <script defer src="quadrilaterals-tools.js?v=20260829h"></script>
-  <script defer src="quadrilaterals-comics.js?v=20260827-jm29ae"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
+  <script defer src="quadrilaterals-tools.js?v=20260830e"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="quadrilaterals-comics.js?v=20260830-fu"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();

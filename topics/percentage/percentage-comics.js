@@ -1,4 +1,4 @@
-/* Percentage comics — story concepts + per-page concept checks.
+﻿/* Percentage comics — story concepts + per-page concept checks.
    Completely separate from percentage-quiz.js (does not touch QUIZ data). */
 (function () {
   "use strict";
@@ -153,180 +153,17 @@
     },
   ];
 
-  function initComics() {
-    const panel = document.getElementById("panel-comics");
-    const subnav = document.getElementById("comics-subnav");
-    const stage = document.getElementById("comics-stage");
-    if (!panel || !subnav || !stage) return;
+  COMICS.forEach(function (comic, i) {
+    comic.chip = "P" + (i + 1);
+  });
 
-    const state = { index: 0, answers: {} };
-    const chipButtons = [];
-
-    function isChapterComplete(comic) {
-      return comic.checks.every(function (q) {
-        return Object.prototype.hasOwnProperty.call(state.answers, q.id);
-      });
-    }
-
-    function goToChapter(index) {
-      if (index < 0 || index >= COMICS.length) return;
-      state.index = index;
-      chipButtons.forEach(function (chip, j) {
-        chip.classList.toggle("active", j === index);
-      });
-      render();
-      stage.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    COMICS.forEach(function (comic, i) {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "chip" + (i === 0 ? " active" : "");
-      btn.dataset.comic = comic.id;
-      btn.textContent = comic.title;
-      btn.addEventListener("click", function () {
-        goToChapter(i);
-      });
-      subnav.appendChild(btn);
-      chipButtons.push(btn);
-    });
-
-    function render() {
-      const comic = COMICS[state.index];
-      stage.innerHTML = "";
-
-      const article = document.createElement("article");
-      article.className = "comic-page";
-
-      const head = document.createElement("div");
-      head.className = "comic-page-head";
-      const chap = document.createElement("span");
-      chap.className = "comic-chapter";
-      chap.textContent = comic.chapter;
-      const title = document.createElement("h2");
-      title.textContent = comic.title;
-      head.appendChild(chap);
-      head.appendChild(title);
-      article.appendChild(head);
-
-      const fig = document.createElement("figure");
-      fig.className = "comic-figure";
-      const img = document.createElement("img");
-      img.src = comic.image;
-      img.alt = comic.title + " — educational comic page";
-      img.loading = "lazy";
-      fig.appendChild(img);
-      article.appendChild(fig);
-
-      const checkWrap = document.createElement("div");
-      checkWrap.className = "comic-checks";
-      const checkTitle = document.createElement("h3");
-      checkTitle.textContent = "Concept checking";
-      checkWrap.appendChild(checkTitle);
-
-      comic.checks.forEach(function (q, qi) {
-        checkWrap.appendChild(buildCheckCard(comic, q, qi));
-      });
-      article.appendChild(checkWrap);
-
-      if (isChapterComplete(comic) && state.index < COMICS.length - 1) {
-        const nav = document.createElement("div");
-        nav.className = "comic-chapter-nav";
-        const nextComic = COMICS[state.index + 1];
-        const nextBtn = document.createElement("button");
-        nextBtn.type = "button";
-        nextBtn.className = "quiz-nav-btn primary comic-chapter-next";
-        nextBtn.textContent = "Next chapter: " + nextComic.title + " \u2192";
-        nextBtn.addEventListener("click", function () {
-          goToChapter(state.index + 1);
-        });
-        nav.appendChild(nextBtn);
-        article.appendChild(nav);
-      }
-
-      stage.appendChild(article);
-    }
-
-    function buildCheckCard(comic, q, qi) {
-      const card = document.createElement("article");
-      card.className = "quiz-card comic-check-card";
-      const answered = Object.prototype.hasOwnProperty.call(state.answers, q.id);
-      const selected = state.answers[q.id];
-      const ok = selected === q.answer;
-
-      const head = document.createElement("div");
-      head.className = "quiz-head";
-      const num = document.createElement("span");
-      num.className = "quiz-num";
-      num.textContent = qi + 1 + ".";
-      const prompt = document.createElement("div");
-      prompt.className = "quiz-prompt";
-      prompt.textContent = q.prompt;
-      head.appendChild(num);
-      head.appendChild(prompt);
-      if (answered) {
-        const mark = document.createElement("span");
-        mark.className = "quiz-mark " + (ok ? "ok" : "bad");
-        mark.textContent = ok ? "\u2713" : "\u2717";
-        head.appendChild(mark);
-      }
-      card.appendChild(head);
-
-      const mc = document.createElement("div");
-      mc.className = "quiz-mc";
-      q.choices.forEach(function (choice, ci) {
-        const label = document.createElement("label");
-        label.className = "quiz-mc-opt";
-        if (answered) {
-          label.classList.add("locked");
-          if (ci === q.answer) label.classList.add("reveal-ok");
-          else if (ci === selected) label.classList.add("reveal-bad");
-        }
-        const input = document.createElement("input");
-        input.type = "radio";
-        input.name = "comic-check-" + q.id;
-        input.value = String(ci);
-        input.disabled = answered;
-        if (selected === ci) input.checked = true;
-        input.addEventListener("change", function () {
-          state.answers[q.id] = ci;
-          render();
-        });
-        const letter = document.createElement("span");
-        letter.className = "quiz-mc-letter";
-        letter.textContent = String.fromCharCode(65 + ci) + ".";
-        const tex = document.createElement("span");
-        tex.className = "quiz-mc-tex";
-        tex.textContent = choice;
-        label.appendChild(input);
-        label.appendChild(letter);
-        label.appendChild(tex);
-        mc.appendChild(label);
-      });
-      card.appendChild(mc);
-
-      if (answered) {
-        const result = document.createElement("div");
-        result.className = "quiz-result";
-        const msg = document.createElement("div");
-        msg.className = "quiz-result-msg";
-        msg.textContent = ok ? "Correct. " : "Not quite. ";
-        const explain = document.createElement("span");
-        explain.textContent = q.explain;
-        msg.appendChild(explain);
-        result.appendChild(msg);
-        card.appendChild(result);
-      }
-
-      return card;
-    }
-
-    render();
+  function start() {
+    if (window.initJmComics) window.initJmComics(COMICS);
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initComics);
+    document.addEventListener("DOMContentLoaded", start);
   } else {
-    initComics();
+    start();
   }
 })();

@@ -2,6 +2,19 @@
   "use strict";
 
   var NS = "http://www.w3.org/2000/svg";
+  /* Free-triangle ink: dark blue lines, grey vertices. */
+  var TRI = {
+    line: "#234e70",
+    fill: "rgba(35, 78, 112, 0.12)",
+    ink: "#27364a",
+    vertex: "#6b7280",
+  };
+  var CHART = {
+    a: "#1f6b4a",
+    b: "#6b7280",
+    point: "#3d7ea6",
+    guide: "#94a3b8",
+  };
 
   function E(tag, attrs, text) {
     var el = document.createElementNS(NS, tag);
@@ -118,8 +131,45 @@
         btn.classList.add("active");
         $("stage-cosin").style.display = btn.dataset.p3 === "sin" ? "" : "none";
         $("stage-cotan").style.display = btn.dataset.p3 === "tan" ? "" : "none";
+        if (btn.dataset.p3 === "sin") {
+          if (coSin.method === "geo") renderCoGeo();
+          else renderCoSin();
+        } else {
+          if (coTan.method === "geo") renderCoTanGeo();
+          else renderCoTan();
+        }
       });
     });
+
+    var cosinM = $("cosin-method-nav");
+    if (cosinM) {
+      cosinM.querySelectorAll("[data-cosin-m]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          cosinM.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
+          btn.classList.add("active");
+          coSin.method = btn.dataset.cosinM;
+          $("cosin-geo-wrap").style.display = coSin.method === "geo" ? "flex" : "none";
+          $("cosin-graph-wrap").style.display = coSin.method === "graph" ? "flex" : "none";
+          if (coSin.method === "geo") renderCoGeo();
+          else renderCoSin();
+        });
+      });
+    }
+
+    var cotanM = $("cotan-method-nav");
+    if (cotanM) {
+      cotanM.querySelectorAll("[data-cotan-m]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          cotanM.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
+          btn.classList.add("active");
+          coTan.method = btn.dataset.cotanM;
+          $("cotan-geo-wrap").style.display = coTan.method === "geo" ? "flex" : "none";
+          $("cotan-graph-wrap").style.display = coTan.method === "graph" ? "flex" : "none";
+          if (coTan.method === "geo") renderCoTanGeo();
+          else renderCoTan();
+        });
+      });
+    }
   }
 
   /* =========================================================================
@@ -193,8 +243,8 @@
     var F = fitOf(t, opts.fitPad);
     svg._fit = F;
     var C = F.C, A = F.A, B = F.B;
-    var stroke = opts.stroke || "#0f7a7a";
-    var fill = opts.fill || "rgba(15,122,122,.16)";
+    var stroke = opts.stroke || TRI.line;
+    var fill = opts.fill || TRI.fill;
 
     // fill + three thick edges (edges guarantee visibility)
     svg.appendChild(E("polygon", {
@@ -231,7 +281,7 @@
     var distVC = Math.hypot(C.x - V.x, C.y - V.y) || 1;
     var arcR = Math.min(18, Math.max(10, distVC * 0.22));
     var sweep = ((a2 - a1 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
-    var thetaInk = "#0f7a7a";
+    var thetaInk = TRI.line;
     svg.appendChild(E("path", {
       d: "M " + (V.x + arcR * Math.cos(a1)) + " " + (V.y + arcR * Math.sin(a1)) +
         " A " + arcR + " " + arcR + " 0 0 " + (sweep > 0 ? 1 : 0) + " " +
@@ -279,11 +329,11 @@
     if (opts.showSides) {
       svg.appendChild(E("text", {
         x: (C.x + A.x) / 2 + ux * (-10), y: (C.y + A.y) / 2 + uy * (-10),
-        fill: "#34d399", "font-size": 12, "font-weight": 700, "text-anchor": "middle",
+        fill: TRI.ink, "font-size": 12, "font-weight": 700, "text-anchor": "middle",
       }, opts.sideA || "leg"));
       svg.appendChild(E("text", {
         x: (C.x + B.x) / 2 + vx * (-10), y: (C.y + B.y) / 2 + vy * (-10),
-        fill: "#f472b6", "font-size": 12, "font-weight": 700, "text-anchor": "middle",
+        fill: TRI.ink, "font-size": 12, "font-weight": 700, "text-anchor": "middle",
       }, opts.sideB || "leg"));
     }
 
@@ -296,7 +346,7 @@
         var px = (-dy / len) * 8, py = (dx / len) * 8;
         svg.appendChild(E("line", {
           x1: mx - px, y1: my - py, x2: mx + px, y2: my + py,
-          stroke: "#059669", "stroke-width": 2.8, "stroke-linecap": "round",
+          stroke: TRI.line, "stroke-width": 2.8, "stroke-linecap": "round",
         }));
       }
       tick(C, A);
@@ -304,11 +354,16 @@
     }
 
     if (opts.draggable) {
-      [["C", C, "#5a6b74"], ["A", A, "#d97706"], ["B", B, "#d97706"]].forEach(function (h) {
+      [["C", C], ["A", A], ["B", B]].forEach(function (h) {
         svg.appendChild(E("circle", {
-          cx: h[1].x, cy: h[1].y, r: 9,
-          fill: h[2], stroke: "#fff", "stroke-width": 2,
+          cx: h[1].x, cy: h[1].y, r: 14,
+          fill: "transparent",
           "data-h": h[0], style: "cursor:grab",
+        }));
+        svg.appendChild(E("circle", {
+          cx: h[1].x, cy: h[1].y, r: 5,
+          fill: TRI.vertex, stroke: "#fff", "stroke-width": 1.4,
+          "data-h": h[0], style: "cursor:grab;pointer-events:none",
         }));
       });
     }
@@ -420,7 +475,7 @@
 
     if (iso.step === 0) {
       body.innerHTML =
-        '<p class="hint-sm">Drag <strong>any vertex</strong> — rotate, stretch, move. The right angle at the grey corner never breaks. Make each triangle isosceles (equal legs). The three just need to <strong>not be identical</strong> (size or rotation).</p>' +
+        '<p class="hint-sm">Drag <strong>any vertex</strong> — rotate, stretch, move. The right angle never breaks. Make each triangle isosceles (equal legs). The three just need to <strong>not be identical</strong> (size or rotation).</p>' +
         '<div class="tri-row" id="iso-row">' +
         [0, 1, 2].map(function (i) {
           return '<div class="tri-card" id="iso-card-' + i + '">' +
@@ -581,12 +636,10 @@
       drawFreeRight(svg, t, {
         draggable: true,
         thetaAt: "A",
-        fill: "rgba(217,119,6,.16)",
-        stroke: "#d97706",
       });
       // live lengths OUTSIDE the triangle, small type
       var F = fitOf(t);
-      function edgeLabel(p1, p2, other, text, color) {
+      function edgeLabel(p1, p2, other, text) {
         var mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
         var dx = p2.x - p1.x, dy = p2.y - p1.y;
         var len = Math.hypot(dx, dy) || 1;
@@ -596,13 +649,13 @@
         var y = clamp(my + ny * 12, 12, BOX - 12);
         svg.appendChild(E("text", {
           x: x, y: y,
-          fill: color, "font-size": 10, "font-weight": 700, "text-anchor": "middle",
+          fill: TRI.ink, "font-size": 10, "font-weight": 700, "text-anchor": "middle",
           "dominant-baseline": "middle",
-          stroke: "#fffefb", "stroke-width": 2.5, "paint-order": "stroke fill",
+          stroke: "#fff", "stroke-width": 2.5, "paint-order": "stroke fill",
         }, text));
       }
-      edgeLabel(F.C, F.B, F.A, fmt(opp / 40, 2), "#f472b6"); // opposite
-      edgeLabel(F.A, F.B, F.C, fmt(hyp / 40, 2), "#c4b5fd"); // hypotenuse
+      edgeLabel(F.C, F.B, F.A, "opp " + fmt(opp / 40, 2));
+      edgeLabel(F.A, F.B, F.C, "hyp " + fmt(hyp / 40, 2));
     });
     var next = $("half-next");
     var st = $("half-status");
@@ -612,7 +665,7 @@
         st.className = "status-line" + (halfCanNext() ? " ok" : "");
         st.textContent = halfCanNext()
           ? "All three have opp/hyp = 1/2. Next unlocked."
-          : "Pink = opposite · purple = hypotenuse. Drag until opp/hyp = 1/2 on each card.";
+          : "Numbers on the sides: opposite and hypotenuse. Drag until opp/hyp = 1/2 on each card.";
       }
     }
   }
@@ -678,11 +731,9 @@
         // Same triangles as step 0 — only thetaAt flips from A → B
         drawFreeRight(svg, t, {
           thetaAt: "B",
-          fill: "rgba(217,119,6,.16)",
-          stroke: "#d97706",
         });
         var F = fitOf(t);
-        function edgeLabel(p1, p2, other, text, color) {
+        function edgeLabel(p1, p2, other, text) {
           var mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
           var dx = p2.x - p1.x, dy = p2.y - p1.y;
           var len = Math.hypot(dx, dy) || 1;
@@ -692,14 +743,14 @@
           var y = clamp(my + ny * 12, 12, BOX - 12);
           svg.appendChild(E("text", {
             x: x, y: y,
-            fill: color, "font-size": 10, "font-weight": 700, "text-anchor": "middle",
+            fill: TRI.ink, "font-size": 10, "font-weight": 700, "text-anchor": "middle",
             "dominant-baseline": "middle",
-            stroke: "#fffefb", "stroke-width": 2.5, "paint-order": "stroke fill",
+            stroke: "#fff", "stroke-width": 2.5, "paint-order": "stroke fill",
           }, text));
         }
-        edgeLabel(F.C, F.A, F.B, fmt(adj / 40, 2), "#34d399"); // adjacent (to old θ)
-        edgeLabel(F.C, F.B, F.A, fmt(opp / 40, 2), "#f472b6"); // opposite (to old θ)
-        edgeLabel(F.A, F.B, F.C, fmt(hyp / 40, 2), "#c4b5fd"); // hypotenuse
+        edgeLabel(F.C, F.A, F.B, "adj " + fmt(adj / 40, 2));
+        edgeLabel(F.C, F.B, F.A, "opp " + fmt(opp / 40, 2));
+        edgeLabel(F.A, F.B, F.C, "hyp " + fmt(hyp / 40, 2));
       });
     } else {
       next.disabled = true;
@@ -1217,7 +1268,7 @@
     var baseFn = kind === "sin"
       ? function (d) { return Math.sin(rad(d)); }
       : function (d) { return Math.cos(rad(d)); };
-    var stroke = kind === "sin" ? "#38bdf8" : "#f472b6";
+    var stroke = kind === "sin" ? CHART.a : CHART.b;
     if (squared) {
       /* Ghost of Step 1 curve — same graph, before squaring */
       svg.appendChild(E("path", {
@@ -1288,11 +1339,11 @@
     svg._idS = S;
     var s2 = function (d) { var v = Math.sin(rad(d)); return v * v; };
     var c2 = function (d) { var v = Math.cos(rad(d)); return v * v; };
-    svg.appendChild(E("path", { d: curvePath(s2, S), fill: "none", stroke: "#38bdf8", "stroke-width": 2.4 }));
-    svg.appendChild(E("path", { d: curvePath(c2, S), fill: "none", stroke: "#f472b6", "stroke-width": 2.4 }));
+    svg.appendChild(E("path", { d: curvePath(s2, S), fill: "none", stroke: CHART.a, "stroke-width": 2.4 }));
+    svg.appendChild(E("path", { d: curvePath(c2, S), fill: "none", stroke: CHART.b, "stroke-width": 2.4 }));
     svg.appendChild(E("line", {
       x1: S.x0, y1: S.yS(1), x2: S.x1, y2: S.yS(1),
-      stroke: "#059669", "stroke-width": 1.6, "stroke-dasharray": "5 4",
+      stroke: CHART.guide, "stroke-width": 1.6, "stroke-dasharray": "5 4",
     }));
     var x = idn.x, a = s2(x), b = c2(x), mid = (a + b) / 2, sum = a + b;
     var xs = S.xS(x);
@@ -1300,29 +1351,29 @@
     var yBase = S.yS(0), yA = S.yS(a), yTop = S.yS(sum);
     svg.appendChild(E("line", {
       x1: xs, y1: yBase, x2: xs, y2: yA,
-      stroke: "#38bdf8", "stroke-width": 10, "stroke-linecap": "butt", opacity: "0.9",
+      stroke: CHART.a, "stroke-width": 10, "stroke-linecap": "butt", opacity: "0.9",
       "data-id-drag": "1", style: "cursor:ew-resize",
     }));
     svg.appendChild(E("line", {
       x1: xs, y1: yA, x2: xs, y2: yTop,
-      stroke: "#f472b6", "stroke-width": 10, "stroke-linecap": "butt", opacity: "0.9",
+      stroke: CHART.b, "stroke-width": 10, "stroke-linecap": "butt", opacity: "0.9",
       "data-id-drag": "1", style: "cursor:ew-resize",
     }));
-    svg.appendChild(E("circle", { cx: xs, cy: S.yS(mid), r: 5, fill: "#fbbf24" }));
-    // large invisible hit target + green handle
+    svg.appendChild(E("circle", { cx: xs, cy: S.yS(mid), r: 5, fill: CHART.point }));
+    // large invisible hit target + handle at sum=1
     svg.appendChild(E("circle", {
       cx: xs, cy: S.yS(sum), r: 22, fill: "transparent",
       "data-id-drag": "1", style: "cursor:ew-resize",
     }));
     svg.appendChild(E("circle", {
-      cx: xs, cy: S.yS(sum), r: 9, fill: "#059669", stroke: "#fff", "stroke-width": 2.5,
+      cx: xs, cy: S.yS(sum), r: 9, fill: CHART.point, stroke: "#fff", "stroke-width": 2.5,
       "data-id-drag": "1", style: "cursor:ew-resize",
     }));
     var ro = $("id-readout");
     if (ro) {
       ro.innerHTML = "At " + K("x=" + x + "^\\circ") + ": " +
         K("\\sin^2 x+\\cos^2 x=" + exactTex(sum)) +
-        " · drag the green handle";
+        " · drag the handle";
     }
     bindIdDrag(svg);
   }
@@ -1361,7 +1412,7 @@
       paintMini("id-cos", "cos", true);
     } else if (idn.step === 2) {
       body.innerHTML =
-        '<p class="hint-sm" style="margin-bottom:6px">Drag the <strong style="color:#16a34a">green</strong> handle (or use the slider). Stack always meets ' +
+        '<p class="hint-sm" style="margin-bottom:6px">Drag the handle (or use the slider). Stack always meets ' +
         K("y=1") + ".</p>" +
         '<div class="slider-row" style="margin:0 0 6px">' +
         '<label for="id-x">x</label>' +
@@ -1369,10 +1420,9 @@
         '<span id="id-x-val">' + idn.x + "°</span></div>" +
         '<svg class="lab-svg-fill" id="id-big" viewBox="0 0 900 300" preserveAspectRatio="none"></svg>' +
         '<p class="point-legend" style="margin-top:4px">' +
-        '<span><span class="dot" style="background:#38bdf8"></span>sin²</span>' +
-        '<span><span class="dot" style="background:#f472b6"></span>cos²</span>' +
-        '<span><span class="dot" style="background:#fbbf24"></span>mid</span>' +
-        '<span><span class="dot" style="background:#059669"></span>sum=1 (drag)</span>' +
+        '<span><span class="dot" style="background:' + CHART.a + '"></span>sin²</span>' +
+        '<span><span class="dot" style="background:' + CHART.b + '"></span>cos²</span>' +
+        '<span><span class="dot" style="background:' + CHART.point + '"></span>points / handle</span>' +
         '<span class="status-line" id="id-readout" style="margin:0 0 0 8px"></span></p>';
       $("id-x").addEventListener("input", function (e) { setIdX(+e.target.value); });
       paintIdBig();
@@ -1420,14 +1470,12 @@
     drawFreeRight(svg, IDTAN_TRI, {
       thetaAt: "A",
       thetaLabel: "x",
-      stroke: "#d97706",
-      fill: "rgba(217,119,6,.16)",
       fitPad: 40,
     });
     var F = fitOf(IDTAN_TRI, 40);
-    triEdgeLabel(svg, F.C, F.A, F.B, "adjacent", "#34d399");
-    triEdgeLabel(svg, F.C, F.B, F.A, "opposite", "#f472b6");
-    triEdgeLabel(svg, F.A, F.B, F.C, "hypotenuse", "#c4b5fd");
+    triEdgeLabel(svg, F.C, F.A, F.B, "adjacent", TRI.ink);
+    triEdgeLabel(svg, F.C, F.B, F.A, "opposite", TRI.ink);
+    triEdgeLabel(svg, F.A, F.B, F.C, "hypotenuse", TRI.ink);
   }
 
   function renderIdTan() {
@@ -1484,13 +1532,412 @@
   /* =========================================================================
    * Part 3 — co-functions (companion angle = 90° − x)
    * ========================================================================= */
-  var coSin = { step: 0, x: 30 };
-  var coTan = { step: 0, x: 30 };
+  var coSin = { step: 0, x: 30, method: "geo", geoStep: 0 };
+  var coTan = { step: 0, x: 30, method: "geo", geoStep: 0 };
   var CO_XMIN = -270, CO_XMAX = 360;
   var CO_W = 750, CO_H = 450; // exact 5:3
   var CO_PAD = 48;
 
   function coCompanion(x) { return 90 - x; }
+
+  /* ─── Part 3 · Geometric explanation: shared rectangle figure ─── */
+  var GEO_W = 520, GEO_H = 340;
+
+  /** kind: "sin" | "tan" — controls which sides are highlighted. */
+  function paintRectGeoFig(svgId, state, kind) {
+    var svg = $(svgId);
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    svg.setAttribute("viewBox", "0 0 " + GEO_W + " " + GEO_H);
+
+    var xDeg = clamp(state.x, 18, 72);
+    var xr = rad(xDeg);
+    var cLen = 248;
+    var b = cLen * Math.cos(xr);
+    var a = cLen * Math.sin(xr);
+    var ox = (GEO_W - b) / 2;
+    var oy = (GEO_H + a) / 2 + 4;
+    var C = { x: ox, y: oy };
+    var D = { x: ox + b, y: oy };
+    var A = { x: ox, y: oy - a };
+    var B = { x: ox + b, y: oy - a };
+    var step = state.geoStep;
+    var ink = TRI.ink;
+    var line = TRI.line;
+    var softA = "rgba(31, 107, 74, 0.18)";
+    var softB = "rgba(61, 126, 166, 0.16)";
+
+    svg.appendChild(E("text", {
+      x: GEO_W / 2, y: 28, fill: ink, "font-size": 18, "font-weight": 800,
+      "text-anchor": "middle",
+    }, "Rectangle"));
+
+    if (step === 1) {
+      svg.appendChild(E("polygon", {
+        points: [B, C, D].map(function (p) { return p.x + "," + p.y; }).join(" "),
+        fill: softA, stroke: "none",
+      }));
+    } else if (step === 2) {
+      svg.appendChild(E("polygon", {
+        points: [A, B, C].map(function (p) { return p.x + "," + p.y; }).join(" "),
+        fill: softB, stroke: "none",
+      }));
+    } else if (step >= 3) {
+      svg.appendChild(E("polygon", {
+        points: [B, C, D].map(function (p) { return p.x + "," + p.y; }).join(" "),
+        fill: softA, stroke: "none",
+      }));
+      svg.appendChild(E("polygon", {
+        points: [A, B, C].map(function (p) { return p.x + "," + p.y; }).join(" "),
+        fill: softB, stroke: "none",
+      }));
+    }
+
+    [[A, B], [B, D], [D, C], [C, A]].forEach(function (seg) {
+      svg.appendChild(E("line", {
+        x1: seg[0].x, y1: seg[0].y, x2: seg[1].x, y2: seg[1].y,
+        stroke: line, "stroke-width": 2.6, "stroke-linecap": "round",
+      }));
+    });
+    svg.appendChild(E("line", {
+      x1: C.x, y1: C.y, x2: B.x, y2: B.y,
+      stroke: line, "stroke-width": 2.2, "stroke-dasharray": "7 5",
+    }));
+
+    function rightMark(corner, pU, pV) {
+      var s = 14;
+      var lu = Math.hypot(pU.x - corner.x, pU.y - corner.y) || 1;
+      var lv = Math.hypot(pV.x - corner.x, pV.y - corner.y) || 1;
+      var ux = (pU.x - corner.x) / lu, uy = (pU.y - corner.y) / lu;
+      var vx = (pV.x - corner.x) / lv, vy = (pV.y - corner.y) / lv;
+      svg.appendChild(E("path", {
+        d: "M " + (corner.x + ux * s) + " " + (corner.y + uy * s) +
+          " L " + (corner.x + ux * s + vx * s) + " " + (corner.y + uy * s + vy * s) +
+          " L " + (corner.x + vx * s) + " " + (corner.y + vy * s),
+        fill: "none", stroke: CHART.guide, "stroke-width": 1.6,
+      }));
+    }
+    rightMark(A, C, B);
+    rightMark(D, C, B);
+
+    // Side highlights differ for sin (a,c) vs tan (a,b)
+    if (kind === "tan") {
+      if (step === 1) {
+        svg.appendChild(E("line", {
+          x1: B.x, y1: B.y, x2: D.x, y2: D.y,
+          stroke: CHART.a, "stroke-width": 4, "stroke-linecap": "round",
+        }));
+        svg.appendChild(E("line", {
+          x1: C.x, y1: C.y, x2: D.x, y2: D.y,
+          stroke: CHART.a, "stroke-width": 4, "stroke-linecap": "round",
+        }));
+      } else if (step === 2) {
+        svg.appendChild(E("line", {
+          x1: A.x, y1: A.y, x2: B.x, y2: B.y,
+          stroke: CHART.point, "stroke-width": 4, "stroke-linecap": "round",
+        }));
+        svg.appendChild(E("line", {
+          x1: A.x, y1: A.y, x2: C.x, y2: C.y,
+          stroke: CHART.point, "stroke-width": 4, "stroke-linecap": "round",
+        }));
+      }
+    } else {
+      if (step === 1) {
+        svg.appendChild(E("line", {
+          x1: B.x, y1: B.y, x2: D.x, y2: D.y,
+          stroke: CHART.a, "stroke-width": 4, "stroke-linecap": "round",
+        }));
+        svg.appendChild(E("line", {
+          x1: C.x, y1: C.y, x2: B.x, y2: B.y,
+          stroke: CHART.a, "stroke-width": 4, "stroke-dasharray": "7 5",
+        }));
+      } else if (step === 2) {
+        svg.appendChild(E("line", {
+          x1: A.x, y1: A.y, x2: C.x, y2: C.y,
+          stroke: CHART.point, "stroke-width": 4, "stroke-linecap": "round",
+        }));
+        svg.appendChild(E("line", {
+          x1: C.x, y1: C.y, x2: B.x, y2: B.y,
+          stroke: CHART.point, "stroke-width": 4, "stroke-dasharray": "7 5",
+        }));
+      }
+    }
+
+    function sideLabel(p1, p2, text, outward) {
+      var mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+      var dx = p2.x - p1.x, dy = p2.y - p1.y;
+      var len = Math.hypot(dx, dy) || 1;
+      var nx = -dy / len, ny = dx / len;
+      var cx = (A.x + B.x + C.x + D.x) / 4, cy = (A.y + B.y + C.y + D.y) / 4;
+      if ((nx * (cx - mx) + ny * (cy - my) > 0) === !outward) { nx = -nx; ny = -ny; }
+      svg.appendChild(E("text", {
+        x: mx + nx * 16, y: my + ny * 16,
+        fill: ink, "font-size": 16, "font-weight": 800, "text-anchor": "middle",
+        "dominant-baseline": "middle",
+      }, text));
+    }
+    sideLabel(A, C, "a", true);
+    sideLabel(B, D, "a", true);
+    sideLabel(A, B, "b", true);
+    sideLabel(C, D, "b", true);
+    sideLabel(C, B, "c", false);
+
+    function vertex(p, lab, dx, dy) {
+      svg.appendChild(E("circle", {
+        cx: p.x, cy: p.y, r: 4.5, fill: CHART.point, stroke: "#fff", "stroke-width": 1.2,
+      }));
+      svg.appendChild(E("text", {
+        x: p.x + dx, y: p.y + dy, fill: ink, "font-size": 15, "font-weight": 800,
+      }, lab));
+    }
+    vertex(A, "A", -16, -6);
+    vertex(B, "B", 8, -6);
+    vertex(C, "C", -16, 18);
+    vertex(D, "D", 8, 18);
+
+    function angleArc(vertex, p1, p2, label, show) {
+      if (!show) return;
+      var a1 = Math.atan2(p1.y - vertex.y, p1.x - vertex.x);
+      var a2 = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
+      var r = 28;
+      var sweep = ((a2 - a1 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
+      svg.appendChild(E("path", {
+        d: "M " + (vertex.x + r * Math.cos(a1)) + " " + (vertex.y + r * Math.sin(a1)) +
+          " A " + r + " " + r + " 0 0 " + (sweep > 0 ? 1 : 0) + " " +
+          (vertex.x + r * Math.cos(a2)) + " " + (vertex.y + r * Math.sin(a2)),
+        fill: "none", stroke: CHART.point, "stroke-width": 2.2,
+      }));
+      var am = a1 + sweep / 2;
+      svg.appendChild(E("text", {
+        x: vertex.x + (r + 18) * Math.cos(am),
+        y: vertex.y + (r + 18) * Math.sin(am),
+        fill: CHART.point, "font-size": 14, "font-weight": 800,
+        "text-anchor": "middle", "dominant-baseline": "middle",
+      }, label));
+    }
+    angleArc(C, D, B, "x", step >= 0);
+    angleArc(C, A, B, "90°−x", step >= 2);
+
+    svg.appendChild(E("circle", {
+      cx: B.x, cy: B.y, r: 11, fill: CHART.point, stroke: "#fff", "stroke-width": 2,
+      "data-geo-drag": "1", style: "cursor:ew-resize",
+    }));
+  }
+
+  function bindRectGeoDrag(svg, state, kind, sliderId, valId, proofId, paintProof) {
+    if (!svg || svg.dataset.geoBound) return;
+    svg.dataset.geoBound = "1";
+    var dragging = false;
+    function fromPtr(e) {
+      var pt = svg.createSVGPoint();
+      pt.x = e.clientX;
+      pt.y = e.clientY;
+      var ctm = svg.getScreenCTM();
+      if (!ctm) return;
+      var p = pt.matrixTransform(ctm.inverse());
+      var xDeg = clamp(state.x, 18, 72);
+      var xr = rad(xDeg);
+      var cLen = 248;
+      var b = cLen * Math.cos(xr);
+      var a = cLen * Math.sin(xr);
+      var ox = (GEO_W - b) / 2;
+      var oy = (GEO_H + a) / 2 + 4;
+      var dx = p.x - ox;
+      var dy = oy - p.y;
+      if (dx < 8) dx = 8;
+      if (dy < 8) dy = 8;
+      state.x = Math.round(clamp(deg(Math.atan2(dy, dx)), 18, 72));
+      var slider = $(sliderId);
+      var val = $(valId);
+      if (slider) slider.value = String(state.x);
+      if (val) val.textContent = state.x + "°";
+      paintRectGeoFig(svg.id, state, kind);
+      paintProof();
+      paintTex($(proofId));
+    }
+    svg.addEventListener("pointerdown", function (e) {
+      if (e.target.getAttribute("data-geo-drag") == null) return;
+      dragging = true;
+      svg.setPointerCapture(e.pointerId);
+      fromPtr(e);
+    });
+    svg.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      fromPtr(e);
+    });
+    svg.addEventListener("pointerup", function () { dragging = false; });
+    svg.addEventListener("pointercancel", function () { dragging = false; });
+  }
+
+  function updateCoGeoProof() {
+    var box = $("co-geo-proof");
+    if (!box) return;
+    var x = clamp(coSin.x, 18, 72);
+    var x2 = 90 - x;
+    var step = coSin.geoStep;
+    function cls(i) {
+      if (i < step) return "proof-step";
+      if (i === step) return "proof-step on";
+      return "proof-step dim";
+    }
+    var html = "";
+    html += '<div class="' + cls(0) + '"><strong>Rectangle ABCD</strong> with diagonal ' +
+      K("CB=c") + ". Drag B (or the slider) to change " + K("x") + ".</div>";
+    html += '<div class="' + cls(1) + '"><strong>Consider ' + K("\\triangle BCD") + "</strong>" +
+      (step >= 1
+        ? '<div class="math-line">' + K("\\sin x=\\dfrac{a}{c}") + "</div>" +
+          "<p style=\"margin:0;font-weight:500\">Opposite to " + K("x") + " is " + K("BD=a") +
+          "; hypotenuse is " + K("CB=c") + ".</p>"
+        : "") +
+      "</div>";
+    html += '<div class="' + cls(2) + '"><strong>Consider ' + K("\\triangle ABC") + "</strong>" +
+      (step >= 2
+        ? '<div class="math-line">' + K("\\cos(90^\\circ-x)=\\dfrac{a}{c}") + "</div>" +
+          "<p style=\"margin:0;font-weight:500\">At C the other acute angle is " +
+          K(x2 + "^\\circ") + ". Adjacent is " + K("AC=a") + "; hypotenuse is " + K("CB=c") + ".</p>"
+        : "") +
+      "</div>";
+    html += '<div class="' + cls(3) + '">' +
+      (step >= 3
+        ? '<div class="math-line">' + K("\\therefore\\;\\sin x=\\cos(90^\\circ-x)") + "</div>" +
+          "<p style=\"margin:0;font-weight:500\">Both equal " + K("a/c") +
+          ". Now " + K("x=" + x + "^\\circ") + ", so " + K("90^\\circ-x=" + x2 + "^\\circ") + ".</p>"
+        : "<strong>Conclusion</strong>") +
+      "</div>";
+    box.innerHTML = html;
+  }
+
+  function updateCoTanGeoProof() {
+    var box = $("co-tan-geo-proof");
+    if (!box) return;
+    var x = clamp(coTan.x, 18, 72);
+    var x2 = 90 - x;
+    var step = coTan.geoStep;
+    function cls(i) {
+      if (i < step) return "proof-step";
+      if (i === step) return "proof-step on";
+      return "proof-step dim";
+    }
+    var html = "";
+    html += '<div class="' + cls(0) + '"><strong>Rectangle ABCD</strong> with diagonal ' +
+      K("CB=c") + ". Drag B (or the slider) to change " + K("x") + ".</div>";
+    html += '<div class="' + cls(1) + '"><strong>Consider ' + K("\\triangle BCD") + "</strong>" +
+      (step >= 1
+        ? '<div class="math-line">' + K("\\tan x=\\dfrac{a}{b}") + "</div>" +
+          "<p style=\"margin:0;font-weight:500\">Opposite to " + K("x") + " is " + K("BD=a") +
+          "; adjacent is " + K("CD=b") + ".</p>"
+        : "") +
+      "</div>";
+    html += '<div class="' + cls(2) + '"><strong>Consider ' + K("\\triangle ABC") + "</strong>" +
+      (step >= 2
+        ? '<div class="math-line">' + K("\\tan(90^\\circ-x)=\\dfrac{b}{a}") + "</div>" +
+          "<p style=\"margin:0;font-weight:500\">At C the other acute angle is " +
+          K(x2 + "^\\circ") + ". Opposite is " + K("AB=b") + "; adjacent is " + K("AC=a") + ".</p>"
+        : "") +
+      "</div>";
+    html += '<div class="' + cls(3) + '">' +
+      (step >= 3
+        ? '<div class="math-line">' + K("\\therefore\\;\\tan(90^\\circ-x)=\\dfrac{1}{\\tan x}") + "</div>" +
+          "<p style=\"margin:0;font-weight:500\">Because " + K("b/a=1/(a/b)") +
+          ". Now " + K("x=" + x + "^\\circ") + ", so " + K("90^\\circ-x=" + x2 + "^\\circ") + ".</p>"
+        : "<strong>Conclusion</strong>") +
+      "</div>";
+    box.innerHTML = html;
+  }
+
+  function renderCoGeo() {
+    var body = $("co-geo-body");
+    if (!body) return;
+    $("co-geo-prev").disabled = coSin.geoStep === 0;
+    $("co-geo-next").disabled = coSin.geoStep === 3;
+    $("co-geo-step-label").textContent = "Step " + (coSin.geoStep + 1) + " / 4";
+    $("co-geo-next").textContent = coSin.geoStep === 3 ? "Done" : "Next →";
+
+    body.innerHTML =
+      '<p class="hint-sm">Same side lengths in both right triangles → the ratios match.</p>' +
+      '<div class="slider-row">' +
+      '<label for="co-geo-x">x</label>' +
+      '<input id="co-geo-x" type="range" min="18" max="72" value="' + clamp(coSin.x, 18, 72) + '">' +
+      '<span id="co-geo-x-val">' + clamp(coSin.x, 18, 72) + "°</span></div>" +
+      '<div class="geo-layout">' +
+      '<div class="geo-fig"><svg id="co-geo-svg" viewBox="0 0 520 340" preserveAspectRatio="xMidYMid meet"></svg></div>' +
+      '<div class="geo-proof box" id="co-geo-proof"></div>' +
+      "</div>";
+
+    $("co-geo-x").addEventListener("input", function (e) {
+      coSin.x = +e.target.value;
+      $("co-geo-x-val").textContent = coSin.x + "°";
+      paintRectGeoFig("co-geo-svg", coSin, "sin");
+      updateCoGeoProof();
+      paintTex($("co-geo-proof"));
+    });
+    paintRectGeoFig("co-geo-svg", coSin, "sin");
+    bindRectGeoDrag($("co-geo-svg"), coSin, "sin", "co-geo-x", "co-geo-x-val", "co-geo-proof", updateCoGeoProof);
+    updateCoGeoProof();
+    paintTex(body);
+  }
+
+  function renderCoTanGeo() {
+    var body = $("co-tan-geo-body");
+    if (!body) return;
+    $("co-tan-geo-prev").disabled = coTan.geoStep === 0;
+    $("co-tan-geo-next").disabled = coTan.geoStep === 3;
+    $("co-tan-geo-step-label").textContent = "Step " + (coTan.geoStep + 1) + " / 4";
+    $("co-tan-geo-next").textContent = coTan.geoStep === 3 ? "Done" : "Next →";
+
+    body.innerHTML =
+      '<p class="hint-sm">Same rectangle — now compare the tangent ratios.</p>' +
+      '<div class="slider-row">' +
+      '<label for="co-tan-geo-x">x</label>' +
+      '<input id="co-tan-geo-x" type="range" min="18" max="72" value="' + clamp(coTan.x, 18, 72) + '">' +
+      '<span id="co-tan-geo-x-val">' + clamp(coTan.x, 18, 72) + "°</span></div>" +
+      '<div class="geo-layout">' +
+      '<div class="geo-fig"><svg id="co-tan-geo-svg" viewBox="0 0 520 340" preserveAspectRatio="xMidYMid meet"></svg></div>' +
+      '<div class="geo-proof box" id="co-tan-geo-proof"></div>' +
+      "</div>";
+
+    $("co-tan-geo-x").addEventListener("input", function (e) {
+      coTan.x = +e.target.value;
+      $("co-tan-geo-x-val").textContent = coTan.x + "°";
+      paintRectGeoFig("co-tan-geo-svg", coTan, "tan");
+      updateCoTanGeoProof();
+      paintTex($("co-tan-geo-proof"));
+    });
+    paintRectGeoFig("co-tan-geo-svg", coTan, "tan");
+    bindRectGeoDrag($("co-tan-geo-svg"), coTan, "tan", "co-tan-geo-x", "co-tan-geo-x-val", "co-tan-geo-proof", updateCoTanGeoProof);
+    updateCoTanGeoProof();
+    paintTex(body);
+  }
+
+  function initCoGeo() {
+    $("co-geo-next").addEventListener("click", function () {
+      if (coSin.geoStep < 3) { coSin.geoStep++; renderCoGeo(); }
+    });
+    $("co-geo-prev").addEventListener("click", function () {
+      if (coSin.geoStep > 0) { coSin.geoStep--; renderCoGeo(); }
+    });
+    $("co-geo-reset").addEventListener("click", function () {
+      coSin.geoStep = 0;
+      coSin.x = 30;
+      renderCoGeo();
+    });
+    renderCoGeo();
+  }
+
+  function initCoTanGeo() {
+    $("co-tan-geo-next").addEventListener("click", function () {
+      if (coTan.geoStep < 3) { coTan.geoStep++; renderCoTanGeo(); }
+    });
+    $("co-tan-geo-prev").addEventListener("click", function () {
+      if (coTan.geoStep > 0) { coTan.geoStep--; renderCoTanGeo(); }
+    });
+    $("co-tan-geo-reset").addEventListener("click", function () {
+      coTan.geoStep = 0;
+      coTan.x = 30;
+      renderCoTanGeo();
+    });
+    renderCoTanGeo();
+  }
 
   function bindCoAnglePick(containerId, presets, state, renderFn) {
     var pick = $(containerId);
@@ -1561,35 +2008,35 @@
     var S = drawAxes(svg, CO_W, CO_H, CO_PAD, -1.15, 1.15, CO_XMIN, CO_XMAX, "chart");
     svg.appendChild(E("path", {
       d: curvePath(function (d) { return Math.sin(rad(d)); }, S),
-      fill: "none", stroke: "#38bdf8", "stroke-width": 2.8,
+      fill: "none", stroke: CHART.a, "stroke-width": 2.8,
     }));
     svg.appendChild(E("path", {
       d: curvePath(function (d) { return Math.cos(rad(d)); }, S),
-      fill: "none", stroke: "#f472b6", "stroke-width": 2.8,
+      fill: "none", stroke: CHART.b, "stroke-width": 2.8,
     }));
     var x = coSin.x;
     var x2 = coCompanion(x);
-    markCoAxis(svg, S, x, "#fbbf24", x + "\u00b0");
+    markCoAxis(svg, S, x, CHART.point, x + "\u00b0");
     if (coSin.step >= 1) {
-      markCoAxis(svg, S, x2, "#38bdf8", "90\u00b0\u2212" + x + "\u00b0=" + x2 + "\u00b0");
+      markCoAxis(svg, S, x2, CHART.point, "90\u00b0\u2212" + x + "\u00b0=" + x2 + "\u00b0");
     }
-    function mark(d, y, color, lab) {
+    function mark(d, y, lab) {
       var px = S.xS(d), py = S.yS(y);
       svg.appendChild(E("line", {
         x1: px, y1: S.y0, x2: px, y2: py,
-        stroke: color, "stroke-width": 1.4, "stroke-dasharray": "3 3", opacity: "0.75",
+        stroke: CHART.point, "stroke-width": 1.4, "stroke-dasharray": "3 3", opacity: "0.75",
       }));
-      svg.appendChild(E("circle", { cx: px, cy: py, r: 8, fill: color, stroke: "#fff", "stroke-width": 1.4 }));
-      svg.appendChild(E("text", { x: px + 10, y: py - 10, fill: color, "font-size": 18, "font-weight": "700" }, lab));
+      svg.appendChild(E("circle", { cx: px, cy: py, r: 8, fill: CHART.point, stroke: "#fff", "stroke-width": 1.4 }));
+      svg.appendChild(E("text", { x: px + 10, y: py - 10, fill: CHART.point, "font-size": 18, "font-weight": "700" }, lab));
     }
-    mark(x, Math.sin(rad(x)), "#fbbf24", "A");
-    if (coSin.step >= 1) mark(x2, Math.sin(rad(x2)), "#38bdf8", "B");
-    if (coSin.step >= 2) mark(x2, Math.cos(rad(x2)), "#f472b6", "C");
+    mark(x, Math.sin(rad(x)), "A");
+    if (coSin.step >= 1) mark(x2, Math.sin(rad(x2)), "B");
+    if (coSin.step >= 2) mark(x2, Math.cos(rad(x2)), "C");
     if (coSin.step >= 3) {
       var yEq = Math.sin(rad(x));
       svg.appendChild(E("line", {
         x1: S.xS(x), y1: S.yS(yEq), x2: S.xS(x2), y2: S.yS(yEq),
-        stroke: "#059669", "stroke-width": 2.2,
+        stroke: CHART.point, "stroke-width": 2.2,
       }));
     }
   }
@@ -1597,8 +2044,8 @@
   function renderCoSin() {
     var body = $("co-sin-body");
     var tips = [
-      "Pick " + K("x") + ". Point A = " + K("(x,\\sin x)") + " — the yellow tick shows where " + K("x") + " is on the axis.",
-      "Companion angle " + K("90^\\circ-x") + ". The blue tick marks " + K("90^\\circ-x") + " on the axis; B is on sine there.",
+      "Pick " + K("x") + ". Point A = " + K("(x,\\sin x)") + " — the tick shows where " + K("x") + " is on the axis.",
+      "Companion angle " + K("90^\\circ-x") + ". The tick marks " + K("90^\\circ-x") + " on the axis; B is on sine there.",
       "Same angle on cosine: C = " + K("(90^\\circ-x,\\,\\cos(90^\\circ-x))") + ".",
       "C and A share the same y ⇒ " + K("\\cos(90^\\circ-x)=\\sin x") + ".",
     ];
@@ -1612,8 +2059,9 @@
       '<div class="angle-pick" id="co-sin-pick"></div>' +
       '<svg class="lab-svg-fill" id="co-sin-svg" viewBox="0 0 750 450" preserveAspectRatio="xMidYMid meet"></svg>' +
       '<p class="point-legend">' +
-      '<span><span class="dot" style="background:#38bdf8"></span>' + K("\\sin") + "</span>" +
-      '<span><span class="dot" style="background:#f472b6"></span>' + K("\\cos") + "</span>" +
+      '<span><span class="dot" style="background:' + CHART.a + '"></span>' + K("\\sin") + "</span>" +
+      '<span><span class="dot" style="background:' + CHART.b + '"></span>' + K("\\cos") + "</span>" +
+      '<span><span class="dot" style="background:' + CHART.point + '"></span>points</span>' +
       "</p>" +
       '<p class="status-line" id="co-sin-note"></p>';
 
@@ -1648,16 +2096,16 @@
       }
       svg.appendChild(E("path", { d: d, fill: "none", stroke: color, "stroke-width": width || 2.8 }));
     }
-    plot(function (d) { return Math.tan(rad(d)); }, "#38bdf8", 2.8);
+    plot(function (d) { return Math.tan(rad(d)); }, CHART.a, 2.8);
     plot(function (d) {
       var t = Math.tan(rad(d));
       return t === 0 ? Infinity : 1 / t;
-    }, "#f472b6", 2.8);
+    }, CHART.b, 2.8);
     [-270, -90, 90, 270].forEach(function (a) {
       if (a < CO_XMIN || a > CO_XMAX) return;
       svg.appendChild(E("line", {
         x1: S.xS(a), y1: S.y1, x2: S.xS(a), y2: S.y0,
-        stroke: "#64748b", "stroke-width": 1, "stroke-dasharray": "2 3",
+        stroke: CHART.guide, "stroke-width": 1, "stroke-dasharray": "2 3",
       }));
     });
     var x = coTan.x;
@@ -1665,32 +2113,32 @@
     var t = Math.tan(rad(x));
     var t2 = Math.tan(rad(x2));
     var invT = 1 / t;
-    markCoAxis(svg, S, x, "#fbbf24", x + "\u00b0");
+    markCoAxis(svg, S, x, CHART.point, x + "\u00b0");
     if (coTan.step >= 1) {
-      markCoAxis(svg, S, x2, "#38bdf8", "90\u00b0\u2212" + x + "\u00b0=" + x2 + "\u00b0");
+      markCoAxis(svg, S, x2, CHART.point, "90\u00b0\u2212" + x + "\u00b0=" + x2 + "\u00b0");
     }
-    function mark(d, y, color, lab) {
+    function mark(d, y, lab) {
       if (!isFinite(y) || Math.abs(y) > 3.4) return;
       var py = S.yS(clamp(y, -3.2, 3.2));
       svg.appendChild(E("line", {
         x1: S.xS(d), y1: S.y0, x2: S.xS(d), y2: py,
-        stroke: color, "stroke-width": 1.4, "stroke-dasharray": "3 3", opacity: "0.75",
+        stroke: CHART.point, "stroke-width": 1.4, "stroke-dasharray": "3 3", opacity: "0.75",
       }));
       svg.appendChild(E("circle", {
-        cx: S.xS(d), cy: py, r: 7, fill: color, stroke: "#fff", "stroke-width": 1.2,
+        cx: S.xS(d), cy: py, r: 7, fill: CHART.point, stroke: "#fff", "stroke-width": 1.2,
       }));
       svg.appendChild(E("text", {
-        x: S.xS(d) + 10, y: py - 10, fill: color, "font-size": 18, "font-weight": "700",
+        x: S.xS(d) + 10, y: py - 10, fill: CHART.point, "font-size": 18, "font-weight": "700",
       }, lab));
     }
-    mark(x, t, "#fbbf24", "A");
-    if (coTan.step >= 1) mark(x2, t2, "#38bdf8", "B");
-    if (coTan.step >= 2) mark(x, invT, "#f472b6", "C");
+    mark(x, t, "A");
+    if (coTan.step >= 1) mark(x2, t2, "B");
+    if (coTan.step >= 2) mark(x, invT, "C");
     if (coTan.step >= 3 && isFinite(t2) && isFinite(invT)) {
       svg.appendChild(E("line", {
         x1: S.xS(x2), y1: S.yS(clamp(t2, -3.2, 3.2)),
         x2: S.xS(x), y2: S.yS(clamp(invT, -3.2, 3.2)),
-        stroke: "#059669", "stroke-width": 2.2,
+        stroke: CHART.point, "stroke-width": 2.2,
       }));
     }
   }
@@ -1698,9 +2146,9 @@
   function renderCoTan() {
     var body = $("co-tan-body");
     var tips = [
-      "Pick " + K("x") + ". A = " + K("(x,\\tan x)") + " — yellow tick = where " + K("x") + " sits on the axis.",
-      "Companion angle " + K("90^\\circ-x") + ". Blue tick shows " + K("90^\\circ-x") + " on the axis; B is on " + K("\\tan") + " there.",
-      "C = " + K("\\bigl(x,\\tfrac{1}{\\tan x}\\bigr)") + " on the pink " + K("1/\\tan") + " curve (same x as A).",
+      "Pick " + K("x") + ". A = " + K("(x,\\tan x)") + " — the tick shows where " + K("x") + " sits on the axis.",
+      "Companion angle " + K("90^\\circ-x") + ". The tick shows " + K("90^\\circ-x") + " on the axis; B is on " + K("\\tan") + " there.",
+      "C = " + K("\\bigl(x,\\tfrac{1}{\\tan x}\\bigr)") + " on the " + K("1/\\tan") + " curve (same x as A).",
       "B and C match ⇒ " + K("\\tan(90^\\circ-x)=\\dfrac{1}{\\tan x}") + ".",
     ];
     $("co-tan-prev").disabled = coTan.step === 0;
@@ -1713,8 +2161,9 @@
       '<div class="angle-pick" id="co-tan-pick"></div>' +
       '<svg class="lab-svg-fill" id="co-tan-svg" viewBox="0 0 750 450" preserveAspectRatio="xMidYMid meet"></svg>' +
       '<p class="point-legend">' +
-      '<span><span class="dot" style="background:#38bdf8"></span>' + K("\\tan x") + "</span>" +
-      '<span><span class="dot" style="background:#f472b6"></span>' + K("1/\\tan x") + "</span>" +
+      '<span><span class="dot" style="background:' + CHART.a + '"></span>' + K("\\tan x") + "</span>" +
+      '<span><span class="dot" style="background:' + CHART.b + '"></span>' + K("1/\\tan x") + "</span>" +
+      '<span><span class="dot" style="background:' + CHART.point + '"></span>points</span>' +
       "</p>" +
       '<p class="status-line" id="co-tan-note"></p>';
 
@@ -1734,6 +2183,8 @@
   }
 
   function initCo() {
+    initCoGeo();
+    initCoTanGeo();
     $("co-sin-next").addEventListener("click", function () {
       if (coSin.step < 3) { coSin.step++; renderCoSin(); }
     });
@@ -1748,8 +2199,6 @@
       if (coTan.step > 0) { coTan.step--; renderCoTan(); }
     });
     $("co-tan-reset").addEventListener("click", function () { coTan.step = 0; renderCoTan(); });
-    renderCoSin();
-    renderCoTan();
   }
 
   function init() {

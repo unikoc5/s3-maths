@@ -5,9 +5,20 @@
   var SW = 2.5;
   var INK = "#1e2a32";
   var MUTED = "#5a6b74";
-  var ACCENT = "#0f7a7a";
-  var TICK = "#c44b3c";
-  var MARK = "#c47b16";
+  /* Equal lengths = pure red; equal angles & right angles = pure blue. */
+  var TICK = "#ff0000";
+  var ANGLE = "#0000ff";
+  /* Four-centres construction lines + lighter centre dots. */
+  var H_LINE = "#0f7a7a";
+  var H_POINT = "#7ec8c0";
+  var G_LINE = "#6b4423";
+  var G_POINT = "#a67c52";
+  var I_LINE = "#6b7280";
+  var I_POINT = "#a8aeb8";
+  var O_LINE = "#f87171";
+  var O_POINT = "#fbb5b5";
+  var ACCENT = H_LINE;
+  var MARK = ANGLE;
   var VB_W = 500;
   var VB_H = 400;
 
@@ -61,8 +72,8 @@
   };
 
   var PAD = 28;
-  var I_COLOR = "#1a8f6a";
-  var I_LINE = "#6b5cbf";
+  var I_COLOR = I_POINT;
+  var I_LINE_COL = I_LINE;
 
   var CONG = [
     { id: "SSS", label: "SSS", cap: "**SSS** — three pairs of equal sides (same tick marks) ⇒ congruent." },
@@ -140,9 +151,16 @@
     });
   }
   function dashedSeg(p, q, col, w) {
-    var el = seg(p, q, col, w || 1.8);
+    var el = seg(p, q, col, w || SW);
     el.setAttribute("stroke-dasharray", "8 6");
     el.setAttribute("stroke-linecap", "butt");
+    return el;
+  }
+  /** Round-dot dashed — only for extending a triangle side beyond a vertex. */
+  function dottedSeg(p, q, col, w) {
+    var el = seg(p, q, col, w || 1.8);
+    el.setAttribute("stroke-dasharray", "0.01 9");
+    el.setAttribute("stroke-linecap", "round");
     return el;
   }
   function dot(p, col, r) {
@@ -190,7 +208,7 @@
     var c = { x: V.x + u2.x * size, y: V.y + u2.y * size };
     return E("polyline", {
       points: [a.x, a.y, b.x, b.y, c.x, c.y].join(" "),
-      fill: "none", stroke: MARK, "stroke-width": 1.8,
+      fill: "none", stroke: ANGLE, "stroke-width": 1.8,
     });
   }
 
@@ -213,7 +231,7 @@
       var r = baseR + k * 5;
       g.appendChild(E("path", {
         d: shortArcPath(V, a1, a2, r),
-        fill: "none", stroke: MARK, "stroke-width": 1.6,
+        fill: "none", stroke: ANGLE, "stroke-width": 1.6,
       }));
     }
     return g;
@@ -229,11 +247,11 @@
       var r = baseR + k * 5;
       g.appendChild(E("path", {
         d: shortArcPath(V, aP, aI, r),
-        fill: "none", stroke: MARK, "stroke-width": 1.6,
+        fill: "none", stroke: ANGLE, "stroke-width": 1.6,
       }));
       g.appendChild(E("path", {
         d: shortArcPath(V, aI, aQ, r),
-        fill: "none", stroke: MARK, "stroke-width": 1.6,
+        fill: "none", stroke: ANGLE, "stroke-width": 1.6,
       }));
     }
     return g;
@@ -509,11 +527,11 @@
     });
   }
 
-  /** Dashed extension of side BC to altitude foot when foot lies outside the segment. */
+  /** Dotted extension of side BC to altitude foot when foot lies outside the segment. */
   function drawSideExtensionToFoot(g, B, C, F) {
     if (F.t >= -0.02 && F.t <= 1.02) return;
-    if (F.t < 0) g.appendChild(dashedSeg(B, F, "#94a3b8", 1.8));
-    else g.appendChild(dashedSeg(C, F, "#94a3b8", 1.8));
+    if (F.t < 0) g.appendChild(dottedSeg(B, F, "#94a3b8", 1.8));
+    else g.appendChild(dottedSeg(C, F, "#94a3b8", 1.8));
   }
 
   /**
@@ -649,10 +667,10 @@
           var tMin = Math.min(0, Math.min(tF, tH));
           var p0 = { x: v.x + u.x * tMin, y: v.y + u.y * tMin };
           var p1 = { x: v.x + u.x * tMax, y: v.y + u.y * tMax };
-          svg.appendChild(seg(p0, p1, ACCENT));
+          svg.appendChild(dashedSeg(p0, p1, H_LINE));
           altLines.push([p0, p1]);
         } else {
-          svg.appendChild(seg(v, F, ACCENT));
+          svg.appendChild(dashedSeg(v, F, H_LINE));
           altLines.push([v, F]);
         }
         svg.appendChild(dot(F, MUTED, 3.5));
@@ -660,8 +678,8 @@
       });
       drawSideEqualityMarks(svg, verts);
       if (H) {
-        svg.appendChild(dot(H, "#2dd4bf", 6));
-        centreLabel(svg, H, verts, "H", "#2dd4bf", altLines);
+        svg.appendChild(dot(H, H_POINT, 7));
+        centreLabel(svg, H, verts, "H", H_LINE, altLines);
       }
       setPlacement("altitude", kind, H, verts);
     }
@@ -676,7 +694,7 @@
         var p2 = verts[opp[1]];
         var sideIdx = opp[0];
         var M = mid(p1, p2);
-        svg.appendChild(seg(v, M, ACCENT));
+        svg.appendChild(dashedSeg(v, M, G_LINE));
         medLines.push([v, M]);
         svg.appendChild(dot(M, MUTED, 3.5));
         if (sideTicks[sideIdx] > 0) {
@@ -684,8 +702,8 @@
         }
         if (i === 0) svg.appendChild(labelAway(M, c, "D", MUTED, 18));
       });
-      svg.appendChild(dot(G, MARK, 6));
-      centreLabel(svg, G, verts, "G", MARK, medLines);
+      svg.appendChild(dot(G, G_POINT, 7));
+      centreLabel(svg, G, verts, "G", G_LINE, medLines);
       setPlacement("median", kind, G, verts);
     }
 
@@ -698,7 +716,7 @@
         var C = verts[(i + 2) % 3];
         var hit = rayHitOpposite(v, I, B, C);
         var tip = extendThrough(v, hit, 14);
-        svg.appendChild(seg(v, tip, I_LINE));
+        svg.appendChild(dashedSeg(v, tip, I_LINE_COL));
         bisLines.push([v, tip]);
       });
       drawSideEqualityMarks(svg, verts);
@@ -707,8 +725,8 @@
         var C = verts[(i + 2) % 3];
         svg.appendChild(bisectorArcMarks(v, B, C, I, arcPlan[i], 16));
       });
-      svg.appendChild(dot(I, I_COLOR, 7));
-      centreLabel(svg, I, verts, "I", I_COLOR, bisLines);
+      svg.appendChild(dot(I, I_POINT, 7));
+      centreLabel(svg, I, verts, "I", I_LINE_COL, bisLines);
       setPlacement("bisector", kind, I, verts);
     }
 
@@ -730,7 +748,7 @@
         }
         var far = { x: M.x + n.x * len, y: M.y + n.y * len };
         var near = { x: M.x - n.x * 28, y: M.y - n.y * 28 };
-        svg.appendChild(seg(near, far, "#f87171"));
+        svg.appendChild(dashedSeg(near, far, O_LINE));
         perpLines.push([near, far]);
         svg.appendChild(dot(M, MUTED, 3.5));
         svg.appendChild(rightAngle(M, p2, { x: M.x + n.x * 40, y: M.y + n.y * 40 }, 10));
@@ -739,8 +757,8 @@
         }
       });
       if (O) {
-        svg.appendChild(dot(O, "#f87171", 6));
-        centreLabel(svg, O, verts, "O", "#f87171", perpLines);
+        svg.appendChild(dot(O, O_POINT, 7));
+        centreLabel(svg, O, verts, "O", O_LINE, perpLines);
       }
       setPlacement("perp", kind, O, verts);
     }

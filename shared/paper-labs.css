@@ -1,6 +1,6 @@
 /* Paper-lab look — light canvas, soft motion. Content unchanged. */
 .paper-labs {
-  --lab-paper: #fffaf3;
+  --lab-paper: #f4f7fb;
   --lab-ink: #1e2a32;
 }
 
@@ -16,7 +16,7 @@
 .paper-labs .numline-svg,
 .paper-labs .bar-chart-fixed {
   background:
-    linear-gradient(180deg, #fffefb 0%, var(--lab-paper) 100%) !important;
+    linear-gradient(180deg, #f8fbfe 0%, var(--lab-paper) 100%) !important;
   border: 1px solid rgba(30, 42, 50, 0.1) !important;
   border-radius: 18px !important;
   box-shadow: 0 10px 28px rgba(30, 50, 60, 0.08);
@@ -34,13 +34,13 @@
 }
 
 .paper-labs .tri-card .badge {
-  color: #c44b3c !important;
-  background: rgba(255, 250, 243, 0.92) !important;
+  color: #5c6578 !important;
+  background: rgba(244, 247, 251, 0.92) !important;
   box-shadow: 0 1px 4px rgba(30, 42, 50, 0.08);
 }
 
 .paper-labs .tri-card.ready .badge {
-  color: #0f7a7a !important;
+  color: #234e70 !important;
 }
 
 .paper-labs .curve-box .ttl {
@@ -48,7 +48,7 @@
 }
 
 .paper-labs section.block {
-  background: rgba(255, 250, 243, 0.92) !important;
+  background: rgba(244, 247, 251, 0.92) !important;
   border: 1px solid rgba(30, 42, 50, 0.08) !important;
   box-shadow: 0 12px 32px rgba(30, 50, 60, 0.08);
 }

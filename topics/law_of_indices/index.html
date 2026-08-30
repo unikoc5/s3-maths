@@ -57,12 +57,12 @@
     .formula.formula-locked { display: none; }
 
     .step-frame {
-      display: grid; grid-template-columns: 48px 1fr 48px; gap: 10px;
-      min-height: 200px; padding: 12px; border-radius: 14px;
+      display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 10px;
+      min-width: 0; min-height: 200px; padding: 12px; border-radius: 14px;
       border: 1px solid var(--line); background: var(--surface-2);
     }
     @media (max-width: 640px) {
-      .step-frame { grid-template-columns: 1fr; }
+      .step-frame { grid-template-columns: minmax(0, 1fr); }
       .nav-btn.prev { order: 2; justify-self: start; }
       .nav-btn.next { order: 3; justify-self: end; margin-top: -44px; }
       .step-body { order: 1; }
@@ -74,9 +74,11 @@
     }
     .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
     .nav-btn:disabled { opacity: .35; cursor: not-allowed; }
-    .step-body { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 6px; min-height: 170px; }
+    .step-body { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 6px; min-height: 170px; overflow: hidden; min-width: 0; max-width: 100%; }
     .step-panel { display: none; }
     .step-panel.active { display: block; }
+    .step-track { display: flex; width: 100%; transition: transform 0.35s ease; will-change: transform; }
+    .step-track > .step-panel { display: block; flex: 0 0 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden; }
     .step-label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--glow); }
     .step-title { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.35; }
     .step-text { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
@@ -339,8 +341,10 @@
     }
     .sci-convert-q, .sci-arith-q { text-align: center; font-size: 1.1em; margin: 8px 0 12px; line-height: 1.5; }
   </style>
-  <link rel="stylesheet" href="../../lessons/_shared/lesson.css?v=20260829c">
+  <link rel="stylesheet" href="../../lessons/_shared/lesson.css?v=20260830b">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260829c">
+  <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830b">
 </head>
 <body>
 <header class="topbar">
@@ -350,13 +354,23 @@
     <h1>Law of Indices</h1>
   </div>
   <nav class="main-tabs" aria-label="Lesson sections">
-    <button class="main-tab is-active" type="button" data-tab="tools">Interactive Tools</button>
+    <button class="main-tab is-active" type="button" data-tab="concept">Concept &amp; Formula</button>
+    <button class="main-tab" type="button" data-tab="tools">Interactive Tool</button>
+    <button class="main-tab" type="button" data-tab="games">Games</button>
     <button class="main-tab" type="button" data-tab="comics">Comics</button>
+    <button class="main-tab" type="button" data-tab="summary">Summary</button>
+    <button class="main-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
 </header>
 
 <main class="lesson-main">
-    <section id="panel-tools" class="view is-active">
+    <section id="panel-concept" class="view is-active">
+      <section class="block">
+        <h2>Concept &amp; Formula</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-tools" class="view">
       <div class="subnav" aria-label="Tools">
         <button class="chip active" type="button" data-lab="powers">Powers</button>
         <button class="chip" type="button" data-lab="scientific">Scientific notation</button>
@@ -884,7 +898,30 @@
       </div>
     </section>
 
-    <section id="panel-comics" class="view"></section>
+    <section id="panel-games" class="view">
+      <section class="block">
+        <h2>Games</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-comics" class="view">
+      <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
+      <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+      <div id="comics-stage"></div>
+      <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+    </section>
+    <section id="panel-summary" class="view">
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-quiz" class="view">
+      <section class="block">
+        <h2>Quiz</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
   </main>
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
@@ -892,10 +929,8 @@
   <script defer src="law-of-indices-binary.js?v=20260730-bin8"></script>
   <script defer src="law-of-indices-scientific.js?v=20260810-sci3"></script>
   <script src="comics-manifest.js?v=20260829c"></script>
-  <script src="comics-quiz.js?v=20260829c"></script>
-  <script src="../../shared/comics-quiz-utils.js?v=20260829c"></script>
-  <script src="../../shared/comics-reader.js?v=20260829c"></script>
-  <script src="../../shared/comics-mount.js?v=20260829c"></script>
+  <script src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script src="indices-comics.js?v=20260830-fu"></script>
   <script src="sci-notation-content.js?v=20260828-sel1"></script>
   <script src="sci-notation-tool.js?v=20260828-sel1"></script>
   <script>
@@ -919,20 +954,36 @@
     function initStepper(name) {
       const frame = document.querySelector(`[data-stepper="${name}"]`);
       const dotsWrap = document.querySelector(`[data-dots="${name}"]`);
+      if (!frame) return;
+      let track = frame.querySelector(".step-track");
       const panels = [...frame.querySelectorAll(".step-panel")];
+      if (!track && panels.length) {
+        const host = panels[0].parentNode;
+        host.classList.add("step-viewport");
+        track = document.createElement("div");
+        track.className = "step-track";
+        panels.forEach((p) => track.appendChild(p));
+        host.appendChild(track);
+      }
       const prev = frame.querySelector(".prev");
       const next = frame.querySelector(".next");
       stepperState[name] = 0;
       function show(i) {
         stepperState[name] = Math.max(0, Math.min(panels.length - 1, i));
+        if (track) track.style.transform = `translateX(-${stepperState[name] * 100}%)`;
         panels.forEach((p, idx) => p.classList.toggle("active", idx === stepperState[name]));
-        [...dotsWrap.querySelectorAll("span")].forEach((d, idx) => d.classList.toggle("on", idx === stepperState[name]));
-        prev.disabled = stepperState[name] === 0;
-        next.disabled = stepperState[name] === panels.length - 1;
+        if (dotsWrap) {
+          [...dotsWrap.querySelectorAll("span")].forEach((d, idx) => d.classList.toggle("on", idx === stepperState[name]));
+        }
+        if (prev) prev.disabled = stepperState[name] === 0;
+        if (next) next.disabled = stepperState[name] === panels.length - 1;
         renderKatex(frame);
       }
-      prev.addEventListener("click", () => show(stepperState[name] - 1));
-      next.addEventListener("click", () => show(stepperState[name] + 1));
+      if (prev) prev.addEventListener("click", () => show(stepperState[name] - 1));
+      if (next) next.addEventListener("click", () => show(stepperState[name] + 1));
+      if (dotsWrap) {
+        [...dotsWrap.querySelectorAll("span")].forEach((d, idx) => d.addEventListener("click", () => show(idx)));
+      }
       show(0);
     }
 
@@ -1238,11 +1289,14 @@
       if (name === "tools") {
         const activeLab = document.querySelector(".lab.active");
         if (activeLab) renderKatex(activeLab);
+      } else {
+        const panel = document.getElementById("panel-" + name);
+        if (panel) renderKatex(panel);
       }
     }
     function showLab(name) {
       showTab("tools");
-      document.querySelectorAll(".subnav .chip").forEach((btn) => {
+      document.querySelectorAll(".subnav .chip[data-lab]").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.lab === name);
       });
       document.querySelectorAll(".lab").forEach((lab) => {
@@ -1263,22 +1317,17 @@
       btn.addEventListener("click", () => {
         const name = btn.dataset.tab;
         showTab(name);
-        history.replaceState(null, "", name === "tools" ? "#powers" : "#comics");
         if (name === "tools") {
           const active = document.querySelector(".subnav .chip.active");
-          if (active) history.replaceState(null, "", "#" + active.dataset.lab);
+          history.replaceState(null, "", "#" + (active ? active.dataset.lab : "powers"));
+        } else {
+          history.replaceState(null, "", "#" + name);
         }
       });
     });
-    document.querySelectorAll(".subnav .chip").forEach((btn) => {
+    document.querySelectorAll(".subnav .chip[data-lab]").forEach((btn) => {
       btn.addEventListener("click", () => showLab(btn.dataset.lab));
     });
-
-    if (window.ComicsMount) {
-      window.ComicsMount.init("panel-comics", {
-        intro: "Read the JM24 manga by sub-topic — Rules, Scientific Notation, and Binary.",
-      });
-    }
 
     waitKatex().then(() => {
       ["intro", "twox", "root"].forEach(initStepper);
@@ -1288,11 +1337,13 @@
       if (window.initBinaryLab) window.initBinaryLab();
       if (window.initScientificLab) window.initScientificLab();
       const hash = (location.hash || "").replace("#", "");
-      if (hash === "comics") showTab("comics");
+      const topTabs = ["concept", "games", "comics", "summary", "quiz"];
+      if (topTabs.indexOf(hash) >= 0) showTab(hash);
       else if (hash === "binary") showLab("binary");
       else if (hash === "scientific") showLab("scientific");
       else if (hash === "sci-walk") showLab("sci-walk");
       else if (hash === "powers" || hash === "tools") showLab("powers");
+      else showTab("concept");
     });
   </script>
 </body>

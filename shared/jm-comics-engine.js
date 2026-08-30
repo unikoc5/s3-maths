@@ -1,8 +1,29 @@
 (function () {
   "use strict";
 
+  function looksLikeTex(text) {
+    return /\\[a-zA-Z]/.test(text);
+  }
+
+  function normalizeComicText(text) {
+    if (!text) return text;
+    return String(text).replace(/\$([^$\n]{1,80})\$/g, function (_, inner) {
+      if (/^\d+(\.\d+)?$/.test(inner.trim()) || /\\|[A-Za-z]/.test(inner)) {
+        return "\\(" + inner + "\\)";
+      }
+      return "$" + inner + "$";
+    });
+  }
+
   function renderMixed(el, text) {
     if (!text) return;
+    text = normalizeComicText(text);
+    if (window.katex && looksLikeTex(text) && text.indexOf("\\(") < 0 && text.indexOf("\\[") < 0) {
+      try {
+        katex.render(text, el, { throwOnError: false });
+        return;
+      } catch (e) { /* fall through */ }
+    }
     el.textContent = "";
     text.split(/(\*\*[^*]+\*\*)/).forEach(function (part) {
       if (!part) return;
@@ -26,20 +47,50 @@
     }
   }
 
-  function renderTex(el, text) {
-    if (window.katex && text && text.indexOf("\\") >= 0) {
-      try {
-        katex.render(text, el, { throwOnError: false });
-        return;
-      } catch (e) { /* fall through */ }
+  function pageCaption(comic) {
+    if (window.I18n && window.I18n.lang === "zh" && comic.captionZh) {
+      return comic.captionZh;
     }
-    renderMixed(el, text);
+    return comic.caption || comic.captionEn || "";
   }
+
+  window.jmComicsFromTopic = function (topic, checksById) {
+    var pages = [];
+    if (!topic) return pages;
+    (topic.chapters || []).forEach(function (ch, i) {
+      pages.push({
+        id: ch.id,
+        chip: "P" + (i + 1),
+        title: String(ch.title || "").replace(/^Chapter\s+\d+\s+[—–-]\s+/, ""),
+        chapter: ch.title,
+        image: topic.basePath + ch.file,
+        captionEn: ch.captionEn,
+        captionZh: ch.captionZh,
+        checks: checksById && checksById[ch.id],
+      });
+    });
+    var cards = topic.lawCards || (topic.lawCard ? [topic.lawCard] : []);
+    cards.forEach(function (card, i) {
+      var id = card.id || ("law" + (i + 1));
+      pages.push({
+        id: id,
+        chip: "P" + (pages.length + 1),
+        title: card.title,
+        chapter: "Summary",
+        image: topic.basePath + card.file,
+        checks: checksById && checksById[id],
+      });
+    });
+    return pages;
+  };
 
   window.initJmComics = function (comics) {
     var subnav = document.getElementById("comics-subnav");
     var stage = document.getElementById("comics-stage");
-    if (!subnav || !stage || !comics.length) return;
+    if (!subnav || !stage || !comics || !comics.length) return;
+
+    subnav.innerHTML = "";
+    stage.innerHTML = "";
 
     var state = { index: 0, answers: {} };
     var chips = [];
@@ -67,7 +118,7 @@
       btn.type = "button";
       btn.className = "chip" + (i === 0 ? " active" : "");
       btn.textContent = comic.chip || ("P" + (i + 1));
-      btn.title = comic.chapter + " \u2014 " + comic.title;
+      btn.title = (comic.chapter || "") + " \u2014 " + (comic.title || "");
       btn.addEventListener("click", function () { go(i); });
       subnav.appendChild(btn);
       chips.push(btn);
@@ -147,9 +198,9 @@
       head.className = "comic-page-head";
       var chap = document.createElement("div");
       chap.className = "comic-chapter";
-      chap.textContent = comic.chapter;
+      chap.textContent = comic.chapter || "";
       var title = document.createElement("h2");
-      title.textContent = comic.title;
+      title.textContent = comic.title || "";
       head.appendChild(chap);
       head.appendChild(title);
       article.appendChild(head);
@@ -159,10 +210,18 @@
         fig.className = "comic-figure";
         var img = document.createElement("img");
         img.src = comic.image;
-        img.alt = comic.title + " \u2014 educational comic page";
+        img.alt = (comic.title || "Comic") + " \u2014 educational comic page";
         img.loading = "lazy";
         fig.appendChild(img);
         article.appendChild(fig);
+      }
+
+      var caption = pageCaption(comic);
+      if (caption) {
+        var cap = document.createElement("p");
+        cap.className = "comic-caption";
+        renderMixed(cap, caption);
+        article.appendChild(cap);
       }
 
       if (comic.text) {
@@ -200,5 +259,37 @@
     }
 
     render();
+  };
+
+  window.initJmComicsBundle = function (series) {
+    if (!series || !series.length) return;
+    var seriesNav = document.getElementById("comics-series-nav");
+    var current = 0;
+
+    function show(i) {
+      current = i;
+      if (seriesNav) {
+        [].forEach.call(seriesNav.querySelectorAll(".chip"), function (c, j) {
+          c.classList.toggle("active", j === i);
+        });
+      }
+      window.initJmComics(series[i].comics);
+    }
+
+    if (seriesNav) {
+      seriesNav.innerHTML = "";
+      if (series.length > 1) {
+        series.forEach(function (s, i) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "chip" + (i === 0 ? " active" : "");
+          btn.textContent = s.label;
+          btn.addEventListener("click", function () { show(i); });
+          seriesNav.appendChild(btn);
+        });
+      }
+    }
+
+    show(0);
   };
 })();
