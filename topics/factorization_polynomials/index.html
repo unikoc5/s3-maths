@@ -11,11 +11,14 @@
   <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260828-sel1">
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="jm25-extra.css?v=20260831-merge">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="factorization-tools.js?v=20260806-jm25-fix4"></script>
+  <script defer src="factorization-game.js?v=20260831-merge"></script>
+  <script defer src="factorization-quiz.js?v=20260831-merge"></script>
+  <script defer src="factorization-tools.js?v=20260831-merge"></script>
   <style>
     :root {
       --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
@@ -372,7 +375,8 @@
       user-select: none;
     }
     .page {
-      position: relative; z-index: 1; width: min(960px, 100%);
+      position: relative; z-index: 1; width: min(1100px, 100%);
+      max-width: min(1100px, 100%);
       margin: 0 auto; padding: 28px 22px 80px;
     }
     .back {
@@ -413,7 +417,7 @@
 </head>
 <body>
 <main class="page">
-    <a class="back" href="/s3-maths/#lessons">&larr; S3 Lessons</a>
+    <a class="back" href="../../index.html#lessons">&larr; S3 Lessons</a>
     <p class="eyebrow">JM25 · Lesson 25</p>
     <h1>More about Factorization and Polynomials</h1>
     <p class="lead">Interactive tools and comics for factorization and polynomials.</p>
@@ -428,12 +432,24 @@
     </nav>
 
     <section id="panel-concept" class="mode-panel">
-      <section class="block" style="margin:12px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)">
-        <h2 style="margin:0 0 8px;font-size:18px">Concept &amp; Formula</h2>
-        <p class="hint">Coming soon.</p>
-      </section>
-    </section>
-    <section id="panel-tools" class="mode-panel hidden">
+      <div id="panel-slides">
+        <div class="subnav">
+          <button class="chip active" data-deck="../../slides/factorization/perfect-square-sum/index.html" data-tex="(a+b)^2"></button>
+          <button class="chip" data-deck="../../slides/factorization/perfect-square-diff/index.html" data-tex="(a-b)^2"></button>
+          <button class="chip" data-deck="../../slides/factorization/difference-of-squares/index.html" data-tex="a^2-b^2"></button>
+        </div>
+        <div class="deck-slideshow">
+          <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
+          <div class="deck-wrap">
+            <iframe id="deck-frame" src="../../slides/factorization/perfect-square-sum/index.html" title="Algebraic proof slides"></iframe>
+          </div>
+          <button type="button" class="deck-nav-btn deck-next" id="deck-next" aria-label="Next slide">&rarr;</button>
+        </div>
+        <p class="hint hint-deck-desktop">Use &rarr; / Enter / click to advance, &larr; to go back. Each slide animates the algebraic (expansion) proof.</p>
+        <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide animates the algebraic (expansion) proof.</p>
+        <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide animates the algebraic (expansion) proof.</p>
+      </div>
+    </section>    <section id="panel-tools" class="mode-panel hidden">
     <div class="subnav">
       <button class="chip active" data-tool="sum" data-tex="(a+b)^2"></button>
       <button class="chip" data-tool="diff" data-tex="(a-b)^2"></button>
@@ -564,10 +580,101 @@
     </div>
   </section>
     <section id="panel-games" class="mode-panel hidden">
-      <section class="block" style="margin:12px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)">
-        <h2 style="margin:0 0 8px;font-size:18px">Games</h2>
-        <p class="hint">Coming soon.</p>
-      </section>
+      <div id="panel-game">
+<div class="subnav">
+      <button type="button" class="chip active" data-factor-game="blaster">Factor Blaster</button>
+      <button type="button" class="chip" data-factor-game="snake">Cross Method Snake</button>
+    </div>
+
+    <div id="game-blaster">
+    <div class="game-hud">
+      <div class="hud-item">Score <b id="g-score">0</b></div>
+      <div class="hud-item">Q <b id="g-qnum">0/0</b></div>
+      <div class="hud-item">Accuracy <b id="g-acc">100%</b></div>
+      <div class="hud-item">Streak <b id="g-streak">0</b></div>
+      <label class="hud-speed">Speed <input id="g-speed" type="range" min="1" max="10" value="2"></label>
+      <button id="g-restart" class="hud-toggle" title="restart round">&#8635;</button>
+      <button id="g-sound" class="hud-toggle" title="toggle sound">&#128266;</button>
+    </div>
+    <div id="game-stage">
+      <div id="game-prompt"></div>
+      <div id="game-enemies"></div>
+      <div id="game-cannon"></div>
+      <div id="game-countdown" class="game-countdown hidden"></div>
+      <div id="game-overlay" class="game-overlay">
+        <div class="ov-card" id="ov-setup">
+          <h2>Factor&nbsp;Blaster</h2>
+          <div class="ov-row">
+            <span class="ov-label">Mode</span>
+            <button class="modebtn active" data-mode="expand">Expand</button>
+            <button class="modebtn" data-mode="factorize">Factorize</button>
+            <button class="modebtn" data-mode="identify">Identify (x, y)</button>
+          </div>
+          <p class="ov-note" id="ov-mode-note">Expand: match the factored form to its expansion (4 answers).</p>
+          <div class="ov-row">
+            <span class="ov-label">Questions</span>
+            <input id="ov-count" type="range" min="3" max="15" value="10">
+            <b id="ov-count-val">10</b>
+          </div>
+          <div class="ov-row">
+            <span class="ov-label">Speed</span>
+            <input id="ov-speed" type="range" min="1" max="10" value="2">
+            <b id="ov-speed-val">2</b>
+          </div>
+          <p class="ov-keys ov-keys-desktop"><b>&larr; &rarr;</b> move &nbsp;·&nbsp; <b>Space / &uarr;</b> shoot &nbsp;·&nbsp; or <b>click</b> an answer</p>
+          <p class="ov-keys ov-keys-phone">Tap an answer, or move the cannon and tap to shoot.</p>
+          <button id="g-start" class="play-btn">&#9654; Start</button>
+        </div>
+        <div class="ov-card hidden" id="ov-summary">
+          <h2>Round complete</h2>
+          <p id="sum-stats"></p>
+          <div id="sum-list" class="sum-list"></div>
+          <div class="ov-row ov-center">
+            <button id="g-again" class="play-btn">&#9654; Play again</button>
+            <button id="g-settings" class="play-btn ghost">Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="hint">One shot per question — the round ends after your chosen number of questions, then you get a summary.</p>
+    </div>
+
+    <div id="snake-game" class="snake-wrap hidden">
+      <details class="snake-how">
+        <summary>How to play</summary>
+        <p>Use arrow keys or WASD to guide the snake. Eat the correct factorization for the trinomial shown above the board. There is no time limit. You have 3 lives, clear 5 levels to win, and avoid walls or your own body.</p>
+        <p><b>Normal:</b> eat the correct factor pair in one step. <b>Advanced:</b> first eat the common factor, then eat both correct linear factors.</p>
+      </details>
+      <div class="snake-hud">
+        <div class="snake-hud-stats">
+          <div class="snake-stat">Level <b id="sn-level">1</b>/5</div>
+          <div class="snake-stat">Lives <b id="sn-lives">3</b></div>
+          <div class="snake-stat">Score <b id="sn-score">0</b></div>
+        </div>
+        <div class="snake-modes" aria-label="Snake mode">
+          <button class="snake-mode active" data-snake-mode="normal" type="button">Normal</button>
+          <button class="snake-mode" data-snake-mode="advanced" type="button">Advanced</button>
+        </div>
+        <span id="sn-msg" class="snake-msg"></span>
+      </div>
+      <div id="sn-prompt" class="snake-prompt"></div>
+      <div class="snake-play">
+        <div class="snake-board-wrap">
+          <canvas id="snake-board" width="520" height="520"></canvas>
+        </div>
+        <div class="snake-controls">
+          <button id="sn-start" class="snake-btn" type="button">Start Snake</button>
+          <div class="snake-pad" aria-label="Snake direction controls">
+            <button class="up" data-snake-dir="up" type="button" aria-label="up">&#8593;</button>
+            <button class="left" data-snake-dir="left" type="button" aria-label="left">&#8592;</button>
+            <button class="right" data-snake-dir="right" type="button" aria-label="right">&#8594;</button>
+            <button class="down" data-snake-dir="down" type="button" aria-label="down">&#8595;</button>
+          </div>
+        </div>
+      </div>
+      <p class="hint">Controls: Arrow keys / WASD · Mobile: use the direction pad · Click <b>Start Snake</b> to begin</p>
+    </div>
+        </div>
     </section>
         <section id="panel-comics" class="mode-panel hidden">
           <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
@@ -575,18 +682,75 @@
           <div id="comics-stage"></div>
           <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
         </section>
-    <section id="panel-summary" class="mode-panel hidden">
-      <section class="block" style="margin:12px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)">
-        <h2 style="margin:0 0 8px;font-size:18px">Summary</h2>
-        <p class="hint">Coming soon.</p>
+<section id="panel-summary" class="mode-panel hidden">
+    <div class="subnav" id="summary-style-nav">
+      <button type="button" class="chip active" data-summary-style="style-1">Style 1</button>
+      <button type="button" class="chip" data-summary-style="style-2">Style 2</button>
+      <button type="button" class="chip" data-summary-style="style-3">Style 3</button>
+    </div>
+    <div class="summary-slideshow">
+      <button type="button" class="summary-arrow" id="summary-prev" aria-label="Previous page">&larr;</button>
+      <div class="summary-stage" id="summary-stage">
+        <div class="summary-set" data-summary-set="style-1">
+          <figure class="summary-slide active">
+            <img src="../factorization/summary/style-1/summary-1.png?v=20260708" alt="Factorization summary — Style 1, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/style-1/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="../factorization/summary/style-1/summary-2.png?v=20260708" alt="Factorization summary — Style 1, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/style-1/summary-2.png</code></div>
+          </figure>
+        </div>
+        <div class="summary-set hidden" data-summary-set="style-2">
+          <figure class="summary-slide active">
+            <img src="../factorization/summary/style-2/summary-1.png?v=20260708" alt="Factorization summary — Style 2, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/style-2/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="../factorization/summary/style-2/summary-2.png?v=20260708" alt="Factorization summary — Style 2, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/style-2/summary-2.png</code></div>
+          </figure>
+        </div>
+        <div class="summary-set hidden" data-summary-set="style-3">
+          <figure class="summary-slide active">
+            <img src="../factorization/summary/style-3/summary-1.png?v=20260708" alt="Factorization summary — Style 3, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/style-3/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="../factorization/summary/style-3/summary-2.png?v=20260708" alt="Factorization summary — Style 3, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/style-3/summary-2.png</code></div>
+          </figure>
+        </div>
+      </div>
+      <button type="button" class="summary-arrow" id="summary-next" aria-label="Next page">&rarr;</button>
+    </div>
+    <p class="summary-meta">Page <b id="summary-page-num">1</b> of <b id="summary-page-total">2</b></p>
+    <p class="hint">L01–02 More about Factorization — pick a style, then use &larr; &rarr; or the arrows to switch pages.</p>
+    <div id="summary-zoom-overlay" class="summary-zoom-overlay hidden" role="dialog" aria-modal="true" aria-label="Zoomed summary image">
+      <button type="button" class="summary-zoom-close" aria-label="Close">&times;</button>
+      <img class="summary-zoom-img" alt="">
+    </div>
       </section>
-    </section>
-    <section id="panel-quiz" class="mode-panel hidden">
-      <section class="block" style="margin:12px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)">
-        <h2 style="margin:0 0 8px;font-size:18px">Quiz</h2>
-        <p class="hint">Coming soon.</p>
+<section id="panel-quiz" class="mode-panel hidden">
+    <div class="quiz-wrap">
+      <div class="quiz-progress-wrap" id="quiz-progress-wrap">
+        <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
+        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
+      </div>
+      <div id="quiz-root"></div>
+      <div class="quiz-nav" id="quiz-nav">
+        <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
+        <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
+      </div>
+    </div>
+    <p class="hint">Answer each question, use Next to move on. Submit on the last question to see all results.</p>
       </section>
-    </section>
   </main>
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
@@ -604,21 +768,7 @@
       });
     }
 
-    function showTab(name) {
-      document.querySelectorAll(".tab").forEach((btn) => {
-        btn.classList.toggle("active", btn.dataset.tab === name);
-      });
-      document.querySelectorAll(".mode-panel").forEach((panel) => {
-        panel.classList.toggle("hidden", panel.id !== "panel-" + name);
-      });
-      history.replaceState(null, "", "#" + name);
-      if (name === "tools") renderKatex(document.getElementById("panel-tools"));
-      else renderKatex(document.getElementById("panel-" + name));
-    }
 
-    document.querySelectorAll(".tab").forEach((btn) => {
-      btn.addEventListener("click", () => showTab(btn.dataset.tab));
-    });
 
     document.addEventListener("DOMContentLoaded", () => {
       const tick = () => {
@@ -626,10 +776,7 @@
         else setTimeout(tick, 40);
       };
       tick();
-      const hash = (location.hash || "").replace("#", "");
-      if (hash === "comics") showTab("comics");
-      else if (hash === "tools" || hash === "games" || hash === "summary" || hash === "quiz") showTab(hash);
-      else showTab("concept");
+
     });
   </script>
 </body>

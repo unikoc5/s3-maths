@@ -63,7 +63,7 @@
     stage: null, els: {}, cards: [], slots: [],
     cols: 4, cardW: 0, cardH: 0, gap: 14,
     phase: "idle", round: 1, matched: 0, moves: 0, flipped: [], lock: true, built: false,
-    activeMode: "matchup",
+    activeMode: "runner",
   };
 
   function setGameMode(modeName) {
@@ -73,8 +73,14 @@
     });
     const matchup = document.getElementById("game-matchup");
     const doors = document.getElementById("game-doors");
+    const runner = document.getElementById("game-runner");
     if (matchup) matchup.classList.toggle("hidden", modeName !== "matchup");
     if (doors) doors.classList.toggle("hidden", modeName !== "doors");
+    if (runner) runner.classList.toggle("hidden", modeName !== "runner");
+    if (window.BoundaryRunner) {
+      if (modeName === "runner") window.BoundaryRunner.onShow && window.BoundaryRunner.onShow();
+      else window.BoundaryRunner.onHide && window.BoundaryRunner.onHide();
+    }
     if (modeName === "matchup" && G.built) layout();
     if (modeName === "doors" && window.SignFlipDoors) window.SignFlipDoors.mount();
   }
@@ -285,13 +291,16 @@
     window.IneqGame = {
       onShow() {
         if (G.activeMode === "matchup") layout();
-        else if (window.SignFlipDoors) window.SignFlipDoors.mount();
+        else if (G.activeMode === "doors" && window.SignFlipDoors) window.SignFlipDoors.mount();
+        else if (G.activeMode === "runner" && window.BoundaryRunner && window.BoundaryRunner.onShow) {
+          window.BoundaryRunner.onShow();
+        }
       },
       setMode: setGameMode,
     };
 
     const qGame = new URLSearchParams(location.search).get("game");
-    setGameMode(qGame === "doors" ? "doors" : "matchup");
+    setGameMode(qGame === "doors" ? "doors" : qGame === "matchup" ? "matchup" : "runner");
   }
 
   if (window.katex) window.addEventListener("DOMContentLoaded", init);

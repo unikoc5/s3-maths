@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inequality — KOC S3 Math</title>
+  <title>Inequalities I - JM26</title>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
@@ -13,14 +13,16 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260828-sel1">
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/jm12-chrome.css?v=20260831-merge">
+  <link rel="stylesheet" href="../../shared/jm26-runner.css?v=20260831-merge">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script src="comics-manifest.js?v=20260828-sel1"></script>
   <script src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script src="inequalities-comics.js?v=20260830-fu"></script>
-  <script defer src="inequality-tools.js?v=20260828-eric-jm26"></script>
-  <script defer src="inequality-game.js?v=20260706-quiz2"></script>
+  <script defer src="inequality-tools.js?v=20260831-merge"></script>
+  <script defer src="inequality-game.js?v=20260831-merge"></script>
   <script defer src="sign-flip-doors.js?v=20260706-quiz2"></script>
   <script defer src="inequality-quiz.js?v=20260725-fixes6"></script>
   <style>
@@ -295,7 +297,7 @@
 
     .mg-done { max-width: 920px; margin: 14px auto 0; text-align: center; color: var(--dim); font-size: 13px; }
 
-    #game-matchup.hidden, #game-doors.hidden { display: none; }
+    #game-matchup.hidden, #game-doors.hidden, #game-runner.hidden { display: none; }
 
     /* ── Quiz ── */
     #panel-quiz { overflow: visible; }
@@ -442,15 +444,12 @@
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
-<body>
-  <header>
-    <img class="topic-logo" src="../../shared/uniplus-logo.png" alt="Uni+ logo">
-    <div class="topic-headings">
-      <div class="topic-brand">Uni<span class="plus">+</span> · Mathematics</div>
-      <h1>Inequality</h1>
-      <span class="crumb">KOC S3 Math · Summer 2026 · Inequality</span>
-    </div>
-  </header>
+<body class="jm12">
+<main class="page">
+  <a class="back" href="../../index.html#lessons">&larr; S3 Lessons</a>
+  <p class="eyebrow">JM26 · Lesson 26</p>
+  <h1>Inequalities I</h1>
+  <p class="lead">Classroom manga, quiz, Boundary Runner, and inequality labs.</p>
 
   <nav class="tabs">
     <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
@@ -497,11 +496,54 @@
 
   <section id="panel-game" class="panel hidden">
     <div class="subnav">
-      <button type="button" class="chip active" data-ineq-game="matchup">Match-up Game</button>
+      <button type="button" class="chip active" data-ineq-game="runner">Boundary Runner</button>
+      <button type="button" class="chip" data-ineq-game="matchup">Match-up Game</button>
       <button type="button" class="chip" data-ineq-game="doors">Sign Flip Doors</button>
     </div>
 
-    <div id="game-matchup">
+    <div id="game-runner">
+      <div class="indices-game runner-game">
+        <div class="game-head">
+          <div>
+            <h2>Boundary Runner</h2>
+            <p class="game-intro">Run the platforms, then solve the inequality to open the next gate.</p>
+          </div>
+          <div class="game-hud" id="game-hud">
+            <span>Lives: <strong id="hud-lives">3</strong></span>
+            <span>Progress: <strong id="hud-progress">-</strong></span>
+          </div>
+        </div>
+        <div id="runner-map-view">
+          <div class="runner-map" id="runner-map"></div>
+        </div>
+        <div id="runner-play-view" hidden>
+          <div class="game-wrap">
+            <div class="solve-panel" id="solve-panel"></div>
+            <canvas id="game-canvas" width="900" height="520"></canvas>
+            <div class="game-touch" id="game-touch">
+              <button type="button" id="btn-left" aria-label="Left">&larr;</button>
+              <button type="button" id="btn-jump">Jump</button>
+              <button type="button" id="btn-right" aria-label="Right">&rarr;</button>
+            </div>
+            <div class="game-overlay" id="run-overlay">
+              <div class="overlay-card">
+                <h3 id="run-overlay-title"></h3>
+                <p id="run-overlay-msg"></p>
+                <p id="run-overlay-weakest" class="overlay-weakest" hidden></p>
+                <div class="overlay-actions">
+                  <button type="button" class="reader-nav" id="btn-run-retry">Play again</button>
+                  <button type="button" class="reader-nav runner-next-level" id="btn-run-next" hidden>Next level</button>
+                  <button type="button" class="reader-nav" id="btn-run-map">World map</button>
+                  <button type="button" class="reader-nav overlay-review" id="btn-run-review" hidden>Review comics</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="game-matchup" class="hidden">
       <div class="mg-hud">
         <div class="mg-stat">Round <b id="mg-round">1</b><span style="color:var(--dim)">/3</span>
           <span id="mg-pips"></span></div>
@@ -710,5 +752,15 @@
     <p class="hint">Pre S3 L03 Inequality Quiz — answer each question, use Next to move on. Submit on Q8 to see all results.</p>
   </section>
 
+  <script src="../../js/i18n.js"></script>
+  <script src="../../lessons/jm26/game-questions.js"></script>
+  <script src="../../lessons/jm26/runner-levels.js"></script>
+  <script src="../../lessons/jm26/boundary-runner.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.BoundaryRunner && window.BoundaryRunner.init) window.BoundaryRunner.init();
+    });
+  </script>
+</main>
 </body>
 </html>

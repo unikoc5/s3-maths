@@ -1429,23 +1429,41 @@
   }
 
   function initTabs() {
-    const tabs = document.querySelectorAll("[data-tab]");
+    const tabs = document.querySelectorAll("nav.tabs [data-tab], nav.jm-tabs [data-tab]");
+    const alias = {
+      concept: "concept", slides: "concept",
+      tools: "tools",
+      games: "games", game: "games",
+      comics: "comics",
+      summary: "summary",
+      quiz: "quiz",
+    };
     const panels = {
-      slides: document.getElementById("panel-slides"),
+      concept: document.getElementById("panel-concept") || document.getElementById("panel-slides"),
       tools: document.getElementById("panel-tools"),
-      game: document.getElementById("panel-game"),
+      games: document.getElementById("panel-games") || document.getElementById("panel-game"),
+      comics: document.getElementById("panel-comics"),
       summary: document.getElementById("panel-summary"),
       quiz: document.getElementById("panel-quiz"),
     };
+    function show(name) {
+      const key = alias[name] || name;
+      tabs.forEach((x) => x.classList.toggle("active", (alias[x.dataset.tab] || x.dataset.tab) === key));
+      for (const k in panels) if (panels[k]) panels[k].classList.toggle("hidden", k !== key);
+      if (window.FactGame) { (key === "games" ? window.FactGame.show() : window.FactGame.hide()); }
+    }
     tabs.forEach((t) => t.addEventListener("click", () => {
-      tabs.forEach((x) => x.classList.toggle("active", x === t));
-      for (const k in panels) { if (panels[k]) panels[k].classList.toggle("hidden", k !== t.dataset.tab); }
-      if (window.FactGame) { (t.dataset.tab === "game" ? window.FactGame.show() : window.FactGame.hide()); }
+      const key = alias[t.dataset.tab] || t.dataset.tab;
+      show(key);
+      history.replaceState(null, "", "#" + key);
     }));
+    const hash = (location.hash || "").replace("#", "");
+    if (hash && (alias[hash] || panels[hash])) show(hash);
   }
 
   function initDecks() {
     const frame = document.getElementById("deck-frame");
+    if (!frame) return;
     const btns = document.querySelectorAll("[data-deck]");
     btns.forEach((b) => b.addEventListener("click", () => {
       btns.forEach((x) => x.classList.toggle("active", x === b));

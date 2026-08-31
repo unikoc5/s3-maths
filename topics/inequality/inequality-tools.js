@@ -1004,6 +1004,7 @@
       slides: document.getElementById("panel-slides"),
       tools: document.getElementById("panel-tools"),
       game: document.getElementById("panel-game"),
+      comics: document.getElementById("panel-comics"),
       summary: document.getElementById("panel-summary"),
       quiz: document.getElementById("panel-quiz"),
     };

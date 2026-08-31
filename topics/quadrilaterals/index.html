@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quadrilaterals — JM29</title>
+  <title>Quadrilaterals · JM29</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
@@ -96,15 +96,35 @@
       height: auto;
       vertical-align: middle;
     }
+    .deck-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #0f172a;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .deck-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .deck-advance {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      cursor: pointer;
+    }
+    /* file:// cannot read iframe.Reveal — let clicks reach the deck. */
+    html.file-preview .deck-advance { pointer-events: none; }
+    #reason-subnav { margin-top: -4px; }
+    #reason-subnav.hidden { display: none; }
   </style>
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
-    <a class="jm-back" href="/s3-maths/#lessons">&larr; S3 Lessons</a>
+    <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
     <p class="jm-eyebrow">JM29 · Lesson 29</p>
     <h1>Quadrilaterals</h1>
-    <p class="lead">Drag freely to classify shapes, explore mid-pt. &amp; intercept theorems, then tap a reason to see it in a figure.</p>
+    <p class="lead">Classify the family first. Then open a shape — //gram, rhombus, rectangle, or square — to see its reasons.</p>
         <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
       <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
@@ -115,10 +135,18 @@
     </nav>
 
         <section id="panel-concept" class="jm-panel">
-      <section class="block">
-        <h2>Concept &amp; Formula</h2>
-        <p class="hint">Coming soon.</p>
-      </section>
+      <div class="subnav" id="shape-subnav" aria-label="Shapes">
+        <button class="chip active" type="button" data-shape="classify">Classify shapes</button>
+        <button class="chip" type="button" data-shape="para">//gram</button>
+        <button class="chip" type="button" data-shape="rhombus">Rhombus</button>
+        <button class="chip" type="button" data-shape="rectangle">Rectangle</button>
+        <button class="chip" type="button" data-shape="square">Square</button>
+      </div>
+      <div class="subnav hidden" id="reason-subnav" aria-label="Reasons"></div>
+      <div class="deck-wrap">
+        <iframe id="deck-frame" src="../../slides/quadrilaterals/classify/index.html" title="JM29 concept slides"></iframe>
+        <div class="deck-advance" id="deck-advance" role="presentation"></div>
+      </div>
     </section>
 <section id="panel-tools" class="jm-panel hidden">
       <div class="subnav" id="jm29-lab-nav" aria-label="Tool labs"></div>
@@ -140,9 +168,9 @@
           <p class="hint">If more than one reason works, pick a button. Follow the steps.</p>
           <div class="tool-toggle-row" id="prove-reason-btns"></div>
           <div class="step-frame">
-            <button class="nav-btn prev" type="button" id="prove-prev" aria-label="Previous">‹</button>
+            <button class="nav-btn prev" type="button" id="prove-prev" aria-label="Previous">←</button>
             <div class="step-body" id="prove-body"></div>
-            <button class="nav-btn next" type="button" id="prove-next" aria-label="Next">›</button>
+            <button class="nav-btn next" type="button" id="prove-next" aria-label="Next">→</button>
           </div>
           <div class="step-dots" id="prove-dots"></div>
         </section>
@@ -221,8 +249,139 @@
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="quadrilaterals-comics.js?v=20260830-fu"></script>
   <script>
+    if (location.protocol === "file:") {
+      document.documentElement.classList.add("file-preview");
+    }
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
+      var base = "../../slides/quadrilaterals/";
+      var SHAPES = {
+        classify: { src: base + "classify/index.html", reasons: null },
+        para: {
+          reasons: [
+            { label: "Opp. sides //", src: base + "opp-sides-parallel/index.html" },
+            { label: "Opp. sides equal", src: base + "opp-sides-equal/index.html" },
+            { label: "Opp. angles equal", src: base + "opp-angles/index.html" },
+            { label: "1 pair // and equal", src: base + "one-pair/index.html" },
+            { label: "Diags. bisect", src: base + "diags-bisect/index.html" },
+          ],
+        },
+        rhombus: {
+          reasons: [
+            { label: "All sides equal", src: base + "rhombus-def/index.html" },
+            { label: "Diags. ⊥ and bisect ∠s", src: base + "rhombus-symmetry/index.html" },
+          ],
+        },
+        rectangle: {
+          reasons: [
+            { label: "Four right ∠s", src: base + "rectangle-def/index.html" },
+            { label: "Diags. equal", src: base + "rectangle-diags/index.html" },
+          ],
+        },
+        square: {
+          reasons: [
+            { label: "Rhombus + rectangle", src: base + "square-def/index.html" },
+            { label: "Diags. → 45°", src: base + "square-diags/index.html" },
+          ],
+        },
+      };
+      var frame = document.getElementById("deck-frame");
+      var reasonNav = document.getElementById("reason-subnav");
+      var shapeBtns = document.querySelectorAll("#shape-subnav [data-shape]");
+
+      function loadDeck(src) {
+        if (frame) frame.src = src;
+      }
+
+      function showShape(id) {
+        var spec = SHAPES[id];
+        if (!spec) return;
+        shapeBtns.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-shape") === id);
+        });
+        reasonNav.innerHTML = "";
+        if (!spec.reasons) {
+          reasonNav.classList.add("hidden");
+          loadDeck(spec.src);
+          return;
+        }
+        reasonNav.classList.remove("hidden");
+        spec.reasons.forEach(function (reason, i) {
+          var chip = document.createElement("button");
+          chip.className = "chip" + (i === 0 ? " active" : "");
+          chip.type = "button";
+          chip.textContent = reason.label;
+          chip.addEventListener("click", function () {
+            reasonNav.querySelectorAll(".chip").forEach(function (x) {
+              x.classList.toggle("active", x === chip);
+            });
+            loadDeck(reason.src);
+          });
+          reasonNav.appendChild(chip);
+        });
+        loadDeck(spec.reasons[0].src);
+      }
+
+      shapeBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          showShape(btn.getAttribute("data-shape"));
+        });
+      });
+
+      function conceptOpen() {
+        var panel = document.getElementById("panel-concept");
+        return !!(panel && !panel.classList.contains("hidden"));
+      }
+
+      function deckStep(dir) {
+        var method = dir < 0 ? "prev" : "next";
+        try {
+          var R = frame && frame.contentWindow && frame.contentWindow.Reveal;
+          if (R && R.isReady && R.isReady()) {
+            if (dir < 0) R.prev();
+            else R.next();
+            return;
+          }
+        } catch (err) { /* file:// cannot read iframe.Reveal */ }
+        try {
+          if (frame && frame.contentWindow) {
+            frame.contentWindow.postMessage(
+              JSON.stringify({ method: method, args: [] }),
+              "*"
+            );
+          }
+        } catch (err2) {}
+      }
+
+      var advance = document.getElementById("deck-advance");
+      if (advance) {
+        advance.addEventListener("click", function () {
+          if (conceptOpen()) deckStep(1);
+        });
+      }
+
+      function focusDeck() {
+        try { if (frame) frame.focus(); } catch (err) {}
+      }
+      if (frame) {
+        frame.addEventListener("load", focusDeck);
+        focusDeck();
+      }
+
+      document.addEventListener("keydown", function (e) {
+        if (!conceptOpen()) return;
+        if (e.target && e.target.closest && e.target.closest("input, textarea, select")) return;
+        var isNext = e.code === "Space" || e.key === " " || e.key === "ArrowRight";
+        var isPrev = e.key === "ArrowLeft";
+        if (!isNext && !isPrev) return;
+        if (location.protocol === "file:") {
+          // Parent cannot drive the iframe here. Do not eat the key.
+          focusDeck();
+          return;
+        }
+        e.preventDefault();
+        deckStep(isPrev ? -1 : 1);
+      });
     });
   </script>
 </body>

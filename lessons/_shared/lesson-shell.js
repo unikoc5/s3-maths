@@ -15,6 +15,7 @@
     return document.body.getAttribute("data-lesson") || "jm24";
   }
 
+
   function getTopic() {
     if (typeof window.getTopicById !== "function") return null;
     return window.getTopicById(getLessonId());
@@ -129,7 +130,7 @@
     var app = document.getElementById("app");
     app.innerHTML =
       '<header class="topbar">' +
-      '  <a class="back-link" href="/s3-maths/#lessons" data-i18n="lesson.back">' +
+      '  <a class="back-link" href="../../index.html#lessons" data-i18n="lesson.back">' +
       t("lesson.back", "\u2190 S3 Lessons") +
       "</a>" +
       '  <div class="lesson-brand">' +
@@ -173,6 +174,7 @@
         window.LessonShell.refresh();
       });
     });
+
 
     renderToolsView(topic);
     renderComicsView(topic);
