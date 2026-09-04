@@ -1,16 +1,17 @@
-<!DOCTYPE html>
+Ôªø<!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260904-pale">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quadrilaterals °P JM29</title>
+  <title>Quadrilaterals ¬∑ JM29</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-pale">
-  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-pale">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b">
+  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:
@@ -112,19 +113,19 @@
       z-index: 2;
       cursor: pointer;
     }
-    /* file:// cannot read iframe.Reveal °X let clicks reach the deck. */
+    /* file:// cannot read iframe.Reveal ‚Äî let clicks reach the deck. */
     html.file-preview .deck-advance { pointer-events: none; }
     #reason-subnav { margin-top: -4px; }
     #reason-subnav.hidden { display: none; }
   </style>
-  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-pale">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
     <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
-    <p class="jm-eyebrow">JM29 °P Lesson 29</p>
+    <p class="jm-eyebrow">JM29 &middot; Lesson 29</p>
     <h1>Quadrilaterals</h1>
-    <p class="lead">Classify the family first. Then open a shape °X //gram, rhombus, rectangle, or square °X to see its reasons.</p>
+    <p class="lead">Classify the family first. Then open a shape ‚Äî //gram, rhombus, rectangle, or square ‚Äî to see its reasons.</p>
         <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
       <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
@@ -135,6 +136,8 @@
     </nav>
 
         <section id="panel-concept" class="jm-panel">
+      <section class="block jm-deck-panel">
+
       <div class="subnav" id="shape-subnav" aria-label="Shapes">
         <button class="chip active" type="button" data-shape="classify">Classify shapes</button>
         <button class="chip" type="button" data-shape="para">//gram</button>
@@ -147,16 +150,18 @@
         <iframe id="deck-frame" src="../../slides/quadrilaterals/classify/index.html" title="JM29 concept slides"></iframe>
         <div class="deck-advance" id="deck-advance" role="presentation"></div>
       </div>
+    
+      </section>
     </section>
 <section id="panel-tools" class="jm-panel hidden">
       <div class="subnav" id="jm29-lab-nav" aria-label="Tool labs"></div>
 
       <!-- Lab 1 -->
       <div class="lab active" id="lab-detect">
-        <p class="part-title">Lab 1 °P Shape detector &amp; prove</p>
+        <p class="part-title">Lab 1 ¬∑ Shape detector &amp; prove</p>
         <section class="block">
-          <h2>Drag any corner °X what shape is it?</h2>
-          <p class="hint">Pick a preset, or drag A°VD. // marks use arrowheads; equal lengths use tick groups (same tick count = same length only). Marks are offset so they do not stack.</p>
+          <h2>Drag any corner ‚Äî what shape is it?</h2>
+          <p class="hint">Pick a preset, or drag A‚ÄìD. // marks use arrowheads; equal lengths use tick groups (same tick count = same length only). Marks are offset so they do not stack.</p>
           <div class="tool-toggle-row" id="det-preset-btns"></div>
           <svg class="lab-svg" id="det-svg" viewBox="0 0 500 340" aria-label="Quadrilateral detector"></svg>
           <div class="badge-row" id="det-badges"></div>
@@ -168,15 +173,15 @@
           <p class="hint">If more than one reason works, pick a button. Follow the steps.</p>
           <div class="tool-toggle-row" id="prove-reason-btns"></div>
           <div class="step-frame">
-            <button class="nav-btn prev" type="button" id="prove-prev" aria-label="Previous">°ˆ</button>
+            <button class="nav-btn prev" type="button" id="prove-prev" aria-label="Previous">‚Üê</button>
             <div class="step-body" id="prove-body"></div>
-            <button class="nav-btn next" type="button" id="prove-next" aria-label="Next">°˜</button>
+            <button class="nav-btn next" type="button" id="prove-next" aria-label="Next">‚Üí</button>
           </div>
           <div class="step-dots" id="prove-dots"></div>
         </section>
         <section class="block">
           <h2>Comparison table</h2>
-          <p class="hint">? = must be true for that shape. The row for your current detection is highlighted.</p>
+          <p class="hint">‚úì = must be true for that shape. The row for your current detection is highlighted.</p>
           <div style="overflow-x:auto">
             <table class="diff-table" id="det-table" aria-label="Property comparison"></table>
           </div>
@@ -185,7 +190,7 @@
 
       <!-- Lab 2 -->
       <div class="lab" id="lab-thm">
-        <p class="part-title">Lab 2 °P Mid-pt. thm. &amp; Intercept thm.</p>
+        <p class="part-title">Lab 2 ¬∑ Mid-pt. thm. &amp; Intercept thm.</p>
         <section class="block">
           <h2>Parallel lines playground</h2>
           <p class="hint">Drag near the left end of a green line to move it. Drag blue/purple end-handles to tilt. Mid-pt: match <strong>PB = BC</strong> and <strong>PE = EF</strong>. Intercept: match <strong>AB = BC</strong> (then DE = EF follows).</p>
@@ -202,9 +207,9 @@
 
       <!-- Lab 3 -->
       <div class="lab" id="lab-reasons">
-        <p class="part-title">Lab 3 °P Reason bank</p>
+        <p class="part-title">Lab 3 ¬∑ Reason bank</p>
         <section class="block">
-          <h2>Pick a reason °X see it on a figure</h2>
+          <h2>Pick a reason ‚Äî see it on a figure</h2>
           <p class="hint">Tap a reason code. The frame shows a matching diagram and the wording you write in a proof.</p>
           <div class="tool-toggle-row" id="reason-cat-btns"></div>
           <div class="reason-grid" id="reason-grid"></div>
@@ -269,19 +274,19 @@
         rhombus: {
           reasons: [
             { label: "All sides equal", src: base + "rhombus-def/index.html" },
-            { label: "Diags. °Ê and bisect °Ás", src: base + "rhombus-symmetry/index.html" },
+            { label: "Diags. ‚ä• and bisect ‚à†s", src: base + "rhombus-symmetry/index.html" },
           ],
         },
         rectangle: {
           reasons: [
-            { label: "Four right °Ás", src: base + "rectangle-def/index.html" },
+            { label: "Four right ‚à†s", src: base + "rectangle-def/index.html" },
             { label: "Diags. equal", src: base + "rectangle-diags/index.html" },
           ],
         },
         square: {
           reasons: [
             { label: "Rhombus + rectangle", src: base + "square-def/index.html" },
-            { label: "Diags. °˜ 45¢X", src: base + "square-diags/index.html" },
+            { label: "Diags. ‚Üí 45¬∞", src: base + "square-diags/index.html" },
           ],
         },
       };

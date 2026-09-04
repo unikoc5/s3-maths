@@ -8,9 +8,10 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
-  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260904-pale">
-  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-pale">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-pale">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b">
+  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
@@ -65,7 +66,7 @@
     }
     .chip:hover { color: var(--ink); }
     .chip.active { color: #fff; background: #4FC3F7; border-color: #4FC3F7; }
-    /* Tab 1: slide deck ??height from topic-shell.css */
+    /* Tab 1: slide deck ‚Äî height from topic-shell.css */
     .deck-wrap {
       background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
     }
@@ -112,7 +113,7 @@
     .lg-item .lg-sym { min-width: 40px; }
     .lg-item em { font-style: normal; color: var(--dim); }
 
-    /* ?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä Builder (game) tab ?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä?Ä */
+    /* ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ Builder (game) tab ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ‚îÄ */
     .build-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
     .mode-switch { display: inline-flex; background: var(--panel); border: 1px solid var(--line);
       border-radius: 999px; padding: 4px; gap: 4px; }
@@ -228,7 +229,7 @@
       border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px 9px 13px; cursor: pointer; font: inherit;
       color: var(--ink); transition: all .15s; position: relative; }
     .formula-chip:hover { border-color: var(--a); background: var(--panel2); }
-    .formula-chip::after { content: "??; position: absolute; top: 7px; right: 9px; font-size: 12px;
+    .formula-chip::after { content: "‚ìò"; position: absolute; top: 7px; right: 9px; font-size: 12px;
       color: var(--dim); opacity: 0; transition: opacity .15s; }
     .formula-chip:hover::after { opacity: 1; color: var(--a); }
     .formula-chip .katex { color: var(--ink); }
@@ -262,7 +263,7 @@
     .fx-note { font-size: 14px; color: var(--dim); line-height: 1.6; margin-top: 12px;
       padding-top: 12px; border-top: 1px solid var(--line); }
 
-    /* ?Ä?Ä Quiz ?Ä?Ä */
+    /* ‚îÄ‚îÄ Quiz ‚îÄ‚îÄ */
     .quiz-wrap { max-width: 860px; margin: 0 auto; min-width: 0; }
     .quiz-progress-wrap { margin-bottom: 18px; }
     .quiz-progress-label { font-size: 14px; font-weight: 600; color: var(--dim); margin-bottom: 8px; text-align: center; }
@@ -331,7 +332,7 @@
     .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
     .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
 
-    /* ?Ä?Ä Comics ?Ä?Ä */
+    /* ‚îÄ‚îÄ Comics ‚îÄ‚îÄ */
     #panel-comics { max-width: 920px; margin: 0 auto; }
     #comics-subnav { margin-bottom: 18px; }
     .comic-page { display: grid; gap: 18px; }
@@ -358,14 +359,14 @@
     }
     .comic-chapter-next { margin-left: auto; }
   </style>
-  <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260904-pale">
+  <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
-  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-pale">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
 <body class="paper-labs">
 <main class="jm-page">
   <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
-  <p class="jm-eyebrow">JM32 ¬∑ Lesson 32</p>
+  <p class="jm-eyebrow">JM32 &middot; Lesson 32</p>
   <h1>Areas and Volumes III</h1>
   <p class="lead">Sectors, cylinders, cones, and spheres: tools, builder game, comics, and quiz.</p>
 
@@ -378,10 +379,12 @@
     <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
 <!-- TAB 1: slide decks -->
-  <section id="panel-slides" class="jm-panel panel">
+  <section id="panel-slides" class="jm-panel">
+      <section class="block jm-deck-panel">
+
     <div class="subnav">
-      <button class="chip active" data-deck="../../slides/area_volume/plane-shapes/index.html">2D Shapes ??Area</button>
-      <button class="chip" data-deck="../../slides/area_volume/solids/index.html">3D Solids ??Volume &amp; Surface Area</button>
+      <button class="chip active" data-deck="../../slides/area_volume/plane-shapes/index.html">2D Shapes ‚Äî Area</button>
+      <button class="chip" data-deck="../../slides/area_volume/solids/index.html">3D Solids ‚Äî Volume &amp; Surface Area</button>
     </div>
     <div class="deck-slideshow">
       <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
@@ -393,10 +396,12 @@
     <p class="hint hint-deck-desktop">Use &rarr; / Space to advance, &larr; to go back. Each slide builds the formula step by step from the figure.</p>
     <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide builds the formula step by step from the figure.</p>
     <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the formula step by step from the figure.</p>
-  </section>
+  
+      </section>
+    </section>
 
-  <!-- TAB 2: interactive tool ??similar shapes & solids -->
-  <section id="panel-tools" class="jm-panel panel hidden">
+  <!-- TAB 2: interactive tool ‚Äî similar shapes & solids -->
+  <section id="panel-tools" class="jm-panel hidden">
     <div class="subnav">
       <button class="chip active" data-lab="square">Square + Prism</button>
       <button class="chip" data-lab="triangle">Triangle + Pyramid</button>
@@ -408,33 +413,33 @@
       </div>
       <div class="control-card">
         <h3>Worked steps</h3>
-        <p class="tool-instr">Drag the <b style="color:#FF8A65">orange dots</b> to set <b>L??/b> and <b>L??/b>. Then press <b>Next</b> to find the scale factor <b>k</b>, the <b>area</b> of ?? then its <b>volume</b>.</p>
+        <p class="tool-instr">Drag the <b style="color:#FF8A65">orange dots</b> to set <b>L‚ÇÅ</b> and <b>L‚ÇÇ</b>. Then press <b>Next</b> to find the scale factor <b>k</b>, the <b>area</b> of ‚ë°, then its <b>volume</b>.</p>
         <div id="tool-steps"></div>
         <div class="tool-nav">
-          <button id="step-back" class="nav-btn">??Back</button>
+          <button id="step-back" class="nav-btn">‚Äπ Back</button>
           <span id="step-progress" class="progress-label"></span>
-          <button id="step-next" class="nav-btn">Next ??/button>
+          <button id="step-next" class="nav-btn">Next ‚Ä∫</button>
         </div>
         <button id="tool-reset" class="tool-action">Reset</button>
         <div class="legend">
           <p class="legend-title">Colour key</p>
-          <div class="lg-item"><i class="sw" style="background:var(--a)"></i><span class="lg-sym">??/span><em>original figure (known)</em></div>
-          <div class="lg-item"><i class="sw" style="background:var(--b)"></i><span class="lg-sym">??/span><em>enlarged figure (find it)</em></div>
-          <div class="lg-item"><span class="lg-sym" data-tex="k"></span><em>= length ratio L??: L??/em></div>
+          <div class="lg-item"><i class="sw" style="background:var(--a)"></i><span class="lg-sym">‚ë†</span><em>original figure (known)</em></div>
+          <div class="lg-item"><i class="sw" style="background:var(--b)"></i><span class="lg-sym">‚ë°</span><em>enlarged figure (find it)</em></div>
+          <div class="lg-item"><span class="lg-sym" data-tex="k"></span><em>= length ratio L‚ÇÇ : L‚ÇÅ</em></div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- TAB 3: builder game -->
-  <section id="panel-game" class="jm-panel panel hidden">
+  <section id="panel-game" class="jm-panel hidden">
     <div class="build-top">
       <div class="mode-switch">
         <button class="mode-btn active" data-mode="2d">2D ¬∑ Area</button>
         <button class="mode-btn" data-mode="3d">3D ¬∑ Volume</button>
       </div>
       <p class="build-hint">Build a figure: drag shapes from the palette onto the canvas and resize them.
-        Then <b>drag each formula label</b> onto the shape it belongs to ??a correct match reveals that
+        Then <b>drag each formula label</b> onto the shape it belongs to ‚Äî a correct match reveals that
         shape's working and adds it to the <b>total</b>. Click any shape to peek at its formula.</p>
     </div>
     <div class="build-layout">
@@ -483,18 +488,18 @@
         </div>
       </section>
     </div>
-    <p class="hint">Each formula is interactive ??hover to highlight, click to open its full derivation with a labelled diagram.</p>
+    <p class="hint">Each formula is interactive ‚Äî hover to highlight, click to open its full derivation with a labelled diagram.</p>
   </section>
 
   <!-- TAB: comics story + concept checks (separate from quiz DB) -->
-  <section id="panel-comics" class="jm-panel panel hidden">
+  <section id="panel-comics" class="jm-panel hidden">
     <div class="subnav" id="comics-subnav"></div>
     <div id="comics-stage"></div>
     <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
   </section>
 
   <!-- TAB: quiz -->
-  <section id="panel-quiz" class="jm-panel panel hidden">
+  <section id="panel-quiz" class="jm-panel hidden">
     <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
         <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
@@ -506,7 +511,7 @@
         <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
       </div>
     </div>
-    <p class="hint">Pre S3 L07??9 Area and Volume Quiz ??answer each question, use Next to move on. Submit on Q8 to see all results. Diagrams are on the paper PDF.</p>
+    <p class="hint">Pre S3 L07‚Äì09 Area and Volume Quiz ‚Äî answer each question, use Next to move on. Submit on Q8 to see all results. Diagrams are on the paper PDF.</p>
   </section>
 
 
@@ -518,6 +523,12 @@
     </div>
   </div>
 </main>
+    <script defer src="../../shared/jm-tabs.js?v=20260904-jm28"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.initJmTabs) window.initJmTabs();
+    });
+  </script>
   <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>
 </body>
 </html>

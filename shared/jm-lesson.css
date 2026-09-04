@@ -34,6 +34,20 @@ input, textarea, select, [contenteditable="true"] { caret-color: auto; }
   margin: 0 0 6px; color: var(--glow); font-size: 11px; font-weight: 700;
   letter-spacing: .12em; text-transform: uppercase;
 }
+.jm-page h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.65rem, 4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text);
+  font-family: "Hanken Grotesk", system-ui, sans-serif;
+}
+.jm-page .lead {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
 .jm-tabs {
   display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 0 0 14px;
   border-bottom: 1px solid var(--line);

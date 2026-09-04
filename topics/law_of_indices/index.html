@@ -9,7 +9,7 @@
   <title>JM24 · Law of Indices</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <style>
     :root {
@@ -36,7 +36,7 @@
     }
     .chip:hover { color: var(--accent); border-color: rgba(61, 126, 166, 0.35); }
     .chip.active {
-      color: #fff; background: var(--accent); border-color: var(--accent);
+      color: #fff; background: #4FC3F7; border-color: #4FC3F7;
     }
     .lab { display: none; }
     .lab.active { display: block; }
@@ -195,7 +195,7 @@
     }
     .panel .line.accent { color: var(--accent); }
 
-    /* ?�?� Binary lab ?�?� */
+    /* ── Binary lab ── */
     .bit-row {
       display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
       width: 100%;
@@ -305,7 +305,7 @@
       background: rgba(21, 128, 61, .12); color: var(--good); font-size: 12px; font-weight: 700;
     }
 
-    /* ?�?� Scientific notation lab ?�?� */
+    /* ── Scientific notation lab ── */
     .sci-digit-row {
       display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
       gap: 2px; font-size: clamp(22px, 4vw, 32px); font-weight: 700;
@@ -344,14 +344,15 @@
   <link rel="stylesheet" href="../../lessons/_shared/lesson.css?v=20260830b">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260829c">
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
-  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-pale">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-pale">
-  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-pale">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830b">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b">
+  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">
 </head>
 <body class="paper-labs">
 <main class="jm-page">
     <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
-    <p class="jm-eyebrow">JM24 · Lesson 24</p>
+    <p class="jm-eyebrow">JM24 &middot; Lesson 24</p>
     <h1>Law of Indices</h1>
     <p class="lead">Powers, scientific notation, binary, comics, and quiz.</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
@@ -363,7 +364,7 @@
     <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
 
-    <section id="panel-concept" class="jm-panel active">
+    <section id="panel-concept" class="jm-panel">
       <section class="block">
         <h2>Concept &amp; Formula</h2>
         <p class="hint">Coming soon.</p>
@@ -378,7 +379,7 @@
       </div>
 
       <div class="lab active" id="lab-powers">
-      <p class="lead">Part 1: meaning of a power. Part 2: prove the laws ??product, quotient, power of a power, roots, then zero and negative indices.</p>
+      <p class="lead">Part 1: meaning of a power. Part 2: prove the laws — product, quotient, power of a power, roots, then zero and negative indices.</p>
 
     <p class="part-title">Part 1 · What does a power mean?</p>
 
@@ -386,7 +387,7 @@
       <h2>1A. Powers: square and cube</h2>
       <p class="hint">Use the arrows. The index counts how many identical factors you multiply.</p>
       <div class="step-frame" data-stepper="intro">
-        <button class="nav-btn prev" type="button" aria-label="Previous">??/button>
+        <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
         <div class="step-body">
           <div class="step-panel active" data-step="0">
             <div class="step-label">Step 1 / 3</div>
@@ -411,7 +412,7 @@
             <p class="step-math">\[ x^{n}=\underbrace{x\times x\times\cdots\times x}_{n\text{ times}} \]</p>
           </div>
         </div>
-        <button class="nav-btn next" type="button" aria-label="Next">??/button>
+        <button class="nav-btn next" type="button" aria-label="Next">→</button>
       </div>
       <div class="step-dots" data-dots="intro"><span class="on"></span><span></span><span></span></div>
     </section>
@@ -420,7 +421,7 @@
       <h2>1B. Why \(2x\) is not \(x^{2}\)</h2>
       <p class="hint">Addition changes the coefficient. A power is repeated multiplication.</p>
       <div class="step-frame" data-stepper="twox">
-        <button class="nav-btn prev" type="button" aria-label="Previous">??/button>
+        <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
         <div class="step-body">
           <div class="step-panel active" data-step="0">
             <div class="step-label">Step 1 / 4</div>
@@ -438,7 +439,7 @@
           <div class="step-panel" data-step="2">
             <div class="step-label">Step 3 / 4</div>
             <p class="step-title">If someone claims \(x\times x=2x\)</p>
-            <p class="step-text">Put \(x=3\): then \(x\times x\) is \(3\times 3=9\), but \(2x\) is \(2\times 3=6\). That would force \(3\times 3=6\) ??impossible.</p>
+            <p class="step-text">Put \(x=3\): then \(x\times x\) is \(3\times 3=9\), but \(2x\) is \(2\times 3=6\). That would force \(3\times 3=6\) — impossible.</p>
             <p class="step-math">\[ \text{If }x\times x=2x\text{ and }x=3,\text{ then }3\times 3=6\text{?} \]</p>
           </div>
           <div class="step-panel" data-step="3">
@@ -448,12 +449,12 @@
             <p class="step-math">\[ x\times x=x^{2}\qquad\text{and}\qquad x+x=2x \]</p>
           </div>
         </div>
-        <button class="nav-btn next" type="button" aria-label="Next">??/button>
+        <button class="nav-btn next" type="button" aria-label="Next">→</button>
       </div>
       <div class="step-dots" data-dots="twox"><span class="on"></span><span></span><span></span><span></span></div>
     </section>
 
-    <p class="part-title">Part 2 · Index laws (add ??subtract ??multiply ??divide ??zero ??negative)</p>
+    <p class="part-title">Part 2 · Index laws (add → subtract → multiply → divide → zero → negative)</p>
 
     <!-- + Product -->
     <section class="block">
@@ -478,12 +479,12 @@
       <p class="formula formula-locked" id="formula-prod">\[ x^{2}\times x^{3}=x^{2+3}=x^{5} \]</p>
     </section>
 
-    <!-- ??Quotient -->
+    <!-- − Quotient -->
     <section class="block">
       <h2>3. Quotient (subtract indices) · \(x^{m}\div x^{n}=x^{m-n}\)</h2>
       <p class="hint">
         Write it as a fraction. Double-click to expand, then cancel matching factors across the line.
-        The denominator must not disappear ??when everything cancels, it becomes \(1\).
+        The denominator must not disappear — when everything cancels, it becomes \(1\).
       </p>
       <div class="stage" id="quot-stage">
         <div class="fraction" id="quot-frac">
@@ -514,7 +515,7 @@
       <p class="formula formula-locked" id="formula-quot">\[ \frac{x^{5}}{x^{2}}=x^{5-2}=x^{3} \]</p>
     </section>
 
-    <!-- ? Power of a power -->
+    <!-- × Power of a power -->
     <section class="block">
       <h2>4. Power of a power (multiply indices) · \((x^{m})^{n}=x^{mn}\)</h2>
       <p class="hint">
@@ -546,12 +547,12 @@
     <section class="block">
       <h2>5. Roots / fractional indices (divide indices) · \(x^{\frac{n}{m}}=\sqrt[m]{x^{n}}\)</h2>
       <div class="step-frame" data-stepper="root">
-        <button class="nav-btn prev" type="button" aria-label="Previous">??/button>
+        <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
         <div class="step-body">
           <div class="step-panel active" data-step="0">
             <div class="step-label">Step 1 / 4</div>
             <p class="step-title">What is a square root?</p>
-            <p class="step-text">A square root undoes squaring ??it is the inverse of the 2nd power.</p>
+            <p class="step-text">A square root undoes squaring — it is the inverse of the 2nd power.</p>
             <p class="step-math">\[ \left(\sqrt{a}\right)^{2}=a \]</p>
           </div>
           <div class="step-panel" data-step="1">
@@ -576,7 +577,7 @@
             <p class="step-math">\[ x^{\frac{n}{m}}=\sqrt[m]{x^{n}} \]</p>
           </div>
         </div>
-        <button class="nav-btn next" type="button" aria-label="Next">??/button>
+        <button class="nav-btn next" type="button" aria-label="Next">→</button>
       </div>
       <div class="step-dots" data-dots="root"><span class="on"></span><span></span><span></span><span></span></div>
       <p class="formula">\[ x^{\frac{n}{m}}=\sqrt[m]{x^{n}} \]</p>
@@ -597,7 +598,7 @@
           Any positive power of \(0\) is \(0\): \(0^{n}=0\) (you are multiplying zeros).
         </p>
         <p>
-          So the same ?�proof??pattern would become
+          So the same “proof” pattern would become
           \(\dfrac{0^{n}}{0^{n}}\), which is essentially dividing by \(0\).
         </p>
         <p>
@@ -632,14 +633,14 @@
       </div>
 
       <div class="lab" id="lab-scientific">
-        <p class="lead">Write very large or very small numbers as \(a \times 10^{n}\) with \(1 \le a &lt; 10\). Uses the same index laws as the Powers lab ??multiply adds indices, divide subtracts.</p>
+        <p class="lead">Write very large or very small numbers as \(a \times 10^{n}\) with \(1 \le a &lt; 10\). Uses the same index laws as the Powers lab — multiply adds indices, divide subtracts.</p>
 
         <p class="part-title">Part 1 · Standard form</p>
         <section class="block">
           <h2>1. What is scientific notation?</h2>
-          <p class="hint">Worksheet §1??0: express ordinary numbers in the form \(a \times 10^{n}\).</p>
+          <p class="hint">Worksheet §1–10: express ordinary numbers in the form \(a \times 10^{n}\).</p>
           <div class="step-frame" data-stepper="sci-intro">
-            <button class="nav-btn prev" type="button" aria-label="Previous">??/button>
+            <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
             <div class="step-body">
               <div class="step-panel active" data-step="0">
                 <div class="step-label">Step 1 / 4</div>
@@ -649,16 +650,16 @@
               </div>
               <div class="step-panel" data-step="1">
                 <div class="step-label">Step 2 / 4</div>
-                <p class="step-title">Large numbers ??positive \(n\)</p>
+                <p class="step-title">Large numbers → positive \(n\)</p>
                 <div class="step-examples">
                   <div class="chip-ex">\(102\,000\,000 = 1.02 \times 10^{8}\)</div>
                   <div class="chip-ex">\(9\,410\,000\,000 = 9.41 \times 10^{9}\)</div>
                 </div>
-                <p class="step-text">Move the decimal point left; count how many places ??that is \(n\).</p>
+                <p class="step-text">Move the decimal point left; count how many places → that is \(n\).</p>
               </div>
               <div class="step-panel" data-step="2">
                 <div class="step-label">Step 3 / 4</div>
-                <p class="step-title">Small numbers ??negative \(n\)</p>
+                <p class="step-title">Small numbers → negative \(n\)</p>
                 <div class="step-examples">
                   <div class="chip-ex">\(0.000\,504 = 5.04 \times 10^{-4}\)</div>
                   <div class="chip-ex">\(0.000\,000\,000\,000\,001\,4 = 1.4 \times 10^{-15}\)</div>
@@ -672,7 +673,7 @@
                 <p class="step-math">\[ 2.45 \times 10^{2} \times 10^{6} = 2.45 \times 10^{8} \]</p>
               </div>
             </div>
-            <button class="nav-btn next" type="button" aria-label="Next">??/button>
+            <button class="nav-btn next" type="button" aria-label="Next">→</button>
           </div>
           <div class="step-dots" data-dots="sci-intro"><span class="on"></span><span></span><span></span><span></span></div>
         </section>
@@ -686,9 +687,9 @@
             <p class="sci-preview" id="sci-shift-preview">\(1 \times 10^{0}\)</p>
           </div>
           <div class="sci-shift-controls">
-            <button class="btn" type="button" id="sci-shift-left">??shift decimal left</button>
+            <button class="btn" type="button" id="sci-shift-left">← shift decimal left</button>
             <span class="sci-exp-readout" id="sci-shift-power">Power: \(10^{0}\)</span>
-            <button class="btn" type="button" id="sci-shift-right">shift decimal right ??/button>
+            <button class="btn" type="button" id="sci-shift-right">shift decimal right →</button>
           </div>
           <div class="task-box">
             <h3>Your task</h3>
@@ -705,8 +706,8 @@
         <p class="part-title">Part 3 · Practice</p>
         <section class="block">
           <h2>3. Convert both ways</h2>
-          <p class="hint">Random question: ordinary ??scientific, or scientific ??ordinary (worksheet Q1??0 style).</p>
-          <p class="sci-convert-q" id="sci-convert-q">??/p>
+          <p class="hint">Random question: ordinary → scientific, or scientific → ordinary (worksheet Q1–10 style).</p>
+          <p class="sci-convert-q" id="sci-convert-q">—</p>
           <div class="sci-convert-fields" id="sci-convert-fields"></div>
           <div class="task-box">
             <div class="count-row">
@@ -720,11 +721,11 @@
 
         <p class="part-title">Part 4 · Multiply &amp; divide</p>
         <section class="block">
-          <h2>4. Use index laws (worksheet Q11??2)</h2>
-          <p class="hint">Combine coefficients, then add or subtract the indices ??same rules as \(x^{m} \times x^{n}\) and \(x^{m} \div x^{n}\).</p>
-          <p class="sci-arith-q" id="sci-arith-q">??/p>
+          <h2>4. Use index laws (worksheet Q11–22)</h2>
+          <p class="hint">Combine coefficients, then add or subtract the indices — same rules as \(x^{m} \times x^{n}\) and \(x^{m} \div x^{n}\).</p>
+          <p class="sci-arith-q" id="sci-arith-q">—</p>
           <div class="sci-arith-fields">
-            <label>Answer: <input id="sci-arith-a" type="number" step="any"> ? 10<sup>n</sup>, n = <input id="sci-arith-n" type="number" step="1"></label>
+            <label>Answer: <input id="sci-arith-a" type="number" step="any"> × 10<sup>n</sup>, n = <input id="sci-arith-n" type="number" step="1"></label>
           </div>
           <div class="task-box">
             <div class="count-row">
@@ -738,8 +739,8 @@
 
         <p class="part-title">Part 5 · Compare &amp; order</p>
         <section class="block" id="sci-sort-wrap">
-          <h2>5. Arrange in order (worksheet Q33??4)</h2>
-          <p class="hint" id="sci-sort-label">Drag into ascending order (smallest ??largest).</p>
+          <h2>5. Arrange in order (worksheet Q33–34)</h2>
+          <p class="hint" id="sci-sort-label">Drag into ascending order (smallest → largest).</p>
           <div class="sort-area">
             <div class="sort-pool" id="sci-sort-pool"></div>
             <div class="sort-slots-row" id="sci-sort-slots">
@@ -761,19 +762,19 @@
       </div>
 
       <div class="lab" id="lab-sci-walk">
-        <p class="lead">Guided scientific-notation walkthrough (from the comics lesson) ??step through conversion and arithmetic modules. The Scientific notation lab above stays available for practice drills.</p>
+        <p class="lead">Guided scientific-notation walkthrough (from the comics lesson) — step through conversion and arithmetic modules. The Scientific notation lab above stays available for practice drills.</p>
         <div id="sci-walk-root"></div>
       </div>
 
       <div class="lab" id="lab-binary">
-        <p class="lead">Base 2 uses powers of \(2\) as place values ??the same indices you met in the Powers lab. Flip bits, match targets, and try worksheet-style challenges.</p>
+        <p class="lead">Base 2 uses powers of \(2\) as place values — the same indices you met in the Powers lab. Flip bits, match targets, and try worksheet-style challenges.</p>
 
         <p class="part-title">Part 1 · Base 2 and place value</p>
         <section class="block">
           <h2>1. From indices to binary</h2>
           <p class="hint">Each binary digit is a coefficient times a power of \(2\).</p>
           <div class="step-frame" data-stepper="binary-intro">
-            <button class="nav-btn prev" type="button" aria-label="Previous">??/button>
+            <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
             <div class="step-body">
               <div class="step-panel active" data-step="0">
                 <div class="step-label">Step 1 / 4</div>
@@ -793,7 +794,7 @@
               <div class="step-panel" data-step="2">
                 <div class="step-label">Step 3 / 4</div>
                 <p class="step-title">Only digits \(0\) and \(1\)</p>
-                <p class="step-text">Each place is either ?�on??(\(1\)) or ?�off??(\(0\)) ??like light bulbs in a row.</p>
+                <p class="step-text">Each place is either “on” (\(1\)) or “off” (\(0\)) — like light bulbs in a row.</p>
               </div>
               <div class="step-panel" data-step="3">
                 <div class="step-label">Step 4 / 4</div>
@@ -801,7 +802,7 @@
                 <p class="step-math">\[ \text{In } 10111_{(2)}, \text{ the } 0 \text{ has place value } 2^{3} \]</p>
               </div>
             </div>
-            <button class="nav-btn next" type="button" aria-label="Next">??/button>
+            <button class="nav-btn next" type="button" aria-label="Next">→</button>
           </div>
           <div class="step-dots" data-dots="binary-intro"><span class="on"></span><span></span><span></span><span></span></div>
         </section>
@@ -829,14 +830,14 @@
             <div class="ladder-remainders">
               <p class="hint">Binary (read remainders bottom-up):</p>
               <div class="ladder-steps ladder-binary-row">
-                <div class="ladder-binary-result" id="bin-ladder-digits">??/div>
+                <div class="ladder-binary-result" id="bin-ladder-digits">—</div>
               </div>
             </div>
             <div class="count-row">
               <button class="btn" type="button" id="bin-ladder-step">Divide by 2</button>
               <button class="btn" type="button" id="bin-ladder-reset">New number</button>
             </div>
-            <p class="feedback" id="fb-bin-ladder">Click ?�Divide by 2??for each step.</p>
+            <p class="feedback" id="fb-bin-ladder">Click “Divide by 2” for each step.</p>
             <p class="formula formula-locked" id="formula-bin-ladder">\[ 35_{(10)} = 100011_{(2)} \]</p>
           </div>
         </section>
@@ -1062,7 +1063,7 @@
       const val = Number(document.getElementById("prod-count").value);
       if (val === 5) {
         fb.className = "feedback ok";
-        fb.innerHTML = "Correct ??5 factors, so \\(x^{2}\\times x^{3}=x^{5}=x^{2+3}\\).";
+        fb.innerHTML = "Correct — 5 factors, so \\(x^{2}\\times x^{3}=x^{5}=x^{2+3}\\).";
         revealFormula("formula-prod");
       } else {
         fb.className = "feedback bad";
@@ -1213,7 +1214,7 @@
       const val = Number(document.getElementById("quot-count").value);
       if (val === 3) {
         fb.className = "feedback ok";
-        fb.innerHTML = "Correct ??\\(\\dfrac{x^{5}}{x^{2}}=x^{5-2}=x^{3}\\), so 3 factors remain on top.";
+        fb.innerHTML = "Correct — \\(\\dfrac{x^{5}}{x^{2}}=x^{5-2}=x^{3}\\), so 3 factors remain on top.";
         revealFormula("formula-quot");
       } else {
         fb.className = "feedback bad";
@@ -1264,7 +1265,7 @@
       const val = Number(document.getElementById("pow-count").value);
       if (val === 6) {
         fb.className = "feedback ok";
-        fb.innerHTML = "Correct ??6 factors, so \\((x^{2})^{3}=x^{6}=x^{2\\times 3}\\).";
+        fb.innerHTML = "Correct — 6 factors, so \\((x^{2})^{3}=x^{6}=x^{2\\times 3}\\).";
         revealFormula("formula-pow");
       } else {
         fb.className = "feedback bad";
@@ -1344,6 +1345,12 @@
       else if (hash === "sci-walk") showLab("sci-walk");
       else if (hash === "powers" || hash === "tools") showLab("powers");
       else showTab("concept");
+    });
+  </script>
+    <script defer src="../../shared/jm-tabs.js?v=20260904-jm28"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.initJmTabs) window.initJmTabs();
     });
   </script>
   <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>
