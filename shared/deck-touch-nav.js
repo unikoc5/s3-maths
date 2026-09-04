@@ -61,7 +61,7 @@
   }
 
   function slidesPanelActive() {
-    const panel = document.getElementById("panel-slides");
+    const panel = document.getElementById("panel-concept") || document.getElementById("panel-slides");
     return !!(panel && !panel.classList.contains("hidden"));
   }
 
@@ -99,7 +99,7 @@
   }
 
   function initDeckTouchNav(frame) {
-    const wrap = document.querySelector("#panel-slides .deck-wrap");
+    const wrap = document.querySelector("#panel-concept .deck-wrap, #panel-slides .deck-wrap");
     const prevBtn = document.getElementById("deck-prev");
     const nextBtn = document.getElementById("deck-next");
     if (!wrap || !frame) return;

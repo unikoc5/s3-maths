@@ -1,0 +1,284 @@
+/* JM28 unified control panel — header, tabs, subnav chips, panel blocks */
+
+/* Page container shell — matching JM28 metrics */
+body.paper-labs .jm-page,
+main.jm-page,
+main.page,
+.page {
+  position: relative;
+  z-index: 1;
+  width: min(1100px, 100%) !important;
+  max-width: min(1100px, 100%) !important;
+  margin: 0 auto !important;
+  padding: 28px 22px 80px !important;
+  box-sizing: border-box !important;
+}
+
+/* Back link */
+.jm-page .jm-back,
+.jm-page .back,
+main .jm-back,
+main .back {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin-bottom: 18px !important;
+  padding: 7px 12px !important;
+  border: 1px solid var(--line, rgba(30, 41, 59, 0.12)) !important;
+  border-radius: 8px !important;
+  background: var(--surface-2, #eef2f7) !important;
+  color: var(--text, #1e293b) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: background .15s ease, border-color .15s ease !important;
+}
+
+.jm-page .jm-back:hover,
+.jm-page .back:hover,
+main .jm-back:hover,
+main .back:hover {
+  background: #e2e8f0 !important;
+  border-color: rgba(30, 41, 59, 0.25) !important;
+}
+
+/* Eyebrow header — JM28 style */
+.jm-page .jm-eyebrow,
+.jm-page .eyebrow,
+main .jm-eyebrow,
+main .eyebrow {
+  margin: 0 0 6px !important;
+  color: var(--glow, #29B6F6) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  line-height: 1.3 !important;
+}
+
+/* Page H1 Title — JM28 style */
+.jm-page h1,
+main h1,
+.page h1 {
+  margin: 0 0 8px !important;
+  font-size: clamp(26px, 4vw, 36px) !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -.03em !important;
+  color: var(--text, #1e293b) !important;
+  font-family: "Hanken Grotesk", system-ui, -apple-system, sans-serif !important;
+}
+
+/* Lead subtitle paragraph — JM28 style */
+.jm-page .lead,
+main .lead,
+.page .lead {
+  margin: 0 0 18px !important;
+  color: var(--muted, #64748b) !important;
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+/* Navigation Tabs row — JM28 style */
+.jm-page .jm-tabs,
+.jm-page .tabs,
+.jm-page .tab-row,
+main nav.jm-tabs,
+main nav.tabs {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px 6px !important;
+  margin: 0 0 14px !important;
+  border-bottom: 1px solid var(--line, rgba(30, 41, 59, 0.12)) !important;
+  padding-bottom: 0 !important;
+  background: transparent !important;
+}
+
+.jm-page .jm-tab,
+.jm-page .tab,
+main .jm-tab,
+main .tab {
+  background: none !important;
+  border: none !important;
+  color: var(--muted, #64748b) !important;
+  font: inherit !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  padding: 10px 12px !important;
+  border-radius: 10px 10px 0 0 !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease !important;
+}
+
+.jm-page .jm-tab:hover,
+.jm-page .tab:hover,
+main .jm-tab:hover,
+main .tab:hover {
+  color: var(--text, #1e293b) !important;
+  background: transparent !important;
+}
+
+.jm-page .jm-tab.active,
+.jm-page .tab.active,
+main .jm-tab.active,
+main .tab.active {
+  color: var(--text, #1e293b) !important;
+  background: var(--surface, #ffffff) !important;
+  box-shadow: inset 0 -2px 0 var(--accent, #4FC3F7) !important;
+}
+
+/* Panel shell — no legacy .panel padding */
+.jm-page .jm-panel,
+.jm-page .panel,
+.jm-page .mode-panel,
+main .jm-panel {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.jm-page .jm-panel.hidden,
+.jm-page .panel.hidden,
+.jm-page .mode-panel.hidden {
+  display: none !important;
+}
+
+/* Subnav chips — JM28 style (overrides legacy 999px pills) */
+body.paper-labs .jm-panel .subnav,
+body.paper-labs .subnav,
+.jm-page .subnav,
+.subnav {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin: 0 0 16px !important;
+  align-items: center !important;
+}
+
+body.paper-labs .jm-panel .subnav .chip,
+body.paper-labs .jm-panel > .chip,
+body.paper-labs .jm-panel .chip,
+body.paper-labs .subnav .chip,
+.jm-page .chip,
+.chip {
+  background: var(--surface, #ffffff) !important;
+  border: 1px solid var(--line, rgba(30, 41, 59, 0.12)) !important;
+  color: var(--muted, #64748b) !important;
+  font: inherit !important;
+  font-weight: 600 !important;
+  padding: 8px 14px !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  line-height: 1.3 !important;
+  transition: color .15s, background .15s, border-color .15s !important;
+}
+
+body.paper-labs .jm-panel .chip:hover,
+body.paper-labs .subnav .chip:hover,
+.jm-page .chip:hover,
+.chip:hover {
+  color: var(--text, #1e293b) !important;
+  border-color: rgba(79, 195, 247, 0.35) !important;
+}
+
+body.paper-labs .jm-panel .chip.active,
+body.paper-labs .subnav .chip.active,
+.jm-page .chip.active,
+.chip.active {
+  color: #ffffff !important;
+  background: #4FC3F7 !important;
+  border-color: #4FC3F7 !important;
+}
+
+/* Section block card container — JM28 style */
+.jm-panel section.block,
+.jm-page section.block,
+main section.block,
+.jm-panel .block {
+  margin-bottom: 16px !important;
+  padding: 18px 16px 20px !important;
+  border: 1px solid var(--line, rgba(30, 41, 59, 0.12)) !important;
+  border-radius: 16px !important;
+  background: var(--surface, #ffffff) !important;
+  box-sizing: border-box !important;
+}
+
+.jm-panel section.block h2,
+.jm-page section.block h2,
+main section.block h2 {
+  margin: 0 0 8px !important;
+  font-size: 18px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+  color: var(--text, #1e293b) !important;
+}
+
+.jm-panel section.block:last-child,
+.jm-page section.block:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Deck panel inside light block card (JM28 shell around slide decks) */
+.jm-panel .block.jm-deck-panel,
+.jm-panel .jm-deck-panel {
+  padding: 18px 16px 20px !important;
+}
+
+.jm-panel .jm-deck-panel .deck-slideshow,
+.deck-slideshow {
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+}
+
+#panel-concept .deck-wrap,
+#panel-slides .deck-wrap,
+.jm-panel .jm-deck-panel .deck-wrap,
+.deck-wrap {
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  aspect-ratio: 16 / 9 !important;
+  display: block !important;
+  overflow: hidden !important;
+  background: #000000 !important;
+  border: 1px solid var(--line, rgba(30, 41, 59, 0.12)) !important;
+  border-radius: 12px !important;
+}
+
+#panel-concept .deck-wrap iframe,
+#panel-slides .deck-wrap iframe,
+.jm-panel .jm-deck-panel .deck-wrap iframe,
+.deck-wrap iframe {
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  display: block !important;
+}
+
+.jm-panel .jm-deck-panel .hint,
+#panel-concept .hint,
+#panel-slides .hint,
+.jm-panel .hint {
+  margin: 10px 0 0 !important;
+  font-size: 13px !important;
+  color: var(--muted, #64748b) !important;
+  text-align: center !important;
+  line-height: 1.55 !important;
+}
+
+/* Tools / games lab section titles */
+.jm-panel .lab > .part-title:first-of-type {
+  margin-top: 4px !important;
+}
+
+.jm-panel .part-title,
+.part-title {
+  margin: 4px 0 12px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+  color: var(--accent, #4FC3F7) !important;
+}

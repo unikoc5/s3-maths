@@ -1,4 +1,4 @@
-/* Topic dashboard shell ?Enatural one-page layout for slides/tools/game.
+/* Topic dashboard shell ?ï¿½Enatural one-page layout for slides/tools/game.
    KOC flex fill applies only while Worked Solutions tab is active. */
 html, body {
   height: 100%;
@@ -31,10 +31,12 @@ html.tablet-touch.in-embed body {
   display: none;
 }
 
-/* ?€?€ Slides: classic 16:9 deck (sizes from width ?Eworked well before) ?€?€ */
+/* ?ï¿½?ï¿½ Slides: classic 16:9 deck (sizes from width ?ï¿½Eworked well before) ?ï¿½?ï¿½ */
+#panel-concept .subnav,
 #panel-slides .subnav {
   margin-bottom: 12px;
 }
+#panel-concept .deck-wrap,
 #panel-slides .deck-wrap {
   width: 100%;
   max-width: 1100px;
@@ -46,12 +48,14 @@ html.tablet-touch.in-embed body {
   border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
   border-radius: 12px;
 }
+#panel-concept .deck-wrap iframe,
 #panel-slides .deck-wrap iframe {
   width: 100%;
   height: 100%;
   border: 0;
   display: block;
 }
+#panel-concept .hint,
 #panel-slides .hint {
   margin: 10px 0 0;
   font-size: 13px;
@@ -95,7 +99,8 @@ html.tablet-touch .deck-nav-btn:active {
   border-color: var(--a, #4fc3f7);
   color: var(--a, #4fc3f7);
 }
-html.tablet-touch #panel-slides .deck-wrap {
+html.tablet-touch #panel-concept .deck-wrap,
+#panel-slides .deck-wrap {
   flex: 1;
   min-width: 0;
   touch-action: pan-y pinch-zoom;
@@ -129,7 +134,8 @@ html.phone-compact .deck-nav-btn:active {
   border-color: var(--a, #4fc3f7);
   color: var(--a, #4fc3f7);
 }
-html.phone-compact #panel-slides .deck-wrap {
+html.phone-compact #panel-concept .deck-wrap,
+#panel-slides .deck-wrap {
   grid-column: 1 / -1;
   grid-row: 1;
   flex: none;
@@ -159,8 +165,9 @@ html.phone-compact .hint-deck-phone {
   display: block;
 }
 
-/* ?€?€ Tools / game: natural block flow (no flex clip) ?€?€ */
+/* ?ï¿½?ï¿½ Tools / game: natural block flow (no flex clip) ?ï¿½?ï¿½ */
 #panel-tools .subnav,
+#panel-games > .subnav:first-child,
 #panel-game > .subnav:first-child,
 #panel-game .pg-game-subnav {
   margin-bottom: 12px;
@@ -173,14 +180,16 @@ html.phone-compact .hint-deck-phone {
 #panel-tools .control-stack {
   min-height: 0;
 }
+#panel-games > .hint,
 #panel-game > .hint,
+#panel-games > .mg-done,
 #panel-game > .mg-done {
   margin-top: 10px;
   font-size: 13px;
   color: var(--dim, #5d544f);
 }
 
-/* ?€?€ Worked tab only: viewport-height flex shell ?€?€ */
+/* ?ï¿½?ï¿½ Worked tab only: viewport-height flex shell ?ï¿½?ï¿½ */
 body:has(#panel-worked:not(.hidden)) {
   display: flex;
   flex-direction: column;
@@ -251,13 +260,13 @@ body:has(#panel-worked:not(.hidden)) #panel-worked {
   margin-bottom: 8px;
 }
 
-/* ?€?€ iPad embed: keep shell compact; Concept deck stays classic 16:9 (width-sized) ?€?€ */
+/* ?ï¿½?ï¿½ iPad embed: keep shell compact; Concept deck stays classic 16:9 (width-sized) ?ï¿½?ï¿½ */
 html.tablet-touch.in-embed .panel:not(.hidden) {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
-/* ?€?€ iPhone only (<=767px, html.phone-compact) ?Edesktop & iPad unchanged ?€?€ */
+/* ?ï¿½?ï¿½ iPhone only (<=767px, html.phone-compact) ?ï¿½Edesktop & iPad unchanged ?ï¿½?ï¿½ */
 html.phone-compact header {
   flex-direction: column;
   align-items: flex-start;
@@ -305,13 +314,16 @@ html.phone-compact .chip {
   font-size: 13px;
   padding: 7px 12px;
 }
-html.phone-compact #panel-slides .subnav {
+html.phone-compact #panel-concept .subnav,
+#panel-slides .subnav {
   margin-bottom: 8px;
 }
-html.phone-compact #panel-slides .deck-wrap {
+html.phone-compact #panel-concept .deck-wrap,
+#panel-slides .deck-wrap {
   border-radius: 10px;
 }
-html.phone-compact #panel-slides .hint {
+html.phone-compact #panel-concept .hint,
+#panel-slides .hint {
   margin-top: 8px;
   font-size: 12px;
 }
