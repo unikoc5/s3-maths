@@ -1,17 +1,17 @@
 /* Chem-inspired light theme for KOC S3 Math dashboards (UI shell only) */
 
 :root {
-  --bg: #fdfbf7;
+  --bg: #f8fafc;
   --panel: #ffffff;
-  --panel2: #f5efe6;
-  --ink: #2c2420;
-  --dim: #5d544f;
-  --line: rgba(0, 0, 0, 0.08);
-  --a: #4fc3f7;
-  --accent: #4fc3f7;
-  --on-accent: #06283d;
+  --panel2: #eef2f7;
+  --ink: #1e293b;
+  --dim: #64748b;
+  --line: rgba(30, 41, 59, 0.12);
+  --a: #0284c7;
+  --accent: #0284c7;
+  --on-accent: #ffffff;
   --nav-surface: rgba(255, 255, 255, 0.72);
-  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-soft: 0 4px 24px rgba(26, 31, 46, 0.06), 0 1px 2px rgba(26, 31, 46, 0.04);
 }
 
 /* ── Topic page header (hidden in embed) ── */
@@ -195,11 +195,11 @@ html.tablet-touch.in-embed .panel {
 
 .chip:hover {
   color: var(--ink);
-  border-color: rgba(79, 195, 247, 0.35);
+  border-color: rgba(2, 132, 199, 0.35);
 }
 
 .chip.active {
-  color: var(--on-accent);
+  color: #fff;
   background: var(--a);
   border-color: var(--a);
 }

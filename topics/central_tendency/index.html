@@ -7,13 +7,13 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Measures of Central Tendencies — JM31</title>
+  <title>Measures of Central Tendencies ??JM31</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260830-fu">
-  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29b">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
@@ -135,7 +135,7 @@
         <p class="part-title">Lab 1 · Mean · Median · Mode</p>
         <section class="block">
           <h2>Three averages on one data set</h2>
-          <p class="hint">Add values (0–999) or load the default set. Click a chip to remove it. Yellow = mean, green = median, pink = mode on the number line.</p>
+          <p class="hint">Add values (0??99) or load the default set. Click a chip to remove it. Yellow = mean, green = median, pink = mode on the number line.</p>
           <div class="count-row">
             <input id="avg-in" type="number" min="0" max="999" step="1" value="0">
             <button class="btn" type="button" id="avg-add">Add</button>
@@ -145,29 +145,29 @@
           <div class="chip-list" id="avg-chips"></div>
           <svg class="numline-svg" id="avg-numline" viewBox="0 0 640 100" aria-label="Number line with mean, median and mode"></svg>
           <div class="stat-grid">
-            <div class="stat-card"><div class="val" id="avg-mean">—</div><div class="lbl">Mean</div></div>
-            <div class="stat-card"><div class="val" id="avg-median">—</div><div class="lbl">Median</div></div>
-            <div class="stat-card"><div class="val" id="avg-mode">—</div><div class="lbl">Mode</div></div>
+            <div class="stat-card"><div class="val" id="avg-mean">??/div><div class="lbl">Mean</div></div>
+            <div class="stat-card"><div class="val" id="avg-median">??/div><div class="lbl">Median</div></div>
+            <div class="stat-card"><div class="val" id="avg-mode">??/div><div class="lbl">Mode</div></div>
             <div class="stat-card"><div class="val" id="avg-n">0</div><div class="lbl">Count n</div></div>
           </div>
           <p class="formula" id="avg-formula">\(\bar{x}\) = Mean, \(M_d\) = Median, \(M_o\) = Mode</p>
           <div class="note-box" id="avg-note">Mean uses every datum; median resists extreme values; mode is the most frequent value.</div>
 
           <div class="section-gap" id="avg-bar-section" style="display:none">
-            <p class="split-hint">Frequency bar chart (values 0–10 only)</p>
+            <p class="split-hint">Frequency bar chart (values 0??0 only)</p>
             <svg class="bar-chart-fixed" id="avg-bar-chart" viewBox="0 0 640 140" aria-label="Frequency bar chart from current data set"></svg>
           </div>
 
           <div class="section-gap">
             <h2 style="font-size:17px;margin:0 0 8px">Weighted mean</h2>
-            <p class="hint">Edit marks and weights (%). Weighted mean = Σ(mark × weight) ÷ Σweights.</p>
+            <p class="hint">Edit marks and weights (%). Weighted mean = Σ(mark ? weight) ÷ Σweights.</p>
             <table class="freq-table" id="weight-table" aria-label="Weighted mean table"></table>
             <div class="stat-grid">
-              <div class="stat-card"><div class="val" id="weight-mean">—</div><div class="lbl">Weighted \(\bar{x}\)</div></div>
-              <div class="stat-card"><div class="val" id="weight-sum">—</div><div class="lbl">Σ(weight × mark)</div></div>
-              <div class="stat-card"><div class="val" id="weight-wsum">—</div><div class="lbl">Σ weights</div></div>
+              <div class="stat-card"><div class="val" id="weight-mean">??/div><div class="lbl">Weighted \(\bar{x}\)</div></div>
+              <div class="stat-card"><div class="val" id="weight-sum">??/div><div class="lbl">Σ(weight ? mark)</div></div>
+              <div class="stat-card"><div class="val" id="weight-wsum">??/div><div class="lbl">Σ weights</div></div>
             </div>
-            <p class="formula" id="weight-formula">Weighted mean = (45%×59 + 25%×47 + …) ÷ 100%</p>
+            <p class="formula" id="weight-formula">Weighted mean = (45%?59 + 25%?47 + ?? ÷ 100%</p>
           </div>
 
           <div class="section-gap task-box">
@@ -185,7 +185,7 @@
           <div id="more-questions-panel">
             <section class="block" style="margin-top:12px">
               <h2>Which average fits?</h2>
-              <p class="hint">Read the data and context — pick the best average for each scenario.</p>
+              <p class="hint">Read the data and context ??pick the best average for each scenario.</p>
               <div id="scenario-list"></div>
             </section>
           </div>
@@ -193,7 +193,7 @@
       </div>
 
       <div class="lab" id="lab-transform">
-        <p class="part-title">Lab 2 · + / × constant</p>
+        <p class="part-title">Lab 2 · + / ? constant</p>
         <section class="block">
           <h2>Effect on \(\bar{x}\), \(M_d\) &amp; \(M_o\)</h2>
           <p class="hint">Move the sliders to add a constant or multiply every value. Data are shown in ascending order.</p>
@@ -210,7 +210,7 @@
               <span class="val" id="transform-add-val">0</span>
             </div>
             <div class="slider-row">
-              <label for="transform-mul">×k each datum</label>
+              <label for="transform-mul">?k each datum</label>
               <input id="transform-mul" type="range" min="0.5" max="3" step="0.1" value="1">
               <span class="val" id="transform-mul-val">1</span>
             </div>
@@ -221,16 +221,16 @@
               <div class="stat-row" id="transform-orig"></div>
             </div>
             <div class="compare-col">
-              <h3>After ×k then +c</h3>
+              <h3>After ?k then +c</h3>
               <div class="stat-row" id="transform-new"></div>
             </div>
           </div>
           <div class="rule-box">
             <div class="rule-card"><strong>+c to every datum</strong>new \(\bar{x}\) = \(\bar{x}\) + c<br>new \(M_d\) = \(M_d\) + c<br>new \(M_o\) = \(M_o\) + c</div>
-            <div class="rule-card"><strong>×k every datum</strong>new \(\bar{x}\) = \(\bar{x}\) × k<br>new \(M_d\) = \(M_d\) × k<br>new \(M_o\) = \(M_o\) × k</div>
-            <div class="rule-card"><strong>Both (×k then +c)</strong>Each average follows the same transform.</div>
+            <div class="rule-card"><strong>?k every datum</strong>new \(\bar{x}\) = \(\bar{x}\) ? k<br>new \(M_d\) = \(M_d\) ? k<br>new \(M_o\) = \(M_o\) ? k</div>
+            <div class="rule-card"><strong>Both (?k then +c)</strong>Each average follows the same transform.</div>
           </div>
-          <div class="note-box" id="transform-note">Move the sliders — +c shifts all three averages by c; ×k scales all three by k.</div>
+          <div class="note-box" id="transform-note">Move the sliders ??+c shifts all three averages by c; ?k scales all three by k.</div>
         </section>
       </div>
     </section>
