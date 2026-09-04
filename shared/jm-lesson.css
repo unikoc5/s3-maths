@@ -1,3 +1,12 @@
+html, body { caret-color: transparent; }
+input, textarea, select, [contenteditable="true"] { caret-color: auto; }
+.hint, .lead, .formula, .eq-line, .katex, h1, h2, h3, .part-title {
+  -webkit-user-select: text; user-select: text; caret-color: transparent;
+}
+.chip, .jm-tab, .subnav, .slider-row, input[type=range], svg, button {
+  caret-color: transparent;
+}
+
 :root {
   --surface: #ffffff;
   --surface-2: #eef2f7;

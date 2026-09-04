@@ -3,10 +3,18 @@
 html, body {
   height: 100%;
   margin: 0;
+  caret-color: transparent;
 }
 body {
   background: var(--bg, #fdfbf7);
   overflow-x: hidden;
+  caret-color: transparent;
+}
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  caret-color: auto;
 }
 /* iPad embed: stop the rubber-band bounce from chaining into the hub page,
    which left the topic page stuck once it over-scrolled past the bottom. */
