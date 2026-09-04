@@ -8,9 +8,9 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
-  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
-  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29b">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260904-pale">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-pale">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-pale">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
@@ -24,8 +24,8 @@
       --text: #1e293b;
       --muted: #64748b;
       --line: rgba(30, 41, 59, 0.12);
-      --accent: #0284c7;
-      --glow: #0369a1;
+      --accent: #4FC3F7;
+      --glow: #29B6F6;
       --bg: #f1f5f9;
       --panel: var(--surface);
       --panel2: var(--surface-2);
@@ -71,7 +71,7 @@
     }
     .chip .katex { font-size: 1.08em; }
     .chip:hover { color: var(--a); border-color: rgba(2, 119, 189, 0.35); }
-    .chip.active { color: #fff; background: var(--accent); border-color: var(--accent); }
+    .chip.active { color: #fff; background: #4FC3F7; border-color: #4FC3F7; }
     /* Tab 1: slide deck ??height from topic-shell.css */
     .deck-wrap {
       background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
@@ -117,7 +117,7 @@
     .lg-item .lg-sym[data-tex="b"] { color: var(--b); }
     .lg-item .lg-sym[data-tex="ab"] { color: var(--ab); }
     .lg-item em { font-style: normal; color: var(--dim); font-size: 14px; }
-    /* ?€?€ Cross method lab (wizard) ?€?€ */
+    /* ???? Cross method lab (wizard) ???? */
     .tool-layout.hidden { display: none; }
     .cross-lab.hidden { display: none; }
     .cross-lab { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; }
@@ -249,7 +249,7 @@
       .drop-slot { min-height: 48px; }
       .control-card, .control-stack, .figure-card, .cross-lab { padding: 14px; }
     }
-    /* ?€?€ Game ?€?€ */
+    /* ???? Game ???? */
     .game-hud { display: flex; align-items: center; gap: 18px; max-width: 1000px; margin: 0 auto 12px; flex-wrap: wrap; }
     .hud-item { color: var(--dim); font-size: 14px; font-weight: 600; }
     .hud-item b { color: var(--ink); font-family: "JetBrains Mono", monospace; font-size: 20px; margin-left: 6px; }
@@ -394,7 +394,7 @@
     .snake-pad .left { grid-column: 1; grid-row: 2; }
     .snake-pad .right { grid-column: 3; grid-row: 2; }
     .snake-pad .down { grid-column: 2; grid-row: 3; }
-    /* ?€?€ Summary slideshow ?€?€ */
+    /* ???? Summary slideshow ???? */
     .summary-slideshow {
       max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
     }
@@ -478,7 +478,7 @@
       justify-content: center;
       touch-action: manipulation;
     }
-    /* ?€?€ Quiz ?€?€ */
+    /* ???? Quiz ???? */
     .quiz-wrap { max-width: 720px; margin: 0 auto; }
     .quiz-progress-wrap { margin-bottom: 18px; }
     .quiz-progress-label {
@@ -568,7 +568,7 @@
     .quiz-part-stem { font-size: 20px; margin-bottom: 10px; }
     .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
     .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
-    /* ?€?€ iPad / tablet touch (standard iPad landscape; desktop unchanged) ?€?€ */
+    /* ???? iPad / tablet touch (standard iPad landscape; desktop unchanged) ???? */
     /* Identities tools: graph | equations+key ; sliders full-width below */
     html.tablet-touch #panel-tools .tool-layout {
       grid-template-columns: minmax(0, 1.25fr) minmax(240px, 1fr);
@@ -616,7 +616,7 @@
     html.tablet-touch #panel-tools .eq-line { font-size: 20px; margin: 10px 0; }
     html.tablet-touch #panel-tools .eq-line .katex { font-size: 1.06em; }
     html.tablet-touch #tool-svg { max-width: 100%; margin: 0; max-height: min(52vh, 480px); }
-    /* ?€?€ iPhone only ??identities tools label sizing (desktop & iPad unchanged) ?€?€ */
+    /* ???? iPhone only ??identities tools label sizing (desktop & iPad unchanged) ???? */
     html.phone-compact #panel-tools .figure-card {
       padding: 12px 10px 14px;
     }
@@ -689,7 +689,7 @@
     html.tablet-touch input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; }
     html.tablet-touch input[type=range]::-moz-range-thumb { width: 26px; height: 26px; }
 
-    /* ?€?€ Phone only (< 768px) ??desktop & tablet-touch unchanged ?€?€ */
+    /* ???? Phone only (< 768px) ??desktop & tablet-touch unchanged ???? */
     @media (max-width: 767px) {
       header { flex-direction: column; align-items: flex-start; padding: 12px 16px; gap: 4px; }
       header .crumb { font-size: 11px; line-height: 1.4; }
@@ -1033,13 +1033,13 @@
       width: 6px;
     }
   </style>
-  <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260904-jm29c">
-  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm29c">
+  <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260904-pale">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-pale">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
     <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
-    <p class="jm-eyebrow">JM25 Â· Lesson 25</p>
+    <p class="jm-eyebrow">JM25 ?Lesson 25</p>
     <h1>More about Factorization and Polynomials</h1>
     <p class="lead">Interactive tools and comics for factorization and polynomials.</p>
 <nav class="jm-tabs" aria-label="Lesson sections">
@@ -1152,11 +1152,11 @@
         <div class="cross-lab-layout">
           <aside class="cross-pair-bank">
             <div class="cross-bank-section">
-              <h4>xÂ² pairs (<span id="cross-a2-label"></span>)</h4>
+              <h4>x?pairs (<span id="cross-a2-label"></span>)</h4>
               <div id="cross-x-pairs"></div>
             </div>
             <div class="cross-bank-section">
-              <h4>yÂ² pairs (<span id="cross-c2-label"></span>)</h4>
+              <h4>y?pairs (<span id="cross-c2-label"></span>)</h4>
               <div id="cross-y-pairs"></div>
             </div>
           </aside>
@@ -1243,7 +1243,7 @@
             <input id="ov-speed" type="range" min="1" max="10" value="2">
             <b id="ov-speed-val">2</b>
           </div>
-          <p class="ov-keys ov-keys-desktop"><b>&larr; &rarr;</b> move &nbsp;Â·&nbsp; <b>Space / &uarr;</b> shoot &nbsp;Â·&nbsp; or <b>click</b> an answer</p>
+          <p class="ov-keys ov-keys-desktop"><b>&larr; &rarr;</b> move &nbsp;?nbsp; <b>Space / &uarr;</b> shoot &nbsp;?nbsp; or <b>click</b> an answer</p>
           <p class="ov-keys ov-keys-phone">Tap an answer, or move the cannon and tap to shoot.</p>
           <button id="g-start" class="play-btn">&#9654; Start</button>
         </div>
@@ -1294,7 +1294,7 @@
           </div>
         </div>
       </div>
-      <p class="hint">Controls: Arrow keys / WASD Â· Mobile: use the direction pad Â· Click <b>Start Snake</b> to begin</p>
+      <p class="hint">Controls: Arrow keys / WASD ?Mobile: use the direction pad ?Click <b>Start Snake</b> to begin</p>
     </div>
   </section>
 

@@ -1,4 +1,4 @@
-/* Topic dashboard shell â€Enatural one-page layout for slides/tools/game.
+/* Topic dashboard shell ?Enatural one-page layout for slides/tools/game.
    KOC flex fill applies only while Worked Solutions tab is active. */
 html, body {
   height: 100%;
@@ -31,7 +31,7 @@ html.tablet-touch.in-embed body {
   display: none;
 }
 
-/* â”€â”€ Slides: classic 16:9 deck (sizes from width â€Eworked well before) â”€â”€ */
+/* ?€?€ Slides: classic 16:9 deck (sizes from width ?Eworked well before) ?€?€ */
 #panel-slides .subnav {
   margin-bottom: 12px;
 }
@@ -159,7 +159,7 @@ html.phone-compact .hint-deck-phone {
   display: block;
 }
 
-/* â”€â”€ Tools / game: natural block flow (no flex clip) â”€â”€ */
+/* ?€?€ Tools / game: natural block flow (no flex clip) ?€?€ */
 #panel-tools .subnav,
 #panel-game > .subnav:first-child,
 #panel-game .pg-game-subnav {
@@ -180,7 +180,7 @@ html.phone-compact .hint-deck-phone {
   color: var(--dim, #5d544f);
 }
 
-/* â”€â”€ Worked tab only: viewport-height flex shell â”€â”€ */
+/* ?€?€ Worked tab only: viewport-height flex shell ?€?€ */
 body:has(#panel-worked:not(.hidden)) {
   display: flex;
   flex-direction: column;
@@ -251,13 +251,13 @@ body:has(#panel-worked:not(.hidden)) #panel-worked {
   margin-bottom: 8px;
 }
 
-/* â”€â”€ iPad embed: keep shell compact; Concept deck stays classic 16:9 (width-sized) â”€â”€ */
+/* ?€?€ iPad embed: keep shell compact; Concept deck stays classic 16:9 (width-sized) ?€?€ */
 html.tablet-touch.in-embed .panel:not(.hidden) {
   padding-top: 8px;
   padding-bottom: 8px;
 }
 
-/* â”€â”€ iPhone only (<=767px, html.phone-compact) â€Edesktop & iPad unchanged â”€â”€ */
+/* ?€?€ iPhone only (<=767px, html.phone-compact) ?Edesktop & iPad unchanged ?€?€ */
 html.phone-compact header {
   flex-direction: column;
   align-items: flex-start;

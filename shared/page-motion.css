@@ -1,6 +1,6 @@
 /**
  * Rate-and-ratio motion language: rise-in on enter, slide steppers, soft hover.
- * Colours stay with each page — this file is timing and transform only.
+ * Colours stay with each page ??this file is timing and transform only.
  */
 @keyframes riseIn {
   from { opacity: 0; transform: translateY(12px); }
@@ -171,11 +171,11 @@ section.block:nth-of-type(4) { animation-delay: 0.38s; }
   }
 }
 
-/* JM29 accent — final override (this sheet loads last on legacy topic pages) */
+/* JM29 accent ??final override (this sheet loads last on legacy topic pages) */
 body.paper-labs .subnav .chip.active,
 body.paper-labs .chip.active,
 body.paper-labs .btn.active {
   color: #fff !important;
-  background: #0284c7 !important;
-  border-color: #0284c7 !important;
+  background: #4FC3F7 !important;
+  border-color: #4FC3F7 !important;
 }

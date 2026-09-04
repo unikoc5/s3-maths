@@ -20,8 +20,8 @@
 #comics-series-nav .chip.active,
 #comics-subnav .chip.active {
   color: #fff;
-  background: var(--accent, var(--a, #0284c7));
-  border-color: var(--accent, var(--a, #0284c7));
+  background: var(--accent, var(--a, #4FC3F7));
+  border-color: var(--accent, var(--a, #4FC3F7));
 }
 .comic-page { display: grid; gap: 16px; }
 .comic-page-head { text-align: center; }
@@ -59,7 +59,7 @@
   margin-bottom: 12px;
 }
 .comic-page .quiz-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
-.comic-page .quiz-num { font-weight: 700; color: var(--accent, var(--a, #0284c7)); flex: none; }
+.comic-page .quiz-num { font-weight: 700; color: var(--accent, var(--a, #4FC3F7)); flex: none; }
 .comic-page .quiz-prompt { flex: 1; font-size: 15px; line-height: 1.5; }
 .comic-page .quiz-mark { font-weight: 700; margin-left: auto; }
 .comic-page .quiz-mark.ok { color: var(--good, #15803d); }
@@ -88,7 +88,7 @@
   cursor: pointer;
   font-size: 15px;
 }
-.comic-page .quiz-mc-opt:hover:not(.locked) { border-color: var(--accent, var(--a, #0284c7)); }
+.comic-page .quiz-mc-opt:hover:not(.locked) { border-color: var(--accent, var(--a, #4FC3F7)); }
 .comic-page .quiz-mc-opt.locked { cursor: default; }
 .comic-page .quiz-mc-opt.reveal-ok {
   border-color: var(--good, #15803d);
@@ -110,7 +110,7 @@
 .comic-chapter-next {
   border: none;
   border-radius: 999px;
-  background: var(--accent, var(--a, #0284c7));
+  background: var(--accent, var(--a, #4FC3F7));
   color: #fff;
   font: inherit;
   font-weight: 600;

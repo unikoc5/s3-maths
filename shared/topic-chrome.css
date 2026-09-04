@@ -1,6 +1,6 @@
 /**
  * Restyle legacy KOC topic pages to match the comics gallery look.
- * Content and behaviour stay the same — appearance only.
+ * Content and behaviour stay the same ??appearance only.
  */
 :root {
   --ink: #1e293b;
@@ -12,7 +12,7 @@
   --radius: 16px;
   --font: "Hanken Grotesk", "DM Sans", system-ui, sans-serif;
   --display: "Hanken Grotesk", "Fraunces", Georgia, serif;
-  --accent: #0284c7;
+  --accent: #4FC3F7;
   --accent-soft: #e0f2fe;
   --surface: var(--card);
   --surface-2: #eef2f7;
@@ -21,7 +21,7 @@
   --bg: var(--paper);
   --panel: var(--card);
   --panel2: var(--surface-2);
-  --glow: #0369a1;
+  --glow: #29B6F6;
 }
 
 html { scroll-behavior: smooth; caret-color: transparent; }

@@ -76,7 +76,7 @@ body.ws-split-dragging * {
   height: auto;
 }
 
-/* Collapsed animation — solution takes full width */
+/* Collapsed animation ??solution takes full width */
 .worked-stage.anim-collapsed .ws-split-left,
 .worked-stage.anim-collapsed .ws-split-handle {
   display: none;
@@ -106,7 +106,7 @@ body.ws-split-dragging * {
   font-size: var(--ws-step-idx-font, 12px);
 }
 
-/* Pinned question — same scale as solution step body text */
+/* Pinned question ??same scale as solution step body text */
 .worked-content .sp-q .sp-q-row,
 .solution-panel.ws-split-right .sp-q .sp-q-row {
   font-size: var(--ws-step-font, 15px);

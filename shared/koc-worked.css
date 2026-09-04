@@ -1,4 +1,4 @@
-/* KOC reference layout — Figure panel + Solution panel */
+/* KOC reference layout ??Figure panel + Solution panel */
 .koc-worked-root {
   display: flex;
   flex-direction: column;
@@ -116,7 +116,7 @@ body.koc-splitter-dragging {
   cursor: col-resize !important;
   user-select: none !important;
 }
-/* Solution panel typography — scales with panel width via JS */
+/* Solution panel typography ??scales with panel width via JS */
 .koc-solution-panel {
   --koc-sol-ui: 15px;
   --koc-sol-body: 16px;

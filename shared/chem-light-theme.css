@@ -7,14 +7,14 @@
   --ink: #1e293b;
   --dim: #64748b;
   --line: rgba(30, 41, 59, 0.12);
-  --a: #0284c7;
-  --accent: #0284c7;
+  --a: #4FC3F7;
+  --accent: #4FC3F7;
   --on-accent: #ffffff;
   --nav-surface: rgba(255, 255, 255, 0.72);
   --shadow-soft: 0 4px 24px rgba(26, 31, 46, 0.06), 0 1px 2px rgba(26, 31, 46, 0.04);
 }
 
-/* â”€â”€ Topic page header (hidden in embed) â”€â”€ */
+/* ?€?€ Topic page header (hidden in embed) ?€?€ */
 header {
   padding: 14px 28px;
   border-bottom: 1px solid var(--line);
@@ -66,7 +66,7 @@ header .crumb {
   font-size: 13px;
 }
 
-/* â”€â”€ Tabs (layout unchanged) â”€â”€ */
+/* ?€?€ Tabs (layout unchanged) ?€?€ */
 .tabs {
   display: flex;
   gap: 6px;
@@ -178,7 +178,7 @@ html.tablet-touch.in-embed .panel {
   padding-bottom: 12px;
 }
 
-/* â”€â”€ Subnav chips â”€â”€ */
+/* ?€?€ Subnav chips ?€?€ */
 .chip {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -195,20 +195,20 @@ html.tablet-touch.in-embed .panel {
 
 .chip:hover {
   color: var(--ink);
-  border-color: rgba(2, 132, 199, 0.35);
+  border-color: rgba(79, 195, 247, 0.35);
 }
 
 .chip.active {
   color: #fff;
-  background: #0284c7;
-  border-color: #0284c7;
+  background: #4FC3F7;
+  border-color: #4FC3F7;
 }
 
-/* JM29 accent â€” must win when this sheet loads after paper-labs */
+/* JM29 accent ??must win when this sheet loads after paper-labs */
 body.paper-labs .subnav .chip.active,
 body.paper-labs .chip.active,
 body.paper-labs .btn.active {
   color: #fff !important;
-  background: #0284c7 !important;
-  border-color: #0284c7 !important;
+  background: #4FC3F7 !important;
+  border-color: #4FC3F7 !important;
 }

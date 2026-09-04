@@ -2,8 +2,8 @@
   --ink: #1a1f2e;
   --muted: #5c6578;
   --line: rgba(26, 31, 46, 0.08);
-  --accent: #0284c7;
-  --accent-soft: rgba(2, 132, 199, 0.12);
+  --accent: #4FC3F7;
+  --accent-soft: rgba(79, 195, 247, 0.12);
   --card: #ffffff;
   --display: "Fraunces", Georgia, serif;
   --font: "DM Sans", system-ui, sans-serif;
@@ -622,7 +622,7 @@
   filter: brightness(1.05);
 }
 
-/* Factor tool — aligned math visualizations */
+/* Factor tool ??aligned math visualizations */
 .sci-step-math--mono {
   font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
   white-space: pre-wrap;

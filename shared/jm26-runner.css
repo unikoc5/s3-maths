@@ -415,7 +415,7 @@
   filter: brightness(1.05);
 }
 
-/* Factor tool â€” aligned math visualizations */
+/* Factor tool ??aligned math visualizations */
 .sci-step-math--mono {
   font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
   white-space: pre-wrap;
@@ -659,7 +659,7 @@
   text-align: center;
 }
 
-/* â€”â€” JM26 Boundary Runner â€”â€” */
+/* ?”â€?JM26 Boundary Runner ?”â€?*/
 .runner-game .runner-map {
   display: flex;
   flex-direction: column;
