@@ -170,3 +170,12 @@ section.block:nth-of-type(4) { animation-delay: 0.38s; }
     transform: none !important;
   }
 }
+
+/* JM29 accent — final override (this sheet loads last on legacy topic pages) */
+body.paper-labs .subnav .chip.active,
+body.paper-labs .chip.active,
+body.paper-labs .btn.active {
+  color: #fff !important;
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+}

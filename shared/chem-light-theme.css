@@ -200,6 +200,15 @@ html.tablet-touch.in-embed .panel {
 
 .chip.active {
   color: #fff;
-  background: var(--a);
-  border-color: var(--a);
+  background: #0284c7;
+  border-color: #0284c7;
+}
+
+/* JM29 accent — must win when this sheet loads after paper-labs */
+body.paper-labs .subnav .chip.active,
+body.paper-labs .chip.active,
+body.paper-labs .btn.active {
+  color: #fff !important;
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
 }
