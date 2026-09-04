@@ -9,7 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
-  <link rel="stylesheet" href="../../shared/jm12-chrome.css?v=20260831-merge">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
@@ -349,26 +350,23 @@
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
-<body class="jm12">
-<main class="page">
-  <a class="back" href="../../index.html#lessons">&larr; S3 Lessons</a>
-  <p class="eyebrow">JM32 · Lesson 32</p>
+<body class="paper-labs">
+<main class="jm-page">
+  <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
+  <p class="jm-eyebrow">JM32 · Lesson 32</p>
   <h1>Areas and Volumes III</h1>
   <p class="lead">Sectors, cylinders, cones, and spheres: tools, builder game, comics, and quiz.</p>
 
-  <div class="tab-row">
-  <nav class="tabs">
-    <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
-    <button class="tab" data-tab="tools">Interactive Tool</button>
-    <button class="tab" data-tab="game">Games</button>
-    <button class="tab" data-tab="comics">Comics</button>
-    <button class="tab" data-tab="summary">Summary</button>
-    <button class="tab" data-tab="quiz">Quiz</button>
+  <nav class="jm-tabs" aria-label="Lesson sections">
+    <button class="jm-tab active" type="button" data-tab="slides">Concept &amp; Formula</button>
+    <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+    <button class="jm-tab" type="button" data-tab="game">Games</button>
+    <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+    <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
-  </div>
-
-  <!-- TAB 1: slide decks -->
-  <section id="panel-slides" class="panel">
+<!-- TAB 1: slide decks -->
+  <section id="panel-slides" class="jm-panel panel">
     <div class="subnav">
       <button class="chip active" data-deck="../../slides/area_volume/plane-shapes/index.html">2D Shapes — Area</button>
       <button class="chip" data-deck="../../slides/area_volume/solids/index.html">3D Solids — Volume &amp; Surface Area</button>
@@ -386,7 +384,7 @@
   </section>
 
   <!-- TAB 2: interactive tool — similar shapes & solids -->
-  <section id="panel-tools" class="panel hidden">
+  <section id="panel-tools" class="jm-panel panel hidden">
     <div class="subnav">
       <button class="chip active" data-lab="square">Square + Prism</button>
       <button class="chip" data-lab="triangle">Triangle + Pyramid</button>
@@ -417,7 +415,7 @@
   </section>
 
   <!-- TAB 3: builder game -->
-  <section id="panel-game" class="panel hidden">
+  <section id="panel-game" class="jm-panel panel hidden">
     <div class="build-top">
       <div class="mode-switch">
         <button class="mode-btn active" data-mode="2d">2D · Area</button>
@@ -477,14 +475,14 @@
   </section>
 
   <!-- TAB: comics story + concept checks (separate from quiz DB) -->
-  <section id="panel-comics" class="panel hidden">
+  <section id="panel-comics" class="jm-panel panel hidden">
     <div class="subnav" id="comics-subnav"></div>
     <div id="comics-stage"></div>
     <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
   </section>
 
   <!-- TAB: quiz -->
-  <section id="panel-quiz" class="panel hidden">
+  <section id="panel-quiz" class="jm-panel panel hidden">
     <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
         <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>

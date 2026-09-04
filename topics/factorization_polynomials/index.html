@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260828-sel1">
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29">
   <link rel="stylesheet" href="jm25-extra.css?v=20260831-merge">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
@@ -415,23 +417,23 @@
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
-<body>
-<main class="page">
-    <a class="back" href="../../index.html#lessons">&larr; S3 Lessons</a>
-    <p class="eyebrow">JM25 · Lesson 25</p>
+<body class="paper-labs">
+<main class="jm-page">
+    <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
+    <p class="jm-eyebrow">JM25 · Lesson 25</p>
     <h1>More about Factorization and Polynomials</h1>
     <p class="lead">Interactive tools and comics for factorization and polynomials.</p>
 
-    <nav class="tabs" aria-label="Lesson sections">
-      <button class="tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
-      <button class="tab" type="button" data-tab="tools">Interactive Tool</button>
-      <button class="tab" type="button" data-tab="games">Games</button>
-      <button class="tab" type="button" data-tab="comics">Comics</button>
-      <button class="tab" type="button" data-tab="summary">Summary</button>
-      <button class="tab" type="button" data-tab="quiz">Quiz</button>
+    <nav class="jm-tabs" aria-label="Lesson sections" aria-label="Lesson sections">
+      <button class="jm-tab active" type="button" type="button" data-tab="concept">Concept &amp; Formula</button>
+      <button class="jm-tab" type="button" type="button" data-tab="tools">Interactive Tool</button>
+      <button class="jm-tab" type="button" type="button" data-tab="games">Games</button>
+      <button class="jm-tab" type="button" type="button" data-tab="comics">Comics</button>
+      <button class="jm-tab" type="button" type="button" data-tab="summary">Summary</button>
+      <button class="jm-tab" type="button" type="button" data-tab="quiz">Quiz</button>
     </nav>
 
-    <section id="panel-concept" class="mode-panel">
+    <section id="panel-concept" class="jm-panel mode-panel">
       <div id="panel-slides">
         <div class="subnav">
           <button class="chip active" data-deck="../../slides/factorization/perfect-square-sum/index.html" data-tex="(a+b)^2"></button>
@@ -449,7 +451,7 @@
         <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide animates the algebraic (expansion) proof.</p>
         <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide animates the algebraic (expansion) proof.</p>
       </div>
-    </section>    <section id="panel-tools" class="mode-panel hidden">
+    </section>    <section id="panel-tools" class="jm-panel mode-panel hidden">
     <div class="subnav">
       <button class="chip active" data-tool="sum" data-tex="(a+b)^2"></button>
       <button class="chip" data-tool="diff" data-tex="(a-b)^2"></button>
@@ -579,7 +581,7 @@
       </div>
     </div>
   </section>
-    <section id="panel-games" class="mode-panel hidden">
+    <section id="panel-games" class="jm-panel mode-panel hidden">
       <div id="panel-game">
 <div class="subnav">
       <button type="button" class="chip active" data-factor-game="blaster">Factor Blaster</button>
@@ -676,13 +678,13 @@
     </div>
         </div>
     </section>
-        <section id="panel-comics" class="mode-panel hidden">
+        <section id="panel-comics" class="jm-panel mode-panel hidden">
           <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
           <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
           <div id="comics-stage"></div>
           <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
         </section>
-<section id="panel-summary" class="mode-panel hidden">
+<section id="panel-summary" class="jm-panel mode-panel hidden">
     <div class="subnav" id="summary-style-nav">
       <button type="button" class="chip active" data-summary-style="style-1">Style 1</button>
       <button type="button" class="chip" data-summary-style="style-2">Style 2</button>
@@ -737,7 +739,7 @@
       <img class="summary-zoom-img" alt="">
     </div>
       </section>
-<section id="panel-quiz" class="mode-panel hidden">
+<section id="panel-quiz" class="jm-panel mode-panel hidden">
     <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
         <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>

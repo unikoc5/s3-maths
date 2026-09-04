@@ -13,7 +13,8 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260828-sel1">
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
-  <link rel="stylesheet" href="../../shared/jm12-chrome.css?v=20260831-merge">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29">
   <link rel="stylesheet" href="../../shared/jm26-runner.css?v=20260831-merge">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
@@ -444,24 +445,24 @@
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
-<body class="jm12">
-<main class="page">
-  <a class="back" href="../../index.html#lessons">&larr; S3 Lessons</a>
-  <p class="eyebrow">JM26 · Lesson 26</p>
+<body class="paper-labs">
+<main class="jm-page">
+  <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
+  <p class="jm-eyebrow">JM26 · Lesson 26</p>
   <h1>Inequalities I</h1>
   <p class="lead">Classroom manga, quiz, Boundary Runner, and inequality labs.</p>
 
-  <nav class="tabs">
-    <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
-    <button class="tab" data-tab="tools">Interactive Tool</button>
-    <button class="tab" data-tab="game">Games</button>
-    <button class="tab" data-tab="comics">Comics</button>
-    <button class="tab" data-tab="summary">Summary</button>
-    <button class="tab" data-tab="quiz">Quiz</button>
+  <nav class="jm-tabs" aria-label="Lesson sections">
+    <button class="jm-tab active" type="button" data-tab="slides">Concept &amp; Formula</button>
+    <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+    <button class="jm-tab" type="button" data-tab="game">Games</button>
+    <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+    <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
 
   <!-- TAB 1: concept slide decks -->
-  <section id="panel-slides" class="panel">
+  <section id="panel-slides" class="jm-panel panel">
     <div class="subnav">
       <button class="chip active" data-deck="../../slides/inequality/signs/index.html">Signs &amp; number line</button>
       <button class="chip" data-deck="../../slides/inequality/negative-coefficient/index.html">Multiply / divide by a negative</button>
@@ -479,7 +480,7 @@
   </section>
 
   <!-- TAB 2: sign-flip lab -->
-  <section id="panel-tools" class="panel hidden">
+  <section id="panel-tools" class="jm-panel panel hidden">
     <div class="sf-wrap">
       <p class="sf-hint">Difficulty rises: <b>3</b> positive → <b>5</b> negative (sign flip) → <b>4</b> multi-step. In Stage 3, <b>enter the boundary value</b>, then drag the sign and hollow / filled.</p>
       <div id="sf-root"></div>
@@ -487,14 +488,14 @@
   </section>
 
   <!-- TAB 3: games -->
-  <section id="panel-comics" class="panel hidden">
+  <section id="panel-comics" class="jm-panel panel hidden">
     <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
     <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
     <div id="comics-stage"></div>
     <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
   </section>
 
-  <section id="panel-game" class="panel hidden">
+  <section id="panel-game" class="jm-panel panel hidden">
     <div class="subnav">
       <button type="button" class="chip active" data-ineq-game="runner">Boundary Runner</button>
       <button type="button" class="chip" data-ineq-game="matchup">Match-up Game</button>
@@ -702,7 +703,7 @@
   </section>
 
   <!-- TAB 4: summary sheet -->
-  <section id="panel-summary" class="panel hidden">
+  <section id="panel-summary" class="jm-panel panel hidden">
     <div class="subnav" id="summary-style-nav">
       <button type="button" class="chip active" data-summary-style="style-1">Style 1</button>
       <button type="button" class="chip" data-summary-style="style-2">Style 2</button>
@@ -737,7 +738,7 @@
   </section>
 
   <!-- TAB 5: quiz -->
-  <section id="panel-quiz" class="panel hidden">
+  <section id="panel-quiz" class="jm-panel panel hidden">
     <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
         <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>

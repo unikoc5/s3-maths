@@ -345,32 +345,31 @@
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260829c">
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830b">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">
 </head>
-<body>
-<header class="topbar">
-  <a class="back-link" href="../../index.html#lessons">&larr; S3 Lessons</a>
-  <div class="lesson-brand">
-    <p class="lesson-kicker">JM24 · Lesson 24</p>
+<body class="paper-labs">
+<main class="jm-page">
+    <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
+    <p class="jm-eyebrow">JM24 · Lesson 24</p>
     <h1>Law of Indices</h1>
-  </div>
-  <nav class="main-tabs" aria-label="Lesson sections">
-    <button class="main-tab is-active" type="button" data-tab="concept">Concept &amp; Formula</button>
-    <button class="main-tab" type="button" data-tab="tools">Interactive Tool</button>
-    <button class="main-tab" type="button" data-tab="games">Games</button>
-    <button class="main-tab" type="button" data-tab="comics">Comics</button>
-    <button class="main-tab" type="button" data-tab="summary">Summary</button>
-    <button class="main-tab" type="button" data-tab="quiz">Quiz</button>
+    <p class="lead">Powers, scientific notation, binary, comics, and quiz.</p>
+    <nav class="jm-tabs" aria-label="Lesson sections">
+    <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
+    <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+    <button class="jm-tab" type="button" data-tab="games">Games</button>
+    <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+    <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
-</header>
 
-<main class="lesson-main">
-    <section id="panel-concept" class="view is-active">
+    <section id="panel-concept" class="jm-panel active">
       <section class="block">
         <h2>Concept &amp; Formula</h2>
         <p class="hint">Coming soon.</p>
       </section>
     </section>
-    <section id="panel-tools" class="view">
+    <section id="panel-tools" class="jm-panel hidden">
       <div class="subnav" aria-label="Tools">
         <button class="chip active" type="button" data-lab="powers">Powers</button>
         <button class="chip" type="button" data-lab="scientific">Scientific notation</button>
@@ -898,25 +897,25 @@
       </div>
     </section>
 
-    <section id="panel-games" class="view">
+    <section id="panel-games" class="jm-panel hidden">
       <section class="block">
         <h2>Games</h2>
         <p class="hint">Coming soon.</p>
       </section>
     </section>
-    <section id="panel-comics" class="view">
+    <section id="panel-comics" class="jm-panel hidden">
       <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
       <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
     </section>
-    <section id="panel-summary" class="view">
+    <section id="panel-summary" class="jm-panel hidden">
       <section class="block">
         <h2>Summary</h2>
         <p class="hint">Coming soon.</p>
       </section>
     </section>
-    <section id="panel-quiz" class="view">
+    <section id="panel-quiz" class="jm-panel hidden">
       <section class="block">
         <h2>Quiz</h2>
         <p class="hint">Coming soon.</p>
@@ -1280,11 +1279,12 @@
     window.lockFormula = lockFormula;
 
     function showTab(name) {
-      document.querySelectorAll(".main-tab").forEach((btn) => {
-        btn.classList.toggle("is-active", btn.dataset.tab === name);
+      document.querySelectorAll(".jm-tab").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === name);
       });
-      document.querySelectorAll(".view").forEach((panel) => {
-        panel.classList.toggle("is-active", panel.id === "panel-" + name);
+      document.querySelectorAll(".jm-panel").forEach((panel) => {
+        panel.classList.toggle("hidden", panel.id !== "panel-" + name);
+        panel.classList.toggle("active", panel.id === "panel-" + name);
       });
       if (name === "tools") {
         const activeLab = document.querySelector(".lab.active");
@@ -1313,7 +1313,7 @@
         }
       }
     }
-    document.querySelectorAll(".main-tab").forEach((btn) => {
+    document.querySelectorAll(".jm-tab").forEach((btn) => {
       btn.addEventListener("click", () => {
         const name = btn.dataset.tab;
         showTab(name);

@@ -97,47 +97,99 @@ header {
 
 .tabs,
 .tab-row .tabs,
-.main-tabs {
+.main-tabs,
+.jm-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
-  border-bottom: none !important;
+  gap: 4px 6px;
+  margin: 0 0 14px;
+  border-bottom: 1px solid var(--line) !important;
   padding-bottom: 0 !important;
 }
 
 .tab,
 .main-tab,
+.jm-tab,
 .chip,
 .tool-pill {
   transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
 .tab,
-.main-tab {
+.main-tab,
+.jm-tab {
   border: none !important;
-  background: transparent !important;
+  background: none !important;
   color: var(--muted) !important;
   font: inherit !important;
-  font-weight: 700 !important;
-  font-size: 0.9rem !important;
-  padding: 0.55rem 1rem !important;
-  border-radius: 999px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  padding: 10px 12px !important;
+  border-radius: 10px 10px 0 0 !important;
   cursor: pointer;
   box-shadow: none !important;
 }
 
 .tab:hover,
-.main-tab:hover {
+.main-tab:hover,
+.jm-tab:hover {
   color: var(--ink) !important;
-  background: rgba(255, 255, 255, 0.7) !important;
+  background: transparent !important;
 }
 
 .tab.active,
 .main-tab.is-active,
-.main-tab.active {
-  color: #fff !important;
-  background: var(--accent) !important;
-  box-shadow: none !important;
+.main-tab.active,
+.jm-tab.active {
+  color: var(--ink) !important;
+  background: var(--surface) !important;
+  box-shadow: inset 0 -2px 0 var(--accent) !important;
+}
+
+.jm-page,
+main.page {
+  position: relative;
+  z-index: 1;
+  width: min(860px, 100%);
+  margin: 0 auto;
+  padding: 28px 22px 80px;
+}
+
+.jm-back,
+.back,
+a.back,
+.back-link {
+  display: inline-flex !important;
+  align-items: center;
+  margin-bottom: 18px !important;
+  padding: 7px 12px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 8px !important;
+  background: var(--surface-2, #eef2f7) !important;
+  color: var(--ink) !important;
+  text-decoration: none !important;
+  font: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+}
+
+.jm-eyebrow,
+.eyebrow,
+.lesson-kicker {
+  margin: 0 0 6px !important;
+  font-size: 11px !important;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent) !important;
+}
+
+.jm-panel.hidden,
+.panel.hidden,
+.mode-panel.hidden,
+.view.hidden {
+  display: none !important;
 }
 
 .subnav {
