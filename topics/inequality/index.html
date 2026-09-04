@@ -28,13 +28,30 @@
   <script defer src="inequality-quiz.js?v=20260725-fixes6"></script>
   <style>
     :root {
-      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
-      --a: #4FC3F7; --line: rgba(0, 0, 0, 0.08); --ab: #66BB6A;
-      --gt: #66BB6A; --ge: #AB47BC; --lt: #FFD54F; --le: #4FC3F7; --red: #EF5350;
+      --surface: #ffffff;
+      --surface-2: #eef2f7;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: rgba(30, 41, 59, 0.12);
+      --accent: #0284c7;
+      --glow: #0369a1;
+      --bg: #f1f5f9;
+      --panel: var(--surface);
+      --panel2: var(--surface-2);
+      --ink: var(--text);
+      --dim: var(--muted);
+      --a: var(--accent);
+      --ab: #66BB6A;
+      --gt: #66BB6A; --ge: #AB47BC; --lt: #FFD54F; --le: #0ea5e9; --red: #EF5350;
     }
     * { box-sizing: border-box; }
-    body { background: var(--bg); color: var(--ink);
-      font-family: "Hanken Grotesk", system-ui, sans-serif; }
+    body { margin: 0; min-height: 100vh; color: var(--text);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(14,165,233,.12), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 92% 8%, rgba(56,189,248,.1), transparent 50%),
+        linear-gradient(180deg,#f8fafc,#f1f5f9);
+      background-attachment: fixed; }
     header { padding: 18px 28px; border-bottom: 1px solid var(--line);
       display: flex; align-items: baseline; gap: 14px; }
     header h1 { font-size: 22px; margin: 0; font-weight: 700; }
@@ -48,7 +65,7 @@
       font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer;
       font-size: 14px; transition: all .15s; }
     .chip:hover { color: var(--ink); }
-    .chip.active { color: #06283d; background: var(--a); border-color: var(--a); }
+    .chip.active { color: #fff; background: var(--accent); border-color: var(--accent); }
     /* Tab 1: slide deck — height from topic-shell.css */
     .deck-wrap { background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
     .hint { color: var(--dim); font-size: 13px; text-align: center; margin-top: 10px; }

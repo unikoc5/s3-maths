@@ -21,8 +21,20 @@
   <script defer src="area-volume-quiz.js?v=20260730-prejm"></script>
   <style>
     :root {
-      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
-      --a: #4FC3F7; --b: #FFD54F; --ab: #81C784; --down: #F06292; --line: rgba(0, 0, 0, 0.08);
+      --surface: #ffffff;
+      --surface-2: #eef2f7;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: rgba(30, 41, 59, 0.12);
+      --accent: #0284c7;
+      --glow: #0369a1;
+      --bg: #f1f5f9;
+      --panel: var(--surface);
+      --panel2: var(--surface-2);
+      --ink: var(--text);
+      --dim: var(--muted);
+      --a: var(--accent);
+      --b: #FFD54F; --ab: #81C784; --down: #F06292;
     }
     * { box-sizing: border-box; }
     body {
@@ -52,7 +64,7 @@
       font-size: 14px; transition: all .15s;
     }
     .chip:hover { color: var(--ink); }
-    .chip.active { color: #06283d; background: var(--a); border-color: var(--a); }
+    .chip.active { color: #fff; background: var(--accent); border-color: var(--accent); }
     /* Tab 1: slide deck — height from topic-shell.css */
     .deck-wrap {
       background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;

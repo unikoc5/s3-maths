@@ -3,25 +3,25 @@
  * Content and behaviour stay the same — appearance only.
  */
 :root {
-  --ink: #1a1f2e;
-  --muted: #5c6578;
-  --paper: #f4f7fb;
+  --ink: #1e293b;
+  --muted: #64748b;
+  --paper: #f1f5f9;
   --card: #ffffff;
-  --line: rgba(26, 31, 46, 0.08);
+  --line: rgba(30, 41, 59, 0.12);
   --shadow: 0 12px 32px rgba(26, 31, 46, 0.08);
   --radius: 16px;
-  --font: "DM Sans", system-ui, sans-serif;
-  --display: "Fraunces", Georgia, serif;
-  --accent: #3d7ea6;
-  --accent-soft: #e8f2f8;
+  --font: "Hanken Grotesk", "DM Sans", system-ui, sans-serif;
+  --display: "Hanken Grotesk", "Fraunces", Georgia, serif;
+  --accent: #0284c7;
+  --accent-soft: #e0f2fe;
   --surface: var(--card);
-  --surface-2: var(--paper);
+  --surface-2: #eef2f7;
   --text: var(--ink);
   --dim: var(--muted);
   --bg: var(--paper);
   --panel: var(--card);
-  --panel2: var(--paper);
-  --glow: var(--accent);
+  --panel2: var(--surface-2);
+  --glow: #0369a1;
 }
 
 html { scroll-behavior: smooth; caret-color: transparent; }
@@ -35,9 +35,9 @@ body {
   color: var(--ink) !important;
   caret-color: transparent !important;
   background:
-    radial-gradient(circle at 8% 0%, rgba(120, 180, 220, 0.22), transparent 42%),
-    radial-gradient(circle at 92% 8%, rgba(180, 160, 220, 0.13), transparent 38%),
-    var(--paper) !important;
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(14,165,233,.12), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 92% 8%, rgba(56,189,248,.1), transparent 50%),
+    linear-gradient(180deg,#f8fafc,#f1f5f9) !important;
   background-attachment: fixed;
 }
 
