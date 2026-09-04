@@ -24,6 +24,7 @@ body {
   min-height: 100vh;
   font-family: var(--font);
   color: var(--ink);
+  caret-color: transparent;
   background:
     radial-gradient(circle at 8% 0%, rgba(120, 180, 220, 0.2), transparent 42%),
     radial-gradient(circle at 92% 8%, rgba(180, 160, 220, 0.14), transparent 38%),
@@ -270,3 +271,15 @@ main {
     grid-template-columns: 1fr;
   }
 }
+/* Hide typing caret on gallery chrome; keep text selectable. */
+h1, h2, .lede, .eyebrow, .card-body p, .lesson-code, .brand strong, .brand small {
+  -webkit-user-select: text;
+  user-select: text;
+  caret-color: transparent;
+}
+button, .topic-card, .back-link, .level-card, .lang-btn, .site-header, .card-art, .tags {
+  -webkit-user-select: none;
+  user-select: none;
+  caret-color: transparent;
+}
+input, textarea, select, [contenteditable="true"] { caret-color: auto; }
