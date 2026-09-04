@@ -12,13 +12,13 @@
     'input, textarea, select, [contenteditable="true"] { caret-color: auto; }' +
     ".hint, .lead, .lede, .feedback, .formula, .eq-line, .katex, .katex-html," +
     ".hero h1, .hero p, .eyebrow, h1, h2, h3, .part-title, .note-box, .quiz-stem," +
-    ".cross-math, .cross-preview, #tool-eq, .caption, .intro {" +
+    ".cross-math, .cross-preview, #tool-eq, .caption, .intro, .lesson-code, .card-body p {" +
     "  -webkit-user-select: text; user-select: text; caret-color: transparent;" +
     "}" +
     ".chip, .tab, .jm-tab, .subnav, .slider-row, .tool-sliders, input[type=range]," +
     "svg, .lab-svg, .numline-svg, .topic-card, .back-link, button, .jm-tabs," +
     ".stat-card, .pcard, .method-chip {" +
-    "  caret-color: transparent;" +
+    "  -webkit-user-select: none; user-select: none; caret-color: transparent;" +
     "}";
   (document.head || document.documentElement).appendChild(style);
 
@@ -55,7 +55,8 @@
     ".task-box p, .panel p, .no-sol, .quiz-stem, .eq-line, .step-title, " +
     ".comic-check-card, .legend-title, .legend .lg-item em, .legend .lg-item .katex, " +
     ".katex, .katex-html, .formula, .cross-math, .cross-preview, .note-box, " +
-    ".part-title, h1, h2, h3, .caption, #tool-eq, .pg-sym, .eyebrow, .hero";
+    ".part-title, h1, h2, h3, .caption, #tool-eq, .pg-sym, .eyebrow, .hero, " +
+    ".lesson-code, .card-body p";
 
   document.addEventListener("focusin", function (e) {
     if (mayKeepFocus(e.target)) return;
@@ -67,7 +68,6 @@
     var el = e.target;
     if (!el || el.closest("input, textarea, select, [contenteditable='true']")) return;
     if (el.closest("button, a, [role='button'], [role='tab'], [tabindex]:not([tabindex='-1'])")) return;
-    if (el.closest(SELECTABLE)) return;
-    if (el.closest(DRAG_CHROME)) e.preventDefault();
+    if (el.closest(SELECTABLE) || el.closest(DRAG_CHROME)) e.preventDefault();
   });
 })();
