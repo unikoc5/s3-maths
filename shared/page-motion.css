@@ -84,10 +84,12 @@ section.block:nth-of-type(4) { animation-delay: 0.38s; }
 .step-viewport,
 .step-body,
 .step-body.step-viewport {
-  overflow: hidden;
+  overflow: hidden !important;
+  padding: 0 !important;
   min-width: 0;
   max-width: 100%;
   min-height: 170px;
+  box-sizing: border-box;
 }
 
 .step-track {
@@ -105,6 +107,7 @@ section.block:nth-of-type(4) { animation-delay: 0.38s; }
   min-width: 0;
   box-sizing: border-box;
   overflow: hidden;
+  padding: 8px 12px;
 }
 
 .step-frame .nav-btn {

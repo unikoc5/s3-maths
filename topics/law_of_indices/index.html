@@ -74,11 +74,11 @@
     }
     .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
     .nav-btn:disabled { opacity: .35; cursor: not-allowed; }
-    .step-body { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 6px; min-height: 170px; overflow: hidden; min-width: 0; max-width: 100%; }
+    .step-body { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 0 !important; min-height: 170px; overflow: hidden !important; min-width: 0; max-width: 100%; box-sizing: border-box; }
     .step-panel { display: none; }
     .step-panel.active { display: block; }
     .step-track { display: flex; width: 100%; transition: transform 0.35s ease; will-change: transform; }
-    .step-track > .step-panel { display: block; flex: 0 0 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden; }
+    .step-track > .step-panel { display: block; flex: 0 0 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden; padding: 8px 12px; }
     .step-label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--glow); }
     .step-title { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.35; }
     .step-text { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
@@ -703,7 +703,7 @@
         <p class="part-title">Part 3 · Practice</p>
         <section class="block">
           <h2>3. Convert both ways</h2>
-          <p class="hint">Random question: ordinary → scientific, or scientific → ordinary (worksheet Q1–10 style).</p>
+          <p class="hint">Random question: ordinary → scientific, or scientific → ordinary.</p>
           <p class="sci-convert-q" id="sci-convert-q">—</p>
           <div class="sci-convert-fields" id="sci-convert-fields"></div>
           <div class="task-box">
@@ -718,7 +718,7 @@
 
         <p class="part-title">Part 4 · Multiply &amp; divide</p>
         <section class="block">
-          <h2>4. Use index laws (worksheet Q11–22)</h2>
+          <h2>4. Use index laws</h2>
           <p class="hint">Combine coefficients, then add or subtract the indices — same rules as \(x^{m} \times x^{n}\) and \(x^{m} \div x^{n}\).</p>
           <p class="sci-arith-q" id="sci-arith-q">—</p>
           <div class="sci-arith-fields">
@@ -736,7 +736,7 @@
 
         <p class="part-title">Part 5 · Compare &amp; order</p>
         <section class="block" id="sci-sort-wrap">
-          <h2>5. Arrange in order (worksheet Q33–34)</h2>
+          <h2>5. Arrange in order</h2>
           <p class="hint" id="sci-sort-label">Drag into ascending order (smallest → largest).</p>
           <div class="sort-area">
             <div class="sort-pool" id="sci-sort-pool"></div>
@@ -759,7 +759,7 @@
       </div>
 
       <div class="lab" id="lab-sci-walk">
-        <p class="lead">Guided scientific-notation walkthrough (from the comics lesson) — step through conversion and arithmetic modules. The Scientific notation lab above stays available for practice drills.</p>
+        <p class="lead">Guided scientific-notation walkthrough — step through conversion and arithmetic modules. The Scientific notation lab above stays available for practice drills.</p>
         <div id="sci-walk-root"></div>
       </div>
 
@@ -927,7 +927,6 @@
   <script defer src="law-of-indices-scientific.js?v=20260810-sci3"></script>
   <script src="comics-manifest.js?v=20260829c"></script>
   <script src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
-  <script src="indices-comics.js?v=20260830-fu"></script>
   <script src="sci-notation-content.js?v=20260828-sel1"></script>
   <script src="sci-notation-tool.js?v=20260828-sel1"></script>
   <script>
