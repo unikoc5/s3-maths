@@ -359,7 +359,7 @@
               subject: 'MATH',
               quizId: 'math-area-volume',
               questionId: 'av-q' + q.id,
-              section: 'area-volume',
+              section: 'JM32 Areas and Volumes III',
               difficulty: 'standard',
               stem: q.stem || q.prompt || null,
               selectedAnswer: userAnswerIdx !== undefined ? String(userAnswerIdx) : null,

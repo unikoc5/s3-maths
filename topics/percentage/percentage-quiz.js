@@ -295,7 +295,7 @@
               subject: 'MATH',
               quizId: 'math-percentages',
               questionId: 'pct-q' + q.id,
-              section: 'percentages',
+              section: 'JM27 Percentages II',
               difficulty: 'standard',
               stem: q.stem || q.prompt || null,
               selectedAnswer: userAnswerIdx !== undefined ? String(userAnswerIdx) : null,

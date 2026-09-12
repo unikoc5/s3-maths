@@ -681,7 +681,7 @@
               subject: 'MATH',
               quizId: 'math-inequality',
               questionId: 'ineq-q' + q.id,
-              section: 'inequality',
+              section: 'JM26 Inequalities I',
               difficulty: 'standard',
               stem: q.stem || null,
               selectedAnswer: userAnswerIdx !== undefined ? String(userAnswerIdx) : null,

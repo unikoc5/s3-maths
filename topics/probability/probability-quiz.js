@@ -330,7 +330,7 @@
               subject: 'MATH',
               quizId: 'math-probability',
               questionId: 'prob-q' + q.id,
-              section: 'probability',
+              section: 'JM30 Probabilities',
               difficulty: 'standard',
               stem: q.stem || q.prompt || null,
               selectedAnswer: userAnswerIdx !== undefined ? String(userAnswerIdx) : null,
