@@ -345,6 +345,7 @@
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260829c">
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260906-comicw"><link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260906-comicw"><link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="jm24-quiz.css?v=20260917-l01-l03">
 </head>
 <body class="paper-labs">
 <main class="jm-page">
@@ -960,10 +961,18 @@
       </section>
     </section>
     <section id="panel-quiz" class="jm-panel hidden">
-      <section class="block">
-        <h2>Quiz</h2>
-        <p class="hint">Coming soon.</p>
-      </section>
+      <div class="quiz-wrap">
+        <div class="quiz-progress-wrap" id="quiz-progress-wrap">
+          <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
+          <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
+        </div>
+        <div id="quiz-root"></div>
+        <div class="quiz-nav" id="quiz-nav">
+          <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
+          <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
+        </div>
+      </div>
+      <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
     </section>
   </main>
 
@@ -971,6 +980,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script defer src="law-of-indices-binary.js?v=20260730-bin8"></script>
   <script defer src="law-of-indices-scientific.js?v=20260810-sci3"></script>
+  <script defer src="law-of-indices-quiz.js?v=20260917-l01-l03"></script>
   <script src="comics-manifest.js?v=20260829c"></script>
   <script src="../../shared/jm-comics-engine.js?v=20260906-comicw"></script>
   <script src="indices-comics.js?v=20260906-comicw2"></script>
