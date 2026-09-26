@@ -6,11 +6,13 @@ window.JM24_COMICS = {
     series: "Indices Club",
     basePath: "comics/rules/",
     chapters: [
-      { id: "ch1", title: "Chapter 1 — Entry Trial", file: "indices-club-chapter-1-color.png" },
-      { id: "ch2", title: "Chapter 2 — Zero's Ambush", file: "indices-club-chapter-2-color.png" },
-      { id: "ch3", title: "Chapter 3 — Final Match: Same Root", file: "indices-club-chapter-3-color.png" },
+      { id: "prologue", title: "Prologue — The Algebra World", file: "indices-club-prologue-color.png" },
+      { id: "ch1", title: "Chapter 1 — The Maze Trial", file: "indices-club-maze-trial-color.png" },
+      { id: "ch2", title: "Chapter 2 — The Stone Bridge", file: "indices-club-stone-bridge-color.png" },
+      { id: "ch3", title: "Chapter 3 — Zero Revealed", file: "indices-club-zero-first-form-color.png?v=20260906-fix1" },
+      { id: "ch4", title: "Chapter 4 — Zero's Second Form", file: "indices-club-zero-second-form-color.png?v=20260906-crisp" },
     ],
-    lawCard: { title: "Law Card — Indices Club", file: "indices-club-laws-card-color.png" },
+    lawCard: { title: "Law Card — Indices School", file: "indices-school-laws-card-color.png?v=20260906-short-hair" },
   },
   "scientific-notation": {
     id: "scientific-notation",

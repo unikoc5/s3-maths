@@ -42,6 +42,8 @@
     var known = [
       [0, "0"], [1, "1"], [-1, "-1"],
       [0.5, "\\dfrac{1}{2}"], [-0.5, "-\\dfrac{1}{2}"],
+      [0.25, "\\dfrac{1}{4}"], [-0.25, "-\\dfrac{1}{4}"],
+      [0.75, "\\dfrac{3}{4}"], [-0.75, "-\\dfrac{3}{4}"],
       [s2, "\\dfrac{\\sqrt{2}}{2}"], [-s2, "-\\dfrac{\\sqrt{2}}{2}"],
       [s3 / 2, "\\dfrac{\\sqrt{3}}{2}"], [-s3 / 2, "-\\dfrac{\\sqrt{3}}{2}"],
       [s3, "\\sqrt{3}"], [-s3, "-\\sqrt{3}"],
@@ -119,6 +121,9 @@
           btn.classList.add("active");
           $("stage-identity").style.display = btn.dataset.p2 === "pyth" ? "" : "none";
           $("stage-idtan").style.display = btn.dataset.p2 === "tan" ? "" : "none";
+          var methods = $("id-method-nav");
+          if (methods) methods.style.display = btn.dataset.p2 === "pyth" ? "" : "none";
+          if (btn.dataset.p2 === "pyth") renderIdentitySection();
           if (btn.dataset.p2 === "tan") renderIdTan();
         });
       });
@@ -1345,7 +1350,7 @@
       x1: S.x0, y1: S.yS(1), x2: S.x1, y2: S.yS(1),
       stroke: CHART.guide, "stroke-width": 1.6, "stroke-dasharray": "5 4",
     }));
-    var x = idn.x, a = s2(x), b = c2(x), mid = (a + b) / 2, sum = a + b;
+    var x = idn.x, a = s2(x), b = c2(x), sum = a + b;
     var xs = S.xS(x);
     // Start at y=0 (not plot bottom yMin) + butt caps so the stack doesn't poke below the axis
     var yBase = S.yS(0), yA = S.yS(a), yTop = S.yS(sum);
@@ -1359,7 +1364,6 @@
       stroke: CHART.b, "stroke-width": 10, "stroke-linecap": "butt", opacity: "0.9",
       "data-id-drag": "1", style: "cursor:ew-resize",
     }));
-    svg.appendChild(E("circle", { cx: xs, cy: S.yS(mid), r: 5, fill: CHART.point }));
     // large invisible hit target + handle at sum=1
     svg.appendChild(E("circle", {
       cx: xs, cy: S.yS(sum), r: 22, fill: "transparent",
@@ -1378,15 +1382,20 @@
     bindIdDrag(svg);
   }
 
+  function setIdFoot(step, last) {
+    var prev = $("id-prev");
+    var next = $("id-next");
+    var label = $("id-step-label");
+    if (!prev || !next || !label) return;
+    prev.disabled = step === 0;
+    next.disabled = step === last;
+    label.textContent = "Step " + (step + 1) + " / " + (last + 1);
+    next.textContent = step === last ? "Done" : "Next →";
+  }
+
   function renderId() {
     var body = $("id-body");
-    var label = $("id-step-label");
-    var next = $("id-next");
-    var prev = $("id-prev");
-    prev.disabled = idn.step === 0;
-    label.textContent = "Step " + (idn.step + 1) + " / 4";
-    next.disabled = idn.step === 3;
-    next.textContent = idn.step === 3 ? "Done" : "Next →";
+    setIdFoot(idn.step, 3);
 
     if (idn.step === 0) {
       body.innerHTML =
@@ -1422,7 +1431,7 @@
         '<p class="point-legend" style="margin-top:4px">' +
         '<span><span class="dot" style="background:' + CHART.a + '"></span>sin²</span>' +
         '<span><span class="dot" style="background:' + CHART.b + '"></span>cos²</span>' +
-        '<span><span class="dot" style="background:' + CHART.point + '"></span>points / handle</span>' +
+        '<span><span class="dot" style="background:' + CHART.point + '"></span>handle</span>' +
         '<span class="status-line" id="id-readout" style="margin:0 0 0 8px"></span></p>';
       $("id-x").addEventListener("input", function (e) { setIdX(+e.target.value); });
       paintIdBig();
@@ -1435,14 +1444,373 @@
     }
   }
 
+  /* =========================================================================
+   * Part 2A — right triangle with hypotenuse 1.
+   * opposite = sin θ, adjacent = cos θ, then Pythagoras:
+   * opposite² + adjacent² = hypotenuse² ⇒ sin²θ + cos²θ = 1.
+   * ========================================================================= */
+  var idMethod = "graph";
+  var lad = { step: 0, deg: 35, drag: false, mode: null };
+  var LAD_LAST = 2;
+  var LAD_MIN = 18, LAD_MAX = 72;
+  var LAD_W = 560, LAD_H = 480, LAD_L = 150;
+  var LAD_SIN = "#34d399";
+  var LAD_COS = "#60a5fa";
+
+  function ladderMetrics() {
+    var th = clamp(lad.deg, LAD_MIN, LAD_MAX);
+    var s = Math.sin(rad(th));
+    var c = Math.cos(rad(th));
+    return { deg: th, sin: s, cos: c, sin2: s * s, cos2: c * c };
+  }
+
+  function svgPointMeet(svg, e) {
+    var r = svg.getBoundingClientRect();
+    var vb = svg.viewBox.baseVal;
+    var s = Math.min(r.width / vb.width, r.height / vb.height);
+    var ox = (r.width - vb.width * s) / 2;
+    var oy = (r.height - vb.height * s) / 2;
+    return {
+      x: (e.clientX - r.left - ox) / s,
+      y: (e.clientY - r.top - oy) / s,
+    };
+  }
+
+  function distToSeg(p, a, b) {
+    var dx = b.x - a.x, dy = b.y - a.y;
+    var l2 = dx * dx + dy * dy || 1;
+    var t = clamp(((p.x - a.x) * dx + (p.y - a.y) * dy) / l2, 0, 1);
+    return Math.hypot(p.x - a.x - t * dx, p.y - a.y - t * dy);
+  }
+
+  function ladText(svg, x, y, str, fill, size, halo) {
+    var attrs = {
+      x: x, y: y, fill: fill,
+      "font-size": size || 15,
+      "font-weight": 800,
+      "text-anchor": "middle",
+      "dominant-baseline": "middle",
+      "font-family": "Hanken Grotesk, system-ui, sans-serif",
+    };
+    if (halo) {
+      attrs.stroke = "#0f172a";
+      attrs["stroke-width"] = 3.5;
+      attrs["paint-order"] = "stroke fill";
+    }
+    svg.appendChild(E("text", attrs, str));
+  }
+
+  function ladEq(cls, tex) {
+    return '<p class="lad-eq ' + cls + '">' + K(tex) + "</p>";
+  }
+
+  function setLadDeg(degV) {
+    lad.deg = Math.round(clamp(degV, LAD_MIN, LAD_MAX));
+    syncLadControls();
+    paintLadder();
+  }
+
+  function syncLadControls() {
+    var slider = $("lad-deg");
+    if (slider && document.activeElement !== slider) slider.value = String(lad.deg);
+    else if (slider && +slider.value !== lad.deg) slider.value = String(lad.deg);
+    var val = $("lad-deg-val");
+    if (val) val.textContent = lad.deg + "°";
+    document.querySelectorAll("[data-lad-preset]").forEach(function (b) {
+      b.classList.toggle("active", +b.getAttribute("data-lad-preset") === lad.deg);
+    });
+  }
+
+  function ladderGeom(m) {
+    var C = { x: 214, y: 196 };
+    return {
+      C: C,
+      T: { x: C.x, y: C.y - LAD_L * m.sin },
+      F: { x: C.x + LAD_L * m.cos, y: C.y },
+    };
+  }
+
+  function drawDim(svg, x1, y1, x2, y2, color) {
+    var dx = x2 - x1, dy = y2 - y1;
+    var len = Math.hypot(dx, dy) || 1;
+    var px = -dy / len * 6, py = dx / len * 6;
+    svg.appendChild(E("line", {
+      x1: x1, y1: y1, x2: x2, y2: y2,
+      stroke: color, "stroke-width": 2.4, "stroke-linecap": "round",
+    }));
+    [[x1, y1], [x2, y2]].forEach(function (pt) {
+      svg.appendChild(E("line", {
+        x1: pt[0] - px, y1: pt[1] - py, x2: pt[0] + px, y2: pt[1] + py,
+        stroke: color, "stroke-width": 2.4, "stroke-linecap": "round",
+      }));
+    });
+  }
+
+  function paintLadder() {
+    var svg = $("lad-svg");
+    var side = $("lad-side");
+    if (!svg) return;
+    var m = ladderMetrics();
+    var G = ladderGeom(m);
+    var C = G.C, T = G.T, F = G.F;
+    svg.setAttribute("viewBox", "50 6 390 286");
+    svg._ladC = C;
+    svg._ladL = LAD_L;
+    svg._ladT = T;
+    svg._ladF = F;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    svg.appendChild(E("rect", { x: 0, y: 0, width: LAD_W, height: LAD_H, fill: "#0f172a" }));
+
+    svg.appendChild(E("polygon", {
+      points: [C, T, F].map(function (p) { return p.x + "," + p.y; }).join(" "),
+      fill: "rgba(226,232,240,.08)", stroke: "none",
+    }));
+    svg.appendChild(E("line", {
+      x1: C.x, y1: C.y, x2: C.x, y2: T.y,
+      stroke: LAD_SIN, "stroke-width": 5, "stroke-linecap": "round",
+    }));
+    svg.appendChild(E("line", {
+      x1: C.x, y1: C.y, x2: F.x, y2: F.y,
+      stroke: LAD_COS, "stroke-width": 5, "stroke-linecap": "round",
+    }));
+    svg.appendChild(E("line", {
+      x1: F.x, y1: F.y, x2: T.x, y2: T.y,
+      stroke: "#e2e8f0", "stroke-width": 5, "stroke-linecap": "round",
+    }));
+
+    var rs = 14;
+    svg.appendChild(E("path", {
+      d: "M " + (C.x + rs) + " " + C.y +
+        " L " + (C.x + rs) + " " + (C.y - rs) +
+        " L " + C.x + " " + (C.y - rs),
+      fill: "none", stroke: "#cbd5e1", "stroke-width": 1.8,
+    }));
+
+    var aFloor = Math.atan2(C.y - F.y, C.x - F.x);
+    var aLad = Math.atan2(T.y - F.y, T.x - F.x);
+    var sweep = aLad - aFloor;
+    while (sweep <= -Math.PI) sweep += 2 * Math.PI;
+    while (sweep > Math.PI) sweep -= 2 * Math.PI;
+    var arcR = 26;
+    var ax0 = F.x + arcR * Math.cos(aFloor);
+    var ay0 = F.y + arcR * Math.sin(aFloor);
+    var ax1 = F.x + arcR * Math.cos(aFloor + sweep);
+    var ay1 = F.y + arcR * Math.sin(aFloor + sweep);
+    svg.appendChild(E("path", {
+      d: "M " + ax0 + " " + ay0 + " A " + arcR + " " + arcR + " 0 0 " +
+        (sweep > 0 ? 1 : 0) + " " + ax1 + " " + ay1,
+      fill: "none", stroke: "#fbbf24", "stroke-width": 2.4,
+    }));
+    var labelR = arcR + 13;
+    var midAng = aFloor + sweep / 2;
+    ladText(
+      svg,
+      F.x + labelR * Math.cos(midAng),
+      F.y + labelR * Math.sin(midAng),
+      "θ", "#fbbf24", 16, true
+    );
+
+    var midX = (F.x + T.x) / 2, midY = (F.y + T.y) / 2;
+    var ox = midX - C.x, oy = midY - C.y;
+    var ol = Math.hypot(ox, oy) || 1;
+    ladText(svg, midX + (ox / ol) * 28, midY + (oy / ol) * 28, "1", "#f8fafc", 18, true);
+
+    drawDim(svg, C.x - 28, T.y, C.x - 28, C.y, LAD_SIN);
+    drawDim(svg, C.x, C.y + 28, F.x, C.y + 28, LAD_COS);
+    var hy = (T.y + C.y) / 2;
+    var bx = (C.x + F.x) / 2;
+    ladText(svg, C.x - 78, hy, "sin θ", "#6ee7b7", 15, true);
+    ladText(svg, bx, C.y + 52, "cos θ", "#93c5fd", 15, true);
+    if (lad.step >= 1) {
+      ladText(svg, C.x - 78, hy + 20, ladPlain(m.sin), "#6ee7b7", 14, true);
+      ladText(svg, bx, C.y + 72, ladPlain(m.cos), "#93c5fd", 14, true);
+    }
+
+    svg.appendChild(E("line", {
+      x1: F.x, y1: F.y, x2: T.x, y2: T.y,
+      stroke: "transparent", "stroke-width": 28,
+      "data-lad-drag": "bar",
+    }));
+    [["top", T], ["foot", F]].forEach(function (h) {
+      svg.appendChild(E("circle", {
+        cx: h[1].x, cy: h[1].y, r: 11,
+        fill: "#fbbf24", stroke: "#fff", "stroke-width": 2.5,
+        "data-lad-drag": h[0],
+      }));
+      svg.appendChild(E("circle", {
+        cx: h[1].x, cy: h[1].y, r: 22,
+        fill: "transparent",
+        "data-lad-drag": h[0],
+      }));
+    });
+
+    if (!side) return;
+    var deg = m.deg;
+    var opp = exactTex(m.sin);
+    var adj = exactTex(m.cos);
+    var opp2 = exactTex(m.sin2);
+    var adj2 = exactTex(m.cos2);
+    if (lad.step === 0) {
+      side.innerHTML =
+        '<div class="box">' +
+        '<p class="lad-title">Why opposite = sin θ and adjacent = cos θ</p>' +
+        ladEq("", "\\text{hypotenuse}=1") +
+        ladEq("sin", "\\sin\\theta=\\dfrac{\\text{opposite}}{\\text{hypotenuse}}=\\dfrac{\\text{opposite}}{1}") +
+        ladEq("sin", "\\text{opposite}=\\sin\\theta") +
+        ladEq("cos", "\\cos\\theta=\\dfrac{\\text{adjacent}}{\\text{hypotenuse}}=\\dfrac{\\text{adjacent}}{1}") +
+        ladEq("cos", "\\text{adjacent}=\\cos\\theta") +
+        '<p class="lad-note">Sine is opposite over hypotenuse. Cosine is adjacent over hypotenuse. The hypotenuse is 1, so each ratio is the side itself. The green side is labeled sin θ. The blue side is labeled cos θ.</p>' +
+        "</div>";
+    } else if (lad.step === 1) {
+      side.innerHTML =
+        '<div class="box">' +
+        '<p class="lad-title">The two sides, from θ</p>' +
+        ladEq("", "\\theta=" + deg + "^\\circ") +
+        ladEq("", "\\text{hypotenuse}=1") +
+        ladEq("sin", "\\text{opposite}=1\\times\\sin " + deg + "^\\circ=" + opp) +
+        ladEq("cos", "\\text{adjacent}=1\\times\\cos " + deg + "^\\circ=" + adj) +
+        '<p class="lad-note">The angle is known and the hypotenuse is 1, so multiply by sin θ to get the opposite side, and by cos θ to get the adjacent side.</p>' +
+        "</div>";
+    } else {
+      side.innerHTML =
+        '<div class="box final">' +
+        '<p class="lad-title">Pythagoras theorem</p>' +
+        '<p class="lad-note">The square mark is 90°, so the squares of the two legs add up to the square of the hypotenuse.</p>' +
+        ladEq("sum", "\\text{opposite}^2+\\text{adjacent}^2=\\text{hypotenuse}^2") +
+        ladEq("", "(1\\times\\sin\\theta)^2+(1\\times\\cos\\theta)^2=1^2") +
+        ladEq("sum", "\\sin^2\\theta+\\cos^2\\theta=1") +
+        ladEq("sin", "\\sin^2 " + deg + "^\\circ=" + opp2) +
+        ladEq("cos", "\\cos^2 " + deg + "^\\circ=" + adj2) +
+        ladEq("sum", opp2 + "+" + adj2 + "=1") +
+        "</div>";
+    }
+  }
+
+  function ladPlain(v) {
+    var t = exactTex(v);
+    if (t === "\\dfrac{\\sqrt{3}}{2}") return "√3/2";
+    if (t === "\\dfrac{1}{2}") return "1/2";
+    if (t === "\\dfrac{\\sqrt{2}}{2}") return "√2/2";
+    if (t === "\\dfrac{3}{4}") return "3/4";
+    if (t === "\\dfrac{1}{4}") return "1/4";
+    if (t === "1" || t === "0") return t;
+    return fmt(v, 3);
+  }
+
+  function bindLadderDrag(svg) {
+    if (!svg || svg.dataset.dragBound) return;
+    svg.dataset.dragBound = "1";
+    function fromPtr(e) {
+      var C = svg._ladC;
+      var L = svg._ladL;
+      if (!C || !L) return;
+      var p = svgPointMeet(svg, e);
+      if (lad.mode === "top") {
+        var s = clamp((C.y - p.y) / L, Math.sin(rad(LAD_MIN)), Math.sin(rad(LAD_MAX)));
+        setLadDeg(deg(Math.asin(s)));
+      } else if (lad.mode === "foot") {
+        var c = clamp((p.x - C.x) / L, Math.cos(rad(LAD_MAX)), Math.cos(rad(LAD_MIN)));
+        setLadDeg(deg(Math.acos(c)));
+      } else {
+        var best = lad.deg, bestD = 1e9;
+        for (var d = LAD_MIN; d <= LAD_MAX; d++) {
+          var ss = Math.sin(rad(d)), cc = Math.cos(rad(d));
+          var TT = { x: C.x, y: C.y - L * ss };
+          var FF = { x: C.x + L * cc, y: C.y };
+          var dist = distToSeg(p, TT, FF);
+          if (dist < bestD) { bestD = dist; best = d; }
+        }
+        setLadDeg(best);
+      }
+    }
+    svg.addEventListener("pointerdown", function (e) {
+      var mode = e.target.getAttribute && e.target.getAttribute("data-lad-drag");
+      if (!mode) return;
+      lad.drag = true;
+      lad.mode = mode;
+      svg.setPointerCapture(e.pointerId);
+      fromPtr(e);
+    });
+    svg.addEventListener("pointermove", function (e) {
+      if (!lad.drag) return;
+      fromPtr(e);
+    });
+    function endDrag() { lad.drag = false; lad.mode = null; }
+    svg.addEventListener("pointerup", endDrag);
+    svg.addEventListener("pointercancel", endDrag);
+  }
+
+  function renderLadder() {
+    var body = $("id-body");
+    if (!body) return;
+    if (lad.step > LAD_LAST) lad.step = LAD_LAST;
+    setIdFoot(lad.step, LAD_LAST);
+    var hints = [
+      "sin θ = opposite ÷ hypotenuse, and cos θ = adjacent ÷ hypotenuse. The hypotenuse is 1, so opposite = sin θ and adjacent = cos θ. Those labels are on the triangle.",
+      "θ is known and the hypotenuse is 1. opposite = 1 × sin θ. adjacent = 1 × cos θ.",
+      "Pythagoras theorem: opposite² + adjacent² = hypotenuse². So (1 × sin θ)² + (1 × cos θ)² = 1², which is sin²θ + cos²θ = 1.",
+    ];
+    var presets = [30, 45, 60].map(function (d) {
+      return '<button type="button" class="btn' + (lad.deg === d ? " active" : "") +
+        '" data-lad-preset="' + d + '">' + d + "°</button>";
+    }).join("");
+    body.innerHTML =
+      '<p class="hint-sm">' + hints[lad.step] + "</p>" +
+      '<div class="slider-row">' +
+      '<label for="lad-deg">θ</label>' +
+      '<input id="lad-deg" type="range" min="' + LAD_MIN + '" max="' + LAD_MAX + '" value="' + lad.deg + '">' +
+      '<span id="lad-deg-val">' + lad.deg + "°</span>" +
+      presets +
+      "</div>" +
+      '<div class="ladder-layout">' +
+      '<div class="ladder-fig"><svg id="lad-svg" viewBox="0 0 ' + LAD_W + " " + LAD_H +
+      '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Right triangle with hypotenuse 1"></svg></div>' +
+      '<div class="ladder-side" id="lad-side"></div>' +
+      "</div>";
+    $("lad-deg").addEventListener("input", function (e) { setLadDeg(+e.target.value); });
+    body.querySelectorAll("[data-lad-preset]").forEach(function (b) {
+      b.addEventListener("click", function () { setLadDeg(+b.getAttribute("data-lad-preset")); });
+    });
+    paintLadder();
+    bindLadderDrag($("lad-svg"));
+  }
+
+  function renderIdentitySection() {
+    var stage = $("stage-identity");
+    if (stage) stage.classList.toggle("stage-ladder", idMethod === "ladder");
+    if (idMethod === "ladder") renderLadder();
+    else renderId();
+  }
+
   function initId() {
+    var nav = $("id-method-nav");
+    if (nav) {
+      nav.querySelectorAll("[data-idm]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          idMethod = btn.getAttribute("data-idm");
+          nav.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
+          btn.classList.add("active");
+          renderIdentitySection();
+        });
+      });
+    }
     $("id-next").addEventListener("click", function () {
-      if (idn.step < 3) { idn.step++; renderId(); }
+      if (idMethod === "ladder") {
+        if (lad.step < LAD_LAST) { lad.step++; renderLadder(); }
+      } else if (idn.step < 3) {
+        idn.step++;
+        renderId();
+      }
     });
     $("id-prev").addEventListener("click", function () {
-      if (idn.step > 0) { idn.step--; renderId(); }
+      if (idMethod === "ladder") {
+        if (lad.step > 0) { lad.step--; renderLadder(); }
+      } else if (idn.step > 0) {
+        idn.step--;
+        renderId();
+      }
     });
-    renderId();
+    renderIdentitySection();
   }
 
   /* ───────── Part 2B: tan x = sin x / cos x (right triangle) ───────── */

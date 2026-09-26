@@ -23,33 +23,49 @@
       ch2: [
         {
           id: "r2a",
-          prompt: "Evaluate \\(5^{-2}\\).",
-          choices: ["\\(\\dfrac{1}{25}\\)", "25", "−25", "\\(\\dfrac{1}{5}\\)"],
-          answer: 0,
-          explain: "A negative index means the reciprocal: \\(5^{-2} = 1/5^{2} = 1/25\\).",
+          prompt: "Write \\(\\sqrt{x}\\) using a fractional index.",
+          choices: ["\\(x^{2}\\)", "\\(x^{1/2}\\)", "\\(x^{-2}\\)", "\\(2x\\)"],
+          answer: 1,
+          explain: "A square root is the inverse of squaring, so \\(\\sqrt{x}=x^{1/2}\\).",
         },
         {
           id: "r2b",
-          prompt: "The value of \\(7^{0}\\) is",
-          choices: ["0", "7", "1", "undefined"],
-          answer: 2,
-          explain: "Any non-zero number to the power 0 is 1.",
+          prompt: "Rewrite \\(q^{-3}\\) using a positive index.",
+          choices: ["\\(-q^{3}\\)", "\\(\\dfrac{1}{q^{3}}\\)", "\\(q^{3}\\)", "\\(\\dfrac{1}{3q}\\)"],
+          answer: 1,
+          explain: "A negative index means the reciprocal: \\(q^{-3}=1/q^{3}\\).",
         },
       ],
       ch3: [
         {
           id: "r3a",
+          prompt: "Evaluate \\((-7)^{0}\\).",
+          choices: ["\\(-7\\)", "0", "1", "undefined"],
+          answer: 2,
+          explain: "Every non-zero base raised to the power zero equals 1.",
+        },
+        {
+          id: "r3b",
+          prompt: "In this course, \\(0^{0}\\) is",
+          choices: ["0", "1", "−1", "undefined"],
+          answer: 3,
+          explain: "The zero-index rule requires a non-zero base, so \\(0^{0}\\) is undefined here.",
+        },
+      ],
+      ch4: [
+        {
+          id: "r4a",
           prompt: "Simplify \\(3^{2n} \\times 27\\).",
           choices: ["\\(3^{2n+3}\\)", "\\(3^{2n}\\)", "\\(3^{9n}\\)", "\\(3^{2n-3}\\)"],
           answer: 0,
           explain: "Rewrite 27 as \\(3^{3}\\), then add indices: \\(2n+3\\).",
         },
         {
-          id: "r3b",
-          prompt: "Write \\(8 \\times 2^{n}\\) as a power of 2.",
-          choices: ["\\(2^{n}\\)", "\\(2^{n+3}\\)", "\\(2^{3n}\\)", "\\(16^{n}\\)"],
-          answer: 1,
-          explain: "\\(8 = 2^{3}\\), so \\(2^{3} \\times 2^{n} = 2^{n+3}\\).",
+          id: "r4b",
+          prompt: "Simplify \\(81^{n-1}\\times3^{n-1}\\div9^{n-2}\\).",
+          choices: ["\\(3^{3n-1}\\)", "\\(3^{3n+1}\\)", "\\(3^{7n-7}\\)", "\\(3^{n-1}\\)"],
+          answer: 0,
+          explain: "Rewrite 81 as \\(3^{4}\\) and 9 as \\(3^{2}\\): the index is \\(4(n-1)+(n-1)-2(n-2)=3n-1\\).",
         },
       ],
       law1: [
@@ -302,6 +318,12 @@
 
   function start() {
     var map = window.JM24_COMICS;
+    if (window.JM24_COMICS_ONLY) {
+      var only = map && map[window.JM24_COMICS_ONLY];
+      if (!only || !window.initJmComics || !window.jmComicsFromTopic) return;
+      window.initJmComics(window.jmComicsFromTopic(only, CHECKS[window.JM24_COMICS_ONLY] || {}));
+      return;
+    }
     var order = window.JM24_COMIC_ORDER || ["rules", "scientific-notation", "binary"];
     if (!map || !window.initJmComicsBundle || !window.jmComicsFromTopic) return;
     var series = order.map(function (key) {

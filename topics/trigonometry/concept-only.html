@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260926-direct">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JM34 · Concept &amp; Formula</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260906-comicw">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+      background: linear-gradient(180deg,#f8fafc,#f1f5f9); background-attachment: fixed; }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); letter-spacing:-.03em; }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .deck-wrap {
+      position: relative; width: 100%; aspect-ratio: 16 / 9;
+      background: #0f172a; border-radius: 14px; border: 1px solid var(--line); overflow: hidden;
+    }
+    .deck-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .deck-advance { position: absolute; inset: 0; z-index: 2; cursor: pointer; }
+    html.file-preview .deck-advance { pointer-events: none; }
+  </style>
+</head>
+<body class="paper-labs">
+  <main class="jm-page">
+    <p class="jm-eyebrow">JM34</p>
+    <h1>Concept &amp; Formula</h1>
+    <p class="lead">Graph explanations for the identity and the co-functions.</p>
+    <div class="subnav" id="concept-subnav" aria-label="Concept decks">
+      <button class="chip active" type="button" data-deck="sin-squared">sin² + cos²</button>
+      <button class="chip" type="button" data-deck="cofunction-sin">sin(90° − x)</button>
+      <button class="chip" type="button" data-deck="cofunction-cos">cos(90° − x)</button>
+      <button class="chip" type="button" data-deck="cofunction-tan">tan(90° − x)</button>
+    </div>
+    <div class="deck-wrap">
+      <iframe id="deck-frame" src="../../slides/trigonometry/sin-squared/index.html" title="JM34 concept slides"></iframe>
+      <div class="deck-advance" id="deck-advance" role="presentation"></div>
+    </div>
+    <p class="hint">Click / Space = next. Left = previous.</p>
+  </main>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (location.protocol === "file:") document.documentElement.classList.add("file-preview");
+      var base = "../../slides/trigonometry/";
+      var DECKS = {
+        "sin-squared": base + "sin-squared/index.html",
+        "cofunction-sin": base + "cofunction-sin/index.html",
+        "cofunction-cos": base + "cofunction-cos/index.html",
+        "cofunction-tan": base + "cofunction-tan/index.html"
+      };
+      var frame = document.getElementById("deck-frame");
+      document.querySelectorAll("#concept-subnav [data-deck]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll("#concept-subnav .chip").forEach(function (x) {
+            x.classList.toggle("active", x === btn);
+          });
+          if (frame) frame.src = DECKS[btn.getAttribute("data-deck")];
+        });
+      });
+      function deckStep(dir) {
+        var method = dir < 0 ? "prev" : "next";
+        try {
+          var R = frame && frame.contentWindow && frame.contentWindow.Reveal;
+          if (R && R.isReady && R.isReady()) {
+            if (dir < 0) R.prev();
+            else R.next();
+            return;
+          }
+        } catch (err) {}
+        try {
+          if (frame && frame.contentWindow) {
+            frame.contentWindow.postMessage(JSON.stringify({ method: method, args: [] }), "*");
+          }
+        } catch (err2) {}
+      }
+      var advance = document.getElementById("deck-advance");
+      if (advance) advance.addEventListener("click", function () { deckStep(1); });
+      document.addEventListener("keydown", function (e) {
+        if (e.target && e.target.closest && e.target.closest("input, textarea, select")) return;
+        var isNext = e.code === "Space" || e.key === " " || e.key === "ArrowRight";
+        var isPrev = e.key === "ArrowLeft";
+        if (!isNext && !isPrev) return;
+        if (location.protocol === "file:") return;
+        e.preventDefault();
+        deckStep(isPrev ? -1 : 1);
+      });
+    });
+  </script>
+</body>
+</html>
