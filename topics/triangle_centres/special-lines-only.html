@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260926-direct">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JM28 · Special Lines in Triangles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260906-comicw">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+      background: linear-gradient(180deg,#f8fafc,#f1f5f9); background-attachment: fixed; }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); letter-spacing:-.03em; }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .comic-figure { margin:0; border-radius:14px; border:1px solid var(--line); background:#0f172a; overflow:hidden; }
+    .comic-figure img { display:block; width:100%; height:auto; }
+  </style>
+</head>
+<body class="paper-labs">
+  <main class="jm-page">
+    <p class="jm-eyebrow">JM28</p>
+    <h1>Special Lines in Triangles</h1>
+    <p class="lead">This comic only. Angle pairs and similar triangles are not on this page.</p>
+    <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+    <div id="comics-stage"></div>
+  </main>
+  <script src="../../shared/jm-comics-engine.js?v=20260926-direct"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var topic = {
+        basePath: "../../comics/Special lines and centres in triangles/",
+        chapters: [
+          { id: "ch1", title: "Chapter 1 — Altitude", file: "triangle-lines-chapter-1-color.png" },
+          { id: "ch2", title: "Chapter 2 — Median", file: "triangle-lines-chapter-2-color.png" },
+          { id: "ch3", title: "Chapter 3 — Angle Bisector", file: "triangle-lines-chapter-3-color.png" },
+          { id: "ch4", title: "Chapter 4 — Perpendicular Bisector", file: "triangle-lines-chapter-4-color.png" },
+          { id: "ch5", title: "Chapter 5 — Orthocentre", file: "triangle-centres-chapter-5-orthocentre-color.png?v=20260906-upper-restored" },
+          { id: "ch6", title: "Chapter 6 — Centroid", file: "triangle-centres-chapter-6-centroid-color.png?v=20260906-upper-restored" },
+          { id: "ch7", title: "Chapter 7 — In-centre", file: "triangle-centres-chapter-7-incentre-color.png?v=20260906-upper-restored" },
+          { id: "ch8", title: "Chapter 8 — Circumcentre", file: "triangle-centres-chapter-8-circumcentre-color.png?v=20260906-teacher-regenerated" },
+          { id: "quest1", title: "Real life 1 — Incentre: the biggest cake circle", file: "quest-01-incentre-cake.png?v=20260906-exact-incircle" },
+          { id: "quest2", title: "Real life 2 — Circumcentre: a fair meeting point", file: "quest-02-circumcentre-meet.png" },
+          { id: "quest3", title: "Real life 3 — Centroid: where it balances", file: "quest-03-centroid-balance.png" },
+          { id: "quest4", title: "Real life 4 — Orthocentre: block all three paths", file: "quest-04-orthocentre-block.png" }
+        ]
+      };
+      window.initJmComics(window.jmComicsFromTopic(topic));
+    });
+  </script>
+</body>
+</html>

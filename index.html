@@ -43,6 +43,20 @@
     .level-card .card-body h2 {
       font-size: 1.55rem;
     }
+    .direct-links { margin: 0 0 1.6rem; }
+    .direct-row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .direct-row a {
+      display: inline-flex;
+      padding: 0.55rem 0.9rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 0.92rem;
+      text-decoration: none;
+    }
+    .direct-row a:hover { border-color: var(--accent); color: var(--accent); }
   </style>
   <link rel="stylesheet" href="shared/page-motion.css?v=20260830a">
 </head>
@@ -84,6 +98,16 @@
         <p class="eyebrow">Gallery</p>
         <h1>S3 Lessons</h1>
         <p class="lede">Each lesson has six sections: Concept &amp; Formula, Interactive Tool, Games, Comics, Summary, and Quiz.</p>
+      </section>
+
+      <section class="direct-links" aria-label="Direct links">
+        <p class="eyebrow">Direct links</p>
+        <div class="direct-row">
+          <a href="topics/quadrilaterals/concept-only.html">JM29 Concept &amp; Formula</a>
+          <a href="topics/law_of_indices/rules-only.html">JM24 Comics · Rules</a>
+          <a href="topics/triangle_centres/special-lines-only.html">JM28 Comics · Special Lines in Triangles</a>
+          <a href="topics/quadrilaterals/games-comics-only.html">JM29 Games &amp; Comics</a>
+        </div>
       </section>
 
       <section class="gallery" aria-label="S3 lesson topics">

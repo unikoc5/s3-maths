@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260926-direct">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JM29 · Games and Comics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260906-comicw">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <link rel="stylesheet" href="quadrilaterals-game.css?v=20260920-game5m">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+      background: linear-gradient(180deg,#f8fafc,#f1f5f9); background-attachment: fixed; }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); letter-spacing:-.03em; }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .jm-page { width: min(980px, 100%); }
+    .comic-figure { margin:0; border-radius:14px; border:1px solid var(--line); background:#0f172a; overflow:hidden; }
+    .comic-figure img { display:block; width:100%; height:auto; }
+    #comics-subnav { margin-bottom: 14px; }
+  </style>
+</head>
+<body class="paper-labs">
+  <main class="jm-page">
+    <p class="jm-eyebrow">JM29</p>
+    <h1>Games and Comics</h1>
+    <p class="lead">Only these two sections.</p>
+    <nav class="jm-tabs" aria-label="Games and comics">
+      <button class="jm-tab active" type="button" data-tab="games">Games</button>
+      <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    </nav>
+    <section id="panel-games" class="jm-panel">
+      <section class="block">
+        <p class="part-title">Game 1 · Identifying quadrilaterals</p>
+        <h2>The Search for the True Princesses</h2>
+        <p class="hint">Click the scene (or press Space) to move the story on.</p>
+        <div class="qg-stage" id="qg-stage" role="application" aria-label="Identifying quadrilaterals — story game"></div>
+      </section>
+    </section>
+    <section id="panel-comics" class="jm-panel hidden">
+      <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+      <div id="comics-stage"></div>
+    </section>
+  </main>
+  <script src="../../shared/jm-tabs.js?v=20260830b"></script>
+  <script src="../../shared/jm-comics-engine.js?v=20260926-direct"></script>
+  <script src="quadrilaterals-game.js?v=20260920-game5m"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.initJmTabs) window.initJmTabs();
+      var comics = [
+        { id: "p1", chip: "P1", title: "The tilted square", chapter: "P1 - Shape versus orientation", image: "comics/jm29-v11-01-tilted-square.png?v=20260913-geometry-v14" },
+        { id: "p2", chip: "P2", title: "Same person, same shape", chapter: "P2 - Defining properties", image: "comics/jm29-v11-02-same-person-same-shape.png?v=20260913-geometry-v14" },
+        { id: "p3", chip: "P3", title: "Never judge by eye", chapter: "P3 - Read the given facts", image: "comics/jm29-v11-03-never-judge-by-eye.png?v=20260913-geometry-v14" },
+        { id: "p4", chip: "P4", title: "The all-in-one square", chapter: "P4 - The quadrilateral family", image: "comics/jm29-v11-04-all-in-one-square.png?v=20260913-geometry-v14" },
+        { id: "p5", chip: "P5", title: "Meet the kite", chapter: "P5 - Enrichment", image: "comics/jm29-v11-05-meet-the-kite.png?v=20260913-geometry-v14" },
+        { id: "p6", chip: "P6", title: "Why the gate can fold", chapter: "P6 - Parallelogram structures", image: "comics/jm29-v11-06-expanding-gate.png?v=20260913-geometry-v14" }
+      ];
+      if (window.initJmComics) window.initJmComics(comics);
+    });
+  </script>
+</body>
+</html>

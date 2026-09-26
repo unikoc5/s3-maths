@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260926-direct">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JM29 · Concept &amp; Formula</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260906-comicw">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(14,165,233,.12), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 92% 8%, rgba(56,189,248,.1), transparent 50%),
+        linear-gradient(180deg,#f8fafc,#f1f5f9);
+      background-attachment: fixed; }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); letter-spacing:-.03em; }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .deck-wrap {
+      position: relative; width: 100%; aspect-ratio: 16 / 9;
+      background: #0f172a; border-radius: 14px; border: 1px solid var(--line); overflow: hidden;
+    }
+    .deck-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .deck-advance { position: absolute; inset: 0; z-index: 2; cursor: pointer; }
+    html.file-preview .deck-advance { pointer-events: none; }
+    #family-subnav.hidden, #reason-subnav.hidden { display: none; }
+  </style>
+</head>
+<body class="paper-labs">
+  <main class="jm-page">
+    <p class="jm-eyebrow">JM29</p>
+    <h1>Concept &amp; Formula</h1>
+    <p class="lead">Classify the family, or open Mid-pt &amp; intercept.</p>
+    <div class="subnav" id="shape-subnav" aria-label="Family">
+      <button class="chip active" type="button" data-shape="classify">Classify shapes</button>
+      <button class="chip" type="button" data-shape="theorems">Mid-pt &amp; intercept</button>
+    </div>
+    <div class="subnav" id="family-subnav" aria-label="Shapes">
+      <button class="chip" type="button" data-shape="para">//gram</button>
+      <button class="chip" type="button" data-shape="rhombus">Rhombus</button>
+      <button class="chip" type="button" data-shape="rectangle">Rectangle</button>
+      <button class="chip" type="button" data-shape="square">Square</button>
+    </div>
+    <div class="subnav hidden" id="reason-subnav" aria-label="Reasons"></div>
+    <div class="deck-wrap">
+      <iframe id="deck-frame" src="../../slides/quadrilaterals/classify/index.html" title="JM29 concept slides"></iframe>
+      <div class="deck-advance" id="deck-advance" role="presentation"></div>
+    </div>
+  </main>
+  <script>
+    if (location.protocol === "file:") document.documentElement.classList.add("file-preview");
+    document.addEventListener("DOMContentLoaded", function () {
+      var base = "../../slides/quadrilaterals/";
+      var CLASSIFY_SRC = base + "classify/index.html";
+      var SHAPES = {
+        para: {
+          reasons: [
+            { label: "Opp. sides //", src: base + "opp-sides-parallel/index.html" },
+            { label: "Opp. sides equal", src: base + "opp-sides-equal/index.html" },
+            { label: "Opp. angles equal", src: base + "opp-angles/index.html" },
+            { label: "1 pair // and equal", src: base + "one-pair/index.html" },
+            { label: "Diags. bisect", src: base + "diags-bisect/index.html" }
+          ]
+        },
+        rhombus: {
+          reasons: [
+            { label: "All sides equal", src: base + "rhombus-def/index.html" },
+            { label: "Diags. ⊥ and bisect ∠s", src: base + "rhombus-symmetry/index.html" }
+          ]
+        },
+        rectangle: {
+          reasons: [
+            { label: "Four right ∠s", src: base + "rectangle-def/index.html" },
+            { label: "Diags. equal", src: base + "rectangle-diags/index.html" }
+          ]
+        },
+        square: {
+          reasons: [
+            { label: "Rhombus + rectangle", src: base + "square-def/index.html" },
+            { label: "Diags. → 45°", src: base + "square-diags/index.html" }
+          ]
+        }
+      };
+      var THEOREMS = [
+        { label: "Mid-pt. thm.", src: base + "midpt-thm/index.html" },
+        { label: "Intercept thm.", src: base + "intercept-thm/index.html" }
+      ];
+      var frame = document.getElementById("deck-frame");
+      var reasonNav = document.getElementById("reason-subnav");
+      var familyNav = document.getElementById("family-subnav");
+      var familyBtns = document.querySelectorAll("#family-subnav [data-shape]");
+      var topBtns = document.querySelectorAll("#shape-subnav [data-shape]");
+
+      function loadDeck(src) { if (frame) frame.src = src; }
+      function setTop(id) {
+        topBtns.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-shape") === id);
+        });
+      }
+      function fillReasons(reasons) {
+        reasonNav.innerHTML = "";
+        if (!reasons || !reasons.length) {
+          reasonNav.classList.add("hidden");
+          return;
+        }
+        reasonNav.classList.remove("hidden");
+        reasons.forEach(function (reason, i) {
+          var chip = document.createElement("button");
+          chip.className = "chip" + (i === 0 ? " active" : "");
+          chip.type = "button";
+          chip.textContent = reason.label;
+          chip.addEventListener("click", function () {
+            reasonNav.querySelectorAll(".chip").forEach(function (x) {
+              x.classList.toggle("active", x === chip);
+            });
+            loadDeck(reason.src);
+          });
+          reasonNav.appendChild(chip);
+        });
+        loadDeck(reasons[0].src);
+      }
+      function showClassifyHome() {
+        setTop("classify");
+        familyNav.classList.remove("hidden");
+        familyBtns.forEach(function (btn) { btn.classList.remove("active"); });
+        fillReasons(null);
+        loadDeck(CLASSIFY_SRC);
+      }
+      function showTheorems() {
+        setTop("theorems");
+        familyNav.classList.add("hidden");
+        familyBtns.forEach(function (btn) { btn.classList.remove("active"); });
+        fillReasons(THEOREMS);
+      }
+      function showShape(id) {
+        var spec = SHAPES[id];
+        if (!spec) return;
+        setTop("classify");
+        familyNav.classList.remove("hidden");
+        familyBtns.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-shape") === id);
+        });
+        fillReasons(spec.reasons);
+      }
+      topBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var id = btn.getAttribute("data-shape");
+          if (id === "theorems") showTheorems();
+          else showClassifyHome();
+        });
+      });
+      familyBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () { showShape(btn.getAttribute("data-shape")); });
+      });
+      function deckStep(dir) {
+        var method = dir < 0 ? "prev" : "next";
+        try {
+          var R = frame && frame.contentWindow && frame.contentWindow.Reveal;
+          if (R && R.isReady && R.isReady()) {
+            if (dir < 0) R.prev(); else R.next();
+            return;
+          }
+        } catch (err) {}
+        try {
+          if (frame && frame.contentWindow) {
+            frame.contentWindow.postMessage(JSON.stringify({ method: method, args: [] }), "*");
+          }
+        } catch (err2) {}
+      }
+      var advance = document.getElementById("deck-advance");
+      if (advance) advance.addEventListener("click", function () { deckStep(1); });
+      document.addEventListener("keydown", function (e) {
+        if (e.target && e.target.closest && e.target.closest("input, textarea, select")) return;
+        var isNext = e.code === "Space" || e.key === " " || e.key === "ArrowRight";
+        var isPrev = e.key === "ArrowLeft";
+        if (!isNext && !isPrev) return;
+        if (location.protocol === "file:") return;
+        e.preventDefault();
+        deckStep(isPrev ? -1 : 1);
+      });
+    });
+  </script>
+</body>
+</html>
