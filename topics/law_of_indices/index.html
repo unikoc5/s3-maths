@@ -361,10 +361,19 @@
     <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
 
-    <section id="panel-concept" class="jm-panel">
-      <section class="block">
-        <h2>Concept &amp; Formula</h2>
-        <p class="hint">Coming soon.</p>
+        <section id="panel-concept" class="jm-panel">
+      <section class="block jm-deck-panel">
+        <div class="subnav">
+          <button class="chip active" data-deck="../../slides/law_of_indices/positive-indices/index.html?v=20260926i">Laws of Positive Indices</button>
+          <button class="chip" data-deck="../../slides/law_of_indices/scientific-notation/index.html?v=20260926i">Scientific Notation</button>
+          <button class="chip" data-deck="../../slides/law_of_indices/denary-binary/index.html?v=20260926i">Denary &amp; Binary</button>
+          <a class="chip" href="concept-only.html" target="_blank" rel="noopener">Share Concept only</a>
+        </div>
+        <div class="deck-slideshow"><div class="deck-wrap">
+            <iframe id="deck-frame" src="../../slides/law_of_indices/positive-indices/index.html?v=20260926i" title="Law of Indices concept &amp; formula slides"></iframe>
+          </div></div>
+        <p class="hint">Use &rarr; / Enter / click to advance, &larr; to go back. Each slide builds the idea step by step.</p>
+        <p class="hint">Share updated Concept only: <a href="concept-only.html">concept-only.html</a></p>
       </section>
     </section>
     <section id="panel-tools" class="jm-panel hidden">
@@ -1401,5 +1410,28 @@
     });
   </script>
   <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var frame = document.getElementById("deck-frame");
+      var btns = document.querySelectorAll("#panel-concept [data-deck]");
+      if (!frame || !btns.length) return;
+      if (window.KOCDeckTouch) window.KOCDeckTouch.initDeckTouchNav(frame);
+      btns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          btns.forEach(function (x) { x.classList.toggle("active", x === b); });
+          if (b.dataset.deck && frame.getAttribute("src") !== b.dataset.deck) {
+            frame.src = b.dataset.deck;
+            frame.addEventListener("load", function onDeckLoad() {
+              frame.removeEventListener("load", onDeckLoad);
+              if (window.KOCDeckTouch) window.KOCDeckTouch.initDeckTouchNav(frame);
+            });
+          }
+        });
+      });
+    });
+  </script>
+
+  <script src="../../shared/deck-touch-nav.js?v=20260926i"></script>
 </body>
 </html>

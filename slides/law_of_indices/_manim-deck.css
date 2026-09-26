@@ -1,0 +1,2120 @@
+/* JM24 Concept — Manim-frame look + fly / expand / regroup motion */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* JM25 shared/styles.py palette — quantity keeps its colour */
+  --ink: #ffffff;
+  --muted: #94a3b8;
+  --gold-line: #e6c260;   /* title accent / GOLD captions */
+  --sym-a: #4fc3f7;       /* COL_A — first base / group */
+  --sym-b: #ffd54f;       /* COL_B — second base b */
+  --sym-a2: #81c784;      /* COL_AB — second a-group / product role */
+  --sym-y: #4fc3f7;       /* reuse COL_A for y */
+  --pow: #ffd54f;         /* exponents — amber like COL_B */
+  --note: #e6c260;        /* GOLD procedural captions */
+  --strike: #e57373;      /* COL_REMOVE — cancel / danger */
+  --box: #81c784;         /* SurroundingRectangle on final */
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #0f172a;
+  caret-color: transparent !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  cursor: default;
+}
+
+.reveal,
+.reveal * {
+  caret-color: transparent !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+.reveal {
+  width: 100%;
+  height: 100%;
+  background: #0f172a;
+  color: var(--ink);
+  font-family: "Times New Roman", Times, Georgia, serif;
+}
+
+.reveal .slides { text-align: center; }
+
+/* Match JM25–27 / 30 / 32: title fixed at top, body in remaining frame */
+.reveal .slides > section {
+  /* Keep Reveal absolute stacking; title/stage position against this box */
+  position: absolute !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  text-align: center;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal .m-title {
+  text-transform: none !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Title + gold rule sit in one header so tall KaTeX never crosses the line */
+.m-head {
+  position: relative !important;
+  flex: 0 0 auto;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Manim title_bar: to_edge(UP, buff=0.5) ≈ 36px @720p; accent buff=0.14 */
+  gap: 10px;
+  padding: 36px 48px 12px;
+  pointer-events: none;
+}
+
+.m-title {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: 5;
+  font-family: "Times New Roman", Times, Georgia, serif !important;
+  /* Manim title_bar: font_size=52, color=INK */
+  font-size: 52px !important;
+  font-weight: normal !important;
+  color: #f8fafc;
+  margin: 0 !important;
+  line-height: 1.25;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Manim title_bar: Write(title) + GrowFromCenter(accent) */
+.m-head.title-enter .m-title {
+  animation: titleWrite 0.85s ease both;
+}
+.m-head.title-enter .m-line {
+  animation: titleGrowLine 0.7s cubic-bezier(0.22, 1.15, 0.36, 1) both;
+  animation-delay: 0.12s;
+}
+@keyframes titleWrite {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+@keyframes titleGrowLine {
+  from { opacity: 0; transform: scaleX(0.12); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+.m-line {
+  transform-origin: center;
+}
+
+.m-title.m-title-eq {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.2;
+}
+.m-title .m-why {
+  display: block;
+  line-height: 1.2;
+}
+
+/* Manim gold accent: stroke_width=3, width=title.width+0.6 */
+.m-line {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  z-index: 5;
+  width: 280px;
+  height: 3px;
+  margin: 0 !important;
+  transform: scaleX(0);
+  transform-origin: center;
+  background: var(--gold-line);
+  border-radius: 1px;
+  pointer-events: none;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.reveal .slides > section.present .m-line {
+  transform: scaleX(1);
+}
+
+/* Content stage fills the remaining frame under the header */
+.m-stage {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start !important;
+  gap: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  height: auto !important;
+  padding: 10px 48px 28px;
+}
+
+/* Keep KaTeX a11y layer from painting over the slide */
+.katex .katex-mathml {
+  position: absolute !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  height: 1px !important;
+  width: 1px !important;
+  overflow: hidden !important;
+}
+
+.m-sub {
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-size: 26px;
+  color: #e2e8f0;
+  margin: 8px 0;
+  line-height: 1.35;
+  max-width: 1000px;
+}
+
+.m-sub.lead {
+  font-size: 32px;
+  color: #ffffff;
+  font-weight: normal;
+}
+.m-sub.emphasis {
+  font-size: 30px;
+  color: var(--note);
+}
+.m-sub.quiet {
+  font-size: 22px;
+  color: var(--muted);
+}
+.m-logic {
+  font-size: 28px;
+  color: var(--pow);
+  margin: 0 0.35em 0 0;
+  flex-shrink: 0;
+}
+.logic-line {
+  display: flex !important;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.25em;
+  width: 100%;
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.logic-line .m-logic {
+  min-width: 1.1em;
+}
+.paren { color: #94a3b8; }
+
+/* Yellow frame — roomy so it never clips powers / numerators; Example only */
+.expand-framed,
+.token.expand-framed,
+.src.expand-framed,
+.src-core.expand-framed,
+.pv-grid .c.framed {
+  outline: 2px solid var(--pow);
+  outline-offset: 10px;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+}
+.fly-ghost.expand-framed,
+.fly-ghost .expand-framed {
+  outline: none !important;
+}
+
+/* Core base only — outer power sits outside the yellow frame */
+.example-row .src {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
+}
+.example-row .src .src-core {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 6px;
+  line-height: 1.15;
+}
+/* Outer power tucked tight against base (closer, not further) */
+.example-row .src > .pow.outer,
+.example-row .src > .pow,
+.token.expand-src > .pow.outer,
+.token > .pow.outer {
+  margin-left: -0.28em !important;
+  padding-left: 0 !important;
+  top: -0.55em !important;
+  font-size: 0.55em !important;
+  line-height: 0 !important;
+  vertical-align: super !important;
+}
+
+/* Stepped fraction build */
+.frac-build {
+  position: relative;
+  width: 100%;
+  min-height: 7.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.frac-build .frac-phase {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.frac-build .num,
+.frac-build .den {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease;
+}
+.frac-build .frac-bar {
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+  min-width: 280px;
+}
+.frac-build .frac-stack.phase-bar .frac-bar,
+.frac-build .frac-stack.phase-compact .frac-bar,
+.frac-build .frac-stack.phase-num .frac-bar,
+.frac-build .frac-stack.phase-expand .frac-bar,
+.frac-build .frac-stack.phase-den .frac-bar,
+.frac-build .frac-stack.phase-cancel .frac-bar,
+.frac-build .frac-stack.phase-result .frac-bar {
+  transform: scaleX(1);
+}
+.frac-build .frac-stack.phase-compact .num,
+.frac-build .frac-stack.phase-compact .den,
+.frac-build .frac-stack.phase-num .num,
+.frac-build .frac-stack.phase-expand .num,
+.frac-build .frac-stack.phase-expand .den,
+.frac-build .frac-stack.phase-den .num,
+.frac-build .frac-stack.phase-cancel .num,
+.frac-build .frac-stack.phase-result .num {
+  opacity: 1;
+  visibility: visible;
+}
+.frac-build .frac-stack.phase-den .den,
+.frac-build .frac-stack.phase-expand .den,
+.frac-build .frac-stack.phase-cancel .den,
+.frac-build .frac-stack.phase-result .den {
+  opacity: 1;
+  visibility: visible;
+}
+.gather-eq {
+  opacity: 0;
+  font-size: 36px;
+  color: #fff;
+  margin: 0;
+  transition: opacity 0.35s ease;
+}
+.gather-eq.show { opacity: 1; }
+/* = sits to the LEFT of the result (not above it) */
+.gather-side {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 1.4em;
+  margin-left: 18px;
+}
+.frac-stack.gathering,
+.frac-stack.gathered {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+}
+.frac-stack .frac-body {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Two methods side-by-side with a vertical divider; conclusion returns to center */
+.two-method {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.two-method .method-col {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 8px 16px;
+  min-width: 0;
+}
+.two-method .method-col:last-child {
+  padding-top: 8px;
+}
+.two-method .method-col:last-child .neg-right-row {
+  /* whole RHS moves up */
+  margin-top: 0.55em;
+  transform: translateY(-10px);
+}
+.method-col .neg-right-row .eq-lead {
+  margin-left: 0.02em;
+  margin-right: 0.15em;
+  transform: translateY(2px);
+}
+.method-col .neg-right-result {
+  font-size: 30px !important;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  transform: translateY(0);
+}
+.method-col .neg-right-row .frac-build {
+  /* expansion fraction: up overall, then +2px down to ally with = */
+  transform: translateY(-18px);
+}
+.neg-recip {
+  display: inline-grid;
+  grid-template-rows: 1fr auto 1fr;
+  align-items: center;
+  justify-items: center;
+  vertical-align: middle;
+  line-height: 1.05;
+}
+/* Keep y^{-2} as one glyph cluster (prevent cracked −2 during fly) */
+.neg-left-result,
+.neg-drag-left,
+.neg-drag-right,
+.neg-right-result {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+.neg-left-result .pow,
+.neg-drag-left .pow,
+.neg-drag-right .pow,
+.neg-right-result .pow {
+  display: inline-block;
+  white-space: nowrap;
+  letter-spacing: 0;
+}
+.two-method .method-div {
+  flex: 0 0 2px;
+  width: 2px;
+  align-self: stretch;
+  background: linear-gradient(180deg, transparent, #64748b 12%, #64748b 88%, transparent);
+  margin: 4px 4px;
+}
+.two-method + .story-band,
+.story-band-conclude {
+  width: 100%;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.cancel-caption {
+  opacity: 0;
+  margin-top: 8px;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.cancel-caption.show { opacity: 1; }
+.muted-label { color: var(--muted); }
+
+/* Sci equation stage — fixed seats, big RHS */
+.sci-eq-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 1040px;
+  min-height: 9em;
+}
+.sci-lhs {
+  font-size: 48px;
+  line-height: 1.2;
+  color: #fff;
+  min-height: 1.3em;
+}
+.sci-rhs-live {
+  width: 100%;
+  min-height: 2.4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.sci-jump-eq.sci-big {
+  font-size: 44px;
+  line-height: 1.25;
+  gap: 0.12em;
+  align-items: baseline;
+}
+.sci-jump-eq.sci-big .dp-live,
+.sci-jump-eq.sci-big .dp {
+  color: var(--strike);
+  font-size: 1em;
+  padding: 0 1px;
+}
+.sci-jump-eq {
+  display: none;
+  font-size: 34px;
+  color: #fff;
+  min-height: 1.4em;
+}
+.sci-jump-eq.is-on,
+.sci-jump-eq.visible.is-on {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: enterFade 0.35s ease both;
+}
+/* Keep unseen sci steps from collapsing the fixed seat oddly */
+.reveal .m-stage .fragment.sci-jump-eq:not(.visible) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.pv-drag-box {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 2px solid var(--pow);
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-size: 22px;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease;
+  box-shadow: 0 0 0 1px rgba(255, 213, 79, 0.35);
+}
+.pv-drag-box.fade-frame {
+  border-color: transparent;
+  box-shadow: none;
+  opacity: 0.15;
+}
+.expand-term .term-times {
+  opacity: 0;
+  margin: 0 0.08em;
+  transition: opacity 0.3s ease;
+}
+.expand-term.combining .term-times,
+.expand-term.landed .term-times {
+  opacity: 1;
+}
+.expand-term .term-digit { color: #fff; }
+.expand-term .term-place { color: var(--note); }
+
+.conv-subj {
+  display: inline-block;
+  min-width: 1.4em;
+  color: var(--sym-y);
+  font-weight: normal;
+}
+.conv-row {
+  opacity: 0.35;
+  transition: opacity 0.4s ease;
+}
+.conv-row.visible,
+.conv-row.rhs-in {
+  opacity: 1;
+}
+
+.m-sub.note-tone { color: var(--note); }
+.m-sub.note-proc {
+  /* Manim temporary note: INK @ ~0.75–0.8 opacity */
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 24px;
+}
+.m-sub.note-sem {
+  /* Semantic note — colour matches the concept being named */
+  color: var(--sym-a2);
+  font-size: 24px;
+}
+.m-sub.note-warn {
+  color: var(--strike);
+  font-size: 24px;
+}
+
+/* Manim Indicate — one-beat flash, not lasting */
+@keyframes indicatePulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  40% { transform: scale(1.35); filter: brightness(1.25); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+.token.indicate,
+.dp-live.indicate,
+.src.indicate {
+  animation: indicatePulse 0.7s ease;
+  z-index: 3;
+}
+
+.m-eq {
+  font-size: 40px;
+  color: #f8fafc;
+  margin: 8px 0;
+  line-height: 1.4;
+  max-width: 1100px;
+}
+
+.m-eq .katex,
+.m-sub .katex,
+.m-result .katex,
+.m-title .katex {
+  font-size: 1em !important;
+}
+
+.pow, .m-pow { color: var(--pow) !important; }
+.m-hi { color: var(--note); }
+.m-gold,
+.calc-num {
+  color: var(--pow) !important;
+  font-size: 1em !important;
+  font-style: normal;
+  vertical-align: baseline !important;
+  position: static !important;
+  top: auto !important;
+  line-height: inherit !important;
+}
+
+.sym-a, .token.sym-a, .digit.sym-a { color: var(--sym-a) !important; }
+.sym-b, .token.sym-b, .digit.sym-b { color: var(--sym-b) !important; }
+.sym-a2, .token.sym-a2 { color: var(--sym-a2) !important; }
+.sym-y, .token.sym-y { color: var(--sym-y) !important; }
+
+.m-result {
+  font-size: 42px;
+  color: var(--ink);
+  margin-top: 14px;
+  line-height: 1.35;
+  max-width: 1000px;
+}
+/* Manim SurroundingRectangle(buff≈0.28) — lasting takeaway only */
+.m-result.box-final,
+.box-final {
+  display: inline-block;
+  padding: 0.28em 0.45em;
+  border: 3px solid var(--box);
+  border-radius: 4px;
+  box-shadow: none;
+  color: var(--ink);
+}
+
+.example-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.35em;
+  font-size: 28px;
+  margin: 6px 0 12px;
+  color: #fff;
+}
+.example-row .src {
+  display: inline-block;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: box-shadow 0.35s ease, opacity 0.35s ease;
+  line-height: 1.2;
+}
+.example-row .src.is-source {
+  /* framing uses .expand-framed only — avoid double yellow / layout shift */
+  box-shadow: none;
+}
+.example-row .src.is-spent {
+  /* Never permanently dim example terms after TransformFromCopy */
+  opacity: 1;
+}
+
+/* Compact a/b as vertical fraction (LaTeX look) while keeping peelable HTML */
+.mini-frac {
+  display: inline-grid;
+  grid-template-rows: 1fr auto 1fr;
+  align-items: center;
+  justify-items: center;
+  vertical-align: middle;
+  line-height: 1.05;
+  margin: 0 0.08em;
+  padding: 0 0.1em;
+}
+.mini-frac > .sym-a,
+.mini-frac > .sym-b {
+  line-height: 1;
+}
+.mini-frac .mini-bar {
+  display: block;
+  width: 100%;
+  min-width: 0.85em;
+  height: 2px;
+  background: #fff;
+  margin: 0;
+  align-self: center;
+}
+/* Parentheses + mini-frac + outer power share one vertical center (the bar) */
+.token:has(.mini-frac),
+.example-row .src:has(.mini-frac) {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  vertical-align: middle;
+  gap: 0;
+  white-space: nowrap;
+}
+.token .paren,
+.example-row .src .paren {
+  align-self: center;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+.token > .pow.outer,
+.example-row .src > .pow.outer {
+  flex: 0 0 auto;
+  align-self: center;
+  margin-left: -0.28em !important;
+}
+.eq-lead {
+  margin-right: 0.35em;
+  color: #fff;
+}
+
+/* Fraction bar = vertical center reference for same-row symbols */
+.frac-align-row {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35em;
+  max-width: 100%;
+}
+.frac-align-row .frac-build,
+.frac-align-row .frac-stack,
+.frac-align-row .frac-body {
+  margin: 0;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.frac-align-row .op,
+.frac-align-row .eq-lead,
+.frac-align-row .neg-right-result {
+  flex: 0 0 auto;
+  align-self: center;
+  line-height: 1;
+}
+.method-col .neg-right-row {
+  width: auto;
+  max-width: 100%;
+  justify-content: center;
+  gap: 0.18em; /* pull = and answer left toward the fraction */
+}
+.method-col .neg-right-row .frac-build {
+  width: auto;
+  display: inline-block;
+  min-height: 0;
+  transform: translateY(-18px);
+}
+.method-col .neg-right-row .frac-stack .token {
+  font-size: 22px;
+}
+.method-col .neg-right-row .frac-bar {
+  min-width: 120px;
+}
+.method-col .neg-right-row .eq-lead {
+  margin-left: 0.02em;
+  margin-right: 0.15em;
+  transform: translateY(2px);
+}
+.method-col .neg-right-result {
+  font-size: 30px !important;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+.method-col .neg-left-result {
+  font-size: 30px !important;
+}
+.neg-left-result .sym-y,
+.neg-right-result .sym-y,
+.neg-drag-left .sym-y,
+.neg-drag-right .sym-y {
+  color: var(--sym-y) !important;
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-size: 1em;
+}
+.neg-left-result .pow,
+.neg-right-result .pow,
+.neg-drag-left .pow,
+.neg-drag-right .pow {
+  color: var(--pow) !important;
+  font-size: 0.62em !important;
+  vertical-align: super;
+}
+.neg-recip {
+  display: inline-grid;
+  grid-template-rows: 1fr auto 1fr;
+  align-items: center;
+  justify-items: center;
+  vertical-align: middle;
+  line-height: 1.05;
+}
+.neg-recip .mini-bar {
+  display: block;
+  width: 100%;
+  min-width: 1.1em;
+  height: 2px;
+  background: #fff;
+  margin: 0;
+}
+.neg-recip-num {
+  color: #fff;
+  line-height: 1;
+}
+/* Result fractions keep base colors (never KaTeX white flash) */
+.token.mini-frac.result-frac .sym-a,
+.token.mini-frac.result-frac .sym-b {
+  font-size: 1em;
+}
+.token.mini-frac.result-frac .pow {
+  color: var(--pow) !important;
+}
+
+.compact-view {
+  display: none;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 6px;
+}
+.expand-view {
+  display: none;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 6px;
+}
+.frac-stack.phase-compact .compact-view { display: flex; }
+.frac-stack.phase-compact .expand-view { display: none !important; }
+.frac-stack.phase-num .compact-view,
+.frac-stack.phase-expand .compact-view,
+.frac-stack.phase-den .compact-view,
+.frac-stack.phase-cancel .compact-view,
+.frac-stack.phase-result .compact-view { display: none !important; }
+.frac-stack.phase-num .expand-view,
+.frac-stack.phase-expand .expand-view,
+.frac-stack.phase-den .expand-view,
+.frac-stack.phase-cancel .expand-view,
+.frac-stack.phase-result .expand-view { display: flex; }
+
+/* Only hide remainders after gather — keep cancelled ops/tokens visible until then */
+.frac-stack.gathered .num .token.is-remaining,
+.frac-stack.gathered .num .token.op.is-remaining,
+.frac-stack.gathered .den .token.is-remaining,
+.frac-stack.gathered .den .token.op.is-remaining {
+  opacity: 0;
+  transform: scale(0.6);
+}
+.frac-stack.gathered .num .token.cancelable,
+.frac-stack.gathered .den .token.cancelable,
+.frac-stack.gathered .num .token.op:not(.is-remaining),
+.frac-stack.gathered .den .token.op:not(.is-remaining) {
+  opacity: 0.35;
+}
+
+.cancel-result.morph-in {
+  animation: morphIn 0.45s cubic-bezier(0.22, 1.15, 0.36, 1) both;
+}
+@keyframes morphIn {
+  from { opacity: 0; transform: scale(0.72); }
+  to { opacity: 1; transform: none; }
+}
+
+.neg-link-eq {
+  display: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45em;
+  min-height: 1.6em;
+  font-size: 40px;
+}
+.neg-link-eq.show {
+  display: flex;
+}
+.neg-link-eq .fly-wait { opacity: 0; }
+.neg-link-eq.linked .fly-wait,
+.neg-link-eq.linked .fly-land { opacity: 1; }
+.neg-link-step {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+}
+
+.story-stack.even-gap {
+  gap: 14px;
+}
+.story-stack.even-gap .story-band {
+  min-height: 2.5em;
+}
+
+.token-row,
+.digit-row,
+.work-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 6px;
+  margin: 10px 0;
+  min-height: 1.45em;
+}
+
+.token,
+.glyph {
+  display: inline-block;
+  position: relative;
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-size: 30px;
+  color: #ffffff;
+  line-height: 1.25;
+  padding: 0 1px;
+  vertical-align: baseline;
+}
+
+.token.op,
+.glyph.op { color: #cbd5e1; }
+.token.hi { color: var(--note); }
+.token.gold,
+.glyph.gold { color: var(--pow); }
+.token.rose { color: var(--strike); }
+
+/* True LaTeX-like superscripts — descendant (not only direct child) so .src-core works */
+.reveal .token .pow,
+.reveal .src .pow,
+.reveal .src-core .pow,
+.reveal .example-row .pow,
+.reveal .stage-pane .pow,
+.reveal .m-eq .pow,
+.fly-ghost .pow {
+  color: var(--pow) !important;
+  font-size: 0.58em !important;
+  line-height: 0 !important;
+  vertical-align: super !important;
+  position: relative;
+  top: -0.2em;
+  font-style: normal;
+}
+
+/* Red cancel strike — one-by-one via .struck */
+.token.cancelable .strike {
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  top: 48%;
+  height: 2.5px;
+  background: var(--strike);
+  transform: rotate(-28deg) scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: transform 0.35s ease, opacity 0.25s ease;
+}
+.token.cancelable.struck {
+  color: #94a3b8 !important;
+}
+.token.cancelable.struck .strike {
+  opacity: 1;
+  transform: rotate(-28deg) scaleX(1);
+}
+.frac-stack.cancelled .token.cancelable {
+  color: #94a3b8 !important;
+}
+.frac-stack.cancelled .token.cancelable .strike {
+  opacity: 1;
+  transform: rotate(-28deg) scaleX(1);
+}
+.frac-stack .num .token.is-remaining,
+.frac-stack.cancelled .num .token:not(.cancelable):not(.op) {
+  color: var(--pow) !important;
+  transition: color 0.35s ease, transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.token.gather-left {
+  transform: translateX(-28px);
+}
+.token.gather-right {
+  transform: translateX(28px);
+}
+.token.gather-mid {
+  transform: scale(1.08);
+}
+.cancel-result {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  font-size: 34px;
+  margin: 0;
+  color: var(--sym-a);
+}
+.cancel-result.show {
+  opacity: 1;
+  transform: none;
+}
+.cancel-result .pow { color: var(--pow) !important; }
+
+.frac-stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 8px 0;
+}
+.frac-bar {
+  width: 100%;
+  min-width: 240px;
+  height: 2px;
+  background: #ffffff;
+  margin: 2px 0;
+}
+.frac-stack .num,
+.frac-stack .den {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 6px;
+}
+
+.digit {
+  min-width: 0.95em;
+  text-align: center;
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-size: 34px;
+  color: #ffffff;
+  padding: 0 2px;
+  line-height: 1.15;
+  position: relative;
+}
+.digit.dim { color: #94a3b8; }
+.digit.focus { color: var(--note); }
+
+.dp {
+  color: var(--strike);
+  font-size: 32px;
+  padding: 0 2px;
+  font-family: "Times New Roman", Times, Georgia, serif;
+  position: relative;
+  top: -1px;
+}
+
+.arc-svg {
+  width: min(480px, 88%);
+  height: 32px;
+  margin: 2px auto 6px;
+  display: block;
+}
+.arc-svg path {
+  fill: none;
+  stroke: var(--strike);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.arc-svg text {
+  fill: var(--strike);
+  font-size: 16px;
+  font-family: "Times New Roman", Times, Georgia, serif;
+}
+
+.pv-grid {
+  display: inline-grid;
+  gap: 0;
+  margin: 10px auto;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.pv-grid .c {
+  padding: 8px 10px;
+  border-right: 1px solid rgba(148, 163, 184, 0.22);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+  font-family: "Times New Roman", Times, Georgia, serif;
+  min-width: 48px;
+  text-align: center;
+}
+.pv-grid .d { color: #fff; font-size: 28px; }
+.pv-grid .p { color: var(--note); font-size: 22px; }
+.pv-grid .p .pow { color: var(--pow); }
+.pv-grid.denary { border-color: rgba(96, 165, 250, 0.5); }
+.pv-grid.binary { border-color: rgba(244, 114, 182, 0.5); }
+.pv-grid.binary .p { color: #f9a8d4; }
+
+.expand-line {
+  font-size: 24px;
+  color: #e2e8f0;
+  line-height: 1.45;
+  max-width: 1040px;
+  margin: 10px auto 0;
+}
+.expand-line .katex { font-size: 1em !important; }
+
+.note {
+  margin-top: 12px;
+  font-size: 24px;
+  color: #fde68a;
+  max-width: 900px;
+  line-height: 1.35;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 40px;
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: left;
+}
+.col-h {
+  font-size: 28px;
+  margin: 0 0 8px;
+  font-weight: normal;
+}
+.col-h.blue { color: #60a5fa; }
+.col-h.pink { color: #f472b6; }
+.two-col .m-sub { font-size: 24px; text-align: left; }
+
+.laws-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  max-width: 720px;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+  font-size: 30px;
+  color: #fff;
+  flex: 1;
+}
+.laws-grid .full { width: 100%; text-align: center; }
+.laws-grid .katex { font-size: 1em !important; }
+.laws-grid .law-a .katex { color: #4fc3f7; }
+.laws-grid .law-b .katex { color: #ffd54f; }
+.laws-grid .law-a2 .katex { color: #81c784; }
+.laws-grid .law-y .katex { color: #ce93d8; }
+.laws-grid .law-pow .katex { color: #ffab91; }
+/* Single centered column — equal x for every law */
+.laws-grid .law-card {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  transform: none !important;
+  text-align: center;
+  min-height: 0;
+  display: block;
+}
+.laws-grid .law-a2,
+.laws-grid .law-y {
+  min-height: 0;
+  padding-top: 0;
+  display: block;
+}
+.laws-grid .law-card .katex-display {
+  margin: 0.12em 0 !important;
+  text-align: center !important;
+}
+.laws-grid .law-card .katex-display > .katex {
+  text-align: center !important;
+  display: inline-block !important;
+  margin: 0 !important;
+}
+.laws-grid .law-y .katex .mrel {
+  margin-left: 0.14em !important;
+  margin-right: 0.16em !important;
+}
+.reveal .fragment.law-card.visible {
+  animation: enterFade 0.45s ease both;
+}
+
+.conv-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 8px 0;
+  font-size: 26px;
+}
+.arrow { color: var(--pow); font-size: 1.1em; }
+
+/* Ghost used by TransformFromCopy — no frame, no scale pop, keep one horizontal line */
+.fly-ghost {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+  outline: none !important;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.2s ease;
+  will-change: transform;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+  transform: translate(0, 0) scale(1);
+  box-sizing: border-box;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  white-space: nowrap !important;
+  height: auto !important;
+  width: auto !important;
+}
+.fly-ghost.flying {
+  opacity: 0.95;
+}
+.fly-ghost .src-core,
+.fly-ghost.fly-ghost-frac,
+.fly-ghost.fly-ghost-frac .src-core {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  white-space: nowrap !important;
+  outline: none !important;
+  height: auto !important;
+}
+/* Keep vertical fraction during fly — never crack into two lines / (a—b) */
+.fly-ghost .mini-frac,
+.fly-ghost.fly-ghost-frac .mini-frac {
+  display: inline-grid !important;
+  grid-template-columns: 1fr !important;
+  grid-template-rows: auto auto auto !important;
+  align-items: center !important;
+  justify-items: center !important;
+  vertical-align: middle !important;
+  line-height: 1.05 !important;
+  white-space: normal !important;
+  margin: 0 0.06em !important;
+}
+.fly-ghost .mini-bar,
+.fly-ghost.fly-ghost-frac .mini-bar {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0.85em !important;
+  height: 2px !important;
+  background: #fff !important;
+  margin: 1px 0 !important;
+}
+.fly-ghost .pow.outer,
+.fly-ghost > .pow,
+.fly-ghost.fly-ghost-frac > .pow,
+.fly-ghost.fly-ghost-frac .pow.outer {
+  margin-left: -0.28em !important;
+  font-size: 0.55em !important;
+  vertical-align: super !important;
+  position: relative !important;
+  top: -0.55em !important;
+  flex: 0 0 auto !important;
+}
+.token.fly-wait,
+.work-row.fly-wait > .token {
+  opacity: 0 !important;
+}
+.token.fly-land,
+.work-row .token.fly-land {
+  animation: landFade 0.22s ease both;
+}
+
+@keyframes landFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Peel: real × stays in CSS seat; factors wait until power lands */
+.work-fixed-frame .stage-pane .token.peel-factor-wait {
+  opacity: 0 !important;
+}
+.work-fixed-frame .stage-pane .token.peel-times.peel-times-live {
+  opacity: 1 !important;
+}
+
+/* PPT-style entrance — final transform always none (fixed seat) */
+.reveal .fragment.m-sub,
+.reveal .fragment.desc-enter,
+.reveal .fragment.note,
+.reveal .fragment.enter-wipe,
+.reveal .fragment.enter-bounce,
+.reveal .fragment.enter-fade,
+.reveal .fragment.enter-pop {
+  animation: none;
+}
+.reveal .fragment.m-sub.visible,
+.reveal .fragment.enter-wipe.visible,
+.reveal .fragment.desc-enter.visible {
+  animation: enterWipe 0.65s ease both;
+}
+.reveal .fragment.m-result.visible,
+.reveal .fragment.enter-bounce.visible,
+.reveal .fragment.note.visible {
+  animation: enterBounce 0.7s cubic-bezier(0.22, 1.25, 0.36, 1) both;
+}
+.reveal .fragment.m-eq.visible,
+.reveal .fragment.enter-fade.visible {
+  animation: enterFade 0.55s ease both;
+}
+.reveal .fragment.enter-pop.visible,
+.reveal .fragment.work-slot.visible {
+  animation: enterPop 0.55s cubic-bezier(0.22, 1.35, 0.36, 1) both;
+}
+
+@keyframes enterWipe {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+@keyframes enterBounce {
+  0% { opacity: 0; transform: scale(0.94); }
+  70% { opacity: 1; transform: scale(1.02); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes enterFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes enterPop {
+  from { opacity: 0; transform: scale(0.82); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Reserved bands — seats are fixed from the first frame; content only fades in */
+.story-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start !important;
+  gap: 6px;
+  width: 100%;
+  max-width: 1000px;
+  flex: 0 0 auto;
+  margin: 0 auto;
+}
+.story-band {
+  position: relative;
+  width: 100%;
+  min-height: 2.4em;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.story-band-example { min-height: 2.5em; }
+.story-band-work { min-height: 3em; }
+.story-band-frac { min-height: 5.8em; }
+.story-band-count { min-height: 2.3em; }
+.story-band-eq { min-height: 2.6em; }
+.story-band-result { min-height: 2.8em; }
+.story-band-note { min-height: 2.3em; }
+
+.story-band > .example-row {
+  margin: 0;
+}
+
+/* Peel-right ghost for power → factor expand (JS drives transform) */
+.peel-ghost {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+  color: var(--pow);
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-weight: normal;
+  line-height: 1;
+  will-change: transform, opacity;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.45);
+  transition: opacity 0.2s ease;
+}
+.times-ghost {
+  position: fixed;
+  z-index: 10001;
+  pointer-events: none;
+  color: #cbd5e1;
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-size: 30px;
+  line-height: 1;
+  transform: translate(-50%, -50%) scale(1);
+  will-change: opacity;
+  transition: opacity 0.12s linear;
+}
+.dp-ghost {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+  color: var(--strike);
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-size: 34px;
+  line-height: 1;
+  will-change: transform;
+}
+.work-fixed-frame .stage-pane.is-measure {
+  opacity: 0 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
+  z-index: -1;
+}
+/* Must beat .fragment.stage-pane:not(.visible){visibility:hidden} or × seat measures as 0 */
+.reveal .m-stage .work-fixed-frame .fragment.stage-pane.is-measure {
+  opacity: 0 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
+  z-index: 2;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+.work-fixed-frame .stage-pane.is-measure-hide {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+/* Peel seat: always overlay at frame center — ignore data-stack relative layout */
+.work-fixed-frame .stage-pane.is-peel-seat,
+.reveal .m-stage .work-fixed-frame .fragment.stage-pane.is-peel-seat,
+.work-fixed-frame .stage-pane.is-measure.is-peel-seat,
+.reveal .m-stage .work-fixed-frame .fragment.stage-pane.is-measure.is-peel-seat,
+.work-fixed-frame[data-stack="1"] .stage-pane.is-peel-seat,
+.reveal .m-stage .work-fixed-frame[data-stack="1"] .fragment.stage-pane.is-peel-seat,
+.work-fixed-frame[data-stack="1"] .stage-pane.is-measure.is-peel-seat,
+.reveal .m-stage .work-fixed-frame[data-stack="1"] .fragment.stage-pane.is-measure.is-peel-seat {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: 2;
+}
+.work-fixed-frame .stage-pane.is-measure.is-peel-seat,
+.reveal .m-stage .work-fixed-frame .fragment.stage-pane.is-measure.is-peel-seat {
+  opacity: 0 !important;
+  visibility: visible !important;
+}
+.work-fixed-frame .stage-pane.is-active.is-peel-seat:not(.is-measure) {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.work-fixed-frame[data-stack="1"] .stage-pane.is-measure,
+.reveal .m-stage .work-fixed-frame[data-stack="1"] .fragment.stage-pane.is-measure {
+  position: relative !important;
+  height: auto !important;
+  transform: none !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+}
+/* Hide real × until peel ghost finishes — ghost sits at final seat */
+.work-fixed-frame .stage-pane .peel-times.is-peel-pending {
+  opacity: 0 !important;
+}
+.work-fixed-frame .stage-pane.is-active.peel-arrive {
+  /* no transform — only a soft fade so the row never pops */
+  animation: none;
+  opacity: 1;
+}
+@keyframes peelArrive {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.work-fixed-frame .stage-pane.fade-out-step {
+  animation: stepFadeOut 0.32s ease both;
+}
+.work-fixed-frame .stage-pane.fade-in-step {
+  animation: stepFadeIn 0.38s ease both;
+}
+@keyframes stepFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes stepFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Scientific jump equations */
+.sci-jump {
+  width: 100%;
+  max-width: 980px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.dp-jump-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  min-height: 2em;
+  position: relative;
+}
+.dp-jump-row [data-dp-slot] {
+  display: inline-block;
+  min-width: 0.55em;
+  height: 1.2em;
+}
+
+/* Aligned place-value grids */
+.pv-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.pv-grid.aligned {
+  display: grid;
+  width: 100%;
+  max-width: 1000px;
+  gap: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+.pv-grid.aligned .c {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 6px;
+}
+.pv-pair {
+  display: contents;
+}
+.pv-frame-wrap {
+  position: relative;
+}
+.pv-cell.framed,
+.pv-grid .c.framed,
+[data-pv-pair].framed .c {
+  box-shadow: inset 0 0 0 2px var(--pow);
+  background: rgba(255, 213, 79, 0.12);
+}
+.pv-grid .c.dragged,
+[data-pv-pair].dragged .c {
+  opacity: 0.45;
+}
+.expand-build {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 8px;
+  margin-top: 16px;
+  min-height: 2.4em;
+  font-size: 26px;
+  width: 100%;
+}
+.expand-term {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  color: #fff;
+}
+.expand-term.awaiting { opacity: 0.15; }
+.expand-term.landed {
+  opacity: 1;
+  transform: none;
+  animation: landPop 0.3s ease both;
+}
+.expand-term .pow { color: var(--pow) !important; }
+.expand-value {
+  opacity: 0;
+  color: var(--note);
+  font-size: 28px;
+  transition: opacity 0.35s ease;
+}
+.expand-value.show { opacity: 1; }
+
+.conv-seq .conv-row {
+  opacity: 1;
+}
+.conv-extra {
+  display: inline-block;
+  transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.4s ease;
+}
+.conv-extra.dragging {
+  color: var(--sym-y);
+  transform: translateY(36px) scale(1.05);
+}
+.conv-extra.spent {
+  opacity: 0.35;
+}
+
+/* One Reveal step = whole row; glyphs still fade / fly independently */
+.reveal .fragment {
+  opacity: 0;
+  visibility: hidden;
+  transition: none !important;
+}
+.reveal .fragment.visible,
+.reveal .fragment.current-fragment {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Critical: unseen fragments must NOT reserve layout space (was overlapping the fixed title) */
+.reveal .m-stage .fragment:not(.visible) {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.reveal .fragment:not(.step-row):not(.step-block):not(.work-row):not(.m-sub):not(.desc-enter):not(.note):not(.m-eq):not(.m-result):not(.work-slot):not(.enter-wipe):not(.enter-bounce):not(.enter-fade):not(.enter-pop):not(.law-card):not(.sci-jump):not(.pv-expand):not(.cancel-seq):not(.conv-seq):not(.frac-phase):not(.conv-row) {
+  animation: manimFadeIn 0.4s ease both;
+}
+
+.reveal .fragment.step-row .glyph,
+.reveal .fragment.step-row .token,
+.reveal .fragment.step-row .digit,
+.reveal .fragment.step-row .dp,
+.reveal .fragment.step-row .pv-token,
+.reveal .fragment.step-block .glyph,
+.reveal .fragment.step-block .token,
+.reveal .fragment.step-block .digit,
+.reveal .fragment.step-block .dp,
+.reveal .fragment.step-block .pv-token,
+.reveal .fragment.step-block .frac-bar,
+.reveal .fragment.work-row .token,
+.reveal .fragment.work-row .glyph {
+  opacity: 0;
+}
+
+.reveal .fragment.step-row.visible .glyph,
+.reveal .fragment.step-row.visible .token,
+.reveal .fragment.step-row.visible .digit,
+.reveal .fragment.step-row.visible .dp,
+.reveal .fragment.step-row.visible .pv-token,
+.reveal .fragment.step-block.visible .glyph,
+.reveal .fragment.step-block.visible .token,
+.reveal .fragment.step-block.visible .digit,
+.reveal .fragment.step-block.visible .dp,
+.reveal .fragment.step-block.visible .pv-token,
+.reveal .fragment.step-block.visible .frac-bar {
+  animation: manimFadeIn 0.36s ease both;
+}
+
+/* Work rows: drag-in from above (default when no JS fly-from) */
+.reveal .fragment.work-row.visible .token:not(.fly-wait):not(.fly-land) {
+  animation: dragDown 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes dragDown {
+  from { opacity: 0; transform: translateY(-28px) scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes manimFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Regroup: tokens slide into sorted a…a · b…b order */
+.reveal .fragment.regroup-row.visible .token {
+  animation: regroupIn 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.reveal .fragment.regroup-row.visible .token:nth-child(1) { --dx: 72px; animation-delay: 0.00s; }
+.reveal .fragment.regroup-row.visible .token:nth-child(2) { --dx: 40px; animation-delay: 0.04s; }
+.reveal .fragment.regroup-row.visible .token:nth-child(3) { --dx: 8px; animation-delay: 0.08s; }
+.reveal .fragment.regroup-row.visible .token:nth-child(4) { --dx: 0; animation-delay: 0.10s; }
+.reveal .fragment.regroup-row.visible .token:nth-child(5) { --dx: -40px; animation-delay: 0.12s; }
+.reveal .fragment.regroup-row.visible .token:nth-child(6) { --dx: -8px; animation-delay: 0.16s; }
+.reveal .fragment.regroup-row.visible .token:nth-child(7) { --dx: 24px; animation-delay: 0.20s; }
+.reveal .fragment.regroup-row.visible .token:nth-child(8) { --dx: -48px; animation-delay: 0.24s; }
+.reveal .fragment.regroup-row.visible .token:nth-child(9) { --dx: -80px; animation-delay: 0.28s; }
+.reveal .fragment.regroup-row.visible .token:nth-child(10) { --dx: -20px; animation-delay: 0.32s; }
+.reveal .fragment.regroup-row.visible .token:nth-child(11) { --dx: -52px; animation-delay: 0.36s; }
+
+@keyframes regroupIn {
+  from { opacity: 0.35; transform: translateX(var(--dx, 40px)) scale(0.95); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Expand chain: only the current stage stays on screen (replace-in-place = TransformMatchingTex seat) */
+.work-chain .work-row.chain-hidden {
+  display: none !important;
+}
+
+/* Fixed-position stage — each .stage-step is one Manim next_slide() */
+.work-fixed-frame {
+  position: relative;
+  width: 100%;
+  min-height: 2.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Entire expansion row is one centered block */
+.work-fixed-frame .stage-pane {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 6px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.work-fixed-frame .stage-pane.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+/* Fragments that are stage-steps stay in the fixed seat (do not collapse to 0×0) */
+.reveal .m-stage .fragment.stage-pane:not(.visible) {
+  position: absolute !important;
+  width: auto !important;
+  height: auto !important;
+  left: 0;
+  right: 0;
+  overflow: visible !important;
+  clip: auto !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+/* CRITICAL: past fragments keep .visible — only .is-active may paint (prevents stacking) */
+.reveal .m-stage .fragment.stage-pane.visible:not(.is-active) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+.reveal .fragment.stage-pane.visible.is-active {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Stacked coexistence: consecutive steps stay visible (Law 4–5) */
+.work-fixed-frame[data-stack="1"] {
+  position: relative;
+  width: 100%;
+  min-height: 2.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Single pane: absolute center seat — same y before/after fly & peel (no pop) */
+.work-fixed-frame[data-stack="1"]:not(.is-multi) .stage-pane,
+.reveal .m-stage .work-fixed-frame[data-stack="1"]:not(.is-multi) .fragment.stage-pane {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+}
+.reveal .m-stage .work-fixed-frame[data-stack="1"]:not(.is-multi) .fragment.stage-pane:not(.visible) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+.reveal .m-stage .work-fixed-frame[data-stack="1"]:not(.is-multi) .fragment.stage-pane.visible.is-active {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+/* Two+ panes: true 上下 stack for compare */
+.work-fixed-frame[data-stack="1"].is-multi {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 0;
+}
+.work-fixed-frame[data-stack="1"].is-multi .stage-pane,
+.reveal .m-stage .work-fixed-frame[data-stack="1"].is-multi .fragment.stage-pane {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  transform: none !important;
+  width: 100% !important;
+  height: auto !important;
+}
+.reveal .m-stage .work-fixed-frame[data-stack="1"].is-multi .fragment.stage-pane:not(.visible) {
+  height: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+.reveal .m-stage .work-fixed-frame[data-stack="1"].is-multi .fragment.stage-pane.visible.is-active,
+.reveal .m-stage .work-fixed-frame[data-stack="1"].is-multi .fragment.stage-pane.visible.is-kept {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none;
+}
+
+.work-slot.fragment {
+  width: 100%;
+  max-width: 980px;
+  margin: 8px auto;
+}
+
+.reveal .fragment.step-row.visible .glyph:nth-child(1),
+.reveal .fragment.step-row.visible .token:nth-child(1),
+.reveal .fragment.step-row.visible .digit:nth-child(1),
+.reveal .fragment.step-block.visible .num .token:nth-child(1),
+.reveal .fragment.step-block.visible .pv-token:nth-child(1),
+.reveal .fragment.work-row.visible .token:nth-child(1) { animation-delay: 0.00s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(2),
+.reveal .fragment.step-row.visible .token:nth-child(2),
+.reveal .fragment.step-row.visible .digit:nth-child(2),
+.reveal .fragment.step-row.visible .dp:nth-child(2),
+.reveal .fragment.step-block.visible .num .token:nth-child(2),
+.reveal .fragment.step-block.visible .pv-token:nth-child(2),
+.reveal .fragment.work-row.visible .token:nth-child(2) { animation-delay: 0.06s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(3),
+.reveal .fragment.step-row.visible .token:nth-child(3),
+.reveal .fragment.step-row.visible .digit:nth-child(3),
+.reveal .fragment.step-block.visible .num .token:nth-child(3),
+.reveal .fragment.step-block.visible .pv-token:nth-child(3),
+.reveal .fragment.work-row.visible .token:nth-child(3) { animation-delay: 0.12s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(4),
+.reveal .fragment.step-row.visible .token:nth-child(4),
+.reveal .fragment.step-row.visible .digit:nth-child(4),
+.reveal .fragment.step-block.visible .num .token:nth-child(4),
+.reveal .fragment.step-block.visible .pv-token:nth-child(4),
+.reveal .fragment.work-row.visible .token:nth-child(4) { animation-delay: 0.18s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(5),
+.reveal .fragment.step-row.visible .token:nth-child(5),
+.reveal .fragment.step-row.visible .digit:nth-child(5),
+.reveal .fragment.step-block.visible .num .token:nth-child(5),
+.reveal .fragment.step-block.visible .pv-token:nth-child(5),
+.reveal .fragment.work-row.visible .token:nth-child(5) { animation-delay: 0.24s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(6),
+.reveal .fragment.step-row.visible .token:nth-child(6),
+.reveal .fragment.step-row.visible .digit:nth-child(6),
+.reveal .fragment.step-block.visible .num .token:nth-child(6),
+.reveal .fragment.step-block.visible .frac-bar,
+.reveal .fragment.step-block.visible .pv-token:nth-child(6),
+.reveal .fragment.work-row.visible .token:nth-child(6) { animation-delay: 0.30s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(7),
+.reveal .fragment.step-row.visible .token:nth-child(7),
+.reveal .fragment.step-row.visible .digit:nth-child(7),
+.reveal .fragment.step-block.visible .num .token:nth-child(7),
+.reveal .fragment.step-block.visible .pv-token:nth-child(7),
+.reveal .fragment.work-row.visible .token:nth-child(7) { animation-delay: 0.36s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(8),
+.reveal .fragment.step-row.visible .token:nth-child(8),
+.reveal .fragment.step-row.visible .digit:nth-child(8),
+.reveal .fragment.step-block.visible .den .token:nth-child(1),
+.reveal .fragment.step-block.visible .pv-token:nth-child(8),
+.reveal .fragment.work-row.visible .token:nth-child(8) { animation-delay: 0.42s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(9),
+.reveal .fragment.step-row.visible .token:nth-child(9),
+.reveal .fragment.step-block.visible .den .token:nth-child(2),
+.reveal .fragment.step-block.visible .pv-token:nth-child(9),
+.reveal .fragment.work-row.visible .token:nth-child(9) { animation-delay: 0.48s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(10),
+.reveal .fragment.step-row.visible .token:nth-child(10),
+.reveal .fragment.step-block.visible .den .token:nth-child(3),
+.reveal .fragment.step-block.visible .pv-token:nth-child(10),
+.reveal .fragment.work-row.visible .token:nth-child(10) { animation-delay: 0.54s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(11),
+.reveal .fragment.step-row.visible .token:nth-child(11),
+.reveal .fragment.step-block.visible .den .token:nth-child(4),
+.reveal .fragment.work-row.visible .token:nth-child(11) { animation-delay: 0.60s; }
+.reveal .fragment.step-row.visible .glyph:nth-child(12),
+.reveal .fragment.step-row.visible .token:nth-child(12),
+.reveal .fragment.step-block.visible .den .token:nth-child(5),
+.reveal .fragment.work-row.visible .token:nth-child(12) { animation-delay: 0.66s; }
+.reveal .fragment.step-row.visible .token:nth-child(n+13),
+.reveal .fragment.work-row.visible .token:nth-child(n+13) { animation-delay: 0.72s; }
+
+/* Digit rows: drag-in feel */
+.reveal .fragment.step-row.visible .digit,
+.reveal .fragment.step-row.visible .dp {
+  animation-name: dragDown;
+  animation-duration: 0.48s;
+}
+
+/* Opening definition card: one short line of maths should read as the slide,
+   not as a caption under a large empty stage. */
+.hero-slide .m-head {
+  padding: 28px 48px 8px;
+}
+.hero-slide .m-stage.fill-center {
+  /* Sit the definition under the title, not in a dead-centre void. */
+  justify-content: flex-start !important;
+  padding: 36px 48px 32px;
+}
+.hero-slide .story-stack {
+  gap: 20px;
+}
+.hero-slide .story-band,
+.hero-slide .story-band-note,
+.hero-slide .story-band-work {
+  min-height: 0;
+}
+.hero-slide .m-sub {
+  margin: 0;
+}
+.hero-slide .m-sub.lead {
+  font-size: 42px;
+}
+.hero-slide .token-row.hero-eq {
+  gap: 8px 14px;
+  margin: 0;
+}
+.hero-slide .token-row.hero-eq .token {
+  font-size: 64px;
+}
+.hero-slide .m-sub.note-proc {
+  font-size: 34px;
+}
+
+.m-stage.fill-center {
+  justify-content: center !important;
+}
+.two-col.fill {
+  margin: auto;
+  max-width: 1000px;
+  gap: 36px 56px;
+}
+.two-col.fill .col-h { font-size: 36px; }
+.two-col.fill .m-sub { font-size: 28px; }
+
+
+/* Positive Indices: tight vertical rhythm — work sits under Example (not bottom-void);
+   mid steps smaller than boxed rule (rule is the takeaway). */
+body.loi-tight .m-head {
+  padding: 14px 40px 10px;
+  gap: 6px;
+}
+body.loi-tight .story-band-example {
+  min-height: 2.1em;
+  padding-top: 8px;
+}
+body.loi-tight .story-band-note {
+  min-height: 1.5em;
+  margin-top: 4px;
+  padding-top: 4px;
+}
+body.loi-tight .story-band-result {
+  min-height: 2.0em;
+  margin-top: 2px;
+}
+body.loi-tight .slide-quot .story-band-note {
+  margin-top: 10px;
+}
+body.loi-tight .slide-quot .work-fixed-frame .token.mini-frac.result-frac {
+  font-size: 34px !important;
+}
+body.loi-tight .two-method {
+  max-height: 42vh;
+}
+body.loi-tight .two-method .frac-stack .token {
+  font-size: 20px;
+}
+body.loi-tight .neg-link-eq {
+  font-size: 34px;
+  min-height: 1.4em;
+}
+body.loi-tight .m-result.box-final {
+  font-size: 40px;
+  padding: 0.14em 0.36em;
+}
+body.loi-tight .m-title.m-title-eq { gap: 2px; }
+body.loi-tight .m-stage {
+  padding: 2px 36px 10px;
+  justify-content: flex-start;
+}
+body.loi-tight .story-stack {
+  gap: 4px;
+}
+body.loi-tight .story-band { min-height: 0; }
+body.loi-tight .story-band-example {
+  min-height: 2.15em;
+  padding-top: 8px;
+}
+body.loi-tight .story-band-work { min-height: 2.1em; }
+body.loi-tight .story-band-frac { min-height: 3.6em; }
+body.loi-tight .story-band-count { min-height: 1.2em; }
+body.loi-tight .story-band-note {
+  min-height: 1.45em;
+  margin-top: 6px;
+  padding-top: 2px;
+}
+body.loi-tight .story-band-eq { min-height: 1.35em; }
+body.loi-tight .story-band-result {
+  min-height: 2.0em;
+  margin-top: 4px;
+}
+body.loi-tight .work-fixed-frame { min-height: 2.1em; }
+body.loi-tight .work-fixed-frame[data-stack="1"] { min-height: 0; }
+body.loi-tight .frac-build { min-height: 3.8em; }
+body.loi-tight .two-method .frac-build { min-height: 0; }
+body.loi-tight .example-row { font-size: 34px; }
+/* Mid working steps — smaller so boxed rule can dominate */
+body.loi-tight .work-fixed-frame .token,
+body.loi-tight .frac-stack .token {
+  font-size: 34px;
+}
+body.loi-tight .two-method .frac-stack .token {
+  font-size: 20px;
+}
+body.loi-tight .m-result.box-final {
+  font-size: 42px;
+  line-height: 1.15;
+  padding: 0.16em 0.4em;
+}
+body.loi-tight .frac-bar { min-width: 180px; }
+body.loi-tight .two-method .method-col {
+  padding: 2px 12px;
+  gap: 6px;
+}
+body.loi-tight .m-eq {
+  font-size: 30px;
+  margin: 0;
+}
+body.loi-tight .m-result,
+body.loi-tight .example-row,
+body.loi-tight .frac-stack,
+body.loi-tight .token-row,
+body.loi-tight .m-sub {
+  margin: 0;
+}
+body.loi-tight .cancel-caption { margin-top: 4px; }
+body.loi-tight .laws-grid {
+  gap: 16px;
+  flex: 0 0 auto;
+  margin: 12px auto 0;
+  font-size: 40px;
+  max-width: 780px;
+}
+body.loi-tight .laws-grid .full.box-final {
+  padding: 0.22em 0.55em;
+}
+body.loi-tight .m-stage.fill-center {
+  justify-content: flex-start !important;
+  padding-top: 18px;
+}
+
+
+/* Boxed rule is the takeaway — larger than mid derivation steps */
+body.loi-tight .m-title.m-title-eq {
+  font-size: 38px !important;
+  line-height: 1.12;
+}
+body.loi-tight .m-result.box-final {
+  font-size: 42px;
+  line-height: 1.15;
+  padding: 0.16em 0.4em;
+}
+body.loi-tight .slide-quot .m-head {
+  padding-top: 12px;
+  padding-bottom: 2px;
+}
+body.loi-tight .slide-quot .story-band-frac {
+  min-height: 2.1em;
+}
+body.loi-tight .slide-quot .story-band-work,
+body.loi-tight .slide-quot .work-fixed-frame {
+  min-height: 2.1em;
+}
+body.loi-tight .slide-quot .work-fixed-frame .token {
+  font-size: 34px;
+}
+body.loi-tight .slide-quot .m-result.box-final {
+  font-size: 42px;
+}
+body.loi-tight .hero-slide .token-row.hero-eq .token {
+  font-size: 58px;
+}
+body.loi-tight .hero-slide .m-sub.lead {
+  font-size: 38px;
+}
+
+@media (max-width: 900px) {
+  .m-title { font-size: 36px !important; }
+  .m-sub, .note { font-size: 20px; }
+  .m-sub.lead { font-size: 24px; }
+  .m-eq, .m-result, .token, .digit { font-size: 24px; }
+  .sci-jump-eq.sci-big { font-size: 28px; }
+  .laws-grid { font-size: 26px; gap: 12px; max-width: 100%; }
+  .hero-slide .m-sub.lead { font-size: 32px; }
+  .hero-slide .token-row.hero-eq .token { font-size: 48px; }
+  .hero-slide .m-sub.note-proc { font-size: 26px; }
+  body.loi-tight .m-result.box-final { font-size: 32px; }
+}

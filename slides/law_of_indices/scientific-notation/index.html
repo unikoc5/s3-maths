@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>JM24 繚 Scientific Notation</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="../_manim-deck.css?v=20260926i">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <section>
+        <header class="m-head">
+        <h2 class="m-title">Scientific Notation</h2>
+        <div class="m-line"></div>
+        </header>
+        <div class="m-stage fill-center">
+        <p class="m-sub lead fragment enter-wipe">Write a number as <span class="sym-a">a</span> ? \(10^{n}\) where 1 ??<span class="sym-a">a</span> &lt; 10.</p>
+        <p class="m-sub fragment enter-fade">Move the decimal to just after the first non-zero digit.</p>
+        <p class="m-sub emphasis fragment enter-bounce">Left ??\(10^{+n}\). &nbsp; Right ??\(10^{-n}\).</p>
+        </div>
+      </section>
+
+      <section>
+        <header class="m-head">
+        <h2 class="m-title">Large numbers ??move left</h2>
+        <div class="m-line"></div>
+        </header>
+        <div class="m-stage fill-center">
+        <p class="m-sub lead">Decimal left by \(n\) places \(\Rightarrow \times 10^{\textcolor{#ffd54f}{n}}\)</p>
+        <div class="sci-eq-stage">
+          <div class="sci-lhs sym-a">5000</div>
+          <div class="sci-rhs-live">
+            <div class="sci-jump-eq fragment sci-big">
+              <span class="op">=</span>
+              <span class="sym-a">5000</span><span class="dp-live dp">.</span>
+              <span class="op">×</span>
+              <span>10</span><sup class="pow">0</sup>
+            </div>
+            <div class="sci-jump-eq fragment sci-big">
+              <span class="op">=</span>
+              <span class="sym-a">500</span><span class="dp-live dp">.</span><span class="sym-a">0</span>
+              <span class="op">×</span>
+              <span>10</span><sup class="pow">1</sup>
+            </div>
+            <div class="sci-jump-eq fragment sci-big">
+              <span class="op">=</span>
+              <span class="sym-a">50</span><span class="dp-live dp">.</span><span class="sym-a">00</span>
+              <span class="op">×</span>
+              <span>10</span><sup class="pow">2</sup>
+            </div>
+            <div class="sci-jump-eq fragment sci-big">
+              <span class="op">=</span>
+              <span class="sym-a">5</span><span class="dp-live dp" style="opacity:0">.</span>
+              <span class="op">×</span>
+              <span>10</span><sup class="pow">3</sup>
+            </div>
+          </div>
+        </div>
+        <div class="m-result fragment enter-bounce box-final">\(5000=5\times 10^{\textcolor{#ffd54f}{3}}\)</div>
+        </div>
+      </section>
+
+      <section>
+        <header class="m-head">
+        <h2 class="m-title">Already has a power of 10</h2>
+        <div class="m-line"></div>
+        </header>
+        <div class="m-stage fill-center">
+        <div class="sci-eq-stage">
+          <div class="sci-lhs">\(428.9\times 10^{\textcolor{#ffd54f}{5}}\)</div>
+          <p class="m-sub note-proc fragment enter-wipe">move the decimal left 2 places:</p>
+          <div class="sci-rhs-live">
+            <div class="sci-jump-eq fragment sci-big">
+              <span class="sym-a">428</span><span class="dp-live dp">.</span><span class="sym-a">9</span>
+              <span class="op">×</span> \(10^{\textcolor{#ffd54f}{5}}\)
+            </div>
+            <div class="sci-jump-eq fragment sci-big">
+              <span class="sym-a">42</span><span class="dp-live dp">.</span><span class="sym-a">89</span>
+              <span class="op">×</span> \(10^{\textcolor{#ffd54f}{1}}\times 10^{\textcolor{#ffd54f}{5}}\)
+            </div>
+            <div class="sci-jump-eq fragment sci-big">
+              <span class="sym-a">4</span><span class="dp-live dp">.</span><span class="sym-a">289</span>
+              <span class="op">×</span> \(10^{\textcolor{#ffd54f}{2}}\times 10^{\textcolor{#ffd54f}{5}}\)
+            </div>
+          </div>
+        </div>
+        <div class="m-result fragment enter-bounce box-final">\(4.289\times 10^{\textcolor{#ffd54f}{7}}\)</div>
+        </div>
+      </section>
+
+      <section>
+        <header class="m-head">
+        <h2 class="m-title">Small numbers ??move right</h2>
+        <div class="m-line"></div>
+        </header>
+        <div class="m-stage fill-center">
+        <p class="m-sub lead">Decimal right by \(n\) places \(\Rightarrow \times 10^{-\textcolor{#ffd54f}{n}}\)</p>
+        <div class="sci-eq-stage">
+          <div class="sci-lhs sym-a">0.09123</div>
+          <div class="sci-rhs-live">
+            <div class="sci-jump-eq fragment sci-big">
+              <span class="op">=</span>
+              <span class="sym-a">0</span><span class="dp-live dp">.</span><span class="sym-a">09123</span>
+              <span class="op">×</span>
+              <span>10</span><sup class="pow">0</sup>
+            </div>
+            <div class="sci-jump-eq fragment sci-big">
+              <span class="op">=</span>
+              <span class="sym-a">0</span><span class="dp-live dp">.</span><span class="sym-a">9123</span>
+              <span class="op">×</span>
+              <span>10</span><sup class="pow">??</sup>
+            </div>
+            <div class="sci-jump-eq fragment sci-big">
+              <span class="op">=</span>
+              <span class="sym-a">9</span><span class="dp-live dp">.</span><span class="sym-a">123</span>
+              <span class="op">×</span>
+              <span>10</span><sup class="pow">??</sup>
+            </div>
+          </div>
+        </div>
+        <div class="m-result fragment enter-bounce box-final">\(0.09123=9.123\times 10^{\textcolor{#ffd54f}{-2}}\)</div>
+        </div>
+      </section>
+
+      <section>
+        <header class="m-head">
+        <h2 class="m-title">Combine negative powers</h2>
+        <div class="m-line"></div>
+        </header>
+        <div class="m-stage fill-center">
+        <div class="m-eq">\[ 0.097 \times 10^{\textcolor{#ffd54f}{-2}} \]</div>
+        <div class="m-eq fragment enter-fade">\(=9.7\times 10^{\textcolor{#ffd54f}{-2}}\times 10^{\textcolor{#ffd54f}{-2}}\)</div>
+        <div class="m-result fragment enter-bounce box-final">\(=9.7\times 10^{\textcolor{#ffd54f}{-4}}\)</div>
+        </div>
+      </section>
+
+      <section>
+        <header class="m-head">
+        <h2 class="m-title">Negative numbers</h2>
+        <div class="m-line"></div>
+        </header>
+        <div class="m-stage fill-center">
+        <p class="m-sub lead fragment enter-wipe">1. Ignore the minus sign.</p>
+        <p class="m-sub fragment enter-fade">2. Convert the magnitude.</p>
+        <p class="m-sub emphasis fragment enter-pop">3. Put the minus back.</p>
+        <div class="m-result fragment enter-bounce">\[ -428.9 \times 10^{\textcolor{#ffd54f}{5}} = -4.289 \times 10^{\textcolor{#ffd54f}{7}} \]</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script src="../_manim-boot.js?v=20260926i"></script>
+  <script src="../../../shared/manim-deck-nav.js?v=20260926i"></script>
+</body>
+</html>
