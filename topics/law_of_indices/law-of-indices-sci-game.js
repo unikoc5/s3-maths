@@ -426,14 +426,382 @@
     node.getAnimations().forEach(function (anim) { anim.cancel(); });
   }
 
+  try { localStorage.removeItem("magnitude-express-sound"); } catch (e) {}
+  var sound = (function () {
+    var ctx = null;
+    var sfxBus, musicBus, echo, noise;
+    var active = true;
+    var wantMusic = false;
+    var musicOn = false;
+    var timer = 0;
+    var nextTime = 0;
+    var step = 0;
+
+    var STEP = 60 / 84 / 2;
+    var CHORDS = [
+      { root: 33, notes: [57, 60, 64, 67, 71] },
+      { root: 29, notes: [57, 60, 64, 65, 69] },
+      { root: 36, notes: [55, 60, 64, 67, 71] },
+      { root: 28, notes: [55, 59, 62, 64, 67] },
+    ];
+    var ARP = [0, 2, 1, 3, 4, 3, 1, 2];
+
+    function freq(n) { return 440 * Math.pow(2, (n - 69) / 12); }
+
+    function gainNode(v, to) {
+      var g = ctx.createGain();
+      g.gain.value = v;
+      if (to) g.connect(to);
+      return g;
+    }
+
+    function impulse(sec) {
+      var len = Math.floor(ctx.sampleRate * sec);
+      var buf = ctx.createBuffer(2, len, ctx.sampleRate);
+      for (var c = 0; c < 2; c++) {
+        var d = buf.getChannelData(c);
+        for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6);
+      }
+      return buf;
+    }
+
+    function init() {
+      if (ctx) return;
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      ctx = new AC();
+      var master = gainNode(0.9);
+      var comp = ctx.createDynamicsCompressor();
+      master.connect(comp);
+      comp.connect(ctx.destination);
+      var verb = ctx.createConvolver();
+      verb.buffer = impulse(3.4);
+      verb.connect(gainNode(0.5, master));
+      sfxBus = gainNode(0.6, master);
+      sfxBus.connect(gainNode(0.18, verb));
+      musicBus = gainNode(0, master);
+      musicBus.connect(verb);
+      echo = ctx.createDelay(1.5);
+      echo.delayTime.value = STEP * 3;
+      var feedback = gainNode(0.38, echo);
+      var tone = ctx.createBiquadFilter();
+      tone.type = "lowpass";
+      tone.frequency.value = 2600;
+      echo.connect(tone);
+      tone.connect(feedback);
+      tone.connect(musicBus);
+      noise = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+      var d = noise.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      loadSample("game-sound/crate-drop.mp3", "crate");
+    }
+
+    var samples = {};
+
+    function loadSample(url, name) {
+      fetch(url)
+        .then(function (res) { return res.arrayBuffer(); })
+        .then(function (data) {
+          return new Promise(function (resolve, reject) { ctx.decodeAudioData(data, resolve, reject); });
+        })
+        .then(function (buf) { samples[name] = { buf: buf, start: firstSound(buf) }; })
+        .catch(function () {});
+    }
+
+    function firstSound(buf) {
+      var peak = 0;
+      var c, i, d;
+      for (c = 0; c < buf.numberOfChannels; c++) {
+        d = buf.getChannelData(c);
+        for (i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i]));
+      }
+      var limit = peak * 0.05;
+      var first = buf.length;
+      for (c = 0; c < buf.numberOfChannels; c++) {
+        d = buf.getChannelData(c);
+        for (i = 0; i < first; i++) {
+          if (Math.abs(d[i]) > limit) { first = i; break; }
+        }
+      }
+      return Math.max(0, first / buf.sampleRate - 0.002);
+    }
+
+    function sample(name, t, level) {
+      var s = samples[name];
+      if (!s) return false;
+      var src = ctx.createBufferSource();
+      src.buffer = s.buf;
+      src.connect(gainNode(level, sfxBus));
+      src.start(t, s.start);
+      return true;
+    }
+
+    function running() {
+      return !!ctx && active && !document.hidden;
+    }
+
+    function apply() {
+      if (!ctx) return;
+      if (running()) {
+        ctx.resume();
+        if (wantMusic && !musicOn) startMusic();
+      } else {
+        ctx.suspend();
+      }
+    }
+
+    function now() {
+      return running() && ctx.state === "running" ? ctx.currentTime : null;
+    }
+
+    function envelope(g, t, peak, a, d) {
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(peak, t + a);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + a + d);
+    }
+
+    function tone(type, f, t, a, d, peak, f2, to) {
+      var o = ctx.createOscillator();
+      o.type = type;
+      o.frequency.setValueAtTime(f, t);
+      if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + a + d);
+      var g = gainNode(0, to || sfxBus);
+      envelope(g, t, peak, a, d);
+      o.connect(g);
+      o.start(t);
+      o.stop(t + a + d + 0.05);
+    }
+
+    function hiss(t, d, type, f, q, peak, f2, a) {
+      a = a || 0.01;
+      var s = ctx.createBufferSource();
+      s.buffer = noise;
+      s.loop = true;
+      var flt = ctx.createBiquadFilter();
+      flt.type = type;
+      flt.frequency.setValueAtTime(f, t);
+      flt.Q.value = q;
+      if (f2) flt.frequency.exponentialRampToValueAtTime(f2, t + a + d);
+      var g = gainNode(0, sfxBus);
+      envelope(g, t, peak, a, d);
+      s.connect(flt);
+      flt.connect(g);
+      s.start(t, Math.random());
+      s.stop(t + a + d + 0.05);
+    }
+
+    function chugs(t, sec, gap, grow) {
+      for (var at = 0; at < sec; at += gap, gap *= grow) {
+        hiss(t + at, 0.05, "bandpass", 1500, 2.5, 0.16);
+        tone("sine", 95, t + at, 0.004, 0.08, 0.12, 60);
+      }
+    }
+
+    var fx = {
+      trainIn: function (sec) {
+        var t = now();
+        if (t === null) return;
+        hiss(t, sec, "lowpass", 1100, 0.8, 0.32, 150, 0.25);
+        tone("triangle", 240, t, 0.15, sec, 0.07, 70);
+        tone("sine", 480, t, 0.15, sec * 0.8, 0.025, 120);
+        chugs(t, sec, 0.08, 1.09);
+      },
+      brake: function () {
+        var t = now();
+        if (t === null) return;
+        hiss(t, 0.55, "highpass", 3200, 0.7, 0.2, 5000, 0.02);
+        tone("sine", 90, t, 0.005, 0.3, 0.35, 40);
+        [523, 831, 1247].forEach(function (f, i) { tone("sine", f, t + 0.02, 0.003, 0.7 - i * 0.15, 0.07 - i * 0.02); });
+      },
+      trainOut: function () {
+        var t = now();
+        if (t === null) return;
+        tone("sine", 784, t, 0.05, 0.6, 0.09, 760);
+        tone("sine", 988, t, 0.05, 0.6, 0.07, 960);
+        hiss(t + 0.3, 1.4, "lowpass", 180, 0.8, 0.3, 1400, 0.4);
+        tone("triangle", 60, t + 0.3, 0.3, 1.3, 0.07, 280);
+        chugs(t + 0.35, 1.3, 0.22, 0.86);
+      },
+      belt: function (sec) {
+        var t = now();
+        if (t === null) return;
+        for (var at = 0; at < sec; at += 0.05) tone("square", 2200 + Math.random() * 400, t + at, 0.002, 0.018, 0.035);
+        tone("sawtooth", 170, t, 0.05, sec, 0.03, 430);
+        tone("triangle", 340, t, 0.05, sec, 0.05, 860);
+        tone("sine", 150, t + sec, 0.004, 0.22, 0.3, 55);
+        hiss(t + sec, 0.12, "lowpass", 700, 1, 0.18);
+      },
+      thud: function (delay) {
+        var t = now();
+        if (t === null) return;
+        t += delay;
+        if (sample("crate", t, 2.4)) return;
+        hiss(t, 0.03, "bandpass", 3800, 1.2, 0.5);
+        tone("sine", 160, t, 0.002, 0.18, 0.35, 70);
+        [[523, 0.55, 0.16], [1187, 0.42, 0.12], [1856, 0.3, 0.09], [2741, 0.22, 0.07], [3920, 0.15, 0.05]].forEach(function (p) {
+          tone("triangle", p[0] * (0.97 + Math.random() * 0.06), t, 0.001, p[1], p[2]);
+        });
+      },
+      zip: function () {
+        var t = now();
+        if (t === null) return;
+        hiss(t, 0.32, "bandpass", 700, 3, 0.14, 4200);
+      },
+      knot: function () {
+        var t = now();
+        if (t === null) return;
+        tone("square", 880, t, 0.002, 0.04, 0.04);
+        tone("sine", 1400, t, 0.002, 0.08, 0.06);
+      },
+      magnet: function () {
+        var t = now();
+        if (t === null) return;
+        tone("sine", 660, t, 0.03, 0.4, 0.05, 1760);
+        tone("triangle", 990, t, 0.03, 0.4, 0.03, 2640);
+      },
+      held: function () {
+        var t = now();
+        if (t === null) return;
+        tone("square", 110, t, 0.01, 0.35, 0.06);
+        tone("square", 117, t, 0.01, 0.35, 0.06);
+      },
+      load: function () {
+        var t = now();
+        if (t === null) return;
+        tone("sine", 130, t, 0.004, 0.16, 0.25, 60);
+      },
+      wrong: function () {
+        var t = now();
+        if (t === null) return;
+        tone("sawtooth", 220, t, 0.01, 0.3, 0.05, 140);
+        tone("square", 233, t, 0.01, 0.3, 0.04, 150);
+      },
+      fired: function () {
+        var t = now();
+        if (t === null) return;
+        tone("sawtooth", 392, t, 0.05, 1.4, 0.06, 98);
+        tone("triangle", 330, t + 0.1, 0.05, 1.4, 0.06, 82);
+      },
+    };
+
+    function pad(chord, t, dur) {
+      var flt = ctx.createBiquadFilter();
+      flt.type = "lowpass";
+      flt.frequency.value = 800;
+      flt.Q.value = 2;
+      var lfo = ctx.createOscillator();
+      lfo.frequency.value = 0.12;
+      lfo.connect(gainNode(350, flt.frequency));
+      var g = gainNode(0, musicBus);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(1, t + 1.6);
+      g.gain.setValueAtTime(1, t + dur - 0.2);
+      g.gain.linearRampToValueAtTime(0, t + dur + 1.6);
+      flt.connect(g);
+      lfo.start(t);
+      lfo.stop(t + dur + 1.7);
+      chord.notes.slice(0, 4).forEach(function (n) {
+        [-7, 7].forEach(function (cents) {
+          var o = ctx.createOscillator();
+          o.type = "sawtooth";
+          o.frequency.value = freq(n);
+          o.detune.value = cents;
+          o.connect(gainNode(0.022, flt));
+          o.start(t);
+          o.stop(t + dur + 1.7);
+        });
+      });
+    }
+
+    function bass(root, t, dur) {
+      var o = ctx.createOscillator();
+      o.type = "sine";
+      o.frequency.value = freq(root);
+      var g = gainNode(0, musicBus);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.16, t + 0.8);
+      g.gain.setValueAtTime(0.16, t + dur - 0.3);
+      g.gain.linearRampToValueAtTime(0, t + dur + 0.4);
+      o.connect(g);
+      o.start(t);
+      o.stop(t + dur + 0.5);
+    }
+
+    function pluck(f, t, peak) {
+      var g = gainNode(0, musicBus);
+      g.connect(echo);
+      envelope(g, t, peak, 0.006, 0.55);
+      ["triangle", "sine"].forEach(function (type, i) {
+        var o = ctx.createOscillator();
+        o.type = type;
+        o.frequency.value = f * (i + 1);
+        o.connect(i ? gainNode(0.3, g) : g);
+        o.start(t);
+        o.stop(t + 0.65);
+      });
+    }
+
+    function bell(f, t) {
+      tone("sine", f, t, 0.01, 2.6, 0.03, 0, musicBus);
+      tone("sine", f * 2.76, t, 0.01, 1.4, 0.01, 0, musicBus);
+    }
+
+    function beat(i, t) {
+      var bar = Math.floor(i / 8);
+      var chord = CHORDS[Math.floor(bar / 2) % CHORDS.length];
+      var s = i % 8;
+      if (i % 16 === 0) {
+        pad(chord, t, STEP * 16);
+        bass(chord.root, t, STEP * 16);
+      }
+      if (i >= 16 && (bar % 4 !== 3 || s < 4)) pluck(freq(chord.notes[ARP[s]] + 12), t, s === 0 ? 0.07 : 0.045);
+      if (Math.random() < 0.05) bell(freq(chord.notes[Math.floor(Math.random() * chord.notes.length)] + 24), t);
+    }
+
+    function schedule() {
+      if (ctx.state !== "running") return;
+      if (nextTime < ctx.currentTime) nextTime = ctx.currentTime + 0.05;
+      while (nextTime < ctx.currentTime + 0.4) {
+        beat(step, nextTime);
+        step += 1;
+        nextTime += STEP;
+      }
+    }
+
+    function startMusic() {
+      if (!ctx || musicOn) return;
+      musicOn = true;
+      step = 0;
+      nextTime = ctx.currentTime + 0.1;
+      musicBus.gain.cancelScheduledValues(ctx.currentTime);
+      musicBus.gain.setTargetAtTime(0.32, ctx.currentTime, 1.5);
+      timer = setInterval(schedule, 120);
+      schedule();
+    }
+
+    return {
+      fx: fx,
+      start: function () {
+        wantMusic = true;
+        init();
+        apply();
+      },
+      setActive: function (yes) {
+        active = yes;
+        apply();
+      },
+      refresh: apply,
+    };
+  })();
+
   function typeOut(key, node, text, speed) {
     if (typers[key]) typers[key]();
     return new Promise(function (resolve) {
       if (reduce) {
         node.textContent = text;
         resolve();
-        return;
-      }
+      return;
+    }
       var i = 0;
       var timer = setInterval(function () {
         i += 1;
@@ -506,6 +874,7 @@
     var ticket = ++wrongTicket;
     el("mx-wrong-title").textContent = "\u274c " + title;
     el("mx-wrong-why").textContent = why;
+    sound.fx.wrong();
     stopAnims(box);
     box.hidden = false;
     play(box, [
@@ -553,11 +922,13 @@
     train.classList.remove("mx-lit");
     train.style.visibility = "visible";
     var from = -(train.offsetLeft + train.offsetWidth + 40);
+    sound.fx.trainIn(1.5);
     return play(train, [{ transform: "translateX(" + from + "px)" }, { transform: "translateX(0)" }], 1500, "cubic-bezier(.2,.7,.3,1)");
   }
 
   async function brake() {
     var train = el("train");
+    sound.fx.brake();
     play(el("mx-flash"), [{ opacity: 0 }, { opacity: 0.85, offset: 0.25 }, { opacity: 0 }], 420);
     await play(train, [
       { transform: "translateX(0)" },
@@ -592,6 +963,7 @@
 
   async function trainOut() {
     var train = el("train");
+    sound.fx.trainOut();
     puff();
     await wait(350);
     var to = train.parentNode.clientWidth - train.offsetLeft + 40;
@@ -602,6 +974,7 @@
 
   async function beltOpen() {
     var belt = el("conveyor-belt");
+    sound.fx.belt(0.9);
     await play(belt, [{ width: "0%" }, { width: "100%" }], 900, "ease-out");
     belt.style.width = "100%";
     belt.classList.add("mx-run");
@@ -654,6 +1027,7 @@
       return node;
     });
     await Promise.all(nodes.map(function (node, i) {
+      sound.fx.thud(reduce ? 0 : (620 + i * 140) * 0.75 / 1000);
       return play(node, [
         { transform: "translateY(-150px)", opacity: 0 },
         { transform: "translateY(0)", opacity: 1, offset: 0.75 },
@@ -711,12 +1085,14 @@
       bundle.appendChild(rope);
       return rope;
     });
+    sound.fx.zip();
     await Promise.all(ropes.map(function (rope, i) {
       return play(rope, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], (420 + i * 120) * k, "ease-out");
     }));
     var knot = document.createElement("span");
     knot.className = "mx-knot";
     bundle.appendChild(knot);
+    sound.fx.knot();
     await play(knot, [
       { transform: "translateX(-50%) scale(0)" },
       { transform: "translateX(-50%) scale(1.3)", offset: 0.7 },
@@ -746,6 +1122,7 @@
   }
 
   function magnet() {
+    sound.fx.magnet();
     return Promise.all(crates().map(function (node) {
       return play(node, [
         { filter: "brightness(1)" },
@@ -771,6 +1148,7 @@
     stamp.className = "mx-held";
     stamp.textContent = "HELD";
     target.appendChild(stamp);
+    sound.fx.held();
     return play(stamp, [
       { transform: "translateX(-50%) rotate(-8deg) scale(2.2)", opacity: 0 },
       { transform: "translateX(-50%) rotate(-8deg) scale(1)", opacity: 1 },
@@ -819,6 +1197,7 @@
     target.style.top = (deck.top - t.top - h) + "px";
     target.style.transform = "scale(" + s + ")";
     train.appendChild(target);
+    sound.fx.load();
   }
 
   function refreshMode() {
@@ -921,6 +1300,7 @@
     await wait(900);
     if (ticket !== run) return;
     el("mx-dock").textContent = "SHIFT OVER";
+    sound.fx.fired();
     if (el("mx-bot").style.visibility !== "visible") botIn();
     botSay("That's three mistakes. Sorry... you're FIRED! You earned $" + cash + " today.");
     await logLine("[SYSTEM] Three mistakes. Your shift is over.");
@@ -1165,8 +1545,8 @@
     if (selected === null) {
       if (!same(got, dock.total)) {
         rejectAdd(dock, got, null);
-        return;
-      }
+      return;
+    }
       hideWrong();
       busy = true;
       lockInput(true);
@@ -1175,8 +1555,8 @@
       if (ticket !== run) return;
       if (!legal(got.m)) {
         await holdForFix(await tie(filed), dock.total, "The station works it out: " + filed + ".", ticket);
-        return;
-      }
+      return;
+    }
       bundle = await tie(filed, true);
       if (ticket !== run) return;
       await departAndNext(bundle, filed, ticket, shortcut(PRAISE_ADD));
@@ -1295,8 +1675,8 @@
     var got = readLabel();
     if (got.msg) {
       showWrong("ERROR", got.msg);
-      return;
-    }
+        return;
+      }
     var dock = DOCKS[dockIndex];
     if (heldFix) return fixHeld(dock, got);
     if (dock.kind === "add") return submitAdd(dock, got);
@@ -1307,8 +1687,8 @@
     var shortcut = !exact && step.act === "tie-held" && nearly(got.m, last.m) && got.e === last.e;
     if (shortcut && dock.training) {
       stepByStep(got);
-      return;
-    }
+        return;
+      }
     if (!exact && !shortcut) {
       reject(dock, step, got);
       return;
@@ -1353,6 +1733,7 @@
   }
 
   async function startShift(skip) {
+    sound.start();
     run += 1;
     var ticket = run;
     busy = true;
@@ -1423,10 +1804,6 @@
     if (ticket !== run) return;
 
     if (skip) {
-      await logLine("[SYSTEM] Training skipped. Endless shift: $" + PAY + " per load, three mistakes and you're fired. Best so far: $" + readBest() + ".");
-      if (ticket !== run) return;
-      await wait(600);
-      if (ticket !== run) return;
       await openDock(TRAINING.length, ticket, true);
       return;
     }
@@ -1446,6 +1823,7 @@
   }
 
   async function startIntro() {
+    sound.start();
     run += 1;
     var ticket = run;
     introAt = -1;
@@ -1512,6 +1890,7 @@
     el("sci-game").classList.toggle("game-off", name !== "magnitude");
     var room = el("sig-game");
     if (room) room.classList.toggle("game-off", name !== "signal");
+    sound.setActive(name === "magnitude");
     document.querySelectorAll("#games-subnav .chip").forEach(function (chip) {
       chip.classList.toggle("active", chip.getAttribute("data-game") === name);
     });
@@ -1533,6 +1912,7 @@
     el("mx-again").addEventListener("click", function () { startShift(false); });
     el("mx-again-solo").addEventListener("click", function () { startShift(true); });
     el("submit-btn").addEventListener("click", submit);
+    document.addEventListener("visibilitychange", sound.refresh);
     el("input-area").addEventListener("keydown", function (event) {
       if (event.key === "Enter") submit();
     });

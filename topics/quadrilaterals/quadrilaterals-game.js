@@ -5,7 +5,7 @@
   "use strict";
 
   var ART = "game/";
-  var V = "?v=20260920-game5m";
+  var V = "?v=20261011-end11";
 
   var TITLE = {
     eyebrow: "JM29 · Game 1",
@@ -64,12 +64,12 @@
       music: "battle",
     },
     {
-      bg: "op-06-map.png",
+      bg: "op-06-map-clean.png",
       mode: "scene",
       music: "battle",
     },
     {
-      bg: "op-06-map.png",
+      bg: "op-06-map-clean.png",
       mode: "speech",
       lines: [
         "This world has four major regions.",
@@ -79,7 +79,7 @@
       music: "battle",
     },
     {
-      bg: "op-06-map.png",
+      bg: "op-06-map-clean.png",
       mode: "speech",
       lines: [
         "The parallelogram region is the largest of them all.",
@@ -90,22 +90,23 @@
     },
   ];
 
+  /* Between regions the story breathes: the "journey" bed, not the war drums. */
   var REGION_OUTRO = [
     {
       bg: "op-07-parallelogram-farewell.png",
       ken: "ken-a",
       mode: "scene",
-      music: "battle",
+      music: "journey",
     },
     {
-      bg: "op-06-map.png",
-      ken: "ken-c",
+      bg: "op-06-map-clean.png",
       mode: "speech",
       lines: [
         "The Parallelogram Region is safe.",
         "Next stop: the Rhombus Zone.",
       ],
-      music: "battle",
+      fx: "next-rhombus",
+      music: "journey",
     },
   ];
 
@@ -118,6 +119,51 @@
 
   var ROUTE = "M55,820 C80,745 110,680 165,600";
 
+  /* Catmull-Rom through the points, as one smooth SVG path. */
+  function smoothPath(pts) {
+    var d = "M" + pts[0].join(",");
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[i - 1] || pts[i];
+      var p1 = pts[i];
+      var p2 = pts[i + 1];
+      var p3 = pts[i + 2] || p2;
+      var c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+      var c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += " C" + c1.join(",") + " " + c2.join(",") + " " + p2.join(",");
+    }
+    return d;
+  }
+
+  /* "Next stop" overlays: the spotlight, a pulsing outline, a dotted route and a name.
+   * Rhombus crosses open land. Rectangle sails the river that leaves the rhombus
+   * land. Square sails on: out of the rectangle land, down the central river,
+   * then along the southern river into the square land. Points are map pixels. */
+  var NEXT_STOPS = {
+    rhombus: {
+      zone: 1,
+      name: "Rhombus",
+      route: "M500,460 C590,450 650,420 710,375 C745,348 775,322 805,300",
+    },
+    rectangle: {
+      zone: 2,
+      name: "Rectangle",
+      route: smoothPath([
+        [975, 305], [1012, 294], [1038, 291], [1064, 298], [1090, 309], [1110, 324],
+        [1108, 338], [1098, 347], [1124, 358], [1150, 372], [1190, 372], [1235, 340],
+      ]),
+    },
+    square: {
+      zone: 3,
+      name: "Square",
+      route: smoothPath([
+        [1215, 385], [1165, 415], [1100, 438], [1055, 448], [1020, 455], [990, 468],
+        [960, 488], [930, 506], [900, 518], [862, 536], [836, 556], [824, 580],
+        [840, 598], [868, 606], [862, 636], [872, 664], [900, 678], [936, 681],
+        [972, 696], [1004, 718], [1030, 730], [1066, 708], [1100, 660],
+      ]),
+    },
+  };
+
   /* Every court offers the same five reasons; only the answer changes. */
   var REASONS = [
     "opp. sides equal",
@@ -126,6 +172,89 @@
     "2 sides equal and parallel",
     "opp. sides parallel",
   ];
+
+  /* Only the rhombus half of each proof is a reason here; any parallelogram
+   * step is read from the marks and said by the sage. */
+  var RH_REASONS = [
+    "4 sides equal",
+    "diags. \u22a5 each other",
+    "diag. bisects \u2220s",
+  ];
+
+  var RHOMBUS_OUTRO = [
+    {
+      bg: "op-07-rhombus-farewell.jpg",
+      ken: "ken-a",
+      mode: "scene",
+      music: "journey",
+    },
+    {
+      bg: "op-06-map-clean.png",
+      mode: "speech",
+      lines: [
+        "The Rhombus Region is safe.",
+        "Next stop: the Rectangle Zone.",
+      ],
+      fx: "next-rectangle",
+      music: "journey",
+    },
+  ];
+
+  var RE_REASONS = [
+    "4 \u2220s = 90\u00b0",
+    "diags. equal",
+  ];
+
+  var RECTANGLE_OUTRO = [
+    {
+      bg: "op-07-rectangle-farewell.jpg",
+      ken: "ken-a",
+      mode: "scene",
+      music: "journey",
+    },
+    {
+      bg: "op-06-map-clean.png",
+      mode: "speech",
+      lines: [
+        "The Rectangle Region is safe.",
+        "Final stop: the Square Zone.",
+      ],
+      fx: "next-square",
+      // The river route runs low on the map, so the bubble moves up out of its way.
+      high: true,
+      music: "journey",
+    },
+  ];
+
+  /* The finale: all four kings hand in hand, under the saved "finale" bed. */
+  var SQUARE_OUTRO = [
+    {
+      bg: "op-07-square-ending.jpg",
+      ken: "ken-a",
+      mode: "scene",
+      music: "finale",
+    },
+    {
+      bg: "op-07-square-ending.jpg",
+      ken: "ken-c",
+      mode: "speech",
+      lines: [
+        "The Square Region is safe.",
+        "Every princess is home, and every king has lowered his sword.",
+      ],
+      music: "finale",
+    },
+  ];
+
+  /* One seat shuffle is made on load; a region with fewer reasons keeps the
+   * same relative order by dropping the seats it does not use. */
+  var REGIONS = {
+    para: { reasons: REASONS, ask: "Which claimant is a true parallelogram?", bed: "court", outro: REGION_OUTRO },
+    rhombus: { reasons: RH_REASONS, ask: "Which claimant is a true rhombus?", bed: "rhombus", outro: RHOMBUS_OUTRO },
+    rectangle: { reasons: RE_REASONS, ask: "Which claimant is a true rectangle?", bed: "rectangle", outro: RECTANGLE_OUTRO },
+    // No reason step: once the true square is picked the sage proves it.
+    square: { reasons: null, ask: "Which claimant is a true square?", bed: "square", outro: SQUARE_OUTRO },
+  };
 
   /* Figures live in a 0–120 × 0–100 box.
    * ticks / arrows are [sideIndex, count]; angles are [vertexIndex, count];
@@ -149,6 +278,75 @@
     // a parallel arrow it is parallel, however crooked the drawing looks.
     h: [[18, 18], [99, 24], [93, 80], [8, 75]],
   };
+
+  /* Rhombus region. Every impostor is drawn close enough to a rhombus that
+   * only the marks can rule her out; every true rhombus is drawn exactly. */
+  var RH = {
+    // True rhombi.
+    lean: [[34, 20], [98, 20], [74, 79], [10, 79]],
+    tilt: [[15, 34], [68, 29], [105, 66], [52, 71]],
+    turn: [[14, 40], [67, 17], [106, 60], [53, 83]],
+
+    // Kites: diagonals really perpendicular, the long one really bisects its
+    // two corners, sides equal only in touching pairs.
+    kiteDown: [[60, 6], [102, 46], [60, 94], [18, 46]],
+
+    // Three sides equal, the fourth a little short.
+    three: [[60, 6], [102, 48], [60, 90], [20, 50]],
+
+    // Parallelograms a few degrees and a few units away from a rhombus.
+    paraUp: [[58, 6], [104, 46], [62, 94], [16, 54]],
+    paraLean: [[30, 18], [100, 18], [86, 82], [16, 82]],
+
+    // Near-squares. The rhombus is exact; the others are a rectangle and
+    // trapezia whose marks are all true for the drawing.
+    squarish: [[28, 20], [87, 21], [92, 80], [33, 79]],
+    squareLean: [[34, 22], [90, 22], [84, 78], [28, 78]],
+    rectSquare: [[30, 22], [92, 22], [92, 80], [30, 80]],
+    // Isosceles trapezium with perpendicular diagonals.
+    trapPerp: [[35, 24], [85, 24], [88, 77], [32, 77]],
+    // Top parallel to bottom; top equals the right side.
+    trapAdj: [[30, 22], [86, 22], [80, 78], [20, 78]],
+    // Top parallel to bottom; top and both slanted sides equal.
+    trapThree: [[34, 22], [90, 22], [93, 78], [31, 78]],
+    // Left parallel to right; top, right and bottom equal.
+    trapSide: [[36, 19], [92, 22], [92, 78], [36, 81]],
+  };
+
+  /* Rectangle region. A true rectangle always looks like one, so every
+   * impostor is drawn within a few degrees of a rectangle and only the marks
+   * rule her out. No impostor's marks may force a rectangle by themselves. */
+  var RE = {
+    // True rectangles.
+    wide: [[22, 24], [98, 24], [98, 76], [22, 76]],
+    plain: [[20, 22], [100, 22], [100, 78], [20, 78]],
+    long: [[18, 24], [102, 24], [102, 76], [18, 76]],
+    tall: [[22, 20], [98, 20], [98, 80], [22, 80]],
+    low: [[20, 24], [100, 24], [100, 76], [20, 76]],
+
+    // B and D are the ends of a diameter, so A and C are right angles; B and
+    // D are 92.5° and 87.5°.
+    cyclic: [[19.8, 27.7], [98.6, 24.9], [102, 68.7], [21.4, 75.1]],
+    // Kite about BD with right angles at A and C.
+    rightKite: [[25.5, 21.1], [94.5, 21.1], [82.5, 89], [25.5, 78.9]],
+    // Right-angled trapezium: top parallel to bottom, right angles at A and D.
+    rightTrap: [[20, 22], [96, 22], [102, 78], [20, 78]],
+    // Leans 4 units: a parallelogram, not a rectangle.
+    lean: [[24, 23], [100, 23], [96, 77], [20, 77]],
+    leanBack: [[22, 22], [99, 22], [96, 78], [19, 78]],
+    // Isosceles trapezium: AE = BE and CE = DE.
+    isoTrap: [[27, 23], [93, 23], [98, 77], [22, 77]],
+    // Kite about BD with A = B = C = 86° and D = 102°.
+    kite86: [[24.2, 16.7], [95.8, 14.2], [93.3, 85.8], [30.8, 79.2]],
+    // D = 90°, A = B = 88°, C = 94°.
+    nearRect: [[20, 20], [98, 22.7], [93.9, 80], [20, 80]],
+    // A, B, C lie 44 from the crossing; D lies 51 from it.
+    threeHalves: [[23.1, 26], [96.9, 26], [96.9, 74], [17.2, 77.8]],
+  };
+
+  /* Square region. Every claimant is drawn as the same exact square, so only
+   * the marks decide; every mark is still true for the drawing. */
+  var SQ = [[30, 20], [90, 20], [90, 80], [30, 80]];
 
   var LEVELS = [
     {
@@ -442,6 +640,711 @@
       ],
       outro: ["Six thrones, six daughters, and every proof answered.", "The parallelogram region lowers its banners at last."],
     },
+    {
+      id: "rhombus-01",
+      region: "rhombus",
+      chapter: "Rhombus Region · Kingdom 1",
+      name: "The Turquoise Court of Arthur",
+      bg: "kd-rhombus-01.jpg",
+      bgAngry: "kd-rhombus-01-angry.jpg",
+      bgPuzzled: "kd-rhombus-01-puzzled.jpg",
+      bgHappy: "kd-rhombus-01-happy.jpg",
+      king: "king-rhombus-01.jpg",
+      kingName: "King Arthur",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Emma",
+          poly: RH.three,
+          ticks: [[0, 1], [1, 1], [3, 1], [2, 2]],
+          why: "Emma has a mark on every side, but one of them is || instead of |.\nOnly three sides are equal, so she is not proved to be a rhombus.",
+        },
+        {
+          name: "Olivia",
+          poly: RH.kiteDown,
+          ticks: [[3, 1], [0, 1], [1, 2], [2, 2]],
+          why: "Olivia's equal sides come in two different pairs, | and ||.\nTwo pairs of touching equal sides make a kite, not a rhombus.",
+        },
+        { name: "Chloe", poly: RH.lean, ticks: [[0, 1], [1, 1], [2, 1], [3, 1]] },
+      ],
+      answer: 2,
+      kingWrong: ["Wrong! That is not my daughter.", "Guards, seize the sage!"],
+      kingCorrect: ["Chloe? She does not look like a rhombus.", "Tell me why she is the one."],
+      reasonAnswer: 0,
+      reasonWhy: [
+        "",
+        "No diagonals are drawn in her figure at all.",
+        "No diagonal is drawn, and no angle is marked.",
+      ],
+      solve: [
+        { who: "you", lines: ["All four sides are marked equal,", "so the figure must be a rhombus. (4 sides equal)"] },
+        { who: "king", lines: ["Chloe! My daughter!", "Arthur owes you this peace, sage."] },
+      ],
+      outro: ["Arthur lowers his banners of war.", "The road turns south, to the coral halls of Edward."],
+    },
+    {
+      id: "rhombus-02",
+      region: "rhombus",
+      chapter: "Rhombus Region · Kingdom 2",
+      name: "The Coral Court of Edward",
+      bg: "kd-rhombus-02.jpg",
+      bgAngry: "kd-rhombus-02-angry.jpg",
+      bgPuzzled: "kd-rhombus-02-puzzled.jpg",
+      bgHappy: "kd-rhombus-02-happy.jpg",
+      king: "king-rhombus-02.jpg",
+      kingName: "King Edward",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Sophie",
+          poly: RH.kiteDown,
+          diags: true,
+          rightCross: true,
+          diagTicks: [[1, 1], [3, 1], [0, 2], [2, 3]],
+          why: "Sophie's short diagonal is cut in half, but her long one is not: || and ||| differ.\nPerpendicular diagonals with only one bisected make a kite.",
+        },
+        {
+          name: "Ruby",
+          poly: RH.paraUp,
+          diags: true,
+          diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          crossAngles: 1,
+          why: "Ruby's diagonals bisect each other, but the arcs at the crossing are not right angles.\nVertically opposite angles are always equal, so she is only a parallelogram.",
+        },
+        {
+          name: "Hannah",
+          poly: RH.tilt,
+          diags: true,
+          rightCross: true,
+          diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]],
+        },
+      ],
+      answer: 2,
+      kingWrong: ["Half a fact is no proof!", "Edward's army is ready, sage!"],
+      kingCorrect: ["Hannah? She leans like a stranger.", "Show my court why she is mine."],
+      reasonAnswer: 1,
+      reasonWhy: [
+        "No side of her figure is marked equal.",
+        "",
+        "No corner angle is marked in her figure.",
+      ],
+      solve: [
+        { who: "you", lines: ["The diagonals bisect each other, so she is a parallelogram.", "They also meet at 90\u00b0, so she is a rhombus. (diags. \u22a5 each other)"] },
+        { who: "king", lines: ["Hannah. Come home.", "Edward stands down. Go on, sage."] },
+      ],
+      outro: ["Edward's war drums fall silent.", "Next come the amethyst towers of Oscar."],
+    },
+    {
+      id: "rhombus-03",
+      region: "rhombus",
+      chapter: "Rhombus Region · Kingdom 3",
+      name: "The Amethyst Court of Oscar",
+      bg: "kd-rhombus-03.jpg",
+      bgAngry: "kd-rhombus-03-angry.jpg",
+      bgPuzzled: "kd-rhombus-03-puzzled.jpg",
+      bgHappy: "kd-rhombus-03-happy.jpg",
+      king: "king-rhombus-03.jpg",
+      kingName: "King Oscar",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Lucy",
+          poly: RH.rectSquare,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          rightAngles: [0],
+          why: "Lucy's right angle is at a corner, not where the diagonals cross.\nA parallelogram with a right-angled corner is a rectangle.",
+        },
+        {
+          name: "Zoe",
+          poly: RH.trapPerp,
+          arrows: [[0, 1], [2, 1]],
+          diags: true,
+          rightCross: true,
+          why: "Zoe's diagonals are perpendicular, but only one pair of her sides is parallel.\nA trapezium can have perpendicular diagonals too.",
+        },
+        {
+          name: "Amy",
+          poly: RH.squarish,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          diags: true,
+          rightCross: true,
+        },
+      ],
+      answer: 2,
+      kingWrong: ["You call that my daughter?", "Oscar will answer with steel!"],
+      kingCorrect: ["Amy. Her sides are only marked parallel.", "Why is that enough?"],
+      reasonAnswer: 1,
+      reasonWhy: [
+        "No side of her figure is marked equal.",
+        "",
+        "No corner angle is marked in her figure.",
+      ],
+      solve: [
+        { who: "you", lines: ["Both pairs of opposite sides are parallel, so she is a parallelogram.", "Her diagonals also meet at 90\u00b0, so she is a rhombus. (diags. \u22a5 each other)"] },
+        { who: "king", lines: ["Amy, my clever girl.", "Oscar puts away his sword."] },
+      ],
+      outro: ["Oscar opens his gates again.", "The moss-green keep of Felix waits ahead."],
+    },
+    {
+      id: "rhombus-04",
+      region: "rhombus",
+      chapter: "Rhombus Region · Kingdom 4",
+      name: "The Moss Court of Felix",
+      bg: "kd-rhombus-04.jpg",
+      bgAngry: "kd-rhombus-04-angry.jpg",
+      bgPuzzled: "kd-rhombus-04-puzzled.jpg",
+      bgHappy: "kd-rhombus-04-happy.jpg",
+      king: "king-rhombus-04.jpg",
+      kingName: "King Felix",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Ella",
+          poly: RH.paraUp,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          ticks: [[0, 1], [2, 1]],
+          why: "Ella's equal sides are opposite each other.\nEvery parallelogram has that, so it proves nothing new.",
+        },
+        {
+          name: "Megan",
+          poly: RH.trapAdj,
+          arrows: [[0, 1], [2, 1]],
+          ticks: [[0, 1], [1, 1]],
+          why: "Megan has two touching sides equal, but only one pair of sides is parallel.\nShe may be a trapezium, so she is not proved to be a parallelogram.",
+        },
+        {
+          name: "Kate",
+          poly: RH.lean,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          ticks: [[0, 1], [1, 1]],
+        },
+      ],
+      answer: 2,
+      kingWrong: ["Wrong! You insult my house.", "Felix rides to war!"],
+      kingCorrect: ["Kate has only two sides marked equal.", "Convince me that is enough."],
+      reasonAnswer: 0,
+      reasonWhy: [
+        "",
+        "No diagonals are drawn in her figure at all.",
+        "No diagonal is drawn, and no angle is marked.",
+      ],
+      solve: [
+        { who: "you", lines: ["She is a parallelogram, so opposite sides are equal.", "Two touching sides are equal too, so all four sides are equal. (4 sides equal)"] },
+        { who: "king", lines: ["Kate. My Kate.", "Felix lays down his spear."] },
+      ],
+      outro: ["Felix sends his soldiers home.", "Far ahead glow the sapphire halls of Hugo."],
+    },
+    {
+      id: "rhombus-05",
+      region: "rhombus",
+      chapter: "Rhombus Region · Kingdom 5",
+      name: "The Sapphire Court of Hugo",
+      bg: "kd-rhombus-05.jpg",
+      bgAngry: "kd-rhombus-05-angry.jpg",
+      bgPuzzled: "kd-rhombus-05-puzzled.jpg",
+      bgHappy: "kd-rhombus-05-happy.jpg",
+      king: "king-rhombus-05.jpg",
+      kingName: "King Hugo",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Holly",
+          poly: RH.paraLean,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          angles: [[0, 1], [2, 1]],
+          why: "Holly's equal angles are two opposite corners, not two halves of one corner.\nEvery parallelogram has equal opposite angles.",
+        },
+        {
+          name: "Jessica",
+          poly: RH.paraUp,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          diagLines: [0],
+          splitAngles: [[0, 1, 2]],
+          why: "Jessica's diagonal splits the corner into two different angles: one arc and two arcs.\nThat corner is not bisected.",
+        },
+        {
+          name: "Bella",
+          poly: RH.turn,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          diagLines: [0],
+          splitAngles: [[0, 1]],
+        },
+      ],
+      answer: 2,
+      kingWrong: ["The marks were right there, sage!", "Hugo calls his knights!"],
+      kingCorrect: ["Bella? Only one angle is marked.", "Explain it to my court."],
+      reasonAnswer: 2,
+      reasonWhy: [
+        "No side of her figure is marked equal.",
+        "No right angle is marked where the diagonals cross.",
+        "",
+      ],
+      solve: [
+        { who: "you", lines: ["Her opposite sides are parallel, so she is a parallelogram.", "Her diagonal cuts a corner angle in half, so she is a rhombus. (diag. bisects \u2220s)"] },
+        { who: "king", lines: ["Bella. You found her.", "Hugo is at peace. Ride on, sage."] },
+      ],
+      outro: ["Hugo's knights unsaddle their horses.", "One court is left: the silver keep of George."],
+    },
+    {
+      id: "rhombus-06",
+      region: "rhombus",
+      chapter: "Rhombus Region · Kingdom 6",
+      name: "The Silver Court of George",
+      bg: "kd-rhombus-06.jpg",
+      bgAngry: "kd-rhombus-06-angry.jpg",
+      bgPuzzled: "kd-rhombus-06-puzzled.jpg",
+      bgHappy: "kd-rhombus-06-happy.jpg",
+      king: "king-rhombus-06.jpg",
+      kingName: "King George",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Molly",
+          poly: RH.trapSide,
+          arrows: [[1, 1], [3, 1]],
+          ticks: [[0, 1], [1, 1], [2, 1]],
+          why: "Molly's parallel arrows are on the left and right, but her equal top and bottom are not parallel.\nShe may be an isosceles trapezium.",
+        },
+        {
+          name: "Amber",
+          poly: RH.trapThree,
+          arrows: [[0, 1], [2, 1]],
+          ticks: [[3, 1], [0, 1], [1, 1]],
+          why: "Amber's parallel top and bottom are not marked equal; her bottom has no mark.\nA trapezium can have three equal sides.",
+        },
+        {
+          name: "Leah",
+          poly: RH.squareLean,
+          arrows: [[0, 1], [2, 1]],
+          ticks: [[0, 1], [1, 1], [2, 1]],
+        },
+      ],
+      answer: 2,
+      kingWrong: ["Three marks each, and still you chose wrongly!", "George has waited long enough. To arms!"],
+      kingCorrect: ["Leah? Only three sides are marked equal.", "Then how can all four be?"],
+      reasonAnswer: 0,
+      reasonWhy: [
+        "",
+        "No diagonals are drawn in her figure at all.",
+        "No diagonal is drawn, and no angle is marked.",
+      ],
+      solve: [
+        { who: "you", lines: ["Her top and bottom are equal and parallel, so she is a parallelogram.", "Opposite sides are equal, so the fourth side matches too. (4 sides equal)"] },
+        { who: "king", lines: ["Leah. Welcome home.", "George withdraws. The region is whole again."] },
+      ],
+      outro: ["Six thrones, six daughters, and every proof answered.", "The rhombus region lowers its banners at last."],
+    },
+    {
+      id: "rectangle-01",
+      region: "rectangle",
+      chapter: "Rectangle Region · Kingdom 1",
+      name: "The Burgundy Court of Conrad",
+      bg: "kd-rectangle-01.jpg",
+      bgAngry: "kd-rectangle-01-angry.jpg",
+      bgPuzzled: "kd-rectangle-01-puzzled.jpg",
+      bgHappy: "kd-rectangle-01-happy.jpg",
+      king: "king-rectangle-01.jpg",
+      kingName: "King Conrad",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Ivy",
+          poly: RE.cyclic,
+          rightAngles: [0, 2],
+          angles: [[1, 1], [3, 2]],
+          why: "Ivy has a mark at every corner, but only two of them are right angles.\nHer one-arc and two-arc corners are different angles, so neither can be 90\u00b0.",
+        },
+        {
+          name: "Jade",
+          poly: RE.rightKite,
+          rightAngles: [0, 2],
+          ticks: [[0, 1], [1, 1], [2, 2], [3, 2]],
+          why: "Jade has only two right angles, at opposite corners.\nHer equal sides come in touching pairs, | and ||. That is a kite.",
+        },
+        { name: "Clara", poly: RE.wide, rightAngles: [0, 1, 2, 3] },
+      ],
+      answer: 2,
+      kingWrong: ["A false daughter on my throne?", "Guards, seize the sage!"],
+      kingCorrect: ["Clara? Ivy has a mark at every corner too.", "Tell me why Clara is the one."],
+      reasonAnswer: 0,
+      reasonWhy: [
+        "",
+        "No diagonals are drawn in her figure at all.",
+      ],
+      solve: [
+        { who: "you", lines: ["All four angles are marked 90\u00b0,", "so the figure must be a rectangle. (4 \u2220s = 90\u00b0)"] },
+        { who: "king", lines: ["Clara! My daughter!", "Conrad owes you this peace, sage."] },
+      ],
+      outro: ["Conrad lowers his banners of war.", "The road runs on to the saffron halls of Rufus."],
+    },
+    {
+      id: "rectangle-02",
+      region: "rectangle",
+      chapter: "Rectangle Region · Kingdom 2",
+      name: "The Saffron Court of Rufus",
+      bg: "kd-rectangle-02.jpg",
+      bgAngry: "kd-rectangle-02-angry.jpg",
+      bgPuzzled: "kd-rectangle-02-puzzled.jpg",
+      bgHappy: "kd-rectangle-02-happy.jpg",
+      king: "king-rectangle-02.jpg",
+      kingName: "King Rufus",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Nora",
+          poly: RE.rightTrap,
+          arrows: [[0, 1], [2, 1]],
+          rightAngles: [0, 3],
+          why: "Nora has two right angles, but only one pair of her sides is parallel.\nA right-angled trapezium carries exactly those marks.",
+        },
+        {
+          name: "Tessa",
+          poly: RH.squarish,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          diags: true,
+          rightCross: true,
+          why: "Tessa's right angle is where the diagonals cross, not at a corner.\nThat turns a parallelogram into a rhombus, not a rectangle.",
+        },
+        {
+          name: "Vera",
+          poly: RE.plain,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          rightAngles: [2],
+        },
+      ],
+      answer: 2,
+      kingWrong: ["You call that my daughter?", "Rufus will answer with steel!"],
+      kingCorrect: ["Vera has only one right angle, and Nora has two.", "Why Vera?"],
+      reasonAnswer: 0,
+      reasonWhy: [
+        "",
+        "No diagonals are drawn in her figure at all.",
+      ],
+      solve: [
+        { who: "you", lines: ["Both pairs of opposite sides are parallel, so she is a parallelogram.", "Co-interior angles add up to 180\u00b0, so one right angle makes all four 90\u00b0. (4 \u2220s = 90\u00b0)"] },
+        { who: "king", lines: ["Vera. Come home.", "Rufus stands down. Go on, sage."] },
+      ],
+      outro: ["Rufus's war drums fall silent.", "Next come the frost-white towers of Frederick."],
+    },
+    {
+      id: "rectangle-03",
+      region: "rectangle",
+      chapter: "Rectangle Region · Kingdom 3",
+      name: "The Frost Court of Frederick",
+      bg: "kd-rectangle-03.jpg",
+      bgAngry: "kd-rectangle-03-angry.jpg",
+      bgPuzzled: "kd-rectangle-03-puzzled.jpg",
+      bgHappy: "kd-rectangle-03-happy.jpg",
+      king: "king-rectangle-03.jpg",
+      kingName: "King Frederick",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Eva",
+          poly: RE.lean,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          why: "Eva's equal halves lie on the same diagonal, | with | and || with ||.\nThat only says her diagonals bisect each other, and every parallelogram does.",
+        },
+        {
+          name: "Maya",
+          poly: RE.isoTrap,
+          arrows: [[0, 1], [2, 1]],
+          ticks: [[1, 1], [3, 1]],
+          diagTicks: [[0, 2], [1, 2]],
+          why: "Maya's equal sides and her parallel sides are different pairs.\nShe may be an isosceles trapezium, and its diagonals are equal too.",
+        },
+        {
+          name: "Daisy",
+          poly: RE.long,
+          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          diagTicks: [[0, 1], [1, 1]],
+        },
+      ],
+      answer: 2,
+      kingWrong: ["Wrong! You insult my house.", "Frederick rides to war!"],
+      kingCorrect: ["Daisy? Only two short pieces are marked.", "Convince me that is enough."],
+      reasonAnswer: 1,
+      reasonWhy: [
+        "Not one angle is marked in her figure.",
+        "",
+      ],
+      solve: [
+        { who: "you", lines: ["Both pairs of sides are parallel, so she is a parallelogram,", "and her diagonals bisect each other."] },
+        { who: "you", lines: ["Each diagonal is twice its marked half,", "so the two diagonals are equal. (diags. equal)"] },
+        { who: "king", lines: ["Daisy. My Daisy.", "Frederick lays down his spear."] },
+      ],
+      outro: ["Frederick opens his gates again.", "The pine-dark keep of Gregor waits ahead."],
+    },
+    {
+      id: "rectangle-04",
+      region: "rectangle",
+      chapter: "Rectangle Region · Kingdom 4",
+      name: "The Pine Court of Gregor",
+      bg: "kd-rectangle-04.jpg",
+      bgAngry: "kd-rectangle-04-angry.jpg",
+      bgPuzzled: "kd-rectangle-04-puzzled.jpg",
+      bgHappy: "kd-rectangle-04-happy.jpg",
+      king: "king-rectangle-04.jpg",
+      kingName: "King Gregor",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Wren",
+          poly: RE.kite86,
+          angles: [[0, 1], [1, 1], [2, 1]],
+          diags: true,
+          rightCross: true,
+          why: "Wren's right angle is where the diagonals cross, not at a corner.\nWith no 90\u00b0 corner, three equal angles can belong to a kite.",
+        },
+        {
+          name: "Hazel",
+          poly: RE.nearRect,
+          angles: [[0, 1], [1, 1], [2, 2]],
+          rightAngles: [3],
+          why: "Hazel's third marked corner has two arcs, not one, so only two corners are equal.\nTwo equal angles and a right angle do not fix the other two corners.",
+        },
+        {
+          name: "Erin",
+          poly: RE.tall,
+          angles: [[0, 1], [1, 1], [2, 1]],
+          rightAngles: [3],
+        },
+      ],
+      answer: 2,
+      kingWrong: ["The marks were right there, sage!", "Gregor calls his knights!"],
+      kingCorrect: ["Erin? Only one of her angles is a right angle.", "Explain it to my court."],
+      reasonAnswer: 0,
+      reasonWhy: [
+        "",
+        "No diagonals are drawn in her figure at all.",
+      ],
+      solve: [
+        { who: "you", lines: ["Her other three angles are marked equal, and all four add up to 360\u00b0.", "So each is (360\u00b0 \u2212 90\u00b0) \u00f7 3 = 90\u00b0. (4 \u2220s = 90\u00b0)"] },
+        { who: "king", lines: ["Erin. You found her.", "Gregor is at peace. Ride on, sage."] },
+      ],
+      outro: ["Gregor's knights unsaddle their horses.", "One court is left: the plum-dark keep of Silas."],
+    },
+    {
+      id: "rectangle-05",
+      region: "rectangle",
+      chapter: "Rectangle Region · Kingdom 5",
+      name: "The Plum Court of Silas",
+      bg: "kd-rectangle-05.jpg",
+      bgAngry: "kd-rectangle-05-angry.jpg",
+      bgPuzzled: "kd-rectangle-05-puzzled.jpg",
+      bgHappy: "kd-rectangle-05-happy.jpg",
+      king: "king-rectangle-05.jpg",
+      kingName: "King Silas",
+      intro: [
+        { who: "king", lines: ["Help me find the princess."] },
+      ],
+      cards: [
+        {
+          name: "Gwen",
+          poly: RE.leanBack,
+          diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          arcs: [[0, 1, 2, 1], [2, 3, 0, 1]],
+          why: "Gwen's two marked angles are alternate angles between parallel sides.\nEvery parallelogram has them, so they say nothing about her | and || halves.",
+        },
+        {
+          name: "Isla",
+          poly: RE.threeHalves,
+          diagTicks: [[0, 1], [2, 1]],
+          arcs: [[0, 1, 2, 1], [1, 0, 3, 1]],
+          why: "Isla's angles make three halves equal, but her fourth half has no mark.\nThe diagonals are not shown to bisect each other, so she is not proved to be a parallelogram.",
+        },
+        {
+          name: "Faye",
+          poly: RE.low,
+          diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]],
+          arcs: [[0, 1, 2, 1], [1, 0, 3, 1]],
+        },
+      ],
+      answer: 2,
+      kingWrong: ["Two marked angles each, and still you chose wrongly!", "Silas has waited long enough. To arms!"],
+      kingCorrect: ["Faye? Her | and || halves are different marks.", "Then how can her diagonals be equal?"],
+      reasonAnswer: 1,
+      reasonWhy: [
+        "No right angle is marked anywhere in her figure.",
+        "",
+      ],
+      solve: [
+        { who: "you", lines: ["Her diagonals bisect each other, so she is a parallelogram.", "The two marked angles share the top side, so that triangle is isosceles."] },
+        { who: "you", lines: ["So her | half equals her || half, and all four halves are equal.", "Then the two diagonals are equal. (diags. equal)"] },
+        { who: "king", lines: ["Faye. Welcome home.", "Silas withdraws. The region is whole again."] },
+      ],
+      outro: ["Five thrones, five daughters, and every proof answered.", "The rectangle region lowers its banners at last."],
+    },
+    {
+      id: "square-01",
+      region: "square",
+      chapter: "Square Region · Kingdom 1",
+      name: "The Cobalt Court of Alaric",
+      bg: "kd-square-01.jpg",
+      bgAngry: "kd-square-01-angry.jpg",
+      bgPuzzled: "kd-square-01-puzzled.jpg",
+      bgHappy: "kd-square-01-happy.jpg",
+      king: "king-square-01.jpg",
+      kingName: "King Alaric",
+      intro: [
+        { who: "king", lines: ["Help me find the princess.", "Every claimant here is a parallelogram."] },
+        { who: "you", lines: ["A parallelogram is a square only when it has 4 sides equal and 4 \u2220s = 90\u00b0.", "One of the two is not enough."] },
+      ],
+      cards: [
+        {
+          name: "Lena",
+          poly: SQ,
+          ticks: [[0, 1], [2, 1]],
+          angles: [[0, 1], [1, 1]],
+          why: "Lena's equal sides are opposite sides, and every parallelogram has those.\nHer equal angles make 4 \u2220s = 90\u00b0, but she is only proved to be a rectangle.",
+        },
+        {
+          name: "Rosa",
+          poly: SQ,
+          ticks: [[0, 1], [3, 1]],
+          angles: [[0, 1], [1, 1]],
+        },
+        {
+          name: "Mabel",
+          poly: SQ,
+          ticks: [[0, 1], [3, 1]],
+          diags: true,
+          rightCross: true,
+          why: "Mabel's right angle is where her diagonals cross, not at a corner.\nEvery rhombus has that, so no corner of hers is proved to be 90\u00b0.",
+        },
+      ],
+      answer: 1,
+      kingWrong: ["Equal sides, and still not a square!", "Alaric has heard enough. To arms!"],
+      kingCorrect: ["Rosa? I see two equal sides and two equal angles.", "That is not four of anything. Prove it."],
+      solve: [
+        { who: "you", lines: ["Her equal sides touch at A. In a parallelogram, opposite sides are equal too.", "So all four sides are equal. (4 sides eq.)"] },
+        { who: "you", lines: ["Her equal angles A and B lie between parallel sides, so they add up to 180\u00b0.", "So each is 90\u00b0, and so are the opposite angles. (4 \u2220s = 90\u00b0)"] },
+        { who: "you", lines: ["4 sides equal and 4 \u2220s = 90\u00b0. She is a square."] },
+        { who: "king", lines: ["Rosa. My daughter.", "Alaric sheathes his sword. Go well, sage."] },
+      ],
+      outro: ["The cobalt banners come down from the walls.", "Ahead, a rose-coloured court is waiting."],
+    },
+    {
+      id: "square-02",
+      region: "square",
+      chapter: "Square Region · Kingdom 2",
+      name: "The Rose Court of Bernard",
+      bg: "kd-square-02.jpg",
+      bgAngry: "kd-square-02-angry.jpg",
+      bgPuzzled: "kd-square-02-puzzled.jpg",
+      bgHappy: "kd-square-02-happy.jpg",
+      king: "king-square-02.jpg",
+      kingName: "King Bernard",
+      intro: [
+        { who: "king", lines: ["Help me find the princess.", "Every claimant here is a parallelogram."] },
+      ],
+      cards: [
+        {
+          name: "Celia",
+          poly: SQ,
+          diags: true,
+          rightCross: true,
+          arcs: [[0, 1, 2, 1], [1, 0, 3, 1]],
+        },
+        {
+          name: "Dora",
+          poly: SQ,
+          diags: true,
+          rightCross: true,
+          arcs: [[0, 1, 2, 1], [2, 3, 0, 1]],
+          why: "Dora's two marked angles are alternate angles between parallel sides.\nEvery parallelogram has them, so her diagonals are not proved equal.",
+        },
+        {
+          name: "Ines",
+          poly: SQ,
+          diags: true,
+          rightAngles: [3],
+          arcs: [[0, 1, 2, 1], [1, 0, 3, 1]],
+          why: "Ines has a right angle at D, so she is a rectangle.\nBut nothing says her diagonals cross at 90\u00b0 or her sides are equal.",
+        },
+      ],
+      answer: 0,
+      kingWrong: ["Marked angles everywhere, and you read them wrong!", "Bernard's patience is gone. To arms!"],
+      kingCorrect: ["Celia? Not one of her corners is marked.", "How can she have four right angles?"],
+      solve: [
+        { who: "you", lines: ["Her diagonals cross at 90\u00b0, so she is a rhombus. (4 sides eq.)", "Her two marked angles share side AB, so EA = EB."] },
+        { who: "you", lines: ["Her diagonals bisect each other, so all four halves are equal.", "Equal diagonals make her a rectangle. (4 \u2220s = 90\u00b0)"] },
+        { who: "you", lines: ["4 sides equal and 4 \u2220s = 90\u00b0. She is a square."] },
+        { who: "king", lines: ["Celia! You have come home.", "Bernard opens his gates to you, sage."] },
+      ],
+      outro: ["Bernard's knights step aside.", "One court is left: the bronze hall of Magnus."],
+    },
+    {
+      id: "square-03",
+      region: "square",
+      chapter: "Square Region · Kingdom 3",
+      name: "The Bronze Court of Magnus",
+      bg: "kd-square-03.jpg",
+      bgAngry: "kd-square-03-angry.jpg",
+      bgPuzzled: "kd-square-03-puzzled.jpg",
+      bgHappy: "kd-square-03-happy.jpg",
+      king: "king-square-03.jpg",
+      kingName: "King Magnus",
+      intro: [
+        { who: "king", lines: ["Help me find the princess.", "Every claimant here is a parallelogram."] },
+      ],
+      cards: [
+        {
+          name: "Pearl",
+          poly: SQ,
+          diagLines: [0],
+          splitAngles: [[0, 1]],
+          angles: [[1, 2], [3, 2]],
+          why: "Pearl's equal angles B and D are opposite angles, and every parallelogram has those.\nShe is a rhombus, but no corner is proved to be 90\u00b0.",
+        },
+        {
+          name: "Sylvia",
+          poly: SQ,
+          diagLines: [0],
+          rightAngles: [1],
+          arcs: [[0, 1, 2, 1], [2, 3, 0, 1]],
+          why: "Sylvia's two arcs are \u2220BAC and \u2220DCA: alternate angles, and every parallelogram has them.\nAC is not shown to bisect any angle, so she is only a rectangle.",
+        },
+        {
+          name: "Thea",
+          poly: SQ,
+          diagLines: [0],
+          splitAngles: [[0, 1]],
+          rightAngles: [1],
+        },
+      ],
+      answer: 2,
+      kingWrong: ["Two daughters with one right angle each, and you chose the false one!", "Magnus rides to war!"],
+      kingCorrect: ["Thea? Sylvia also has a right angle and two equal arcs.", "Why her and not Sylvia?"],
+      solve: [
+        { who: "you", lines: ["Thea's two arcs are both at A, so her diagonal AC bisects angle A.", "So she is a rhombus. (4 sides eq.)"] },
+        { who: "you", lines: ["She is a parallelogram with a right angle at B.", "So all four angles are 90\u00b0. (4 \u2220s = 90\u00b0)"] },
+        { who: "you", lines: ["4 sides equal and 4 \u2220s = 90\u00b0. She is a square."] },
+        { who: "king", lines: ["Thea. Welcome home, my girl.", "Magnus yields. The last war is over."] },
+      ],
+      outro: ["Three thrones, three daughters, and not one sword drawn.", "The last banners in the land are lowered."],
+    },
   ];
 
   var SVG_NS = "http://www.w3.org/2000/svg";
@@ -533,6 +1436,12 @@
 
     fx.appendChild(svg("path", { class: "qg-route", d: ROUTE }));
 
+    // "Next stop": one shared set, aimed at a zone by setNextStop().
+    fx.appendChild(svg("path", { class: "qg-spot-n", "fill-rule": "evenodd", d: "M0,0H1600V900H0Z" }));
+    fx.appendChild(svg("polygon", { class: "qg-glow-n", points: "" }));
+    fx.appendChild(svg("path", { class: "qg-route-n", d: "" }));
+    fx.appendChild(svg("text", { class: "qg-tag-n", x: 0, y: 0 }));
+
     ZONES.forEach(function (zone) {
       var tag = svg("text", { class: "qg-zone-tag", x: zone.label[0], y: zone.label[1] });
       tag.textContent = zone.tag;
@@ -584,15 +1493,12 @@
     return out;
   }
 
-  function angleMarks(P, v, count) {
-    var cur = P[v];
-    var u1 = unit(cur, P[(v + P.length - 1) % P.length]);
-    var u2 = unit(cur, P[(v + 1) % P.length]);
+  function arcMarks(cur, u1, u2, count, base) {
     var sweep = (u1[0] * u2[1] - u1[1] * u2[0]) > 0 ? 1 : 0;
     var out = [];
 
     for (var k = 0; k < count; k++) {
-      var r = 9 + k * 3.4;
+      var r = (base || 9) + k * 3.4;
       out.push(svg("path", {
         class: "qg-mark",
         d: "M" + (cur[0] + u1[0] * r) + "," + (cur[1] + u1[1] * r) +
@@ -600,6 +1506,21 @@
       }));
     }
     return out;
+  }
+
+  function angleMarks(P, v, count) {
+    var cur = P[v];
+    return arcMarks(cur, unit(cur, P[(v + P.length - 1) % P.length]), unit(cur, P[(v + 1) % P.length]), count);
+  }
+
+  function rightMark(cur, u1, u2) {
+    var s = 5;
+    return svg("path", {
+      class: "qg-mark",
+      d: "M" + (cur[0] + u1[0] * s) + "," + (cur[1] + u1[1] * s) +
+         "L" + (cur[0] + (u1[0] + u2[0]) * s) + "," + (cur[1] + (u1[1] + u2[1]) * s) +
+         "L" + (cur[0] + u2[0] * s) + "," + (cur[1] + u2[1] * s),
+    });
   }
 
   function crossPoint(P) {
@@ -616,10 +1537,11 @@
     var fig = svg("svg", { class: "qg-fig", viewBox: "0 0 120 100", "aria-hidden": "true" });
     var P = spec.poly;
 
-    if (spec.diags || spec.diagTicks) {
-      fig.appendChild(svg("line", { class: "qg-diag", x1: P[0][0], y1: P[0][1], x2: P[2][0], y2: P[2][1] }));
-      fig.appendChild(svg("line", { class: "qg-diag", x1: P[1][0], y1: P[1][1], x2: P[3][0], y2: P[3][1] }));
-    }
+    // diagLines picks single diagonals: 0 runs P0–P2, 1 runs P1–P3.
+    var lines = spec.diags || spec.diagTicks ? [0, 1] : spec.diagLines || [];
+    lines.forEach(function (k) {
+      fig.appendChild(svg("line", { class: "qg-diag", x1: P[k][0], y1: P[k][1], x2: P[k + 2][0], y2: P[k + 2][1] }));
+    });
 
     fig.appendChild(svg("polygon", { class: "qg-poly", points: pointsAttr(P) }));
 
@@ -645,11 +1567,47 @@
     (spec.angles || []).forEach(function (t) {
       angleMarks(P, t[0], t[1]).forEach(function (m) { fig.appendChild(m); });
     });
+    (spec.rightAngles || []).forEach(function (v) {
+      var cur = P[v];
+      fig.appendChild(rightMark(cur, unit(cur, P[(v + 3) % 4]), unit(cur, P[(v + 1) % 4])));
+    });
+    // A diagonal from vertex v splits that corner: [v, count] marks both
+    // parts equal, [v, count, other] marks them as two different angles.
+    (spec.splitAngles || []).forEach(function (t) {
+      var cur = P[t[0]];
+      var along = unit(cur, P[(t[0] + 2) % 4]);
+      arcMarks(cur, unit(cur, P[(t[0] + 3) % 4]), along, t[1], 11).forEach(function (m) { fig.appendChild(m); });
+      arcMarks(cur, along, unit(cur, P[(t[0] + 1) % 4]), t[2] || t[1], 11).forEach(function (m) { fig.appendChild(m); });
+    });
+    // [v, a, b, count] marks the angle at P[v] between the rays to P[a] and
+    // P[b]; pointing at the opposite vertex measures against the diagonal.
+    // A side-to-diagonal angle is narrow, so its arc alone reads like a tick;
+    // a shaded wedge underneath shows it is an angle.
+    (spec.arcs || []).forEach(function (t) {
+      var cur = P[t[0]];
+      var u1 = unit(cur, P[t[1]]);
+      var u2 = unit(cur, P[t[2]]);
+      var r = 14;
+      var sweep = (u1[0] * u2[1] - u1[1] * u2[0]) > 0 ? 1 : 0;
+      fig.appendChild(svg("path", {
+        class: "qg-wedge",
+        d: "M" + cur[0] + "," + cur[1] +
+           "L" + (cur[0] + u1[0] * r) + "," + (cur[1] + u1[1] * r) +
+           "A" + r + "," + r + " 0 0 " + sweep + " " + (cur[0] + u2[0] * r) + "," + (cur[1] + u2[1] * r) + "Z",
+      }));
+      arcMarks(cur, u1, u2, t[3], r).forEach(function (m) { fig.appendChild(m); });
+    });
+
+    var mid = crossPoint(P);
     if (spec.diagTicks) {
-      var mid = crossPoint(P);
       spec.diagTicks.forEach(function (t) {
         segMarks(P[t[0]], mid, t[1], "tick").forEach(function (m) { fig.appendChild(m); });
       });
+    }
+    if (spec.rightCross) fig.appendChild(rightMark(mid, unit(mid, P[0]), unit(mid, P[1])));
+    if (spec.crossAngles) {
+      arcMarks(mid, unit(mid, P[0]), unit(mid, P[1]), spec.crossAngles, 6).forEach(function (m) { fig.appendChild(m); });
+      arcMarks(mid, unit(mid, P[2]), unit(mid, P[3]), spec.crossAngles, 6).forEach(function (m) { fig.appendChild(m); });
     }
 
     return fig;
@@ -735,9 +1693,7 @@
       "<h3></h3>" +
       '<p class="qg-sub"></p>' +
       '<button type="button" class="qg-start">Start</button>' +
-      '<button type="button" class="qg-start qg-continue" hidden>Continue</button>' +
-      '<button type="button" class="qg-start ghost qg-debug-open">Select level</button>' +
-      '<div class="qg-debug" hidden></div>';
+      '<button type="button" class="qg-start qg-continue" hidden>Continue</button>';
     stage.appendChild(title);
     title.querySelector(".qg-eyebrow").textContent = TITLE.eyebrow;
     title.querySelector("h3").textContent = TITLE.heading;
@@ -762,6 +1718,8 @@
         '<p class="qg-settings-title">Settings</p>' +
         '<label class="qg-settings-row">Music<input class="qg-vol-music" type="range" min="0" max="100" value="100"></label>' +
         '<label class="qg-settings-row">Sound<input class="qg-vol-sfx" type="range" min="0" max="100" value="100"></label>' +
+        '<p class="qg-settings-title qg-levels-title">Select level</p>' +
+        '<div class="qg-levels"></div>' +
         '<button type="button" class="qg-settings-home">Save and return home</button>' +
       "</div>";
     stage.appendChild(settings);
@@ -793,8 +1751,6 @@
       title: title,
       start: title.querySelector(".qg-start"),
       continueBtn: title.querySelector(".qg-continue"),
-      debugOpen: title.querySelector(".qg-debug-open"),
-      debug: title.querySelector(".qg-debug"),
       card: card,
       cardChapter: card.querySelector(".qg-chapter"),
       cardHead: card.querySelector("h4"),
@@ -805,6 +1761,7 @@
       settingsHome: settings.querySelector(".qg-settings-home"),
       volMusic: settings.querySelector(".qg-vol-music"),
       volSfx: settings.querySelector(".qg-vol-sfx"),
+      levels: settings.querySelector(".qg-levels"),
     };
   }
 
@@ -864,16 +1821,12 @@
     typing = true;
     el.dialogue.classList.add("typing");
 
+    // Dialogue is silent: no per-letter voice blips while a line types out.
     var i = 0;
-    var spoken = 0;
     function step() {
       if (i >= text.length) { finishTyping(); return; }
       var ch = text[i++];
       el.body.textContent += ch;
-      if (/[a-zA-Z]/.test(ch)) {
-        spoken++;
-        if (spoken === 2 || (spoken > 2 && spoken % 5 === 0)) playMouth();
-      }
       var wait = 24;
       if (ch === "," || ch === ";" || ch === "—") wait = 150;
       else if (ch === "." || ch === "!" || ch === "?") wait = 260;
@@ -901,9 +1854,23 @@
       audio.ctx = new Ctx();
       audio.master = audio.ctx.createGain();
       audio.master.gain.value = 0.9;
-      audio.master.connect(audio.ctx.destination);
+      // Brick-wall limiter: the beds used to clip on laptop speakers.
+      audio.limiter = audio.ctx.createDynamicsCompressor();
+      audio.limiter.threshold.value = -9;
+      audio.limiter.knee.value = 4;
+      audio.limiter.ratio.value = 16;
+      audio.limiter.attack.value = 0.002;
+      audio.limiter.release.value = 0.18;
+      audio.master.connect(audio.limiter);
+      audio.limiter.connect(audio.ctx.destination);
       audio.music = audio.ctx.createGain();
-      audio.music.connect(audio.master);
+      // Keep sub-bass out of the music bus; small speakers turn it into buzz.
+      audio.musicHp = audio.ctx.createBiquadFilter();
+      audio.musicHp.type = "highpass";
+      audio.musicHp.frequency.value = 70;
+      audio.musicHp.Q.value = 0.7;
+      audio.music.connect(audio.musicHp);
+      audio.musicHp.connect(audio.master);
       audio.sfx = audio.ctx.createGain();
       audio.sfx.connect(audio.master);
       applyMix();
@@ -978,6 +1945,76 @@
     conv.connect(audio.master);
     audio.space = conv;
     return conv;
+  }
+
+  // Music reverb must sit behind the music fader, unlike the SFX space.
+  function musicSpace() {
+    if (audio.musicSpace) return audio.musicSpace;
+    var conv = audio.ctx.createConvolver();
+    conv.buffer = ensureSpace().buffer;
+    conv.connect(audio.music);
+    audio.musicSpace = conv;
+    return conv;
+  }
+
+  // Drum body must not glide in pitch: a falling sine reads as a bubble on laptop speakers.
+  function drum(t, gain) {
+    var ctx = audio.ctx;
+    var src = ctx.createBufferSource();
+    var band = ctx.createBiquadFilter();
+    var amp = ctx.createGain();
+    src.buffer = noiseBuffer();
+    band.type = "bandpass";
+    band.frequency.value = 220;
+    band.Q.value = 1.4;
+    amp.gain.setValueAtTime(gain, t);
+    amp.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+    src.connect(band);
+    band.connect(amp);
+    amp.connect(audio.music);
+    src.start(t);
+    src.stop(t + 0.18);
+    noiseHit(t, 0.02, 4000, gain * 0.25);
+  }
+
+  // Bass sits an octave above the speaker roll-off and is filtered so it hums instead of buzzing.
+  function bassNote(freq, t, dur, gain) {
+    var ctx = audio.ctx;
+    var osc = ctx.createOscillator();
+    var low = ctx.createBiquadFilter();
+    var amp = ctx.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(freq, t);
+    low.type = "lowpass";
+    low.frequency.value = 700;
+    low.Q.value = 0.5;
+    amp.gain.setValueAtTime(0.0001, t);
+    amp.gain.exponentialRampToValueAtTime(gain, t + 0.01);
+    amp.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(low);
+    low.connect(amp);
+    amp.connect(audio.music);
+    osc.start(t);
+    osc.stop(t + dur + 0.02);
+  }
+
+  function swell(freq, t, attack, dur, type, gain, wet) {
+    var ctx = audio.ctx;
+    var osc = ctx.createOscillator();
+    var amp = ctx.createGain();
+    var send = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t);
+    amp.gain.setValueAtTime(0.0001, t);
+    amp.gain.exponentialRampToValueAtTime(gain, t + attack);
+    amp.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    send.gain.value = wet;
+    osc.connect(amp);
+    amp.connect(audio.music);
+    amp.connect(send);
+    send.connect(musicSpace());
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
   }
 
   function playRewind() {
@@ -1074,23 +2111,6 @@
     osc.stop(t + 0.04);
   }
 
-  function playMouth() {
-    var ctx = ensureAudio();
-    if (!ctx || mix.sfx <= 0) return;
-    var t = ctx.currentTime;
-    var osc = ctx.createOscillator();
-    var g = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(210 + Math.random() * 50, t);
-    osc.frequency.exponentialRampToValueAtTime(130, t + 0.045);
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.07, t + 0.006);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
-    osc.connect(g);
-    g.connect(audio.sfx);
-    osc.start(t);
-    osc.stop(t + 0.055);
-  }
   function playSample(name) {
     var clip = new Audio(ART + name + V);
     clip.volume = mix.sfx;
@@ -1126,15 +2146,101 @@
 
   function bedStep(name, step, t) {
     if (name === "battle") {
-      if (step % 4 === 0) noiseHit(t, 0.1, 140, 0.28);
-      if (step % 8 === 4) noiseHit(t, 0.08, 1800, 0.12);
-      if (step % 8 === 6) noiseHit(t, 0.05, 900, 0.09);
-      var bass = [73, 73, 110, 73, 87, 73, 98, 73];
-      if (step % 2 === 0) tone(bass[(step / 2) % bass.length], t, 0.22, "sawtooth", 0.08);
+      if (step % 4 === 0) drum(t, 0.32);
+      if (step % 8 === 4) noiseHit(t, 0.08, 1800, 0.08);
+      if (step % 8 === 6) noiseHit(t, 0.05, 900, 0.06);
+      var bass = [147, 147, 220, 147, 175, 147, 196, 147];
+      if (step % 2 === 0) bassNote(bass[(step / 2) % bass.length], t, 0.22, 0.09);
     } else if (name === "court") {
       var court = [220, 262, 330, 392, 370, 330, 294, 262];
       tone(court[step % court.length], t, 0.34, "triangle", 0.09);
       if (step % 4 === 0) tone(110, t, 0.6, "sine", 0.075);
+    } else if (name === "rhombus") {
+      var lead = [294, 370, 440, 587, 554, 440, 370, 330, 294, 370, 494, 587, 554, 494, 440, 370];
+      tone(lead[step % lead.length], t, 0.3, "triangle", 0.08);
+      if (step % 2 === 1) tone(lead[step % lead.length] * 2, t, 0.18, "sine", 0.025);
+      var root = [147, 147, 124, 110];
+      if (step % 4 === 0) tone(root[(step / 4) % root.length], t, 1.1, "sine", 0.08);
+    } else if (name === "rectangle") {
+      // Low C harmonic minor: pumping octave bass, semitone threats, syncopated drums.
+      var bar = Math.floor(step / 16) % 4;
+      var beat = step % 16;
+      var root = [131, 104, 87, 98][bar];
+      bassNote(beat % 2 ? root * 2 : root, t, 0.13, beat % 4 === 0 ? 0.07 : 0.045);
+      var motif = [
+        262, 0, 0, 311, 0, 0, 294, 0, 247, 0, 0, 262, 0, 0, 208, 0,
+        262, 0, 0, 311, 0, 0, 349, 0, 311, 0, 294, 0, 247, 0, 196, 0,
+      ];
+      var note = motif[(bar % 2) * 16 + beat];
+      if (note) tone(note, t, 0.28, "triangle", 0.07);
+      if (bar === 3 && beat >= 8) tone(beat % 2 ? 415 : 392, t, 0.12, "square", 0.012);
+      if (beat === 0 || beat === 6 || beat === 8 || beat === 11) drum(t, 0.32);
+      if (beat === 4 || beat === 12) noiseHit(t, 0.1, 2200, 0.09);
+      if (beat % 2 === 1) noiseHit(t, 0.025, 8000, 0.025);
+    } else if (name === "square") {
+      // Regal F-major march in the same triangle-lead voice as the other regions.
+      var march = [349, 440, 523, 698, 659, 523, 587, 523, 466, 587, 698, 587, 523, 440, 392, 440];
+      tone(march[step % march.length], t, 0.3, "triangle", 0.08);
+      if (step % 2 === 1) tone(march[step % march.length] * 2, t, 0.16, "sine", 0.02);
+      var walk = [175, 175, 233, 262];
+      if (step % 4 === 0) bassNote(walk[(step / 4) % walk.length], t, 0.9, 0.08);
+      if (step % 8 === 0) drum(t, 0.22);
+      if (step % 8 === 4) noiseHit(t, 0.07, 2600, 0.06);
+    } else if (name === "journey") {
+      // Casual adventure between regions: C – G – Am – F stroll, plucky lead,
+      // oom-pah bass and strums, a soft shaker. Eight bars of eight eighth-notes.
+      var jbar = Math.floor(step / 8) % 8;
+      var jpos = step % 8;
+      var jlead = [
+        [392, 0, 523, 0, 659, 0, 523, 392],
+        [494, 0, 587, 0, 784, 0, 587, 494],
+        [440, 0, 523, 0, 659, 0, 523, 440],
+        [349, 0, 440, 0, 523, 0, 440, 392],
+        [659, 0, 523, 0, 392, 0, 523, 0],
+        [587, 0, 494, 0, 392, 494, 587, 0],
+        [523, 0, 440, 0, 349, 440, 523, 0],
+        [587, 0, 494, 0, 587, 0, 392, 0],
+      ][jbar][jpos];
+      if (jlead) {
+        tone(jlead, t, 0.2, "triangle", 0.08);
+        if (jpos % 4 === 0) tone(jlead * 2, t, 0.1, "sine", 0.018);
+      }
+      var jroot = [131, 196, 110, 175, 131, 196, 175, 196][jbar];
+      var jfifth = [196, 147, 165, 131, 196, 147, 131, 147][jbar];
+      if (jpos === 0 || jpos === 4) bassNote(jroot, t, 0.2, 0.07);
+      if (jpos === 2 || jpos === 6) {
+        bassNote(jfifth, t, 0.14, 0.04);
+        [
+          [262, 330, 392], [247, 294, 392], [262, 330, 440], [262, 349, 440],
+          [262, 330, 392], [247, 294, 392], [262, 349, 440], [247, 294, 392],
+        ][jbar].forEach(function (f) { tone(f, t, 0.12, "triangle", 0.022); });
+      }
+      if (jpos === 0 || jpos === 4) drum(t, 0.12);
+      if (jpos % 2 === 1) noiseHit(t, 0.03, 9000, 0.02);
+    } else if (name === "finale") {
+      // Reserved for the ending: harp arpeggio over C – Am – F – G, a simple tune, a soft pad.
+      var pos = step % 32;
+      var chord = Math.floor(pos / 8);
+      var harp = [
+        [262, 330, 392, 494, 523, 494, 392, 330],
+        [220, 262, 330, 392, 440, 392, 330, 262],
+        [175, 262, 349, 440, 523, 440, 349, 262],
+        [196, 294, 392, 494, 587, 494, 392, 294],
+      ][chord][pos % 8];
+      swell(harp, t, 0.01, 1.1, "triangle", 0.028, 0.55);
+      if (pos % 8 === 0) {
+        [[131, 196], [110, 165], [87, 131], [98, 147]][chord].forEach(function (f) {
+          swell(f, t, 1.4, 3.4, "sine", 0.03, 0.5);
+        });
+      }
+      var tune = [
+        659, 0, 0, 0, 587, 0, 523, 0, 587, 0, 0, 0, 0, 0, 0, 0,
+        523, 0, 0, 0, 659, 0, 784, 0, 659, 0, 587, 0, 0, 0, 0, 0,
+      ][pos];
+      if (tune) {
+        swell(tune, t, 0.02, 2.2, "sine", 0.04, 0.75);
+        swell(tune * 2, t, 0.02, 1, "sine", 0.007, 0.75);
+      }
     }
   }
 
@@ -1145,7 +2251,7 @@
     audio.bed = name;
     var gen = audio.gen;
     var step = 0;
-    var ms = name === "battle" ? 170 : 340;
+    var ms = name === "battle" ? 170 : name === "rhombus" ? 300 : name === "rectangle" ? 150 : name === "square" ? 300 : name === "finale" ? 380 : name === "journey" ? 240 : 340;
     function tick() {
       if (gen !== audio.gen || !audio.ctx) return;
       bedStep(name, step, audio.ctx.currentTime);
@@ -1159,6 +2265,26 @@
 
   function renderGems() {
     el.gems.forEach(function (gem, i) { gem.classList.toggle("lit", i < rewinds); });
+  }
+
+  var NEXT_CLASSES = ["next-stop", "next-rhombus", "next-rectangle", "next-square"];
+
+  function setNextStop(key) {
+    var stop = NEXT_STOPS[key];
+    var zone = ZONES[stop.zone];
+    var fx = el.mapFx;
+    fx.querySelector(".qg-spot-n").setAttribute(
+      "d",
+      "M0,0H1600V900H0Z M" + zone.points.map(function (p) { return p.join(","); }).join("L") + "Z"
+    );
+    var glow = fx.querySelector(".qg-glow-n");
+    glow.setAttribute("points", pointsAttr(zone.points));
+    glow.style.setProperty("--len", Math.round(perimeter(zone.points)));
+    fx.querySelector(".qg-route-n").setAttribute("d", stop.route);
+    var tag = fx.querySelector(".qg-tag-n");
+    tag.setAttribute("x", zone.label[0]);
+    tag.setAttribute("y", zone.label[1]);
+    tag.textContent = stop.name;
   }
 
   function applyFx(name) {
@@ -1184,6 +2310,13 @@
     el.mapFx.classList.toggle("on", map);
     el.mapFx.classList.toggle("focus", name === "map-focus");
     el.mapFx.classList.toggle("labels", map);
+    var next = name && name.indexOf("next-") === 0 ? name.slice(5) : "";
+    if (!NEXT_STOPS[next]) next = "";
+    if (next) setNextStop(next);
+    el.mapFx.classList.toggle("next-stop", !!next);
+    ["rhombus", "rectangle", "square"].forEach(function (key) {
+      el.mapFx.classList.toggle("next-" + key, key === next);
+    });
   }
 
   function renderBeat(beat) {
@@ -1192,6 +2325,7 @@
     var scene = beat.mode === "scene";
 
     el.dialogue.classList.toggle("narration", narration);
+    el.dialogue.classList.toggle("high", !!beat.high);
     el.dialogue.classList.remove("king");
     el.avatar.style.backgroundImage = "";
     el.speaker.textContent = "You";
@@ -1243,9 +2377,26 @@
     }, 360);
   }
 
+  var outroRegion = "para";
+
+  function regionOf(data) {
+    return (data && data.region) || "para";
+  }
+
+  function regionFirst(id) {
+    for (var i = 0; i < LEVELS.length; i++) if (regionOf(LEVELS[i]) === id) return i;
+    return 0;
+  }
+
+  function regionLast(id) {
+    for (var i = LEVELS.length - 1; i >= 0; i--) if (regionOf(LEVELS[i]) === id) return i;
+    return LEVELS.length - 1;
+  }
+
   function goRegionTo(i) {
-    var beat = REGION_OUTRO[i];
-    var prev = REGION_OUTRO[regionIndex];
+    var beats = REGIONS[outroRegion].outro;
+    var beat = beats[i];
+    var prev = beats[regionIndex];
     var sameShot = prev && prev.bg === beat.bg;
     regionIndex = i;
 
@@ -1268,20 +2419,21 @@
     }, 360);
   }
 
-  function startRegionOutro() {
+  function startRegionOutro(region) {
     mode = "region-outro";
+    outroRegion = REGIONS[region] ? region : "para";
     cancelLater();
     clearScreen();
     el.card.classList.remove("on", "over");
     regionIndex = -1;
-    writeSave({ spot: "region-outro", level: LEVELS.length - 1 });
+    writeSave({ spot: "region-outro", level: regionLast(outroRegion), region: outroRegion });
     goRegionTo(0);
   }
 
   function regionAdvance() {
     if (typing) { finishTyping(); return; }
-    if (regionIndex >= REGION_OUTRO.length - 1) {
-      showRegionCard();
+    if (regionIndex >= REGIONS[outroRegion].outro.length - 1) {
+      showRegionCard(outroRegion);
       return;
     }
     goRegionTo(regionIndex + 1);
@@ -1295,11 +2447,18 @@
 
     el.dialogue.classList.toggle("narration", narration);
     el.dialogue.classList.toggle("king", king);
+    // Kings without a portrait plate are cropped out of their calm palace.
+    el.dialogue.classList.toggle("crop", !!(king && lv.data && !lv.data.king));
     if (king && lv.data) {
-      el.avatar.style.backgroundImage = 'url("' + ART + lv.data.king + V + '")';
+      var kingImage = 'url("' + ART + (lv.data.king || lv.data.bg) + V + '")';
+      el.dialogue.setAttribute("data-region", regionOf(lv.data));
+      el.avatar.style.backgroundImage = lv.data.king ? kingImage : "";
+      el.avatar.style.setProperty("--qg-king-image", kingImage);
       el.speaker.textContent = lv.data.kingName;
     } else {
+      el.dialogue.removeAttribute("data-region");
       el.avatar.style.backgroundImage = "";
+      el.avatar.style.removeProperty("--qg-king-image");
       el.speaker.textContent = "You";
     }
     el.stage.classList.add("talking");
@@ -1355,7 +2514,7 @@
       });
       el.choices.appendChild(btn);
     });
-    el.ask.textContent = "Which claimant is a true parallelogram?";
+    el.ask.textContent = REGIONS[regionOf(data)].ask;
     el.ask.classList.add("on");
     el.choices.classList.add("on");
     lv.picking = true;
@@ -1417,6 +2576,16 @@
       lv.chosen = i;
       later(function () {
         hideChoices();
+        if (!REGIONS[regionOf(data)].reasons) {
+          lv.phase = "solve";
+          setMood("happy");
+          queueSay("king", data.kingCorrect);
+          data.solve.forEach(function (b) { queueSay(b.who, b.lines); });
+          queueSay("narration", data.outro);
+          lv.busy = false;
+          lvAdvance();
+          return;
+        }
         lv.phase = "reason-intro";
         queueSay("king", data.kingCorrect);
         lv.busy = false;
@@ -1451,8 +2620,10 @@
 
     // Reason positions must not reveal the answer. Keep the source index on
     // each button so shuffling never changes which reason it represents.
-    lv.reasonOrder.forEach(function (i, seat) {
-      var text = REASONS[i];
+    var texts = REGIONS[regionOf(data)].reasons;
+    var seats = lv.reasonOrder.filter(function (i) { return i < texts.length; });
+    seats.forEach(function (i, seat) {
+      var text = texts[i];
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = "qg-reason";
@@ -1476,7 +2647,7 @@
 
     submit.type = "button";
     submit.className = "qg-reason qg-reason-submit";
-    submit.style.setProperty("--i", REASONS.length);
+    submit.style.setProperty("--i", texts.length);
     submit.textContent = "Submit";
     submit.disabled = true;
     submit.addEventListener("click", function (e) {
@@ -1612,52 +2783,58 @@
       case "solve":
         lv.phase = "done";
         hideDialogue();
-        if (levelNo + 1 < LEVELS.length) startLevel(levelNo + 1);
-        else startRegionOutro();
+        if (LEVELS[levelNo + 1] && regionOf(LEVELS[levelNo + 1]) === regionOf(data)) startLevel(levelNo + 1);
+        else startRegionOutro(regionOf(data));
         break;
       default:
         break;
     }
   }
 
-  /* DEV ONLY: crude jump list. Region 1 = parallelogram, 2 = rhombus. */
+  function closeSettings() {
+    el.settings.classList.remove("open");
+    el.settingsBtn.setAttribute("aria-expanded", "false");
+  }
+
   function jumpToLevel(n) {
     cancelLater();
     rewinds = MAX_REWIND;
     regionIndex = -1;
+    closeSettings();
     el.title.classList.add("off");
-    el.card.classList.remove("on", "over");
-    el.debug.hidden = true;
+    el.card.classList.remove("on", "over", "finale");
     startLevel(n);
   }
 
-  function paintDebugLevels() {
-    el.debug.innerHTML = "";
+  function paintLevels() {
+    el.levels.innerHTML = "";
     var regions = [
-      { id: 1, label: "Para", count: LEVELS.length },
-      { id: 2, label: "Rhombus", count: 0, planned: 4 },
+      { id: 1, label: "Para", key: "para" },
+      { id: 2, label: "Rhombus", key: "rhombus" },
+      { id: 3, label: "Rectangle", key: "rectangle" },
+      { id: 4, label: "Square", key: "square" },
     ];
     regions.forEach(function (region) {
       var row = document.createElement("div");
-      row.className = "qg-debug-row";
+      row.className = "qg-level-row";
       var tag = document.createElement("span");
       tag.textContent = region.id + " " + region.label;
       row.appendChild(tag);
-      var shown = Math.max(region.count, region.planned || 0);
+      var first = regionFirst(region.key);
+      var shown = regionLast(region.key) - first + 1;
       for (var i = 0; i < shown; i++) {
         var btn = document.createElement("button");
         btn.type = "button";
         btn.textContent = region.id + "-" + (i + 1);
-        if (region.id === 1 && i < LEVELS.length) {
-          btn.addEventListener("click", (function (n) {
-            return function (e) { e.stopPropagation(); jumpToLevel(n); };
-          })(i));
-        } else {
-          btn.disabled = true;
-        }
+        btn.addEventListener("click", (function (n) {
+          return function (e) {
+            e.stopPropagation();
+            jumpToLevel(n);
+          };
+        })(first + i));
         row.appendChild(btn);
       }
-      el.debug.appendChild(row);
+      el.levels.appendChild(row);
     });
   }
 
@@ -1681,7 +2858,7 @@
     var next = {
       v: 1,
       seenIntro: true,
-      region: "para",
+      region: prev.region || "para",
       level: typeof prev.level === "number" ? prev.level : 0,
       rewinds: typeof prev.rewinds === "number" ? prev.rewinds : MAX_REWIND,
       reasonOrder: prev.reasonOrder || reasonOrder.slice(),
@@ -1702,7 +2879,10 @@
     }
     el.continueBtn.hidden = false;
     if (save.spot === "level" && LEVELS[save.level]) {
-      el.continueBtn.textContent = "Continue · Kingdom " + (save.level + 1);
+      var region = regionOf(LEVELS[save.level]);
+      var n = save.level - regionFirst(region) + 1;
+      var prefix = region === "rhombus" ? "Rhombus " : region === "rectangle" ? "Rectangle " : region === "square" ? "Square " : "";
+      el.continueBtn.textContent = "Continue · " + prefix + "Kingdom " + n;
     } else {
       el.continueBtn.textContent = "Continue";
     }
@@ -1721,11 +2901,10 @@
     if (!save) return;
     applySave(save);
     el.title.classList.add("off");
-    el.debug.hidden = true;
     el.card.classList.remove("on", "over");
     if (save.spot === "level") startLevel(levelNo);
-    else if (save.spot === "region-outro") startRegionOutro();
-    else if (save.spot === "region-cleared") showRegionCard();
+    else if (save.spot === "region-outro") startRegionOutro(save.region);
+    else if (save.spot === "region-cleared") showRegionCard(save.region);
     else showChapterCard();
   }
 
@@ -1734,7 +2913,7 @@
     if (!data) { showRegionCard(); return; }
 
     mode = "level";
-    setBed("court");
+    setBed(REGIONS[regionOf(data)].bed);
     cancelLater();
     levelNo = n;
     // busy until the palace has faded in — a click during the cut must not
@@ -1755,16 +2934,18 @@
       rewinds: rewinds,
       reasonOrder: reasonOrder.slice(),
       seenIntro: true,
-      region: "para",
+      region: regionOf(data),
     });
 
     hideDialogue();
+    el.dialogue.classList.remove("high");
     hideChoices();
     hideReasons();
     el.corner.classList.remove("on");
     el.skip.classList.remove("on");
-    el.card.classList.remove("on");
-    el.mapFx.classList.remove("on", "focus", "labels");
+    el.card.classList.remove("on", "finale");
+    el.cardActions.innerHTML = "";
+    el.mapFx.classList.remove.apply(el.mapFx.classList, ["on", "focus", "labels"].concat(NEXT_CLASSES));
     el.fade.classList.add("on");
 
     later(function () {
@@ -1805,13 +2986,14 @@
 
   function clearScreen() {
     hideDialogue();
+    el.dialogue.classList.remove("high");
     hideChoices();
     hideReasons();
     el.corner.classList.remove("on");
     el.skip.classList.remove("on");
     el.hud.classList.remove("on");
     el.chapter.classList.remove("on");
-    el.mapFx.classList.remove("on", "focus", "labels");
+    el.mapFx.classList.remove.apply(el.mapFx.classList, ["on", "focus", "labels"].concat(NEXT_CLASSES));
     el.choices.classList.remove("locked");
     el.reasons.classList.remove("locked");
   }
@@ -1827,7 +3009,7 @@
     mode = "card";
     cancelLater();
     clearScreen();
-    el.card.classList.remove("over");
+    el.card.classList.remove("over", "finale");
     paintCard(
       "Chapter 1",
       "The Parallelogram Region",
@@ -1838,28 +3020,65 @@
         { label: "Play again", ghost: true, run: replayIntro },
       ]
     );
-    writeSave({ spot: "chapter", level: 0, rewinds: MAX_REWIND, reasonOrder: reasonOrder.slice() });
+    writeSave({ spot: "chapter", level: 0, region: "para", rewinds: MAX_REWIND, reasonOrder: reasonOrder.slice() });
     later(function () { el.card.classList.add("on"); }, 380);
   }
 
-  function showRegionCard() {
+  function showRegionCard(region) {
+    region = REGIONS[region] ? region : "para";
     mode = "card";
     cancelLater();
     clearScreen();
-    el.card.classList.remove("over");
-    paintCard(
-      "Region cleared",
-      "The Parallelogram Region is safe",
-      "All five reasons proved: opposite sides equal, opposite angles equal, diagonals bisecting, " +
-      "one pair equal and parallel, and both pairs parallel — and in Philip, two facts joined into one. " +
-      "The rhombus region is still being built.",
-      [
-        // The cleared card is the resume point until the next region exists.
-        { label: "Play again", run: replayIntro },
-        { label: "Replay kingdoms", ghost: true, run: function () { rewinds = MAX_REWIND; startLevel(0); } },
-      ]
-    );
-    writeSave({ spot: "region-cleared", level: LEVELS.length - 1, rewinds: MAX_REWIND });
+    el.card.classList.remove("over", "finale");
+    var first = regionFirst(region);
+    function replay() { rewinds = MAX_REWIND; startLevel(first); }
+    if (region === "para") {
+      paintCard(
+        "Region cleared",
+        "The Parallelogram Region is safe",
+        "All five reasons proved: opposite sides equal, opposite angles equal, diagonals bisecting, " +
+        "one pair equal and parallel, and both pairs parallel — and in Philip, two facts joined into one. " +
+        "Next: the Rhombus Region, where a parallelogram alone is not enough.",
+        [
+          { label: "Enter the Rhombus Region", run: function () { rewinds = MAX_REWIND; startLevel(regionFirst("rhombus")); } },
+          { label: "Replay kingdoms", ghost: true, run: replay },
+        ]
+      );
+    } else if (region === "rhombus") {
+      paintCard(
+        "Region cleared",
+        "The Rhombus Region is safe",
+        "Four sides equal, diagonals at right angles, and a diagonal bisecting its angles — " +
+        "and in George, a fourth side proved from three. Next: the Rectangle Region, where every corner counts.",
+        [
+          { label: "Enter the Rectangle Region", run: function () { rewinds = MAX_REWIND; startLevel(regionFirst("rectangle")); } },
+          { label: "Replay rhombus kingdoms", ghost: true, run: replay },
+        ]
+      );
+    } else if (region === "rectangle") {
+      paintCard(
+        "Region cleared",
+        "The Rectangle Region is safe",
+        "Four right angles and equal diagonals — reached from one right angle, from three equal corners, " +
+        "and in Silas from an isosceles triangle. Next: the Square Region, where one proof is never enough.",
+        [
+          { label: "Enter the Square Region", run: function () { rewinds = MAX_REWIND; startLevel(regionFirst("square")); } },
+          { label: "Replay rectangle kingdoms", ghost: true, run: replay },
+        ]
+      );
+    } else {
+      el.card.classList.add("finale");
+      paintCard(
+        "The End",
+        "Congratulations! You have saved the world!",
+        "Parallelogram, rhombus, rectangle and square — every princess found, every king at peace.",
+        [
+          { label: "Play again", run: replayIntro },
+          { label: "Replay square kingdoms", ghost: true, run: replay },
+        ]
+      );
+    }
+    writeSave({ spot: "region-cleared", level: regionLast(region), region: region, rewinds: MAX_REWIND });
     later(function () { el.card.classList.add("on"); }, 380);
   }
 
@@ -1867,6 +3086,7 @@
     mode = "card";
     cancelLater();
     clearScreen();
+    el.card.classList.remove("finale");
     el.card.classList.add("over");
     paintCard(
       "Game over",
@@ -1878,7 +3098,7 @@
         { label: "Retry this kingdom", ghost: true, run: function () { rewinds = MAX_REWIND; startLevel(levelNo); } },
       ]
     );
-    writeSave({ spot: "level", level: levelNo, rewinds: MAX_REWIND });
+    writeSave({ spot: "level", level: levelNo, region: regionOf(LEVELS[levelNo]), rewinds: MAX_REWIND });
     later(function () { el.card.classList.add("on"); }, 380);
   }
 
@@ -1915,7 +3135,7 @@
     levelNo = 0;
     regionIndex = -1;
     el.title.classList.add("off");
-    el.card.classList.remove("on", "over");
+    el.card.classList.remove("on", "over", "finale");
     el.chapter.classList.remove("on");
     index = -1;
     cutting = true;
@@ -1948,7 +3168,7 @@
     index = -1;
     lv.data = null;
     clearScreen();
-    el.card.classList.remove("on", "over");
+    el.card.classList.remove("on", "over", "finale");
     el.gems.forEach(function (gem) { gem.classList.remove("lit"); });
     setBg(TITLE.bg, "ken-c");
     el.title.classList.remove("off");
@@ -1974,7 +3194,7 @@
     }, true);
 
     stage.addEventListener("click", function (e) {
-      if (e.target.closest(".qg-start") || e.target.closest(".qg-skip") || e.target.closest(".qg-debug") || e.target.closest(".qg-settings")) return;
+      if (e.target.closest(".qg-start") || e.target.closest(".qg-skip") || e.target.closest(".qg-settings")) return;
       if (e.target.closest(".qg-choice") || e.target.closest(".qg-reason")) return;
       advance();
     });
@@ -1985,12 +3205,18 @@
       continueGame();
     });
     refreshContinue();
-    el.debugOpen.addEventListener("click", function (e) {
-      e.stopPropagation();
-      el.debug.hidden = !el.debug.hidden;
-    });
-    paintDebugLevels();
     el.skip.addEventListener("click", showChapterCard);
+
+    el.stage.addEventListener("mousemove", function (e) {
+      var rect = el.stage.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      var x = (e.clientX - rect.left) / rect.width;
+      var y = (e.clientY - rect.top) / rect.height;
+      el.settings.classList.toggle("near", x >= 0.84 && y <= 0.2);
+    });
+    el.stage.addEventListener("mouseleave", function () {
+      el.settings.classList.remove("near");
+    });
 
     readMix();
     el.volMusic.value = String(Math.round(mix.music * 100));
@@ -2008,17 +3234,14 @@
       var open = el.settings.classList.toggle("open");
       el.settingsBtn.setAttribute("aria-expanded", open ? "true" : "false");
     });
+    paintLevels();
     el.settingsHome.addEventListener("click", function (e) {
       e.stopPropagation();
-      el.settings.classList.remove("open");
-      el.settingsBtn.setAttribute("aria-expanded", "false");
+      closeSettings();
       saveAndHome();
     });
     document.addEventListener("click", function (e) {
-      if (!el.settings.contains(e.target)) {
-        el.settings.classList.remove("open");
-        el.settingsBtn.setAttribute("aria-expanded", "false");
-      }
+      if (!el.settings.contains(e.target)) closeSettings();
     });
 
     document.addEventListener("keydown", function (e) {
@@ -2044,9 +3267,11 @@
       var img = new Image();
       img.src = ART + beat.bg + V;
     });
-    REGION_OUTRO.forEach(function (beat) {
-      var img = new Image();
-      img.src = ART + beat.bg + V;
+    Object.keys(REGIONS).forEach(function (key) {
+      REGIONS[key].outro.forEach(function (beat) {
+        var img = new Image();
+        img.src = ART + beat.bg + V;
+      });
     });
     LEVELS.forEach(function (data) {
       [data.bg, data.bgAngry, data.bgPuzzled, data.bgHappy, data.king].forEach(function (file) {

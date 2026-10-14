@@ -75,6 +75,8 @@
   text-anchor: middle;
 }
 
+.sg-exp { font-size: 20px; }
+
 .sg-plate-text {
   font: 800 20px "JetBrains Mono", Consolas, monospace;
   fill: #3b2c14;
@@ -367,13 +369,14 @@
 
 .sig-note-modal {
   position: absolute;
-  inset: 3% 5%;
+  inset: 0;
   z-index: 50;
   display: grid;
   place-items: center;
   padding: 1.5cqw;
-  background: rgba(7, 9, 8, .79);
-  backdrop-filter: blur(3px);
+  box-sizing: border-box;
+  background: rgba(3, 5, 4, .84);
+  backdrop-filter: blur(4px);
 }
 
 .sig-code-sheet {
@@ -438,6 +441,783 @@
   padding-top: .8cqw;
   border-top: 2px solid rgba(74, 54, 29, .36);
   font: 800 clamp(9px, 1.15cqw, 13px)/1.7 "JetBrains Mono", Consolas, monospace;
+}
+
+/* ---------- Story layer (signal-room-story.js) ---------- */
+
+.sgs-cam {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 26%;
+  transition: transform 1.6s cubic-bezier(.45, 0, .2, 1);
+}
+
+#sig-room.sgs-zoom .sgs-cam { transform: scale(1.55); }
+#sig-room.sgs-shake .sgs-cam { animation: sgs-shake .5s ease-out; }
+
+.sgs-dim,
+.sgs-static,
+.sgs-glare,
+.sgs-spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sgs-dim {
+  background: radial-gradient(ellipse at 50% 30%, rgba(4, 7, 12, .3), rgba(2, 3, 6, .72));
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+#sig-room.sgs-dark .sgs-dim { opacity: 1; }
+
+.sgs-static {
+  opacity: 0;
+  background: repeating-linear-gradient(0deg, rgba(160, 255, 170, .08) 0 2px, transparent 2px 5px);
+  mix-blend-mode: screen;
+}
+
+#sig-room.sgs-radio .sgs-static { animation: sgs-static .24s steps(3) infinite; }
+#sig-room.sgs-radio .sig-crt { animation: sgs-crt .2s steps(2) infinite; }
+
+.sgs-glare {
+  opacity: 0;
+  background: radial-gradient(ellipse 60% 40% at 50% 26%, rgba(255, 232, 160, .42), rgba(255, 232, 160, 0) 70%);
+  transition: opacity 1.2s ease;
+}
+
+#sig-room.sgs-blaze .sgs-glare { opacity: 1; }
+#sig-room.sgs-sent .sig-house.is-on .sg-beam,
+#sig-room.sgs-blaze .sig-house .sg-beam { opacity: 1; filter: brightness(1.45); }
+#sig-room.sgs-sent .sig-house.is-on .sg-glow,
+#sig-room.sgs-blaze .sig-house .sg-glow { animation: none; opacity: 1; }
+
+.sgs-spot {
+  z-index: 20;
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+
+.sgs-spot.is-on { opacity: 1; }
+
+.sgs-tip {
+  --tip-edge: #c9953f;
+  --tip-fill: rgba(14, 16, 13, .94);
+  position: absolute;
+  padding: .45cqw 1cqw;
+  border: 1.5px solid var(--tip-edge);
+  border-radius: .35cqw;
+  color: #ffd27a;
+  background: var(--tip-fill);
+  box-shadow: 0 .3cqw 1.2cqw rgba(0, 0, 0, .55), 0 0 1cqw rgba(255, 198, 90, .18);
+  font: 700 clamp(11px, 1.3cqw, 17px) "JetBrains Mono", Consolas, monospace;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.sgs-tip::after {
+  content: "";
+  position: absolute;
+  width: .8cqw;
+  height: .8cqw;
+  min-width: 7px;
+  min-height: 7px;
+  border: 1.5px solid var(--tip-edge);
+  background: var(--tip-fill);
+}
+
+.sgs-tip.is-top { transform: translate(-50%, -100%); }
+.sgs-tip.is-bottom { transform: translate(-50%, 0); }
+.sgs-tip.is-right { transform: translate(0, -50%); }
+
+.sgs-tip.is-top::after {
+  left: 50%;
+  top: 100%;
+  border-top: 0;
+  border-left: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.sgs-tip.is-bottom::after {
+  left: 50%;
+  bottom: 100%;
+  border-bottom: 0;
+  border-right: 0;
+  transform: translate(-50%, 50%) rotate(45deg);
+}
+
+.sgs-tip.is-right::after {
+  right: 100%;
+  top: 50%;
+  border-top: 0;
+  border-right: 0;
+  transform: translate(50%, -50%) rotate(45deg);
+}
+.sgs-tip[hidden] { display: none; }
+
+#sig-room .sgs-dialog {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 3%;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1.4cqw;
+  min-height: 9cqw;
+  padding: 1.1cqw 3cqw 1.1cqw 1.4cqw;
+  border: .2cqw solid #b58a3c;
+  border-radius: .8cqw;
+  color: #efe4c8;
+  background: linear-gradient(180deg, rgba(22, 26, 22, .95), rgba(10, 12, 10, .97));
+  box-shadow: 0 1cqw 3cqw rgba(0, 0, 0, .6);
+  cursor: pointer;
+  animation: sgs-pop .22s ease-out;
+}
+
+#sig-room .sgs-dialog.is-top { top: 7%; bottom: auto; }
+#sig-room .sgs-dialog[hidden] { display: none; }
+#sig-room .sgs-dialog.is-hold { cursor: default; }
+#sig-room .sgs-dialog.is-radio { border-color: #4fae5c; }
+
+.sgs-face {
+  width: clamp(64px, 10.5cqw, 112px);
+  height: clamp(64px, 10.5cqw, 112px);
+  overflow: hidden;
+  border: .15cqw solid #6b5a33;
+  border-radius: .6cqw;
+  background: #273029;
+}
+
+.sgs-dialog.is-radio .sgs-face { border-color: #3d8a49; }
+.sgs-face svg { display: block; width: 100%; height: 100%; }
+.sgs-face img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sgs-waves path { animation: sgs-wave 1s ease-in-out infinite; }
+.sgs-waves path:nth-child(2) { animation-delay: .25s; }
+.sgs-needle { animation: sgs-needle .5s steps(2) infinite; transform-origin: 60px 51px; }
+
+#sig-room .sgs-name {
+  margin-bottom: .4cqw;
+  color: #ffc65a;
+  font: 800 clamp(11px, 1.25cqw, 16px) "JetBrains Mono", Consolas, monospace;
+  letter-spacing: .14em;
+}
+
+#sig-room .sgs-dialog.is-radio .sgs-name { color: #8ff59a; }
+
+#sig-room .sgs-line {
+  min-height: 2.9em;
+  margin: 0;
+  color: #efe4c8;
+  font: 600 clamp(13px, 1.65cqw, 22px)/1.45 "DM Sans", system-ui, sans-serif;
+}
+
+#sig-room .sgs-dialog.is-radio .sgs-line {
+  color: #c8ffc6;
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: clamp(12px, 1.5cqw, 20px);
+}
+
+.sgs-next {
+  position: absolute;
+  right: 1.4cqw;
+  bottom: .9cqw;
+  color: #ffc65a;
+  font-size: clamp(10px, 1.1cqw, 14px);
+  opacity: 0;
+}
+
+.sgs-dialog.is-ready .sgs-next { opacity: 1; animation: sgs-bob .8s ease-in-out infinite; }
+.sgs-dialog.is-hold .sgs-next { display: none; }
+
+#sig-room .sgs-title,
+#sig-room .sgs-clear {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.3cqw;
+  text-align: center;
+}
+
+#sig-room .sgs-title {
+  z-index: 40;
+  background: radial-gradient(ellipse at 50% 40%, rgba(10, 14, 18, .5), rgba(3, 4, 6, .92));
+}
+
+#sig-room .sgs-title[hidden] { display: none; }
+
+#sig-room .sgs-clear {
+  z-index: 45;
+  background: #000;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 2.4s ease, visibility 0s linear 2.4s;
+}
+
+#sig-room .sgs-clear.is-on {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 2.4s ease;
+}
+
+#sig-room .sgs-kicker {
+  margin: 0;
+  color: #ffc65a;
+  font: 800 clamp(11px, 1.3cqw, 16px) "JetBrains Mono", Consolas, monospace;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+}
+
+#sig-room .sgs-title h2 {
+  margin: 0;
+  color: #f3e7c6 !important;
+  font: 700 clamp(26px, 4.6cqw, 64px)/1.05 "Fraunces", Georgia, serif !important;
+  text-shadow: 0 .4cqw 2cqw rgba(0, 0, 0, .8);
+}
+
+#sig-room .sgs-clear h2 {
+  margin: 0;
+  color: #ffd98a !important;
+  font: 900 clamp(34px, 7cqw, 96px)/1 "JetBrains Mono", Consolas, monospace !important;
+  letter-spacing: .18em;
+  text-shadow: 0 0 3cqw rgba(255, 200, 90, .55);
+  opacity: 0;
+  transform: scale(.94);
+  transition: opacity 1.2s ease 2s, transform 1.2s ease 2s;
+}
+
+#sig-room .sgs-clear.is-on h2 { opacity: 1; transform: none; }
+
+#sig-room .sgs-sub {
+  margin: 0;
+  color: #cfc3a0;
+  font: 600 clamp(12px, 1.5cqw, 19px) "DM Sans", system-ui, sans-serif;
+}
+
+#sig-room .sgs-clear .sgs-sub,
+#sig-room .sgs-clear .sgs-btn {
+  opacity: 0;
+  transition: opacity 1s ease 3s;
+}
+
+#sig-room .sgs-clear.is-on .sgs-sub,
+#sig-room .sgs-clear.is-on .sgs-btn { opacity: 1; }
+
+#sig-room .sgs-btn {
+  margin-top: .8cqw;
+  padding: .9cqw 3.2cqw;
+  border: .2cqw solid #ffc65a;
+  border-radius: .5cqw;
+  color: #ffd98a;
+  background: #2a1f0e;
+  font: 800 clamp(14px, 1.8cqw, 24px) "JetBrains Mono", Consolas, monospace;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+#sig-room .sgs-btn:hover,
+#sig-room .sgs-btn:focus-visible {
+  color: #1d1407;
+  background: #ffc65a;
+  outline: none;
+}
+
+.sgs-ghost { opacity: .26; }
+
+.sig-buffer rect.sgs-slot-now {
+  stroke: #d6ffb0;
+  animation: sgs-slot 1s ease-in-out infinite;
+}
+
+.sig-buffer rect.sgs-slot-sent { fill: rgba(110, 230, 120, .2); }
+
+#sig-room.sgs-locked .sig-switch,
+#sig-room.sgs-locked .sig-lever,
+#sig-room.sgs-locked .sig-note { cursor: default; }
+#sig-room.sgs-locked .sig-switch:hover .sg-cap-base { filter: url(#sg-shadow-sm); }
+#sig-room.sgs-locked .sig-lever:hover .sg-grip { filter: none; }
+#sig-room.sgs-locked .sig-note:hover .sig-note-lift { transform: none; }
+
+#sig-room .sgs-clear.is-long h2 {
+  font-size: clamp(26px, 5.4cqw, 76px) !important;
+  letter-spacing: .1em;
+}
+
+#sig-room .sgs-dialog.is-onair { border-color: #e0573f; }
+#sig-room .sgs-dialog.is-passive { pointer-events: none; }
+
+/* Rescuer decoding: docked over the chart so the telescope, cipher note and keyboard stay clear. */
+#sig-room .sgs-dialog.is-mid {
+  top: 2.5%;
+  bottom: auto;
+  left: 33.5%;
+  right: 18%;
+  min-height: 0;
+  gap: 1cqw;
+  padding: .9cqw 1.4cqw .9cqw 1cqw;
+}
+
+#sig-room .sgs-dialog.is-mid .sgs-face {
+  width: clamp(44px, 6.5cqw, 76px);
+  height: clamp(44px, 6.5cqw, 76px);
+}
+
+#sig-room .sgs-dialog.is-mid .sgs-line {
+  min-height: 0;
+  font-size: clamp(11px, 1.4cqw, 18px);
+}
+
+#sig-room.sgr-snap .sgs-cam { transition: none !important; }
+#sig-room .sgs-dialog.is-onair .sgs-name { color: #ff8a6e; }
+
+/* ---------- Role picker ---------- */
+
+.sgs-roles {
+  display: flex;
+  gap: 2cqw;
+  margin-top: .6cqw;
+}
+
+#sig-room .sgs-role {
+  display: grid;
+  justify-items: center;
+  gap: .5cqw;
+  width: clamp(150px, 21cqw, 280px);
+  padding: 1.2cqw 1cqw 1.3cqw;
+  border: .2cqw solid #8a6a32;
+  border-radius: .8cqw;
+  color: #e8dcc0;
+  background: rgba(30, 24, 14, .88);
+  font: 600 clamp(10px, 1.15cqw, 15px)/1.4 "DM Sans", system-ui, sans-serif;
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+
+#sig-room .sgs-role img {
+  width: clamp(56px, 8.5cqw, 112px);
+  height: clamp(56px, 8.5cqw, 112px);
+  border: .15cqw solid #6b5a33;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+#sig-room .sgs-role strong {
+  color: #ffd98a;
+  font: 800 clamp(13px, 1.7cqw, 22px) "JetBrains Mono", Consolas, monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+#sig-room .sgs-role span { color: #cfc3a0; }
+
+#sig-room .sgs-roles[hidden],
+#sig-room .sgs-back[hidden] { display: none; }
+
+#sig-room .sgs-role-icon {
+  display: grid;
+  place-items: center;
+  width: clamp(56px, 8.5cqw, 112px);
+  height: clamp(56px, 8.5cqw, 112px);
+  border: .15cqw solid #6b5a33;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #233042, #10161f);
+}
+
+#sig-room .sgs-role-icon svg { width: 66%; height: 66%; }
+
+#sig-room .sgs-back {
+  padding: .4cqw 1.2cqw;
+  border: 1px solid rgba(255, 198, 90, .5);
+  border-radius: 999px;
+  color: #ffd98a;
+  background: rgba(0, 0, 0, .45);
+  font: 700 clamp(11px, 1.2cqw, 15px) "JetBrains Mono", Consolas, monospace;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+
+#sig-room .sgs-back:hover { background: rgba(60, 44, 18, .9); }
+
+/* ---------- Challenge mode (signal-room-challenge.js) ---------- */
+
+.sgc-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sgc-layer[hidden] { display: none; }
+
+.sgc-layer svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sgc-layer .sgc-solid,
+.sgc-layer .sgc-key { pointer-events: auto; }
+.sgc-layer .sgc-key { cursor: pointer; }
+.sgc-layer .sgc-key:hover .sgr-key-base { fill: #3a4134; }
+.sgc-key-wide { font-size: 22px !important; letter-spacing: .06em; }
+
+.sgc-crt-sub {
+  font: 600 18px "JetBrains Mono", Consolas, monospace;
+  fill: #7fd889;
+  letter-spacing: .08em;
+}
+
+.sgc-dial-num,
+.sgg-dial-num {
+  font: 800 44px "JetBrains Mono", Consolas, monospace;
+  fill: #c8ffc6;
+  text-anchor: middle;
+}
+
+.sgc-arc { transition: stroke-dasharray .12s linear, stroke .3s ease; }
+.sgc-arc.is-low { stroke: #ff6a4a; }
+
+.sgc-layer.is-guess .sgc-speed,
+.sgc-layer.is-speed .sgc-guess { display: none; }
+.sgc-layer.is-guess .sgc-guess,
+.sgc-layer .sgc-powers { pointer-events: none; }
+.sgc-powers .sgr-power { stroke: none; opacity: 1; }
+
+.sgg-arc { transition: stroke-dasharray .3s ease; }
+.sgg-dial-num { font-size: 56px; }
+
+.sgg-small {
+  font: 700 17px "JetBrains Mono", Consolas, monospace;
+  fill: #6fd47c;
+  letter-spacing: .1em;
+}
+.sgg-key { fill: #4fa65c; }
+
+.sgg-big {
+  font: 700 28px "JetBrains Mono", Consolas, monospace;
+  fill: #b6ffb0;
+  letter-spacing: .08em;
+}
+
+.sgc-lcd-label {
+  font: 800 18px "JetBrains Mono", Consolas, monospace;
+  fill: #cfc3a0;
+  letter-spacing: .18em;
+  text-anchor: middle;
+}
+
+.sgc-lcd {
+  font: 800 40px "JetBrains Mono", Consolas, monospace;
+  fill: #b6ffb0;
+  text-anchor: middle;
+}
+
+#sig-room .sgs-role:hover,
+#sig-room .sgs-role:focus-visible {
+  border-color: #ffc65a;
+  background: rgba(60, 44, 18, .95);
+  outline: none;
+  transform: translateY(-3px);
+}
+
+/* ---------- Rescuer mode (signal-room-rescue.js) ---------- */
+
+.sgr-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.sgr-layer[hidden],
+#sig-room .sgr-scope[hidden] { display: none; }
+
+.sgr-layer svg,
+.sgr-scope svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#sig-room.sgr-peek .sgs-cam {
+  transform-origin: 17% 27%;
+  transform: scale(2.6);
+  transition: transform .55s cubic-bezier(.55, 0, .85, .35);
+}
+
+.sgr-layer.can-scope .sgr-scope-hit { cursor: pointer; }
+.sgr-layer.can-scope .sgr-scope-hit:hover .sgr-tube { filter: url(#sg-shadow-sm) brightness(1.2); }
+
+.sgr-scope-hit {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sgr-rain-far { animation: sgr-rain-far 1.15s linear infinite; }
+.sgr-rain-mid { animation: sgr-rain-mid .78s linear infinite; }
+.sgr-rain-near { animation: sgr-rain-near .52s linear infinite; }
+
+.sgr-port-glow {
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+.sgr-layer.is-lit .sgr-port-glow { opacity: 1; }
+
+.sgr-grid {
+  fill: none;
+  stroke: #4f6b72;
+  stroke-width: 1;
+  opacity: .5;
+}
+
+.sgr-grid-major {
+  stroke: #33484d;
+  stroke-width: 1.8;
+  opacity: .7;
+}
+
+.sgr-map-num {
+  font: 800 13px "JetBrains Mono", Consolas, monospace;
+  fill: #3a2d1a;
+}
+
+.sgr-map-axis {
+  font: 800 15px "JetBrains Mono", Consolas, monospace;
+  fill: #7a2a1c;
+  letter-spacing: .18em;
+  text-anchor: middle;
+}
+
+.sgr-layer.can-mark .sgr-map-hit { cursor: crosshair; }
+
+#sgr-hover {
+  fill: rgba(208, 36, 27, .18);
+  stroke: #d0241b;
+  stroke-width: 2;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sgr-layer.can-mark #sgr-hover.is-on { opacity: 1; }
+
+.sgr-x { pointer-events: none; }
+
+.sgr-x path {
+  fill: none;
+  stroke: #d0241b;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: sgr-x-pop .35s cubic-bezier(.2, 1.6, .4, 1);
+}
+
+.sgr-x.is-miss path {
+  stroke: #7d3a2f;
+  stroke-width: 4;
+  animation: sgr-x-pop .35s cubic-bezier(.2, 1.6, .4, 1), sgr-fade 1.4s ease-in forwards;
+}
+
+.sgr-note { outline: none; }
+.sgr-note-lift {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  transition: transform .2s ease;
+}
+.sgr-layer:not([hidden]) .sgr-note { cursor: pointer; }
+.sgr-note:hover .sgr-note-lift { transform: translateY(-6px) rotate(-2deg); }
+
+.sgr-blip { opacity: 0; }
+.sgr-layer.is-blip .sgr-blip { opacity: 1; animation: sg-blip 1.8s ease-out infinite; }
+
+.sgr-crt-small {
+  font: 700 19px "JetBrains Mono", Consolas, monospace;
+  fill: #6fd47c;
+  letter-spacing: .14em;
+}
+
+.sgr-crt-big {
+  font: 700 36px "JetBrains Mono", Consolas, monospace;
+  fill: #b6ffb0;
+  letter-spacing: .12em;
+}
+
+.sgr-key-base {
+  fill: #2c3129;
+  stroke: #0e100d;
+  stroke-width: 2.5;
+  transition: fill .15s ease;
+}
+
+.sgr-key-top { fill: #fff; opacity: .06; }
+
+.sgr-key text {
+  font: 800 28px "JetBrains Mono", Consolas, monospace;
+  fill: #e8dcc0;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.sgr-key-cap { transition: transform .08s ease; }
+.sgr-key.is-down .sgr-key-cap { transform: translateY(3px); }
+.sgr-layer.can-type .sgr-key { cursor: pointer; }
+.sgr-layer.can-type .sgr-key:hover .sgr-key-base { fill: #3a4134; }
+.sgr-key.is-ok .sgr-key-base { fill: #2f7a3a; }
+.sgr-key.is-bad .sgr-key-base { fill: #8a2a21; }
+
+.sgr-lamp {
+  fill: #3a2810;
+  stroke: #1a1208;
+  stroke-width: 2;
+  transition: fill .2s ease;
+}
+
+.sgr-layer.is-auto .sgr-lamp-auto { fill: #ffb53b; animation: sg-blink .8s steps(1) infinite; }
+.sgr-layer.is-air .sgr-lamp-air { fill: #ff5a3a; }
+
+.sgr-lamp-text {
+  font: 800 17px "JetBrains Mono", Consolas, monospace;
+  fill: #cfc3a0;
+  letter-spacing: .08em;
+}
+
+#sig-room .sgr-scope {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  background: #020303;
+  animation: sgr-scope-in .45s ease-out;
+}
+
+.sgr-house .sg-beam {
+  opacity: 0;
+  transform: scaleY(0);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .2s ease;
+}
+
+.sgr-house.is-on .sg-beam { opacity: .85; transform: scaleY(1); }
+.sgr-house .sg-glow { opacity: 0; transition: opacity .2s ease; }
+.sgr-house.is-on .sg-glow { opacity: 1; }
+.sgr-house .sg-lamp { fill: #1f2a34; transition: fill .15s ease; }
+.sgr-house.is-on .sg-lamp { fill: #ffe9a6; }
+#sig-room.sgs-blaze .sgr-house .sg-beam { filter: brightness(1.45); }
+
+.sgr-tick {
+  fill: none;
+  stroke: #9ef59a;
+  stroke-width: 2;
+  opacity: .45;
+}
+
+.sgr-power {
+  font: 800 30px "JetBrains Mono", Consolas, monospace;
+  fill: #b6ffb0;
+  text-anchor: middle;
+  opacity: .85;
+}
+
+.sgr-exp { font-size: 19px; }
+
+#sig-room .sgr-scope-close {
+  position: absolute;
+  top: 4.6%;
+  right: 2.4%;
+  padding: .5cqw 1.2cqw;
+  border: .15cqw solid #9ef59a;
+  border-radius: .5cqw;
+  color: #c8ffc6;
+  background: rgba(6, 20, 9, .85);
+  font: 800 clamp(11px, 1.4cqw, 18px) "JetBrains Mono", Consolas, monospace;
+  letter-spacing: .1em;
+  cursor: pointer;
+  opacity: .35;
+}
+
+#sig-room .sgr-scope.can-close .sgr-scope-close { opacity: 1; }
+#sig-room .sgr-scope.can-close .sgr-scope-close:hover { color: #031006; background: #9ef59a; }
+
+@keyframes sgr-rain-far {
+  from { transform: translate(10px, -113px); }
+  to { transform: translate(0, 0); }
+}
+
+@keyframes sgr-rain-mid {
+  from { transform: translate(14px, -149px); }
+  to { transform: translate(0, 0); }
+}
+
+@keyframes sgr-rain-near {
+  from { transform: translate(19px, -197px); }
+  to { transform: translate(0, 0); }
+}
+
+@keyframes sgr-scope-in {
+  from { opacity: 0; transform: scale(1.08); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sgr-x-pop {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+@keyframes sgr-fade {
+  0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes sgs-shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-.6%, .5%); }
+  40% { transform: translate(.6%, -.4%); }
+  60% { transform: translate(-.4%, .3%); }
+  80% { transform: translate(.3%, -.2%); }
+}
+
+@keyframes sgs-static {
+  0% { opacity: .2; }
+  50% { opacity: .55; }
+  100% { opacity: .3; }
+}
+
+@keyframes sgs-crt {
+  0% { opacity: 1; }
+  100% { opacity: .72; }
+}
+
+@keyframes sgs-pop {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sgs-bob {
+  50% { transform: translateY(3px); }
+}
+
+@keyframes sgs-wave {
+  0%, 100% { opacity: .2; }
+  50% { opacity: 1; }
+}
+
+@keyframes sgs-needle {
+  50% { transform: rotate(18deg); }
+}
+
+@keyframes sgs-slot {
+  50% { stroke-opacity: .35; }
 }
 
 /* ---------- Keyframes ---------- */
@@ -512,9 +1292,16 @@
   .sig-house.is-on .sg-glow,
   .sig-blip.is-on,
   .sig-switch.is-on .sg-cap-glow,
-  .sig-code-sheet {
+  .sig-code-sheet,
+  .sgs-waves path,
+  .sgs-needle,
+  #sig-room.sgs-radio .sgs-static,
+  #sig-room.sgs-radio .sig-crt,
+  #sig-room.sgs-shake .sgs-cam {
     animation: none;
   }
+
+  .sgs-cam { transition: none; }
 
   .sig-house .sg-beam,
   .sig-switch .sg-cap {

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
@@ -113,9 +113,10 @@
     }
     /* file:// cannot read iframe.Reveal — let clicks reach the deck. */
     html.file-preview .deck-advance { pointer-events: none; }
-    #reason-subnav { margin-top: -4px; }
-    #reason-subnav.hidden { display: none; }
-  </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
+    #family-subnav, #reason-subnav { margin-top: -4px; }
+    #family-subnav.hidden, #reason-subnav.hidden { display: none; }
+  </style>  <link rel="stylesheet" href="quadrilaterals-game.css?v=20261011-end11">
+  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
 </head>
 <body class="paper-labs">
@@ -123,7 +124,7 @@
     <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
     <p class="jm-eyebrow">JM29 &middot; Lesson 29</p>
     <h1>Quadrilaterals</h1>
-    <p class="lead">Classify the family first. Then open a shape — //gram, rhombus, rectangle, or square — to see its reasons.</p>
+    <p class="lead">Classify the family, or open Mid-pt &amp; intercept to prove those theorems with similar triangles.</p>
         <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
       <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
@@ -136,8 +137,11 @@
         <section id="panel-concept" class="jm-panel">
       <section class="block jm-deck-panel">
 
-      <div class="subnav" id="shape-subnav" aria-label="Shapes">
+      <div class="subnav" id="shape-subnav" aria-label="Family">
         <button class="chip active" type="button" data-shape="classify">Classify shapes</button>
+        <button class="chip" type="button" data-shape="theorems">Mid-pt &amp; intercept</button>
+      </div>
+      <div class="subnav" id="family-subnav" aria-label="Shapes">
         <button class="chip" type="button" data-shape="para">//gram</button>
         <button class="chip" type="button" data-shape="rhombus">Rhombus</button>
         <button class="chip" type="button" data-shape="rectangle">Rectangle</button>
@@ -223,14 +227,16 @@
 
         <section id="panel-games" class="jm-panel hidden">
       <section class="block">
-        <h2>Games</h2>
-        <p class="hint">Coming soon.</p>
+        <p class="part-title">Game 1 · Identifying quadrilaterals</p>
+        <h2>The Search for the True Princesses</h2>
+        <p class="hint">Click the scene (or press Space) to move the story on. Opening chapter plus all six kingdoms of the parallelogram region.</p>
+        <div class="qg-stage" id="qg-stage" role="application" aria-label="Identifying quadrilaterals — story game"></div>
       </section>
     </section>
 <section id="panel-comics" class="jm-panel hidden">
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
-      <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+      <p class="hint">Read the six-page English story in order.</p>
     </section>
     <section id="panel-summary" class="jm-panel hidden">
       <section class="block">
@@ -250,7 +256,8 @@
   <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
   <script defer src="quadrilaterals-tools.js?v=20260830e"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
-  <script defer src="quadrilaterals-comics.js?v=20260830-fu"></script>
+  <script defer src="quadrilaterals-comics.js?v=20260913-geometry-v14"></script>
+  <script defer src="quadrilaterals-game.js?v=20261011-end11"></script>
   <script>
     if (location.protocol === "file:") {
       document.documentElement.classList.add("file-preview");
@@ -258,8 +265,8 @@
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
       var base = "../../slides/quadrilaterals/";
+      var CLASSIFY_SRC = base + "classify/index.html";
       var SHAPES = {
-        classify: { src: base + "classify/index.html", reasons: null },
         para: {
           reasons: [
             { label: "Opp. sides //", src: base + "opp-sides-parallel/index.html" },
@@ -288,28 +295,34 @@
           ],
         },
       };
+      var THEOREMS = [
+        { label: "Mid-pt. thm.", src: base + "midpt-thm/index.html" },
+        { label: "Intercept thm.", src: base + "intercept-thm/index.html" },
+      ];
       var frame = document.getElementById("deck-frame");
       var reasonNav = document.getElementById("reason-subnav");
-      var shapeBtns = document.querySelectorAll("#shape-subnav [data-shape]");
+      var familyNav = document.getElementById("family-subnav");
+      var familyBtns = document.querySelectorAll("#family-subnav [data-shape]");
+      var topBtns = document.querySelectorAll("#shape-subnav [data-shape]");
 
       function loadDeck(src) {
         if (frame) frame.src = src;
       }
 
-      function showShape(id) {
-        var spec = SHAPES[id];
-        if (!spec) return;
-        shapeBtns.forEach(function (btn) {
+      function setTop(id) {
+        topBtns.forEach(function (btn) {
           btn.classList.toggle("active", btn.getAttribute("data-shape") === id);
         });
+      }
+
+      function fillReasons(reasons) {
         reasonNav.innerHTML = "";
-        if (!spec.reasons) {
+        if (!reasons || !reasons.length) {
           reasonNav.classList.add("hidden");
-          loadDeck(spec.src);
           return;
         }
         reasonNav.classList.remove("hidden");
-        spec.reasons.forEach(function (reason, i) {
+        reasons.forEach(function (reason, i) {
           var chip = document.createElement("button");
           chip.className = "chip" + (i === 0 ? " active" : "");
           chip.type = "button";
@@ -322,10 +335,47 @@
           });
           reasonNav.appendChild(chip);
         });
-        loadDeck(spec.reasons[0].src);
+        loadDeck(reasons[0].src);
       }
 
-      shapeBtns.forEach(function (btn) {
+      function showClassifyHome() {
+        setTop("classify");
+        if (familyNav) familyNav.classList.remove("hidden");
+        familyBtns.forEach(function (btn) {
+          btn.classList.remove("active");
+        });
+        fillReasons(null);
+        loadDeck(CLASSIFY_SRC);
+      }
+
+      function showTheorems() {
+        setTop("theorems");
+        if (familyNav) familyNav.classList.add("hidden");
+        familyBtns.forEach(function (btn) {
+          btn.classList.remove("active");
+        });
+        fillReasons(THEOREMS);
+      }
+
+      function showShape(id) {
+        var spec = SHAPES[id];
+        if (!spec) return;
+        setTop("classify");
+        if (familyNav) familyNav.classList.remove("hidden");
+        familyBtns.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-shape") === id);
+        });
+        fillReasons(spec.reasons);
+      }
+
+      topBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var id = btn.getAttribute("data-shape");
+          if (id === "theorems") showTheorems();
+          else showClassifyHome();
+        });
+      });
+      familyBtns.forEach(function (btn) {
         btn.addEventListener("click", function () {
           showShape(btn.getAttribute("data-shape"));
         });

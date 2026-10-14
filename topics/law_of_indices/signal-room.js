@@ -1,4 +1,4 @@
-/* Signal Room scene: lighthouse buttons, transmit handle, notes, and storm weather. No puzzle logic yet. */
+/* Signal Room scene: lighthouse buttons, transmit handle, notes, and storm weather. The story and puzzle flow live in signal-room-story.js. */
 (function () {
   "use strict";
 
@@ -31,17 +31,23 @@
     });
   }
 
+  /* Buttons only arm a lighthouse; the beacons fire when the transmit lever is pulled and keep showing the last signal sent. */
   function applyLight(i, on) {
     if (i < 0 || i > 5) return;
     lit[i] = !!on;
-    var match = '[data-index="' + i + '"]';
-    each(".sig-house" + match + ", .sig-blip" + match, function (el) {
-      el.classList.toggle("is-on", lit[i]);
-    });
-    each(".sig-switch" + match, function (el) {
+    each(".sig-switch" + '[data-index="' + i + '"]', function (el) {
       el.classList.toggle("is-on", lit[i]);
       el.setAttribute("aria-pressed", lit[i] ? "true" : "false");
     });
+  }
+
+  function showBeacons(states) {
+    for (var i = 0; i < 6; i++) {
+      var on = !!(states && states[i]);
+      each('.sig-house[data-index="' + i + '"], .sig-blip[data-index="' + i + '"]', function (el) {
+        el.classList.toggle("is-on", on);
+      });
+    }
   }
 
   function sceneVisible() {
@@ -243,6 +249,7 @@
   function setThrown(on) {
     thrown = !!on;
     swingTo(thrown ? TILT_MAX : 0);
+    if (thrown) showBeacons(lit);
     lever.classList.toggle("is-thrown", thrown);
     lever.setAttribute("aria-pressed", thrown ? "true" : "false");
     lever.setAttribute("aria-label", thrown ? "Push transmit lever up" : "Pull transmit lever down");
@@ -367,6 +374,7 @@
 
   window.SignalRoom = {
     setLighthouse: applyLight,
+    setBeacons: showBeacons,
     setLever: function (down) {
       if (lever && gripG) setThrown(down);
     },
