@@ -22,7 +22,7 @@
   var MISSIONS = {
     sandbox: {
       title: "Sandbox",
-      goal: "Freestyle — drop and drag dots. Watch the yellow balance point (mean) tip as you move mass.",
+      goal: "Freestyle — drop and drag dots. Watch the triangle (mean) slide as you move mass.",
       start: function () { avgData = DEFAULT_DATA.slice(); },
       check: function () { return null; },
     },
@@ -70,6 +70,7 @@
   var suppressClick = false;
   var numlineBound = null;
 
+  var WEIGHT_COLORS = ["#38bdf8", "#a78bfa", "#34d399", "#fb7185"];
   var WEIGHT_ROWS = [
     { label: "Song", mark: 59, weight: 45 },
     { label: "Scale", mark: 47, weight: 25 },
@@ -216,6 +217,23 @@
     return { lo: lo, hi: hi };
   }
 
+  /** Triangle tip sits on the number line (no extra beam). */
+  function drawFulcrum(svg, mx, yLine, label) {
+    var tipY = yLine; /* tip shares the axis y — visually kisses the stroke */
+    var baseY = yLine + 18;
+    svg.appendChild(E("polygon", {
+      points: (mx - 10) + "," + baseY + " " + (mx + 10) + "," + baseY + " " + mx + "," + tipY,
+      fill: "#f59e0b", stroke: "#d97706", "stroke-width": 1,
+    }));
+    if (label) {
+      var t = E("text", {
+        x: mx, y: baseY + 14, fill: "#b45309", "font-size": 10, "font-weight": 800, "text-anchor": "middle",
+      });
+      t.textContent = label;
+      svg.appendChild(t);
+    }
+  }
+
   function drawNumline(svgId, data, opts) {
     opts = opts || {};
     var svg = document.getElementById(svgId);
@@ -225,9 +243,9 @@
     var range = lineRange(data);
     var lo = range.lo;
     var hi = range.hi;
-    var x0 = 40;
-    var x1 = 600;
-    var yBeam = 88; /* 天秤 plank — dots hang from this */
+    var x0 = 36;
+    var x1 = 684;
+    var yAxis = 98;
 
     function xScale(v) {
       if (hi === lo) return (x0 + x1) / 2;
@@ -242,15 +260,15 @@
     numlineBound = { svg: svg, x0: x0, x1: x1, lo: lo, hi: hi, xScale: xScale, xToValue: xToValue };
 
     svg.appendChild(E("rect", {
-      x: x0 - 10, y: yBeam - 50, width: (x1 - x0) + 20, height: 90,
+      x: x0 - 8, y: yAxis - 40, width: (x1 - x0) + 16, height: 72,
       fill: "transparent", class: "track-hit",
     }));
 
-    /* tick rail above the beam */
     svg.appendChild(E("line", {
-      x1: x0, y1: 36, x2: x1, y2: 36,
-      stroke: "#cbd5e1", "stroke-width": 1.5,
+      x1: x0, y1: yAxis, x2: x1, y2: yAxis,
+      stroke: "#334155", "stroke-width": 2.5,
     }));
+
     var ticks = {};
     var tickStep = niceStep(hi - lo);
     var t0 = Math.ceil(lo / tickStep) * tickStep;
@@ -260,49 +278,29 @@
       .forEach(function (tv) {
         var tx = xScale(tv);
         svg.appendChild(E("line", {
-          x1: tx, y1: 30, x2: tx, y2: 42,
-          stroke: "#94a3b8", "stroke-width": 1,
+          x1: tx, y1: yAxis - 5, x2: tx, y2: yAxis + 5,
+          stroke: tv === 0 ? "#94a3b8" : "#475569",
+          "stroke-width": tv === 0 ? 1.5 : 1,
         }));
         var lbl = E("text", {
-          x: tx, y: 24, fill: MUTED, "font-size": 10, "text-anchor": "middle",
+          x: tx, y: yAxis + 18, fill: tv === 0 ? "#0f172a" : MUTED,
+          "font-size": tv === 0 ? 11 : 10, "font-weight": tv === 0 ? 700 : 400,
+          "text-anchor": "middle",
         });
         lbl.textContent = fmt(tv);
         svg.appendChild(lbl);
       });
 
-    var m = data.length ? mean(data) : (lo + hi) / 2;
-    var mx = xScale(m);
-
-    /* 天秤 beam (plank) sitting on fulcrum */
-    svg.appendChild(E("rect", {
-      x: x0 - 6, y: yBeam - 5, width: (x1 - x0) + 12, height: 10, rx: 4,
-      fill: "#fbbf24", stroke: "#d97706", "stroke-width": 1.5,
-    }));
-    /* end caps like scale arms */
-    svg.appendChild(E("circle", { cx: x0 - 4, cy: yBeam, r: 5, fill: "#f59e0b", stroke: "#b45309", "stroke-width": 1 }));
-    svg.appendChild(E("circle", { cx: x1 + 4, cy: yBeam, r: 5, fill: "#f59e0b", stroke: "#b45309", "stroke-width": 1 }));
-
-    /* fulcrum triangle + stand */
-    svg.appendChild(E("polygon", {
-      points: (mx - 16) + "," + (yBeam + 8) + " " + (mx + 16) + "," + (yBeam + 8) + " " + mx + "," + (yBeam + 36),
-      fill: "#f59e0b", stroke: "#b45309", "stroke-width": 1.4,
-    }));
-    svg.appendChild(E("rect", {
-      x: mx - 22, y: yBeam + 34, width: 44, height: 8, rx: 3,
-      fill: "#92400e",
-    }));
-    var balLbl = E("text", {
-      x: mx, y: yBeam + 56, fill: "#92400e", "font-size": 11, "font-weight": 800, "text-anchor": "middle",
-    });
-    balLbl.textContent = data.length ? ("fulcrum = mean " + fmt(m)) : "drop weights on the beam";
-    svg.appendChild(balLbl);
+    var m = data.length ? mean(data) : null;
+    var mx = m != null ? xScale(m) : (x0 + x1) / 2;
 
     if (!data.length) {
       var empty = E("text", {
-        x: 320, y: 64, fill: MUTED, "font-size": 14, "text-anchor": "middle",
+        x: 360, y: 48, fill: MUTED, "font-size": 14, "text-anchor": "middle",
       });
-      empty.textContent = "Click the yellow beam to hang a weight";
+      empty.textContent = "Click the line to drop your first value";
       svg.appendChild(empty);
+      drawFulcrum(svg, mx, yAxis, null);
       return;
     }
 
@@ -318,26 +316,14 @@
       var idxs = stack[key];
       var cx = xScale(v);
       idxs.forEach(function (dataIdx, i) {
-        var cy = yBeam - 18 - i * 14;
-        /* string from beam to weight */
-        svg.appendChild(E("line", {
-          x1: cx, y1: yBeam - 5, x2: cx, y2: cy + 7,
-          stroke: "#64748b", "stroke-width": 1.2,
-        }));
+        var cy = yAxis - 16 - i * 12;
         var c = E("circle", {
-          cx: cx, cy: cy, r: 8,
-          fill: "#38bdf8", stroke: "#0284c7", "stroke-width": 1.5,
+          cx: cx, cy: cy, r: 7,
+          fill: "#38bdf8", stroke: "#0284c7", "stroke-width": 1.4,
           class: "dot-hit",
           "data-index": String(dataIdx),
         });
         svg.appendChild(c);
-        var vt = E("text", {
-          x: cx, y: cy + 3.5, fill: "#fff", "font-size": 9, "font-weight": 800, "text-anchor": "middle",
-          class: "dot-hit", "data-index": String(dataIdx),
-          "pointer-events": "none",
-        });
-        vt.textContent = String(v);
-        svg.appendChild(vt);
       });
     });
 
@@ -347,76 +333,68 @@
     var meanDx = 0;
     var medDx = 0;
     if (Math.abs(mx - mdx) < 28) {
-      meanDx = -14;
-      medDx = 14;
+      meanDx = -16;
+      medDx = 16;
     }
-    drawMarker(svg, mx, MEAN, "mean", meanDx, 48);
-    drawMarker(svg, mdx, MEDIAN, "median", medDx, 48);
+
+    drawMarker(svg, mx, MEAN, "mean", meanDx, 18, yAxis);
+    drawMarker(svg, mdx, MEDIAN, "median", medDx, 18, yAxis);
     if (mod != null) {
       var modX = Array.isArray(mod)
         ? xScale(mod.reduce(function (a, b) { return a + b; }, 0) / mod.length)
         : xScale(mod);
       var modDx = 0;
-      if (Math.abs(modX - mx) < 24) modDx = 20;
-      else if (Math.abs(modX - mdx) < 24) modDx = -20;
-      drawMarker(svg, modX, MODE, "mode", modDx, 48);
+      if (Math.abs(modX - mx) < 24) modDx = 22;
+      else if (Math.abs(modX - mdx) < 24) modDx = -22;
+      drawMarker(svg, modX, MODE, "mode", modDx, 18, yAxis);
     }
+
+    drawFulcrum(svg, mx, yAxis, "mean " + fmt(m));
   }
 
-  /** Mini twin 天秤 for outlier story (before | after) */
+  /** Twin number lines for outlier story (before | after) */
   function drawOutlierStory() {
     var svg = document.getElementById("outlier-viz");
     if (!svg) return;
     while (svg.firstChild) svg.removeChild(svg.firstChild);
     var before = [2, 4, 6, 8];
     var after = [2, 4, 6, 8, 20];
-    drawMiniBalance(svg, before, 20, 300, "before");
-    drawMiniBalance(svg, after, 340, 620, "after");
+    drawMiniBalance(svg, before, 16, 348, "before");
+    drawMiniBalance(svg, after, 372, 704, "after");
     svg.appendChild(E("line", {
-      x1: 320, y1: 16, x2: 320, y2: 140, stroke: "#cbd5e1", "stroke-width": 1, "stroke-dasharray": "4 3",
+      x1: 360, y1: 14, x2: 360, y2: 136, stroke: "#cbd5e1", "stroke-width": 1, "stroke-dasharray": "4 3",
     }));
   }
 
   function drawMiniBalance(svg, data, xL, xR, tag) {
     var lo = 0;
     var hi = 20;
-    var yBeam = 72;
-    function xs(v) { return xL + 16 + ((v - lo) / (hi - lo)) * ((xR - xL) - 32); }
+    var yAxis = 78;
+    function xs(v) { return xL + 14 + ((v - lo) / (hi - lo)) * ((xR - xL) - 28); }
     var m = mean(data);
     var med = median(data);
     var mx = xs(m);
     var title = E("text", {
       x: (xL + xR) / 2, y: 14, fill: "#475569", "font-size": 11, "font-weight": 800, "text-anchor": "middle",
     });
-    title.textContent = tag === "after" ? "After genius joins" : "Class only";
+    title.textContent = tag === "after" ? "After +20" : "Before";
     svg.appendChild(title);
-    /* tick marks */
     [0, 5, 10, 15, 20].forEach(function (tv) {
       var tx = xs(tv);
-      svg.appendChild(E("line", { x1: tx, y1: 28, x2: tx, y2: 34, stroke: "#94a3b8", "stroke-width": 1 }));
-      var tl = E("text", { x: tx, y: 26, fill: MUTED, "font-size": 8, "text-anchor": "middle" });
+      svg.appendChild(E("line", { x1: tx, y1: yAxis - 4, x2: tx, y2: yAxis + 4, stroke: "#94a3b8", "stroke-width": 1 }));
+      var tl = E("text", { x: tx, y: yAxis + 16, fill: MUTED, "font-size": 8, "text-anchor": "middle" });
       tl.textContent = String(tv);
       svg.appendChild(tl);
     });
-    svg.appendChild(E("rect", {
-      x: xL + 10, y: yBeam - 4, width: (xR - xL) - 20, height: 8, rx: 3,
-      fill: "#fbbf24", stroke: "#d97706", "stroke-width": 1,
-    }));
-    svg.appendChild(E("circle", { cx: xL + 12, cy: yBeam, r: 4, fill: "#f59e0b" }));
-    svg.appendChild(E("circle", { cx: xR - 12, cy: yBeam, r: 4, fill: "#f59e0b" }));
-    svg.appendChild(E("polygon", {
-      points: (mx - 11) + "," + (yBeam + 6) + " " + (mx + 11) + "," + (yBeam + 6) + " " + mx + "," + (yBeam + 30),
-      fill: "#f59e0b", stroke: "#b45309", "stroke-width": 1,
-    }));
-    svg.appendChild(E("rect", {
-      x: mx - 16, y: yBeam + 28, width: 32, height: 5, rx: 2, fill: "#92400e",
+    svg.appendChild(E("line", {
+      x1: xL + 8, y1: yAxis, x2: xR - 8, y2: yAxis,
+      stroke: "#334155", "stroke-width": 2,
     }));
     data.forEach(function (v, i) {
       var cx = xs(v);
       var order = data.slice(0, i).filter(function (x) { return x === v; }).length;
-      var cy = yBeam - 14 - order * 11;
+      var cy = yAxis - 14 - order * 11;
       var isOut = v >= 20;
-      svg.appendChild(E("line", { x1: cx, y1: yBeam - 4, x2: cx, y2: cy + 5, stroke: "#64748b", "stroke-width": 1 }));
       svg.appendChild(E("circle", {
         cx: cx, cy: cy, r: isOut ? 8 : 6,
         fill: isOut ? "#f87171" : "#38bdf8",
@@ -426,31 +404,27 @@
         var ot = E("text", {
           x: cx, y: cy - 12, fill: "#dc2626", "font-size": 9, "font-weight": 800, "text-anchor": "middle",
         });
-        ot.textContent = "20!";
+        ot.textContent = "20";
         svg.appendChild(ot);
       }
     });
-    var meanT = E("text", {
-      x: mx, y: yBeam + 48, fill: "#b45309", "font-size": 10, "font-weight": 800, "text-anchor": "middle",
-    });
-    meanT.textContent = "balance " + fmt(m);
-    svg.appendChild(meanT);
     var medX = xs(med);
     svg.appendChild(E("line", {
-      x1: medX, y1: 36, x2: medX, y2: yBeam - 6,
+      x1: medX, y1: 28, x2: medX, y2: yAxis,
       stroke: "#34d399", "stroke-width": 1.5, "stroke-dasharray": "3 2",
     }));
     var medT = E("text", {
-      x: medX, y: 48, fill: "#0d9488", "font-size": 9, "font-weight": 700, "text-anchor": "middle",
+      x: medX, y: 26, fill: "#0d9488", "font-size": 9, "font-weight": 700, "text-anchor": "middle",
     });
-    medT.textContent = "middle " + fmt(med);
+    medT.textContent = "median " + fmt(med);
     svg.appendChild(medT);
+    drawFulcrum(svg, mx, yAxis, "mean " + fmt(m));
   }
 
   function drawMarker(svg, x, col, label, labelDx, topY, endY) {
     labelDx = labelDx || 0;
     topY = topY || 22;
-    endY = endY == null ? 82 : endY;
+    endY = endY == null ? 98 : endY;
     svg.appendChild(E("line", {
       x1: x, y1: topY + 4, x2: x, y2: endY,
       stroke: col, "stroke-width": 2, "stroke-dasharray": "4 3",
@@ -696,13 +670,13 @@
 
     var note = document.getElementById("avg-note");
     if (!avgData.length) {
-      note.textContent = "Click the yellow beam to hang a weight. The triangle under the 天秤 is the mean — where the beam balances.";
+      note.textContent = "Click the number line to drop dots. The triangle under the line is the mean.";
     } else if (Math.abs(mean(avgData) - median(avgData)) >= 2) {
-      note.textContent = "Mean and median have split — a heavy weight far out is tipping the 天秤 fulcrum (mean).";
+      note.textContent = "Mean and median have split — an extreme value is pulling the triangle (mean) away from the middle.";
     } else if (modeValue(avgData) != null) {
-      note.textContent = "Mode is the tallest stack of weights. Drag them together for a mode, or pull one far away to tip the mean.";
+      note.textContent = "Mode is the tallest stack. Drag dots together to build a mode, or pull one far away to tip the mean.";
     } else {
-      note.textContent = "No repeated value yet — mode is undefined. Stack two identical weights to create one.";
+      note.textContent = "No repeated value yet — mode is undefined. Stack two identical dots to create one.";
     }
     updateMissionHud();
   }
@@ -718,32 +692,76 @@
     return { mean: sum / wsum, sum: sum, wsum: wsum };
   }
 
+  function syncLastWeight() {
+    var sum3 = weightRows[0].weight + weightRows[1].weight + weightRows[2].weight;
+    if (sum3 > 100) {
+      /* trim the row that just grew — keep first three ≤ 100 */
+      var over = sum3 - 100;
+      for (var i = 2; i >= 0 && over > 0; i--) {
+        var cut = Math.min(weightRows[i].weight, over);
+        weightRows[i].weight -= cut;
+        over -= cut;
+      }
+      sum3 = weightRows[0].weight + weightRows[1].weight + weightRows[2].weight;
+    }
+    weightRows[3].weight = Math.max(0, 100 - sum3);
+  }
+
+  function renderWeightShareBar() {
+    var bar = document.getElementById("weight-share");
+    var labs = document.getElementById("weight-share-labels");
+    if (!bar || !labs) return;
+    bar.innerHTML = "";
+    labs.innerHTML = "";
+    var total = weightRows.reduce(function (s, r) { return s + r.weight; }, 0);
+    weightRows.forEach(function (row, i) {
+      if (row.weight <= 0) return;
+      var pct = total ? (row.weight / total) * 100 : 0;
+      var col = WEIGHT_COLORS[i % WEIGHT_COLORS.length];
+      var lab = document.createElement("span");
+      lab.style.flex = "0 0 " + pct + "%";
+      lab.style.color = col;
+      lab.textContent = pct >= 8 ? row.label : "";
+      lab.title = row.label + " " + row.weight + "%";
+      labs.appendChild(lab);
+      var seg = document.createElement("div");
+      seg.className = "seg";
+      seg.style.flex = "0 0 " + pct + "%";
+      seg.style.background = col;
+      seg.title = row.label + ": mark " + row.mark + ", " + row.weight + "%";
+      if (pct >= 12) seg.textContent = String(row.mark);
+      bar.appendChild(seg);
+    });
+  }
+
   function renderWeightedMean() {
     var host = document.getElementById("weight-blocks");
     if (!host) return;
+    syncLastWeight();
     host.innerHTML = "";
     var maxW = Math.max.apply(null, weightRows.map(function (r) { return r.weight; }).concat([1]));
-    weightRows.forEach(function (row) {
+    weightRows.forEach(function (row, idx) {
       var wrap = document.createElement("div");
       wrap.className = "weight-row";
       var name = document.createElement("span");
       name.className = "w-name";
       name.textContent = row.label;
+      name.style.color = WEIGHT_COLORS[idx % WEIGHT_COLORS.length];
       var barWrap = document.createElement("div");
       barWrap.className = "w-bar-wrap";
-      barWrap.title = "Importance " + row.weight + "%";
+      barWrap.title = row.weight + "%";
       var bar = document.createElement("div");
       bar.className = "w-bar";
       bar.style.width = Math.max(8, (row.weight / maxW) * 100) + "%";
-      bar.textContent = "score " + row.mark;
+      bar.style.background = WEIGHT_COLORS[idx % WEIGHT_COLORS.length];
+      bar.textContent = row.mark + "";
       barWrap.appendChild(bar);
       var markIn = document.createElement("input");
       markIn.type = "number";
       markIn.min = "0";
       markIn.max = "100";
       markIn.value = row.mark;
-      markIn.title = "Mark / score";
-      markIn.setAttribute("aria-label", row.label + " mark");
+      markIn.setAttribute("aria-label", row.label + " score");
       markIn.addEventListener("input", function () {
         row.mark = Math.max(0, Math.min(100, Math.round(+markIn.value) || 0));
         markIn.value = row.mark;
@@ -754,13 +772,17 @@
       wIn.min = "0";
       wIn.max = "100";
       wIn.value = row.weight;
-      wIn.title = "Importance %";
-      wIn.setAttribute("aria-label", row.label + " importance %");
-      wIn.addEventListener("input", function () {
-        row.weight = Math.max(0, Math.min(100, Math.round(+wIn.value) || 0));
-        wIn.value = row.weight;
-        renderWeightedMean();
-      });
+      wIn.setAttribute("aria-label", row.label + " weight %");
+      if (idx === 3) {
+        wIn.readOnly = true;
+        wIn.className = "w-locked";
+        wIn.title = "100% minus the other three";
+      } else {
+        wIn.addEventListener("input", function () {
+          row.weight = Math.max(0, Math.min(100, Math.round(+wIn.value) || 0));
+          renderWeightedMean();
+        });
+      }
       wrap.appendChild(name);
       wrap.appendChild(barWrap);
       wrap.appendChild(markIn);
@@ -776,82 +798,58 @@
     var note = document.getElementById("weight-formula");
     if (note) {
       var heaviest = weightRows.slice().sort(function (a, b) { return b.weight - a.weight; })[0];
-      note.textContent = heaviest
-        ? ("The fulcrum sits at the overall score. Right now “" + heaviest.label +
-          "” is the heaviest pan — tug its score or importance and watch the tip.")
-        : "Change scores and importance — the fulcrum is the overall score.";
+      note.textContent = heaviest && heaviest.weight
+        ? ("Overall score sits under the triangle. “" + heaviest.label +
+          "” currently has the largest share — change a score or weight and watch it move.")
+        : "Set the first three weights; the last fills the rest to 100%.";
     }
+    renderWeightShareBar();
     drawWeightBalance(wm);
   }
 
-  /** Music exam parts as hanging pans — size = importance, position = mark */
+  /** Scores on a number line; triangle at the overall mean touches the line */
   function drawWeightBalance(wm) {
     var svg = document.getElementById("weight-viz");
     if (!svg) return;
     while (svg.firstChild) svg.removeChild(svg.firstChild);
     var x0 = 36;
-    var x1 = 604;
-    var yBeam = 78;
+    var x1 = 684;
+    var yAxis = 72;
     var lo = 0;
     var hi = 100;
     function xs(v) { return x0 + ((v - lo) / (hi - lo)) * (x1 - x0); }
 
+    svg.appendChild(E("line", {
+      x1: x0, y1: yAxis, x2: x1, y2: yAxis,
+      stroke: "#334155", "stroke-width": 2.2,
+    }));
     [0, 25, 50, 75, 100].forEach(function (tv) {
       var tx = xs(tv);
-      svg.appendChild(E("line", { x1: tx, y1: 22, x2: tx, y2: 30, stroke: "#94a3b8", "stroke-width": 1 }));
-      var tl = E("text", { x: tx, y: 18, fill: MUTED, "font-size": 9, "text-anchor": "middle" });
+      svg.appendChild(E("line", { x1: tx, y1: yAxis - 5, x2: tx, y2: yAxis + 5, stroke: "#94a3b8", "stroke-width": 1 }));
+      var tl = E("text", { x: tx, y: yAxis + 18, fill: MUTED, "font-size": 10, "text-anchor": "middle" });
       tl.textContent = String(tv);
       svg.appendChild(tl);
     });
-    svg.appendChild(E("line", {
-      x1: x0, y1: 26, x2: x1, y2: 26, stroke: "#cbd5e1", "stroke-width": 1.2,
-    }));
 
-    var mx = wm.mean != null ? xs(wm.mean) : (x0 + x1) / 2;
-    svg.appendChild(E("rect", {
-      x: x0 - 4, y: yBeam - 5, width: (x1 - x0) + 8, height: 10, rx: 4,
-      fill: "#fbbf24", stroke: "#d97706", "stroke-width": 1.4,
-    }));
-    svg.appendChild(E("circle", { cx: x0 - 2, cy: yBeam, r: 5, fill: "#f59e0b", stroke: "#b45309", "stroke-width": 1 }));
-    svg.appendChild(E("circle", { cx: x1 + 2, cy: yBeam, r: 5, fill: "#f59e0b", stroke: "#b45309", "stroke-width": 1 }));
-    svg.appendChild(E("polygon", {
-      points: (mx - 14) + "," + (yBeam + 7) + " " + (mx + 14) + "," + (yBeam + 7) + " " + mx + "," + (yBeam + 34),
-      fill: "#f59e0b", stroke: "#b45309", "stroke-width": 1.3,
-    }));
-    svg.appendChild(E("rect", {
-      x: mx - 20, y: yBeam + 32, width: 40, height: 7, rx: 2, fill: "#92400e",
-    }));
-    var tip = E("text", {
-      x: mx, y: yBeam + 52, fill: "#92400e", "font-size": 11, "font-weight": 800, "text-anchor": "middle",
-    });
-    tip.textContent = wm.mean != null ? ("overall = " + fmt(wm.mean)) : "set some importance";
-    svg.appendChild(tip);
-
-    var colors = ["#38bdf8", "#a78bfa", "#34d399", "#fb7185"];
     weightRows.forEach(function (row, i) {
       if (!row.weight) return;
       var cx = xs(row.mark);
-      var r = 7 + Math.sqrt(row.weight) * 1.35;
-      var cy = yBeam - 12 - r;
-      svg.appendChild(E("line", {
-        x1: cx, y1: yBeam - 5, x2: cx, y2: cy + r - 1,
-        stroke: "#64748b", "stroke-width": 1.4,
-      }));
+      var r = 6 + Math.sqrt(row.weight) * 0.9;
+      var cy = yAxis - 14 - (i % 2) * 2;
       svg.appendChild(E("circle", {
         cx: cx, cy: cy, r: r,
-        fill: colors[i % colors.length], stroke: "#0f172a", "stroke-width": 1.1, opacity: "0.92",
+        fill: WEIGHT_COLORS[i % WEIGHT_COLORS.length], stroke: "#0f172a", "stroke-width": 1,
       }));
       var lab = E("text", {
-        x: cx, y: cy + 3.5, fill: "#0f172a", "font-size": 9, "font-weight": 800, "text-anchor": "middle",
+        x: cx, y: cy - r - 4, fill: WEIGHT_COLORS[i % WEIGHT_COLORS.length],
+        "font-size": 9, "font-weight": 700, "text-anchor": "middle",
       });
-      lab.textContent = row.weight + "%";
+      lab.textContent = row.label;
       svg.appendChild(lab);
-      var name = E("text", {
-        x: cx, y: cy - r - 4, fill: "#334155", "font-size": 9, "font-weight": 700, "text-anchor": "middle",
-      });
-      name.textContent = row.label;
-      svg.appendChild(name);
     });
+
+    var mx = wm.mean != null ? xs(wm.mean) : (x0 + x1) / 2;
+    drawFulcrum(svg, mx, yAxis, wm.mean != null ? ("overall " + fmt(wm.mean)) : null);
   }
 
   function renderScenarios() {
@@ -997,7 +995,7 @@
     while (svg.firstChild) svg.removeChild(svg.firstChild);
     var all = before.concat(after);
     if (!all.length) {
-      var empty = E("text", { x: 320, y: 80, fill: MUTED, "font-size": 14, "text-anchor": "middle" });
+      var empty = E("text", { x: 360, y: 72, fill: MUTED, "font-size": 14, "text-anchor": "middle" });
       empty.textContent = "Pick a sample set above";
       svg.appendChild(empty);
       return;
@@ -1009,26 +1007,25 @@
     hi = Math.ceil(hi + pad);
     if (hi <= lo) { lo -= 1; hi += 1; }
 
-    drawTransformHalf(svg, before, so, 16, 300, lo, hi, "Before");
-    drawTransformHalf(svg, after, sn, 340, 624, lo, hi, "After");
-    /* motion arrow between panels */
+    drawTransformHalf(svg, before, so, 16, 340, lo, hi, "Before");
+    drawTransformHalf(svg, after, sn, 380, 704, lo, hi, "After");
     svg.appendChild(E("line", {
-      x1: 308, y1: 78, x2: 332, y2: 78,
+      x1: 348, y1: 72, x2: 368, y2: 72,
       stroke: "#0284c7", "stroke-width": 2.5,
     }));
     svg.appendChild(E("polygon", {
-      points: "332,72 344,78 332,84", fill: "#0284c7",
+      points: "368,66 380,72 368,78", fill: "#0284c7",
     }));
   }
 
   function drawTransformHalf(svg, data, stats, xL, xR, lo, hi, title) {
-    var y = 88;
+    var y = 78;
     function xs(v) {
       if (hi === lo) return (xL + xR) / 2;
       return xL + 12 + ((v - lo) / (hi - lo)) * ((xR - xL) - 24);
     }
     var ttl = E("text", {
-      x: (xL + xR) / 2, y: 16, fill: "#475569", "font-size": 11, "font-weight": 800, "text-anchor": "middle",
+      x: (xL + xR) / 2, y: 14, fill: "#475569", "font-size": 11, "font-weight": 800, "text-anchor": "middle",
     });
     ttl.textContent = title;
     svg.appendChild(ttl);
@@ -1058,26 +1055,19 @@
         fill: "#38bdf8", stroke: "#0284c7", "stroke-width": 1.2,
       }));
     });
-    if (stats.mean != null) {
-      var mx = xs(stats.mean);
-      svg.appendChild(E("line", {
-        x1: mx, y1: 28, x2: mx, y2: y - 2,
-        stroke: MEAN, "stroke-width": 1.8, "stroke-dasharray": "3 2",
-      }));
-      var mt = E("text", { x: mx, y: 26, fill: "#b45309", "font-size": 9, "font-weight": 800, "text-anchor": "middle" });
-      mt.textContent = "mean " + fmt(stats.mean);
-      svg.appendChild(mt);
-      svg.appendChild(E("polygon", {
-        points: (mx - 7) + "," + (y + 22) + " " + (mx + 7) + "," + (y + 22) + " " + mx + "," + (y + 8),
-        fill: "#f59e0b", stroke: "#b45309", "stroke-width": 0.8,
-      }));
-    }
     if (stats.median != null) {
       var mdx = xs(stats.median);
       svg.appendChild(E("line", {
-        x1: mdx, y1: 40, x2: mdx, y2: y - 2,
+        x1: mdx, y1: 32, x2: mdx, y2: y,
         stroke: MEDIAN, "stroke-width": 1.5, "stroke-dasharray": "3 2",
       }));
+    }
+    if (stats.mean != null) {
+      var mx = xs(stats.mean);
+      var mt = E("text", { x: mx, y: 26, fill: "#b45309", "font-size": 9, "font-weight": 800, "text-anchor": "middle" });
+      mt.textContent = "mean " + fmt(stats.mean);
+      svg.appendChild(mt);
+      drawFulcrum(svg, mx, y, null);
     }
   }
 

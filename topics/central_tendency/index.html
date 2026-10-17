@@ -18,7 +18,19 @@
       background:linear-gradient(180deg,#f8fafc,#f1f5f9);  }
     h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
     .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
-    .jm-page { width: min(920px, 100%); }
+    .jm-page,
+    main.page,
+    main {
+      width: min(1120px, 100%) !important;
+      max-width: min(1120px, 100%) !important;
+      box-sizing: border-box;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+    #panel-tools .block {
+      padding-left: 18px;
+      padding-right: 18px;
+    }
     #comics-subnav { margin-bottom: 14px; }
     .comic-figure {
       margin: 0;
@@ -34,36 +46,39 @@
       vertical-align: middle;
     }
     .note-box {
-      margin-top: 12px; padding: 12px 14px; border-radius: 12px;
+      margin-top: 16px; padding: 12px 14px; border-radius: 12px;
       border: 1px solid rgba(2,132,199,.25); background: rgba(2,132,199,.06);
       font-size: 14px; line-height: 1.55; color: var(--text);
     }
-    .split-hint { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+    .split-hint { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
     .quiz-question {
-      margin: 10px 0 14px; font-size: 16px; font-weight: 600; line-height: 1.5; color: var(--text);
+      margin: 16px 0 14px; font-size: 16px; font-weight: 600; line-height: 1.5; color: var(--text);
     }
+    .section-gap { margin-top: 28px; }
     .numline-svg {
-      width: 100%; max-width: 640px; height: 190px; display: block; margin: 12px auto 0;
+      width: 100%; max-width: none; height: auto; aspect-ratio: 720 / 170;
+      display: block; margin: 16px 0 0;
       border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
       cursor: crosshair; touch-action: none; user-select: none;
     }
     .viz-svg {
-      width: 100%; max-width: 640px; height: 160px; display: block; margin: 10px auto 0;
+      width: 100%; max-width: none; height: auto; aspect-ratio: 720 / 150;
+      display: block; margin: 14px 0 0;
       border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
     }
     .story-card {
-      margin-top: 8px; padding: 14px 16px; border-radius: 14px;
+      margin-top: 12px; padding: 18px 16px; border-radius: 14px;
       border: 1px solid var(--line); background: #fff;
     }
     .story-card .story-lead { margin: 0 0 10px; font-size: 15px; line-height: 1.55; color: var(--text); }
     .story-card .story-meta { margin: 0 0 8px; font-size: 13px; color: var(--muted); }
-    .weight-blocks { display: grid; gap: 8px; margin: 12px 0; }
+    .weight-blocks { display: grid; gap: 12px; margin: 14px 0 18px; }
     .weight-row {
-      display: grid; grid-template-columns: 100px 1fr 54px 54px; gap: 8px; align-items: center;
+      display: grid; grid-template-columns: 110px 1fr 64px 64px; gap: 10px; align-items: center;
     }
     .weight-col-labels {
-      display: grid; grid-template-columns: 100px 1fr 54px 54px; gap: 8px;
-      font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px;
+      display: grid; grid-template-columns: 110px 1fr 64px 64px; gap: 10px;
+      font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;
     }
     .weight-row .w-name { font-size: 13px; font-weight: 650; }
     .weight-row .w-bar-wrap {
@@ -78,6 +93,27 @@
       width: 100%; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line);
       font: inherit; font-weight: 700; text-align: center;
     }
+    .weight-row input.w-locked {
+      background: #f1f5f9; color: #475569; border-style: dashed; cursor: default;
+    }
+    .share-wrap { margin: 8px 0 6px; }
+    .share-labels {
+      display: flex; width: 100%; margin-bottom: 6px; min-height: 1.2em;
+      font-size: 12px; font-weight: 700;
+    }
+    .share-labels span {
+      text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      padding: 0 2px; box-sizing: border-box;
+    }
+    .share-bar {
+      display: flex; width: 100%; height: 36px; border-radius: 10px; overflow: hidden;
+      border: 1px solid var(--line); background: #e2e8f0;
+    }
+    .share-bar .seg {
+      display: flex; align-items: center; justify-content: center;
+      color: #0f172a; font-size: 13px; font-weight: 800; min-width: 0;
+      transition: flex-basis .2s ease;
+    }
     .plain-stat {
       display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; justify-content: center;
     }
@@ -88,7 +124,7 @@
     .plain-stat .bubble .big { font-size: 26px; font-weight: 800; color: #0284c7; }
     .plain-stat .bubble .small { font-size: 12px; color: var(--muted); margin-top: 2px; }
     .twin-label {
-      display: flex; justify-content: space-between; max-width: 640px; margin: 4px auto 0;
+      display: flex; justify-content: space-between; width: 100%; margin: 8px 0 0;
       font-size: 12px; font-weight: 700; color: var(--muted);
     }
     #panel-tools .lab { display: none; }
@@ -96,7 +132,7 @@
     .numline-svg .dot-hit { cursor: grab; }
     .numline-svg.dragging, .numline-svg.dragging .dot-hit { cursor: grabbing; }
     .mission-bar {
-      display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; align-items: center;
+      display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 8px; align-items: center;
     }
     .mission-bar .chip-mission {
       border: 1px solid rgba(2,132,199,.35); background: #fff; color: #0369a1;
@@ -108,7 +144,7 @@
       background: #0284c7; color: #fff; border-color: #0284c7;
     }
     .mission-hud {
-      display: none; margin-top: 8px; padding: 12px 14px; border-radius: 12px;
+      display: none; margin: 12px 0 4px; padding: 12px 14px; border-radius: 12px;
       border: 1px solid rgba(217,119,6,.35); background: rgba(251,191,36,.12);
       font-size: 14px; line-height: 1.5;
     }
@@ -120,12 +156,13 @@
     }
     .mission-hud.ok .mission-title { color: #15803d; }
     .interact-hint {
-      margin: 8px 0 0; font-size: 13px; color: var(--muted); line-height: 1.45;
+      margin: 12px 0 4px; font-size: 13px; color: var(--muted); line-height: 1.45;
     }
     .balance-legend {
-      display: flex; flex-wrap: wrap; gap: 10px 14px; justify-content: center;
-      margin: 6px 0 0; font-size: 12px; font-weight: 650; color: var(--muted);
+      display: flex; flex-wrap: wrap; gap: 12px 18px; justify-content: center;
+      margin: 12px 0 4px; font-size: 12px; font-weight: 650; color: var(--muted);
     }
+    .stat-grid { margin-top: 16px; }
     .balance-legend span::before {
       content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%;
       margin-right: 5px; vertical-align: -1px;
@@ -243,10 +280,10 @@
           </div>
           <div class="chip-list" id="avg-chips"></div>
           <p class="interact-hint">Click empty space on the line to drop a point · drag a blue dot to move · double-click a dot to remove</p>
-          <svg class="numline-svg" id="avg-numline" viewBox="0 0 640 190" aria-label="Balance scale number line — click to add, drag to move"></svg>
+          <svg class="numline-svg" id="avg-numline" viewBox="0 0 720 170" aria-label="Number line with mean as balance point — click to add, drag to move"></svg>
           <div class="balance-legend">
-            <span class="lg-dot">weights (data)</span>
-            <span class="lg-mean">mean = fulcrum</span>
+            <span class="lg-dot">data</span>
+            <span class="lg-mean">mean</span>
             <span class="lg-median">median</span>
             <span class="lg-mode">mode</span>
           </div>
@@ -256,7 +293,7 @@
             <div class="stat-card"><div class="val" id="avg-mode">—</div><div class="lbl">Mode</div></div>
             <div class="stat-card"><div class="val" id="avg-n">0</div><div class="lbl">How many</div></div>
           </div>
-          <div class="note-box" id="avg-note">The yellow beam is a 天秤 (balance). The triangle under it is where the beam balances — that point is the mean.</div>
+          <div class="note-box" id="avg-note">The triangle under the number line marks the mean — the balance point of the data.</div>
 
           <div class="section-gap" id="avg-bar-section" style="display:none">
             <p class="split-hint">How often each score appears (0–10)</p>
@@ -265,22 +302,26 @@
 
           <div class="section-gap">
             <h2 style="font-size:17px;margin:0 0 8px">Music exam — which part counts more?</h2>
-            <p class="hint">Each bar’s <strong>length</strong> = how important that part is. The mark is the score. Bigger weight pulls the overall score more — like a heavier pan on a 天秤.</p>
-            <div class="weight-col-labels"><span>Part</span><span>How important (bar) + score on bar</span><span>Score</span><span>%</span></div>
+            <p class="hint">Edit the first three weights; the last one fills whatever is left to 100%. The coloured strip shows each part’s share of the overall score.</p>
+            <div class="weight-col-labels"><span>Part</span><span>Relative size of weight</span><span>Score</span><span>%</span></div>
             <div class="weight-blocks" id="weight-blocks"></div>
-            <svg class="viz-svg" id="weight-viz" viewBox="0 0 640 160" aria-label="Weighted scores as hanging weights on a balance"></svg>
+            <div class="share-wrap">
+              <div class="share-labels" id="weight-share-labels"></div>
+              <div class="share-bar" id="weight-share" role="img" aria-label="Share of each exam part"></div>
+            </div>
+            <svg class="viz-svg" id="weight-viz" viewBox="0 0 720 140" aria-label="Scores on a number line with overall mean as balance point"></svg>
             <div class="plain-stat">
               <div class="bubble"><div class="big" id="weight-mean">—</div><div class="small">Overall score</div></div>
-              <div class="bubble"><div class="big" id="weight-wsum">—</div><div class="small">Total importance %</div></div>
+              <div class="bubble"><div class="big" id="weight-wsum">—</div><div class="small">Total weight %</div></div>
             </div>
-            <p class="note-box" id="weight-formula">Drag the numbers — watch the overall score slide toward the heavier parts.</p>
+            <p class="note-box" id="weight-formula">Bigger share pulls the overall score toward that part’s mark.</p>
           </div>
 
           <div class="section-gap story-card task-box">
             <p class="story-lead"><strong>Story:</strong> Four classmates scored <strong>2, 4, 6, 8</strong> in a mini-quiz. A transfer student then scores <strong>20</strong> — far above everyone else.</p>
             <p class="story-meta">Watch the balance before and after the “genius” joins.</p>
             <div class="twin-label"><span>Before (2, 4, 6, 8)</span><span>After (+20)</span></div>
-            <svg class="viz-svg" id="outlier-viz" viewBox="0 0 640 160" aria-label="Before and after outlier on twin balance scales"></svg>
+            <svg class="viz-svg" id="outlier-viz" viewBox="0 0 720 150" aria-label="Before and after outlier on twin number lines"></svg>
             <p class="quiz-question">Which average jumped farther when the score 20 arrived?</p>
             <div class="count-row">
               <button class="btn" type="button" data-oans="mean">Mean (balance tip)</button>
@@ -326,7 +367,7 @@
             </div>
           </div>
           <div class="twin-label"><span>Before</span><span>After</span></div>
-          <svg class="viz-svg" id="transform-viz" viewBox="0 0 640 160" aria-label="Before and after transform on twin number lines"></svg>
+          <svg class="viz-svg" id="transform-viz" viewBox="0 0 720 150" aria-label="Before and after transform on twin number lines"></svg>
           <div class="compare-grid">
             <div class="compare-col">
               <h3>Before</h3>
@@ -382,7 +423,7 @@
   <script defer src="../../shared/section-quiz.js?v=20260928-sections"></script>
   <script defer src="central-tendency-quiz.js?v=20260928-sections"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
-  <script defer src="central-tendency-tools.js?v=20261017c"></script>
+  <script defer src="central-tendency-tools.js?v=20261017d"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="central-tendency-comics.js?v=20260830-fu"></script>
   <script>
