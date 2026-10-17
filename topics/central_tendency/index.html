@@ -43,10 +43,56 @@
       margin: 10px 0 14px; font-size: 16px; font-weight: 600; line-height: 1.5; color: var(--text);
     }
     .numline-svg {
-      width: 100%; max-width: 640px; height: 148px; display: block; margin: 12px auto 0;
+      width: 100%; max-width: 640px; height: 190px; display: block; margin: 12px auto 0;
       border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
       cursor: crosshair; touch-action: none; user-select: none;
     }
+    .viz-svg {
+      width: 100%; max-width: 640px; height: 160px; display: block; margin: 10px auto 0;
+      border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
+    }
+    .story-card {
+      margin-top: 8px; padding: 14px 16px; border-radius: 14px;
+      border: 1px solid var(--line); background: #fff;
+    }
+    .story-card .story-lead { margin: 0 0 10px; font-size: 15px; line-height: 1.55; color: var(--text); }
+    .story-card .story-meta { margin: 0 0 8px; font-size: 13px; color: var(--muted); }
+    .weight-blocks { display: grid; gap: 8px; margin: 12px 0; }
+    .weight-row {
+      display: grid; grid-template-columns: 100px 1fr 54px 54px; gap: 8px; align-items: center;
+    }
+    .weight-col-labels {
+      display: grid; grid-template-columns: 100px 1fr 54px 54px; gap: 8px;
+      font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px;
+    }
+    .weight-row .w-name { font-size: 13px; font-weight: 650; }
+    .weight-row .w-bar-wrap {
+      height: 28px; border-radius: 8px; background: #e2e8f0; overflow: hidden; position: relative;
+    }
+    .weight-row .w-bar {
+      height: 100%; border-radius: 8px; background: linear-gradient(90deg,#38bdf8,#0284c7);
+      display: flex; align-items: center; padding: 0 8px; color: #fff; font-size: 12px; font-weight: 700;
+      min-width: 36px; transition: width .25s ease;
+    }
+    .weight-row input {
+      width: 100%; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line);
+      font: inherit; font-weight: 700; text-align: center;
+    }
+    .plain-stat {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; justify-content: center;
+    }
+    .plain-stat .bubble {
+      min-width: 120px; padding: 12px 14px; border-radius: 14px; text-align: center;
+      border: 1px solid var(--line); background: var(--surface-2);
+    }
+    .plain-stat .bubble .big { font-size: 26px; font-weight: 800; color: #0284c7; }
+    .plain-stat .bubble .small { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .twin-label {
+      display: flex; justify-content: space-between; max-width: 640px; margin: 4px auto 0;
+      font-size: 12px; font-weight: 700; color: var(--muted);
+    }
+    #panel-tools .lab { display: none; }
+    #panel-tools .lab.active { display: block; }
     .numline-svg .dot-hit { cursor: grab; }
     .numline-svg.dragging, .numline-svg.dragging .dot-hit { cursor: grabbing; }
     .mission-bar {
@@ -197,10 +243,10 @@
           </div>
           <div class="chip-list" id="avg-chips"></div>
           <p class="interact-hint">Click empty space on the line to drop a point · drag a blue dot to move · double-click a dot to remove</p>
-          <svg class="numline-svg" id="avg-numline" viewBox="0 0 640 148" aria-label="Interactive number line — click to add, drag to move"></svg>
+          <svg class="numline-svg" id="avg-numline" viewBox="0 0 640 190" aria-label="Balance scale number line — click to add, drag to move"></svg>
           <div class="balance-legend">
-            <span class="lg-dot">data</span>
-            <span class="lg-mean">mean (balance point)</span>
+            <span class="lg-dot">weights (data)</span>
+            <span class="lg-mean">mean = fulcrum</span>
             <span class="lg-median">median</span>
             <span class="lg-mode">mode</span>
           </div>
@@ -208,33 +254,37 @@
             <div class="stat-card"><div class="val" id="avg-mean">—</div><div class="lbl">Mean</div></div>
             <div class="stat-card"><div class="val" id="avg-median">—</div><div class="lbl">Median</div></div>
             <div class="stat-card"><div class="val" id="avg-mode">—</div><div class="lbl">Mode</div></div>
-            <div class="stat-card"><div class="val" id="avg-n">0</div><div class="lbl">Count n</div></div>
+            <div class="stat-card"><div class="val" id="avg-n">0</div><div class="lbl">How many</div></div>
           </div>
-          <p class="formula" id="avg-formula">\(\bar{x}\) = Mean (balance), \(M_d\) = Median, \(M_o\) = Mode</p>
-          <div class="note-box" id="avg-note">The yellow triangle is the balance point of all dots — that is the mean. Drag one extreme value and watch it tip.</div>
+          <div class="note-box" id="avg-note">The yellow beam is a 天秤 (balance). The triangle under it is where the beam balances — that point is the mean.</div>
 
           <div class="section-gap" id="avg-bar-section" style="display:none">
-            <p class="split-hint">Frequency bar chart (values 0–10 only)</p>
+            <p class="split-hint">How often each score appears (0–10)</p>
             <svg class="bar-chart-fixed" id="avg-bar-chart" viewBox="0 0 640 140" aria-label="Frequency bar chart from current data set"></svg>
           </div>
 
           <div class="section-gap">
-            <h2 style="font-size:17px;margin:0 0 8px">Weighted mean</h2>
-            <p class="hint">Edit marks and weights (%). Weighted mean = Σ(mark × weight) ÷ Σweights.</p>
-            <table class="freq-table" id="weight-table" aria-label="Weighted mean table"></table>
-            <div class="stat-grid">
-              <div class="stat-card"><div class="val" id="weight-mean">—</div><div class="lbl">Weighted \(\bar{x}\)</div></div>
-              <div class="stat-card"><div class="val" id="weight-sum">—</div><div class="lbl">Σ(weight × mark)</div></div>
-              <div class="stat-card"><div class="val" id="weight-wsum">—</div><div class="lbl">Σ weights</div></div>
+            <h2 style="font-size:17px;margin:0 0 8px">Music exam — which part counts more?</h2>
+            <p class="hint">Each bar’s <strong>length</strong> = how important that part is. The mark is the score. Bigger weight pulls the overall score more — like a heavier pan on a 天秤.</p>
+            <div class="weight-col-labels"><span>Part</span><span>How important (bar) + score on bar</span><span>Score</span><span>%</span></div>
+            <div class="weight-blocks" id="weight-blocks"></div>
+            <svg class="viz-svg" id="weight-viz" viewBox="0 0 640 160" aria-label="Weighted scores as hanging weights on a balance"></svg>
+            <div class="plain-stat">
+              <div class="bubble"><div class="big" id="weight-mean">—</div><div class="small">Overall score</div></div>
+              <div class="bubble"><div class="big" id="weight-wsum">—</div><div class="small">Total importance %</div></div>
             </div>
-            <p class="formula" id="weight-formula">Weighted mean = (45%×59 + 25%×47 + …) ÷ 100%</p>
+            <p class="note-box" id="weight-formula">Drag the numbers — watch the overall score slide toward the heavier parts.</p>
           </div>
 
-          <div class="section-gap task-box">
-            <p class="quiz-question">After adding an outlier to 2, 4, 6, 8, which average moved further from the original mean?</p>
+          <div class="section-gap story-card task-box">
+            <p class="story-lead"><strong>Story:</strong> Four classmates scored <strong>2, 4, 6, 8</strong> in a mini-quiz. A transfer student then scores <strong>20</strong> — far above everyone else.</p>
+            <p class="story-meta">Watch the balance before and after the “genius” joins.</p>
+            <div class="twin-label"><span>Before (2, 4, 6, 8)</span><span>After (+20)</span></div>
+            <svg class="viz-svg" id="outlier-viz" viewBox="0 0 640 160" aria-label="Before and after outlier on twin balance scales"></svg>
+            <p class="quiz-question">Which average jumped farther when the score 20 arrived?</p>
             <div class="count-row">
-              <button class="btn" type="button" data-oans="mean">Mean</button>
-              <button class="btn" type="button" data-oans="median">Median</button>
+              <button class="btn" type="button" data-oans="mean">Mean (balance tip)</button>
+              <button class="btn" type="button" data-oans="median">Median (middle score)</button>
             </div>
             <p class="feedback" id="outlier-fb"></p>
           </div>
@@ -253,44 +303,45 @@
       </div>
 
       <div class="lab" id="lab-transform">
-        <p class="part-title">Lab 2 · + / × constant</p>
+        <p class="part-title">Lab 2 · Shift &amp; stretch</p>
         <section class="block">
-          <h2>Effect on \(\bar{x}\), \(M_d\) &amp; \(M_o\)</h2>
-          <p class="hint">Move the sliders to add a constant or multiply every value. Data are shown in ascending order.</p>
+          <h2>Everyone moves together</h2>
+          <p class="hint">Imagine every student gets the same bonus (+), or every score is scaled (×). Watch the dots slide or stretch — the three averages move the same way.</p>
           <div class="count-row">
-            <button class="btn" type="button" data-tpreset="custom">Simple sample</button>
-            <button class="btn" type="button" data-tpreset="notes">Small sample</button>
-            <button class="btn" type="button" data-tpreset="exam">Exam sample</button>
+            <button class="btn" type="button" data-tpreset="custom">Tiny set</button>
+            <button class="btn" type="button" data-tpreset="notes">Class scores</button>
+            <button class="btn" type="button" data-tpreset="exam">Exam scores</button>
           </div>
           <div class="chip-list" id="transform-chips"></div>
           <div class="transform-sliders">
             <div class="slider-row">
-              <label for="transform-add">+c to each datum</label>
+              <label for="transform-add">Give everyone a bonus</label>
               <input id="transform-add" type="range" min="-15" max="15" step="1" value="0">
               <span class="val" id="transform-add-val">0</span>
             </div>
             <div class="slider-row">
-              <label for="transform-mul">×k each datum</label>
+              <label for="transform-mul">Stretch every score by</label>
               <input id="transform-mul" type="range" min="0.5" max="3" step="0.1" value="1">
-              <span class="val" id="transform-mul-val">1</span>
+              <span class="val" id="transform-mul-val">×1</span>
             </div>
           </div>
+          <div class="twin-label"><span>Before</span><span>After</span></div>
+          <svg class="viz-svg" id="transform-viz" viewBox="0 0 640 160" aria-label="Before and after transform on twin number lines"></svg>
           <div class="compare-grid">
             <div class="compare-col">
-              <h3>Original</h3>
+              <h3>Before</h3>
               <div class="stat-row" id="transform-orig"></div>
             </div>
             <div class="compare-col">
-              <h3>After ×k then +c</h3>
+              <h3>After</h3>
               <div class="stat-row" id="transform-new"></div>
             </div>
           </div>
           <div class="rule-box">
-            <div class="rule-card"><strong>+c to every datum</strong>new \(\bar{x}\) = \(\bar{x}\) + c<br>new \(M_d\) = \(M_d\) + c<br>new \(M_o\) = \(M_o\) + c</div>
-            <div class="rule-card"><strong>×k every datum</strong>new \(\bar{x}\) = \(\bar{x}\) × k<br>new \(M_d\) = \(M_d\) × k<br>new \(M_o\) = \(M_o\) × k</div>
-            <div class="rule-card"><strong>Both (×k then +c)</strong>Each average follows the same transform.</div>
+            <div class="rule-card"><strong>Same bonus for all</strong>Every score slides by that bonus — so mean, median and mode each slide by the same amount.</div>
+            <div class="rule-card"><strong>Stretch every score</strong>Gaps between scores grow or shrink together — so mean, median and mode stretch by the same factor.</div>
           </div>
-          <div class="note-box" id="transform-note">Move the sliders — +c shifts all three averages by c; ×k scales all three by k.</div>
+          <div class="note-box" id="transform-note">Move the sliders and watch both number lines — the whole cloud of dots moves together.</div>
         </section>
       </div>
     </section>
@@ -331,14 +382,15 @@
   <script defer src="../../shared/section-quiz.js?v=20260928-sections"></script>
   <script defer src="central-tendency-quiz.js?v=20260928-sections"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
-  <script defer src="central-tendency-tools.js?v=20261017a"></script>
+  <script defer src="central-tendency-tools.js?v=20261017c"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="central-tendency-comics.js?v=20260830-fu"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
-      if (window.renderMathInElement) {
-        window.renderMathInElement(document.getElementById("avg-formula"), {
+      var avgFormula = document.getElementById("avg-formula");
+      if (window.renderMathInElement && avgFormula) {
+        window.renderMathInElement(avgFormula, {
           delimiters: [{ left: "\\(", right: "\\)", display: false }],
           throwOnError: false,
         });
