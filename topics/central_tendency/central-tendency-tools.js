@@ -2,20 +2,73 @@
   "use strict";
 
   var NS = "http://www.w3.org/2000/svg";
-  var INK = "#1e2a32";
-  var MEAN = "#d97706";
-  var MEDIAN = "#0d9488";
-  var MODE = "#db2777";
-  var MUTED = "#5a6b74";
+  var INK = "#e2e8f0";
+  var MEAN = "#fbbf24";
+  var MEDIAN = "#34d399";
+  var MODE = "#f472b6";
+  var MUTED = "#64748b";
   var INPUT_MIN = 0;
-  var INPUT_MAX = 999;
+  var INPUT_MAX = 20; /* keep the playground readable on one line */
   var BAR_MAX_H = 100;
   var DEFAULT_DATA = [0, 1, 3, 4, 5, 7, 7, 8, 10];
+  var LINE_LO = 0;
+  var LINE_HI = 12;
 
   var LABS = [
     { id: "averages", label: "Mean · Median · Mode" },
     { id: "transform", label: "+ / × constant" },
   ];
+
+  var MISSIONS = {
+    sandbox: {
+      title: "Sandbox",
+      goal: "Freestyle — drop and drag dots. Watch the yellow balance point (mean) tip as you move mass.",
+      start: function () { avgData = DEFAULT_DATA.slice(); },
+      check: function () { return null; },
+    },
+    mean6: {
+      title: "Mission: mean = 6",
+      goal: "Arrange any data so the mean is exactly 6 (median can be anything).",
+      start: function () { avgData = [4, 5, 8]; },
+      check: function () {
+        var m = mean(avgData);
+        if (m == null) return false;
+        return Math.abs(m - 6) < 0.051;
+      },
+    },
+    split: {
+      title: "Mission: split the averages",
+      goal: "Make |mean − median| ≥ 2 so students see how an extreme value pulls the mean.",
+      start: function () { avgData = [3, 4, 5, 5, 6]; },
+      check: function () {
+        if (avgData.length < 3) return false;
+        return Math.abs(mean(avgData) - median(avgData)) >= 2;
+      },
+    },
+    mode3: {
+      title: "Mission: mode = 3",
+      goal: "Make 3 the unique mode (it must appear more often than every other value).",
+      start: function () { avgData = [1, 2, 4, 5]; },
+      check: function () {
+        var mo = modeValue(avgData);
+        return mo === 3;
+      },
+    },
+    outlier: {
+      title: "Mission: survive an outlier",
+      goal: "Keep the median at 5 while the mean is at least 8 — one large value is enough.",
+      start: function () { avgData = [3, 4, 5, 6, 7]; },
+      check: function () {
+        if (avgData.length < 3) return false;
+        return Math.abs(median(avgData) - 5) < 0.051 && mean(avgData) >= 8;
+      },
+    },
+  };
+
+  var activeMission = "sandbox";
+  var dragState = null;
+  var suppressClick = false;
+  var numlineBound = null;
 
   var WEIGHT_ROWS = [
     { label: "Song", mark: 59, weight: 45 },
@@ -153,37 +206,50 @@
   }
 
 
+  function lineRange(data) {
+    var hi = LINE_HI;
+    var lo = LINE_LO;
+    if (data.length) {
+      hi = Math.max(LINE_HI, Math.max.apply(null, data) + 1);
+      lo = Math.min(LINE_LO, Math.min.apply(null, data));
+    }
+    return { lo: lo, hi: hi };
+  }
+
   function drawNumline(svgId, data, opts) {
     opts = opts || {};
     var svg = document.getElementById(svgId);
     if (!svg) return;
     while (svg.firstChild) svg.removeChild(svg.firstChild);
-    if (!data.length) {
-      var empty = E("text", {
-        x: 320, y: 55, fill: MUTED, "font-size": 14, "text-anchor": "middle",
-      });
-      empty.textContent = "Add data to see the number line";
-      svg.appendChild(empty);
-      return;
-    }
 
-    var dataMax = Math.max.apply(null, data);
-    var dataMin = Math.min.apply(null, data);
-    var lo = Math.min(0, dataMin);
-    var hi = dataMax;
-    if (lo < 0) lo -= Math.max(2, Math.abs(lo) * 0.05);
+    var range = lineRange(data);
+    var lo = range.lo;
+    var hi = range.hi;
     var x0 = 36;
     var x1 = 604;
-    var yAxis = 72;
+    var yAxis = 78;
 
     function xScale(v) {
       if (hi === lo) return (x0 + x1) / 2;
       return x0 + ((v - lo) / (hi - lo)) * (x1 - x0);
     }
+    function xToValue(px) {
+      if (hi === lo) return lo;
+      var t = (px - x0) / (x1 - x0);
+      return lo + t * (hi - lo);
+    }
+
+    numlineBound = { svg: svg, x0: x0, x1: x1, lo: lo, hi: hi, xScale: xScale, xToValue: xToValue };
+
+    /* soft hit pad for clicking empty track */
+    svg.appendChild(E("rect", {
+      x: x0 - 8, y: yAxis - 36, width: (x1 - x0) + 16, height: 72,
+      fill: "transparent", class: "track-hit",
+    }));
 
     svg.appendChild(E("line", {
       x1: x0, y1: yAxis, x2: x1, y2: yAxis,
-      stroke: "#8a9aa3", "stroke-width": 2,
+      stroke: "#334155", "stroke-width": 2.5,
     }));
 
     var ticks = {};
@@ -191,18 +257,17 @@
     var t0 = Math.ceil(lo / tickStep) * tickStep;
     for (var t = t0; t <= hi + 0.001; t += tickStep) ticks[fmt(t)] = t;
     ticks["0"] = 0;
-    ticks[String(dataMax)] = dataMax;
 
     Object.keys(ticks).map(function (k) { return ticks[k]; }).sort(function (a, b) { return a - b; })
       .forEach(function (tv) {
         var tx = xScale(tv);
         svg.appendChild(E("line", {
-          x1: tx, y1: yAxis - 4, x2: tx, y2: yAxis + 4,
-          stroke: tv === 0 ? "#8a9aa3" : "#5a6b74",
+          x1: tx, y1: yAxis - 5, x2: tx, y2: yAxis + 5,
+          stroke: tv === 0 ? "#94a3b8" : "#475569",
           "stroke-width": tv === 0 ? 1.5 : 1,
         }));
         var lbl = E("text", {
-          x: tx, y: yAxis + 16, fill: tv === 0 ? INK : MUTED,
+          x: tx, y: yAxis + 18, fill: tv === 0 ? "#0f172a" : MUTED,
           "font-size": tv === 0 ? 11 : 10, "font-weight": tv === 0 ? 700 : 400,
           "text-anchor": "middle",
         });
@@ -210,24 +275,37 @@
         svg.appendChild(lbl);
       });
 
-    var groups = {};
-    data.forEach(function (v) {
+    if (!data.length) {
+      var empty = E("text", {
+        x: 320, y: 42, fill: MUTED, "font-size": 14, "text-anchor": "middle",
+      });
+      empty.textContent = "Click the line to drop your first value";
+      svg.appendChild(empty);
+      return;
+    }
+
+    /* stack dots per value; keep data-index for drag/remove */
+    var stack = {};
+    data.forEach(function (v, idx) {
       var key = String(v);
-      groups[key] = (groups[key] || 0) + 1;
+      if (!stack[key]) stack[key] = [];
+      stack[key].push(idx);
     });
 
-    Object.keys(groups).forEach(function (key) {
+    Object.keys(stack).forEach(function (key) {
       var v = +key;
-      var count = groups[key];
+      var idxs = stack[key];
       var cx = xScale(v);
-      for (var i = 0; i < count; i++) {
-        var cy = yAxis - 14 - i * 11;
-        svg.appendChild(E("circle", {
-          cx: cx, cy: cy, r: 5,
-          fill: opts.outlier && v >= 50 ? "#e85d4c" : "#0d9488",
-          stroke: "#0f7a7a", "stroke-width": 1.2,
-        }));
-      }
+      idxs.forEach(function (dataIdx, i) {
+        var cy = yAxis - 16 - i * 12;
+        var c = E("circle", {
+          cx: cx, cy: cy, r: 7,
+          fill: "#38bdf8", stroke: "#0284c7", "stroke-width": 1.4,
+          class: "dot-hit",
+          "data-index": String(dataIdx),
+        });
+        svg.appendChild(c);
+      });
     });
 
     var m = mean(data);
@@ -243,8 +321,8 @@
       medDx = 16;
     }
 
-    drawMarker(svg, mx, MEAN, "mean", meanDx);
-    drawMarker(svg, mdx, MEDIAN, "median", medDx);
+    drawMarker(svg, mx, MEAN, "mean", meanDx, 18);
+    drawMarker(svg, mdx, MEDIAN, "median", medDx, 18);
     if (mod != null) {
       var modX = Array.isArray(mod)
         ? xScale(mod.reduce(function (a, b) { return a + b; }, 0) / mod.length)
@@ -252,21 +330,154 @@
       var modDx = 0;
       if (Math.abs(modX - mx) < 24) modDx = 22;
       else if (Math.abs(modX - mdx) < 24) modDx = -22;
-      drawMarker(svg, modX, MODE, "mode", modDx);
+      drawMarker(svg, modX, MODE, "mode", modDx, 18);
     }
+
+    /* balance fulcrum = mean */
+    var tri = E("polygon", {
+      points: (mx - 10) + ",130 " + (mx + 10) + ",130 " + mx + ",112",
+      fill: MEAN, stroke: "#d97706", "stroke-width": 1.2,
+    });
+    svg.appendChild(tri);
+    var beam = E("line", {
+      x1: x0, y1: 112, x2: x1, y2: 112,
+      stroke: "rgba(251,191,36,.45)", "stroke-width": 3,
+    });
+    svg.appendChild(beam);
+    var balLbl = E("text", {
+      x: mx, y: 142, fill: "#b45309", "font-size": 10, "font-weight": 700, "text-anchor": "middle",
+    });
+    balLbl.textContent = "balance = " + fmt(m);
+    svg.appendChild(balLbl);
   }
 
-  function drawMarker(svg, x, col, label, labelDx) {
+  function drawMarker(svg, x, col, label, labelDx, topY) {
     labelDx = labelDx || 0;
+    topY = topY || 22;
     svg.appendChild(E("line", {
-      x1: x, y1: 22, x2: x, y2: 58,
+      x1: x, y1: topY + 4, x2: x, y2: 62,
       stroke: col, "stroke-width": 2, "stroke-dasharray": "4 3",
     }));
     var t = E("text", {
-      x: x + labelDx, y: 14, fill: col, "font-size": 10, "font-weight": 700, "text-anchor": "middle",
+      x: x + labelDx, y: topY, fill: col, "font-size": 10, "font-weight": 700, "text-anchor": "middle",
     });
     t.textContent = label;
     svg.appendChild(t);
+  }
+
+  function clientToSvgX(svg, clientX) {
+    var pt = svg.createSVGPoint();
+    pt.x = clientX;
+    pt.y = 0;
+    var ctm = svg.getScreenCTM();
+    if (!ctm) return null;
+    return pt.matrixTransform(ctm.inverse()).x;
+  }
+
+  function bindNumlineInteractions() {
+    var svg = document.getElementById("avg-numline");
+    if (!svg || svg.dataset.bound === "1") return;
+    svg.dataset.bound = "1";
+
+    svg.addEventListener("pointerdown", function (e) {
+      if (!numlineBound) return;
+      var target = e.target;
+      if (target && target.classList && target.classList.contains("dot-hit")) {
+        var idx = +target.getAttribute("data-index");
+        if (!isFinite(idx)) return;
+        dragState = { index: idx, pointerId: e.pointerId };
+        svg.classList.add("dragging");
+        try { svg.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+        e.preventDefault();
+        return;
+      }
+    });
+
+    svg.addEventListener("pointermove", function (e) {
+      if (!dragState || e.pointerId !== dragState.pointerId || !numlineBound) return;
+      var sx = clientToSvgX(svg, e.clientX);
+      if (sx == null) return;
+      var v = clampInput(Math.round(numlineBound.xToValue(sx)));
+      if (v == null) return;
+      if (avgData[dragState.index] !== v) {
+        avgData[dragState.index] = v;
+        renderAverages();
+      }
+    });
+
+    function endDrag(e) {
+      if (!dragState || (e && e.pointerId !== dragState.pointerId)) return;
+      suppressClick = true;
+      dragState = null;
+      svg.classList.remove("dragging");
+    }
+    svg.addEventListener("pointerup", endDrag);
+    svg.addEventListener("pointercancel", endDrag);
+
+    svg.addEventListener("click", function (e) {
+      if (suppressClick) { suppressClick = false; return; }
+      if (dragState) return;
+      var target = e.target;
+      if (target && target.classList && target.classList.contains("dot-hit")) return;
+      if (!numlineBound) return;
+      var sx = clientToSvgX(svg, e.clientX);
+      if (sx == null || sx < numlineBound.x0 - 4 || sx > numlineBound.x1 + 4) return;
+      var v = clampInput(Math.round(numlineBound.xToValue(sx)));
+      if (v == null) return;
+      avgData.push(v);
+      renderAverages();
+    });
+
+    svg.addEventListener("dblclick", function (e) {
+      var target = e.target;
+      if (!target || !target.classList || !target.classList.contains("dot-hit")) return;
+      var idx = +target.getAttribute("data-index");
+      if (!isFinite(idx)) return;
+      avgData.splice(idx, 1);
+      renderAverages();
+      e.preventDefault();
+    });
+  }
+
+  function setMission(id) {
+    if (!MISSIONS[id]) id = "sandbox";
+    activeMission = id;
+    var m = MISSIONS[id];
+    m.start();
+    document.querySelectorAll("#mission-bar .chip-mission").forEach(function (b) {
+      b.classList.toggle("active", b.dataset.mission === id);
+    });
+    var hud = document.getElementById("mission-hud");
+    var title = document.getElementById("mission-title");
+    var goal = document.getElementById("mission-goal");
+    if (hud && title && goal) {
+      hud.classList.add("show");
+      hud.classList.remove("ok");
+      title.textContent = m.title;
+      goal.textContent = m.goal;
+    }
+    renderAverages();
+  }
+
+  function updateMissionHud() {
+    var m = MISSIONS[activeMission];
+    var hud = document.getElementById("mission-hud");
+    var goal = document.getElementById("mission-goal");
+    if (!m || !hud || !goal) return;
+    var ok = m.check();
+    if (ok === null) {
+      hud.classList.remove("ok");
+      goal.textContent = m.goal;
+      return;
+    }
+    if (ok) {
+      hud.classList.add("ok");
+      goal.textContent = "Cleared! " + m.goal + "  ·  Try another mission or keep playing.";
+    } else {
+      hud.classList.remove("ok");
+      goal.textContent = m.goal + "  ·  Current mean " + fmt(mean(avgData)) +
+        ", median " + fmt(median(avgData)) + ", mode " + fmtMode(modeValue(avgData)) + ".";
+    }
   }
 
   function niceStep(range) {
@@ -323,7 +534,7 @@
       if (r.freq > 0) {
         svg.appendChild(E("rect", {
           x: bx, y: by, width: barW, height: h,
-          fill: isMode ? MODE : "#0d9488", rx: 3,
+          fill: isMode ? MODE : "#38bdf8", rx: 3,
         }));
         var ft = E("text", {
           x: cx, y: by - 4,
@@ -388,12 +599,15 @@
 
     var note = document.getElementById("avg-note");
     if (!avgData.length) {
-      note.textContent = "Mean uses every datum; median resists extreme values; mode is the most frequent value.";
-    } else if (avgData.some(function (v) { return v >= 50; }) || Math.abs(mean(avgData) - median(avgData)) > 8) {
-      note.textContent = "Skewed or outlier present — compare mean and median. Mode highlights the most repeated value.";
+      note.textContent = "Click the number line to drop dots. The yellow triangle is the mean — the balance point of every value.";
+    } else if (Math.abs(mean(avgData) - median(avgData)) >= 2) {
+      note.textContent = "Mean and median have split — an extreme value is tipping the yellow balance point.";
+    } else if (modeValue(avgData) != null) {
+      note.textContent = "Mode marks the tallest stack. Drag dots together to build a mode, or pull one far away to tip the mean.";
     } else {
-      note.textContent = "Mean and median are often close here. Check whether any value repeats for the mode.";
+      note.textContent = "No repeated value yet — mode is undefined. Stack two identical dots to create one.";
     }
+    updateMissionHud();
   }
 
   function weightedMean(rows) {
@@ -618,19 +832,25 @@
 
     document.getElementById("avg-add").addEventListener("click", function () {
       addToAvg(+document.getElementById("avg-in").value);
-      document.getElementById("avg-in").value = "0";
+      document.getElementById("avg-in").value = "5";
     });
     document.getElementById("avg-in").addEventListener("keydown", function (e) {
       if (e.key === "Enter") document.getElementById("avg-add").click();
     });
     document.getElementById("avg-default").addEventListener("click", function () {
-      avgData = DEFAULT_DATA.slice();
-      renderAverages();
+      setMission("sandbox");
     });
     document.getElementById("avg-clear").addEventListener("click", function () {
       avgData = [];
       renderAverages();
     });
+
+    document.querySelectorAll("#mission-bar .chip-mission").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        setMission(btn.dataset.mission);
+      });
+    });
+    bindNumlineInteractions();
 
     document.getElementById("more-questions-btn").addEventListener("click", function () {
       var panel = document.getElementById("more-questions-panel");
@@ -675,7 +895,7 @@
       });
     });
 
-    renderAverages();
+    setMission("sandbox");
     renderWeightedMean();
     renderTransform();
   }

@@ -12,10 +12,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260906-comicw"><link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260830-fu"><link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
-      background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
+      background:linear-gradient(180deg,#f8fafc,#f1f5f9);  }
     h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
     .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
     .jm-page { width: min(920px, 100%); }
@@ -43,9 +43,51 @@
       margin: 10px 0 14px; font-size: 16px; font-weight: 600; line-height: 1.5; color: var(--text);
     }
     .numline-svg {
-      width: 100%; max-width: 640px; height: 100px; display: block; margin: 12px auto 0;
+      width: 100%; max-width: 640px; height: 148px; display: block; margin: 12px auto 0;
       border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
+      cursor: crosshair; touch-action: none; user-select: none;
     }
+    .numline-svg .dot-hit { cursor: grab; }
+    .numline-svg.dragging, .numline-svg.dragging .dot-hit { cursor: grabbing; }
+    .mission-bar {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; align-items: center;
+    }
+    .mission-bar .chip-mission {
+      border: 1px solid rgba(2,132,199,.35); background: #fff; color: #0369a1;
+      font: inherit; font-weight: 650; font-size: 13px; padding: 7px 12px;
+      border-radius: 999px; cursor: pointer;
+    }
+    .mission-bar .chip-mission:hover { background: rgba(2,132,199,.08); }
+    .mission-bar .chip-mission.active {
+      background: #0284c7; color: #fff; border-color: #0284c7;
+    }
+    .mission-hud {
+      display: none; margin-top: 8px; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid rgba(217,119,6,.35); background: rgba(251,191,36,.12);
+      font-size: 14px; line-height: 1.5;
+    }
+    .mission-hud.show { display: block; }
+    .mission-hud .mission-title { font-weight: 700; color: #b45309; margin: 0 0 4px; }
+    .mission-hud .mission-goal { margin: 0; color: var(--text); }
+    .mission-hud.ok {
+      border-color: rgba(22,163,74,.4); background: rgba(34,197,94,.12);
+    }
+    .mission-hud.ok .mission-title { color: #15803d; }
+    .interact-hint {
+      margin: 8px 0 0; font-size: 13px; color: var(--muted); line-height: 1.45;
+    }
+    .balance-legend {
+      display: flex; flex-wrap: wrap; gap: 10px 14px; justify-content: center;
+      margin: 6px 0 0; font-size: 12px; font-weight: 650; color: var(--muted);
+    }
+    .balance-legend span::before {
+      content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+      margin-right: 5px; vertical-align: -1px;
+    }
+    .balance-legend .lg-mean::before { background: #fbbf24; }
+    .balance-legend .lg-median::before { background: #34d399; }
+    .balance-legend .lg-mode::before { background: #f472b6; }
+    .balance-legend .lg-dot::before { background: #38bdf8; }
     .bar-chart-fixed {
       width: 100%; max-width: 640px; height: 140px; display: block; margin: 12px auto 0;
       border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
@@ -104,20 +146,21 @@
     #more-questions-panel { display: none; margin-top: 16px; }
     #more-questions-panel.open { display: block; }
     .section-gap { margin-top: 20px; padding-top: 4px; }
-  </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
+  </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections"><link rel="stylesheet" href="../../shared/section-quiz.css?v=20260928-sections">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
     <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
     <p class="jm-eyebrow">JM31 &middot; Lesson 31</p>
     <h1>Measures of Central Tendencies</h1>
-    <p class="lead">Build a data set, compare mean, median and mode on the number line, explore frequency and weighted mean, then test which average fits each context.</p>
+    <p class="lead">Drop and drag data on a number line, tip the mean like a balance beam, clear short missions, then explore transforms and which average fits each context.</p>
         <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
       <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
-      <button class="jm-tab" type="button" data-tab="games">Games</button>
-      <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+      <button class="jm-tab" type="button" data-tab="game">Game</button>
+      <button class="jm-tab" type="button" data-tab="comic">Comic</button>
       <button class="jm-tab" type="button" data-tab="summary">Summary</button>
       <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
     </nav>
@@ -133,24 +176,42 @@
       <div class="lab active" id="lab-averages">
         <p class="part-title">Lab 1 · Mean · Median · Mode</p>
         <section class="block">
-          <h2>Three averages on one data set</h2>
-          <p class="hint">Add values (0–999) or load the default set. Click a chip to remove it. Yellow = mean, green = median, pink = mode on the number line.</p>
+          <h2>Play with the averages</h2>
+          <p class="hint">Drop points on the number line, drag them around, and watch mean / median / mode chase the data. Type a value only if you need a precise number.</p>
+          <div class="mission-bar" id="mission-bar" aria-label="Missions">
+            <button class="chip-mission" type="button" data-mission="sandbox">Sandbox</button>
+            <button class="chip-mission" type="button" data-mission="mean6">Make mean = 6</button>
+            <button class="chip-mission" type="button" data-mission="split">Split mean &amp; median</button>
+            <button class="chip-mission" type="button" data-mission="mode3">Force mode = 3</button>
+            <button class="chip-mission" type="button" data-mission="outlier">Survive an outlier</button>
+          </div>
+          <div class="mission-hud" id="mission-hud" aria-live="polite">
+            <p class="mission-title" id="mission-title"></p>
+            <p class="mission-goal" id="mission-goal"></p>
+          </div>
           <div class="count-row">
-            <input id="avg-in" type="number" min="0" max="999" step="1" value="0">
+            <input id="avg-in" type="number" min="0" max="20" step="1" value="5" title="Optional precise value">
             <button class="btn" type="button" id="avg-add">Add</button>
-            <button class="btn" type="button" id="avg-default">Default</button>
+            <button class="btn" type="button" id="avg-default">Demo set</button>
             <button class="btn" type="button" id="avg-clear">Clear</button>
           </div>
           <div class="chip-list" id="avg-chips"></div>
-          <svg class="numline-svg" id="avg-numline" viewBox="0 0 640 100" aria-label="Number line with mean, median and mode"></svg>
+          <p class="interact-hint">Click empty space on the line to drop a point · drag a blue dot to move · double-click a dot to remove</p>
+          <svg class="numline-svg" id="avg-numline" viewBox="0 0 640 148" aria-label="Interactive number line — click to add, drag to move"></svg>
+          <div class="balance-legend">
+            <span class="lg-dot">data</span>
+            <span class="lg-mean">mean (balance point)</span>
+            <span class="lg-median">median</span>
+            <span class="lg-mode">mode</span>
+          </div>
           <div class="stat-grid">
             <div class="stat-card"><div class="val" id="avg-mean">—</div><div class="lbl">Mean</div></div>
             <div class="stat-card"><div class="val" id="avg-median">—</div><div class="lbl">Median</div></div>
             <div class="stat-card"><div class="val" id="avg-mode">—</div><div class="lbl">Mode</div></div>
             <div class="stat-card"><div class="val" id="avg-n">0</div><div class="lbl">Count n</div></div>
           </div>
-          <p class="formula" id="avg-formula">\(\bar{x}\) = Mean, \(M_d\) = Median, \(M_o\) = Mode</p>
-          <div class="note-box" id="avg-note">Mean uses every datum; median resists extreme values; mode is the most frequent value.</div>
+          <p class="formula" id="avg-formula">\(\bar{x}\) = Mean (balance), \(M_d\) = Median, \(M_o\) = Mode</p>
+          <div class="note-box" id="avg-note">The yellow triangle is the balance point of all dots — that is the mean. Drag one extreme value and watch it tip.</div>
 
           <div class="section-gap" id="avg-bar-section" style="display:none">
             <p class="split-hint">Frequency bar chart (values 0–10 only)</p>
@@ -233,13 +294,13 @@
         </section>
       </div>
     </section>
-        <section id="panel-games" class="jm-panel hidden">
+        <section id="panel-game" class="jm-panel hidden">
       <section class="block">
-        <h2>Games</h2>
+        <h2>Game</h2>
         <p class="hint">Coming soon.</p>
       </section>
     </section>
-<section id="panel-comics" class="jm-panel hidden">
+<section id="panel-comic" class="jm-panel hidden">
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
       <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
@@ -251,16 +312,26 @@
       </section>
     </section>
     <section id="panel-quiz" class="jm-panel hidden">
-      <section class="block">
-        <h2>Quiz</h2>
-        <p class="hint">Coming soon.</p>
-      </section>
+      <div class="quiz-wrap">
+        <div class="quiz-progress-wrap" id="quiz-progress-wrap">
+          <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
+          <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
+        </div>
+        <div id="quiz-root"></div>
+        <div class="quiz-nav" id="quiz-nav">
+          <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
+          <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
+        </div>
+      </div>
+      <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="../../shared/section-quiz.js?v=20260928-sections"></script>
+  <script defer src="central-tendency-quiz.js?v=20260928-sections"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
-  <script defer src="central-tendency-tools.js?v=20260829h"></script>
+  <script defer src="central-tendency-tools.js?v=20261017a"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="central-tendency-comics.js?v=20260830-fu"></script>
   <script>
