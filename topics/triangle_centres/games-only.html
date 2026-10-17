@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JM28 · Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b"><link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260830-merge">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+       }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .note-box {
+      margin-top: 12px; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid rgba(2,132,199,.25); background: rgba(2,132,199,.06);
+      font-size: 14px; line-height: 1.55; color: var(--text);
+    }
+    .split-hint { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+    #comics-subnav { margin-bottom: 14px; }
+    .comic-figure {
+      margin: 0;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0f172a;
+      overflow: hidden;
+    }
+    .comic-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
+    }
+    .comics-mode.hidden, .comics-pane.hidden { display: none; }
+
+    /* JM28 Geometry Arena — light theme, playful vs Quiz */
+    #panel-game.jm-panel { margin: 0; }
+    #panel-game .block {
+      border: none !important;
+      background: transparent !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+    }
+    .tg-arena {
+      --tg-ink: #1e293b;
+      --tg-mute: #64748b;
+      --tg-accent: #0284c7;
+      --tg-hot: #d97706;
+      --tg-ok: #16a34a;
+      --tg-bad: #e11d48;
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      padding: 18px 16px 22px;
+      color: var(--tg-ink);
+      background:
+        radial-gradient(720px 320px at 8% -8%, rgba(79,195,247,.35), transparent 55%),
+        radial-gradient(560px 280px at 100% 0%, rgba(251,191,36,.18), transparent 50%),
+        radial-gradient(480px 260px at 70% 110%, rgba(56,189,248,.14), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(244,247,251,.96) 100%);
+      border: 1px solid rgba(2,132,199,.18);
+      box-shadow: 0 10px 28px rgba(14,116,144,.08), inset 0 1px 0 rgba(255,255,255,.9);
+    }
+    .tg-arena::before {
+      content: "";
+      pointer-events: none;
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(rgba(2,132,199,.07) 1px, transparent 1px);
+      background-size: 18px 18px;
+      mask-image: radial-gradient(ellipse at 40% 20%, #000 30%, transparent 75%);
+      opacity: .9;
+    }
+    .tg-arena > * { position: relative; z-index: 1; }
+    .tg-hero {
+      display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: flex-end;
+      justify-content: space-between; margin-bottom: 14px;
+    }
+    .tg-kicker {
+      margin: 0 0 4px; font-size: 11px; font-weight: 800; letter-spacing: .14em;
+      text-transform: uppercase; color: #0284c7;
+    }
+    .tg-title {
+      margin: 0; font-size: clamp(22px, 3.5vw, 30px); font-weight: 800;
+      letter-spacing: -.02em; line-height: 1.15; color: #0f172a;
+    }
+    .tg-tagline { margin: 6px 0 0; color: var(--tg-mute); font-size: 13px; line-height: 1.45; max-width: 38em; }
+    .tg-modes {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 14px;
+    }
+    @media (max-width: 700px) { .tg-modes { grid-template-columns: 1fr; } }
+    .tg-modes .chip {
+      appearance: none; text-align: left; cursor: pointer;
+      border: 1px solid rgba(2,132,199,.16);
+      background: rgba(255,255,255,.88);
+      color: var(--tg-ink); border-radius: 16px; padding: 12px 12px 11px;
+      font: inherit; transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease, background .15s;
+      box-shadow: 0 4px 14px rgba(14,116,144,.06);
+    }
+    .tg-modes .chip:hover { transform: translateY(-2px); border-color: rgba(2,132,199,.4); }
+    .tg-modes .chip.active {
+      background: linear-gradient(145deg, rgba(79,195,247,.28), rgba(255,255,255,.95));
+      border-color: rgba(2,132,199,.55);
+      box-shadow: 0 0 0 1px rgba(2,132,199,.12), 0 10px 24px rgba(14,165,233,.18);
+    }
+    .tg-modes .chip .tg-mode-ico {
+      display: inline-flex; width: 28px; height: 28px; border-radius: 9px; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; margin-bottom: 6px;
+      background: rgba(2,132,199,.12); color: #0284c7;
+    }
+    .tg-modes .chip[data-tg-mode="angles"] .tg-mode-ico { background: rgba(236,72,153,.12); color: #db2777; }
+    .tg-modes .chip[data-tg-mode="match"] .tg-mode-ico { background: rgba(245,158,11,.14); color: #d97706; }
+    .tg-modes .chip .tg-mode-name { display: block; font-weight: 800; font-size: 14px; margin-bottom: 2px; }
+    .tg-modes .chip .tg-mode-sub { display: block; font-size: 11px; color: var(--tg-mute); line-height: 1.35; font-weight: 500; }
+    .tg-blurb {
+      margin: 0 0 12px; color: #334155; font-size: 13px; line-height: 1.45;
+      padding: 9px 12px; border-radius: 12px;
+      background: rgba(2,132,199,.07);
+      border: 1px solid rgba(2,132,199,.14);
+    }
+    .tg-hud {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 10px;
+    }
+    .tg-stat {
+      display: inline-flex; align-items: baseline; gap: 6px;
+      padding: 7px 12px; border-radius: 999px;
+      background: #fff; border: 1px solid rgba(2,132,199,.16);
+      font-size: 12px; font-weight: 700; color: var(--tg-mute);
+      box-shadow: 0 2px 8px rgba(14,116,144,.05);
+    }
+    .tg-stat b {
+      color: #0f172a; font-size: 16px; font-variant-numeric: tabular-nums; font-weight: 800;
+    }
+    .tg-stat.hot b { color: var(--tg-hot); }
+    .tg-stat.score b { color: var(--tg-accent); }
+    .tg-rate {
+      margin: 0 0 8px; font-size: 12px; font-weight: 700; color: var(--tg-mute); letter-spacing: .02em;
+    }
+    .tg-track {
+      display: flex; height: 12px; border-radius: 999px; overflow: hidden;
+      border: 1px solid rgba(2,132,199,.14); background: rgba(226,232,240,.85); margin: 0 0 16px;
+      box-shadow: inset 0 1px 2px rgba(15,23,42,.06);
+    }
+    .tg-seg { min-width: 0; transition: flex .28s ease; }
+    .tg-seg.ok { background: linear-gradient(90deg, #16a34a, #4ade80); }
+    .tg-seg.bad { background: linear-gradient(90deg, #e11d48, #fb7185); }
+    .tg-seg.todo { background: rgba(148,163,184,.35); }
+    .tg-layout {
+      display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: 14px; align-items: stretch;
+    }
+    .tg-layout.tg-text-only { grid-template-columns: 1fr; }
+    @media (max-width: 720px) { .tg-layout { grid-template-columns: 1fr; } }
+    .tg-figure-wrap {
+      border: 1px solid rgba(2,132,199,.2); border-radius: 18px;
+      background:
+        radial-gradient(120% 80% at 50% -20%, rgba(79,195,247,.22), transparent 55%),
+        linear-gradient(180deg, #ffffff 0%, #e0f2fe 100%);
+      padding: 12px; min-height: 220px;
+      box-shadow: 0 8px 22px rgba(14,116,144,.1), inset 0 1px 0 rgba(255,255,255,.9);
+    }
+    .tg-figure-wrap.hidden, .tg-mark-hint.hidden { display: none; }
+    .tg-fig { width: 100%; height: auto; display: block; }
+    .tg-mark-hint {
+      margin: 10px 0 0; font-size: 12px; line-height: 1.45; color: #475569;
+      padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,.85);
+      border: 1px dashed rgba(2,132,199,.28);
+    }
+    .tg-mission {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin: 0 0 10px; padding: 5px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+      color: #0c4a6e; background: linear-gradient(90deg, #bae6fd, #fde68a);
+    }
+    .tg-prompt {
+      margin: 0 0 14px; font-size: 18px; font-weight: 750; line-height: 1.4; color: #0f172a;
+    }
+    .tg-options { display: grid; gap: 10px; }
+    .tg-opt {
+      display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center;
+      text-align: left; font: inherit; font-weight: 650; font-size: 15px;
+      padding: 12px 12px; border-radius: 14px; cursor: pointer;
+      border: 1px solid rgba(2,132,199,.16);
+      background: #fff;
+      color: #1e293b;
+      box-shadow: 0 3px 10px rgba(14,116,144,.06);
+      transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+    }
+    .tg-opt .tg-key {
+      width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+      font-weight: 800; font-size: 13px; color: #fff;
+      background: linear-gradient(145deg, #38bdf8, #0284c7);
+      box-shadow: 0 2px 0 rgba(2,132,199,.35);
+    }
+    .tg-opt:hover:not(:disabled) {
+      transform: translateX(3px);
+      border-color: rgba(2,132,199,.45);
+      box-shadow: 0 8px 18px rgba(14,165,233,.16);
+    }
+    .tg-opt.ok {
+      border-color: rgba(22,163,74,.55);
+      background: linear-gradient(180deg, #dcfce7, #fff);
+      color: #14532d;
+      animation: tg-pop .35s ease;
+    }
+    .tg-opt.ok .tg-key { background: linear-gradient(145deg, #4ade80, #16a34a); }
+    .tg-opt.bad {
+      border-color: rgba(225,29,72,.5);
+      background: linear-gradient(180deg, #ffe4e6, #fff);
+      color: #881337;
+      animation: tg-shake .4s ease;
+    }
+    .tg-opt.bad .tg-key { background: linear-gradient(145deg, #fb7185, #e11d48); }
+    .tg-opt:disabled { cursor: default; }
+    @keyframes tg-pop {
+      0% { transform: scale(.97); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+    @keyframes tg-shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+    .tg-fb {
+      margin: 12px 0 0; min-height: 1.4em; font-size: 14px; line-height: 1.5; color: var(--tg-mute);
+      padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.7);
+      border: 1px solid transparent;
+    }
+    .tg-fb.ok { color: #166534; border-color: rgba(22,163,74,.3); background: #dcfce7; }
+    .tg-fb.bad { color: #9f1239; border-color: rgba(225,29,72,.28); background: #ffe4e6; }
+    .tg-actions { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .tg-actions .btn {
+      border-radius: 999px !important; font-weight: 800 !important;
+    }
+    .tg-actions .btn.primary {
+      background: linear-gradient(90deg, #38bdf8, #0ea5e9) !important;
+      border-color: transparent !important; color: #fff !important;
+      box-shadow: 0 8px 20px rgba(14,165,233,.28);
+    }
+    .tg-actions .btn.hidden, .tg-done.hidden, #tg-play.hidden { display: none; }
+    .tg-done {
+      margin-top: 6px; padding: 28px 18px; border-radius: 18px; text-align: center;
+      border: 1px solid rgba(2,132,199,.2);
+      background:
+        radial-gradient(500px 200px at 50% 0%, rgba(251,191,36,.22), transparent 60%),
+        linear-gradient(180deg, #fff, #e0f2fe);
+    }
+    .tg-done .tg-done-label {
+      font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #0284c7;
+    }
+    .tg-done .big {
+      font-size: clamp(28px, 5vw, 40px); font-weight: 900; margin: 8px 0 10px;
+      color: #0f172a;
+    }
+    .tg-done .hint { color: var(--tg-mute) !important; }
+    .tg-flash {
+      pointer-events: none; position: absolute; inset: 0; opacity: 0;
+      background: radial-gradient(circle at 50% 40%, rgba(74,222,128,.28), transparent 55%);
+      transition: opacity .25s ease;
+    }
+    .tg-arena.tg-flash-ok .tg-flash { opacity: 1; }
+    .tg-arena.tg-flash-bad .tg-flash {
+      opacity: 1;
+      background: radial-gradient(circle at 50% 40%, rgba(251,113,133,.22), transparent 55%);
+    }
+
+    /* Factory Line */
+    .tg-factory { margin-top: 4px; }
+    .tg-factory-req {
+      margin: 0 0 10px; font-size: 16px; font-weight: 750; line-height: 1.4; color: #0f172a;
+    }
+    .tg-factory-fig {
+      margin: 0 0 12px; padding: 8px; border-radius: 14px;
+      border: 1px solid rgba(2,132,199,.18);
+      background: linear-gradient(180deg, #fff, #e0f2fe);
+    }
+    .tg-factory-fig .tg-fig { width: 100%; max-height: 180px; }
+    .tg-conveyor {
+      position: relative; height: 268px; border-radius: 16px; overflow: hidden;
+      border: 1px solid rgba(2,132,199,.2);
+      background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 48%, #cbd5e1 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    .tg-belt {
+      position: absolute; left: 0; right: 0; top: 64px; height: 14px;
+      background: repeating-linear-gradient(90deg, #78716c 0 12px, #57534e 12px 24px);
+      box-shadow: 0 2px 0 #44403c;
+    }
+    .tg-tunnel {
+      position: absolute; left: 14px; top: 78px; width: 64px; height: 44px; z-index: 2;
+      background: #0f172a;
+      clip-path: polygon(20% 0, 80% 0, 96% 100%, 4% 100%);
+      box-shadow: inset 0 8px 14px rgba(0,0,0,.5);
+    }
+    .tg-tunnel::before {
+      content: ""; position: absolute; left: 24%; right: 24%; top: 0; height: 8px;
+      background: #1e293b; border-radius: 0 0 4px 4px;
+    }
+    .tg-bin {
+      position: absolute; left: 4px; bottom: 4px; width: 112px; height: 130px;
+      border: 3px solid #92400e; border-top: none; border-radius: 0 0 10px 10px;
+      background: linear-gradient(180deg, rgba(180,83,9,.1), rgba(120,53,15,.22));
+      z-index: 1; overflow: hidden;
+    }
+    .tg-bin-stack {
+      position: absolute; inset: 0;
+      pointer-events: none;
+    }
+    .tg-bin-crate {
+      position: absolute;
+      width: 44px; height: 32px; border-radius: 3px;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.08) 0 2px, transparent 2px),
+        linear-gradient(180deg, #e8c39e 0%, #c68a4a 45%, #a16207 100%);
+      border: 2px solid #78350f;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 4px rgba(0,0,0,.12);
+    }
+    .tg-box {
+      position: absolute; top: 36px; left: 78%;
+      width: 56px; height: 40px; z-index: 3;
+      border-radius: 4px;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.08) 0 2px, transparent 2px),
+        linear-gradient(180deg, #e8c39e 0%, #c68a4a 45%, #a16207 100%);
+      border: 2px solid #78350f;
+      box-shadow: 0 4px 10px rgba(15,23,42,.2), inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    .tg-box.run { animation-name: tg-box-slide; animation-timing-function: linear; animation-fill-mode: forwards; }
+    @keyframes tg-box-slide {
+      from { left: 82%; top: 36px; opacity: 1; }
+      to { left: -12%; top: 36px; opacity: 1; }
+    }
+    .tg-box.tg-box-burning { overflow: visible; }
+    .tg-flame {
+      position: absolute; left: 50%; bottom: 30%; width: 22px; height: 36px;
+      margin-left: -11px; border-radius: 50% 50% 20% 20%;
+      background: radial-gradient(circle at 50% 70%, #fde68a 0%, #f97316 45%, #dc2626 75%, transparent 78%);
+      opacity: 0; pointer-events: none; z-index: 4;
+      animation: tg-flame-up .75s ease forwards;
+    }
+    .tg-flame-b { margin-left: -22px; width: 18px; height: 30px; animation-delay: .05s; }
+    .tg-flame-c { margin-left: 2px; width: 16px; height: 28px; animation-delay: .1s; }
+    @keyframes tg-flame-up {
+      0% { opacity: 0; transform: translateY(8px) scale(.6); }
+      25% { opacity: 1; transform: translateY(-6px) scale(1.15); }
+      70% { opacity: .95; transform: translateY(-18px) scale(1.05); }
+      100% { opacity: 0; transform: translateY(-32px) scale(.8); }
+    }
+    .tg-box.tg-box-reject {
+      animation: tg-box-burn .85s ease forwards !important;
+    }
+    @keyframes tg-box-burn {
+      0% { filter: none; opacity: 1; box-shadow: 0 0 0 rgba(249,115,22,0); }
+      30% { filter: saturate(1.8) brightness(1.2); opacity: 1;
+        box-shadow: 0 0 22px rgba(249,115,22,.9), 0 0 40px rgba(220,38,38,.45); }
+      100% { filter: brightness(1.5) blur(1px); opacity: 0;
+        box-shadow: 0 0 30px rgba(220,38,38,.7); }
+    }
+    .tg-box.tg-box-timeout {
+      animation: tg-box-timeout .55s linear forwards !important;
+    }
+    @keyframes tg-box-timeout {
+      from { opacity: 1; }
+      to { left: -16%; opacity: .35; }
+    }
+    .tg-factory-actions {
+      display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; align-items: center;
+    }
+    .tg-factory-actions .tg-reject-btn {
+      background: #fff1f2 !important; color: #9f1239 !important; border-color: #fb7185 !important; font-weight: 800 !important;
+    }
+    .tg-factory-actions .tg-accept-btn {
+      font-weight: 800 !important;
+      background: #ecfdf5 !important;
+      border: 1px solid #4ade80 !important;
+      color: #166534 !important;
+      box-shadow: none !important;
+    }
+    .tg-factory-prog {
+      margin: 8px 0 0; font-size: 12px; font-weight: 700; color: #64748b;
+    }
+  </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections"><link rel="stylesheet" href="../../shared/section-quiz.css?v=20260928-sections">
+
+<style id="jm-share-only-css">
+  .jm-back, .jm-tabs, .jm-eyebrow + /* noop */ .x { }
+  .jm-back, .jm-tabs { display: none !important; }
+  main.jm-page > .jm-eyebrow { margin-top: 0; }
+  #panel-concept, #panel-comic, #panel-comics, #panel-summary, #panel-quiz,
+  #panel-game:not(.jm-share-keep), #panel-tools:not(.jm-share-keep) {
+    display: none !important;
+  }
+  #panel-tools.jm-share-keep, #panel-game.jm-share-keep {
+    display: block !important;
+  }
+  #panel-tools.jm-share-keep.hidden, #panel-game.jm-share-keep.hidden {
+    display: block !important;
+  }
+</style>
+</head>
+<body class="paper-labs">
+  <main class="jm-page">
+    <p class="jm-eyebrow">JM28 · Lesson 28</p>
+    <h1>Games</h1>
+    <p class="lead">Geometry Arena — Centre Snap, Angle Pair Spot, and Condition Check with Factory Line.</p>
+        <section id="panel-concept" class="jm-panel">
+      <section class="block">
+        <h2>Concept &amp; Formula</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-tools" class="jm-panel hidden">
+      <div class="subnav" id="jm28-lab-nav" aria-label="Tool labs"></div>
+
+      <div class="lab active" id="lab-lines">
+        <p class="part-title">Lab 1 · Special lines &amp; centres</p>
+        <section class="block">
+          <h2>Four special lines → four centres</h2>
+          <p class="hint">Construction lines are dashed. Side extensions beyond a vertex use dotted lines. Equal lengths use red ticks; equal angles and right angles use blue marks. Drag vertices to explore.</p>
+          <p class="split-hint">Shape presets (click to load):</p>
+          <div class="tool-toggle-row" id="tri-preset-btns"></div>
+          <div class="tool-toggle-row" id="tri-mode-btns"></div>
+          <svg class="lab-svg" id="tri-svg" viewBox="0 0 500 400" aria-label="Special lines and centres"></svg>
+          <p class="split-hint" style="margin-top:10px;margin-bottom:4px">Detected from the current shape:</p>
+          <div class="badge-row" id="tri-type-badges"></div>
+          <p class="formula" id="tri-caption"></p>
+          <div class="note-box" id="tri-placement"></div>
+        </section>
+      </div>
+
+      <div class="lab" id="lab-angles">
+        <p class="part-title">Lab 2 · Angle pairs (parallel lines)</p>
+        <section class="block">
+          <h2>Corresponding · alternate · interior on same side</h2>
+          <p class="hint">Two parallel lines cut by a transversal. Drag the blue handles <strong>left/right</strong> only to tilt the transversal; pick a relationship to highlight matching angles.</p>
+          <div class="tool-toggle-row" id="ang-mode-btns"></div>
+          <svg class="lab-svg" id="ang-svg" viewBox="0 0 520 320" aria-label="Angle pairs lab"></svg>
+          <p class="formula" id="ang-caption"></p>
+          <div class="note-box" id="ang-note"></div>
+        </section>
+      </div>
+
+      <div class="lab" id="lab-match">
+        <p class="part-title">Lab 3 · Congruence &amp; similarity</p>
+        <section class="block">
+          <h2>Congruent △ · Similar △</h2>
+          <p class="hint">Switch between congruence and similarity. Drag vertices of △ABC; △DEF follows. Markings show what must match for each condition.</p>
+          <div class="tool-toggle-row" id="match-kind-btns"></div>
+          <div class="tool-toggle-row" id="match-cond-btns"></div>
+          <div class="tool-toggle-row" id="match-extra-btns"></div>
+          <div class="slider-row" id="match-k-row" style="display:none">
+            <label for="match-k">Scale factor \(k\)</label>
+            <input id="match-k" type="range" min="0.5" max="1.5" step="0.1" value="0.8">
+            <span id="match-k-val">0.8</span>
+          </div>
+          <p class="split-hint" id="match-drag-hint">Drag A, B or C — the second triangle updates with you.</p>
+          <svg class="lab-svg" id="match-svg" viewBox="0 0 520 320" aria-label="Congruence and similarity lab"></svg>
+          <p class="formula" id="match-caption"></p>
+          <div class="note-box" id="match-note"></div>
+        </section>
+      </div>
+    </section>
+        <section id="panel-game" class="jm-panel jm-share-keep">
+      <section class="block">
+        <div class="tg-arena" id="tg-arena">
+          <div class="tg-flash" aria-hidden="true"></div>
+          <div class="tg-hero">
+            <div>
+              <p class="tg-kicker">JM28 · Quick rounds</p>
+              <h2 class="tg-title">Geometry Arena</h2>
+              <p class="tg-tagline">Pick a mission and clear 8 rounds. Condition Check ends with Factory Line. Diagrams use the same marks as the Interactive Tool.</p>
+            </div>
+          </div>
+
+          <div class="tg-modes" role="tablist" aria-label="Game missions">
+            <button class="chip active" type="button" data-tg-mode="centres">
+              <span class="tg-mode-ico">△</span>
+              <span class="tg-mode-name">Centre Snap</span>
+              <span class="tg-mode-sub">Special lines → centres</span>
+            </button>
+            <button class="chip" type="button" data-tg-mode="angles">
+              <span class="tg-mode-ico">∠</span>
+              <span class="tg-mode-name">Angle Pair Spot</span>
+              <span class="tg-mode-sub">Parallels &amp; transversal</span>
+            </button>
+            <button class="chip" type="button" data-tg-mode="match">
+              <span class="tg-mode-ico">≅</span>
+              <span class="tg-mode-name">Condition Check</span>
+              <span class="tg-mode-sub">Congruence &amp; similarity</span>
+            </button>
+          </div>
+          <p class="tg-blurb" id="tg-blurb"></p>
+
+          <div id="tg-play">
+            <div class="tg-hud">
+              <span class="tg-stat">Round <b id="tg-qnum">1 / 8</b></span>
+              <span class="tg-stat score">Score <b id="tg-score">0</b></span>
+              <span class="tg-stat hot">Streak <b id="tg-streak">0</b></span>
+            </div>
+            <p class="tg-rate" id="tg-rate">Correct 0% · Done 0%</p>
+            <div class="tg-track" aria-hidden="true">
+              <div class="tg-seg ok" id="tg-seg-ok"></div>
+              <div class="tg-seg bad" id="tg-seg-bad"></div>
+              <div class="tg-seg todo" id="tg-seg-todo"></div>
+            </div>
+            <div class="tg-layout" id="tg-layout">
+              <div class="tg-figure-wrap" id="tg-figure-wrap">
+                <div id="tg-figure"></div>
+                <p class="tg-mark-hint hidden" id="tg-mark-hint"></p>
+              </div>
+              <div>
+                <div class="tg-mission" id="tg-mission">Mission</div>
+                <p class="tg-prompt" id="tg-prompt"></p>
+                <div class="tg-options" id="tg-options"></div>
+                <p class="tg-fb" id="tg-fb"></p>
+                <div class="tg-actions">
+                  <button class="btn primary hidden" type="button" id="tg-next">Next round</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tg-done hidden" id="tg-done">
+            <div class="tg-done-label">Mission clear</div>
+            <div class="big" id="tg-done-score">0 / 8</div>
+            <p class="hint" id="tg-done-msg" style="margin:0 0 14px"></p>
+            <div class="tg-actions" style="justify-content:center">
+              <button class="btn primary" type="button" id="tg-again">Replay mission</button>
+              <button class="btn" type="button" id="tg-switch">Next mission</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+    <section id="panel-comic" class="jm-panel hidden">
+      <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
+      <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+      <div id="comics-stage"></div>
+      <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+    </section>
+    <section id="panel-summary" class="jm-panel hidden">
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-quiz" class="jm-panel hidden">
+      <div class="quiz-wrap">
+        <div class="quiz-progress-wrap" id="quiz-progress-wrap">
+          <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
+          <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
+        </div>
+        <div id="quiz-root"></div>
+        <div class="quiz-nav" id="quiz-nav">
+          <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
+          <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
+        </div>
+      </div>
+      <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
+    </section>
+  </main>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="../../shared/section-quiz.js?v=20260928-sections"></script>
+  <script defer src="triangle-centres-quiz.js?v=20260928-sections"></script>
+  <script src="comics-manifest.js?v=20260830-merge"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="triangle-centres-comics.js?v=20260830-fu"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
+  <script defer src="triangle-centres-tools.js?v=20260830j"></script>
+  <script defer src="triangle-centres-game.js?v=20261017j"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      
+    });
+  </script>
+  <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>
+</body>
+</html>

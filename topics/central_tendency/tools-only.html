@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>JM31 · Interactive Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260830-fu"><link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+      background:linear-gradient(180deg,#f8fafc,#f1f5f9);  }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .jm-page,
+    main.page,
+    main {
+      width: min(1120px, 100%) !important;
+      max-width: min(1120px, 100%) !important;
+      box-sizing: border-box;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+    #panel-tools .block {
+      padding-left: 18px;
+      padding-right: 18px;
+    }
+    #comics-subnav { margin-bottom: 14px; }
+    .comic-figure {
+      margin: 0;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0f172a;
+      overflow: hidden;
+    }
+    .comic-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
+    }
+    .note-box {
+      margin-top: 16px; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid rgba(2,132,199,.25); background: rgba(2,132,199,.06);
+      font-size: 14px; line-height: 1.55; color: var(--text);
+    }
+    .split-hint { margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+    .quiz-question {
+      margin: 16px 0 14px; font-size: 16px; font-weight: 600; line-height: 1.5; color: var(--text);
+    }
+    .section-gap { margin-top: 28px; }
+    .numline-svg {
+      width: 100%; max-width: none; height: auto; aspect-ratio: 720 / 170;
+      display: block; margin: 16px 0 0;
+      border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
+      cursor: crosshair; touch-action: none; user-select: none;
+    }
+    .viz-svg {
+      width: 100%; max-width: none; height: auto; aspect-ratio: 720 / 150;
+      display: block; margin: 14px 0 0;
+      border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
+    }
+    .story-card {
+      margin-top: 12px; padding: 18px 16px; border-radius: 14px;
+      border: 1px solid var(--line); background: #fff;
+    }
+    .story-card .story-lead { margin: 0 0 10px; font-size: 15px; line-height: 1.55; color: var(--text); }
+    .story-card .story-meta { margin: 0 0 8px; font-size: 13px; color: var(--muted); }
+    .weight-blocks { display: grid; gap: 12px; margin: 14px 0 18px; }
+    .weight-row {
+      display: grid; grid-template-columns: 110px 1fr 64px 64px; gap: 10px; align-items: center;
+    }
+    .weight-col-labels {
+      display: grid; grid-template-columns: 110px 1fr 64px 64px; gap: 10px;
+      font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px;
+    }
+    .weight-row .w-name { font-size: 13px; font-weight: 650; }
+    .weight-row .w-bar-wrap {
+      height: 28px; border-radius: 8px; background: #e2e8f0; overflow: hidden; position: relative;
+    }
+    .weight-row .w-bar {
+      height: 100%; border-radius: 8px; background: linear-gradient(90deg,#38bdf8,#0284c7);
+      display: flex; align-items: center; padding: 0 8px; color: #fff; font-size: 12px; font-weight: 700;
+      min-width: 36px; transition: width .25s ease;
+    }
+    .weight-row input {
+      width: 100%; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line);
+      font: inherit; font-weight: 700; text-align: center;
+    }
+    .weight-row input.w-locked {
+      background: #f1f5f9; color: #475569; border-style: dashed; cursor: default;
+    }
+    .share-wrap { margin: 8px 0 6px; }
+    .share-labels {
+      display: flex; width: 100%; margin-bottom: 6px; min-height: 1.2em;
+      font-size: 12px; font-weight: 700;
+    }
+    .share-labels span {
+      text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      padding: 0 2px; box-sizing: border-box;
+    }
+    .share-bar {
+      display: flex; width: 100%; height: 36px; border-radius: 10px; overflow: hidden;
+      border: 1px solid var(--line); background: #e2e8f0;
+    }
+    .share-bar .seg {
+      display: flex; align-items: center; justify-content: center;
+      color: #0f172a; font-size: 13px; font-weight: 800; min-width: 0;
+      transition: flex-basis .2s ease;
+    }
+    .plain-stat {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; justify-content: center;
+    }
+    .plain-stat .bubble {
+      min-width: 120px; padding: 12px 14px; border-radius: 14px; text-align: center;
+      border: 1px solid var(--line); background: var(--surface-2);
+    }
+    .plain-stat .bubble .big { font-size: 26px; font-weight: 800; color: #0284c7; }
+    .plain-stat .bubble .small { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .twin-label {
+      display: flex; justify-content: space-between; width: 100%; margin: 8px 0 0;
+      font-size: 12px; font-weight: 700; color: var(--muted);
+    }
+    #panel-tools .lab { display: none; }
+    #panel-tools .lab.active { display: block; }
+    .numline-svg .dot-hit { cursor: grab; }
+    .numline-svg.dragging, .numline-svg.dragging .dot-hit { cursor: grabbing; }
+    .mission-bar {
+      display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 8px; align-items: center;
+    }
+    .mission-bar .chip-mission {
+      border: 1px solid rgba(2,132,199,.35); background: #fff; color: #0369a1;
+      font: inherit; font-weight: 650; font-size: 13px; padding: 7px 12px;
+      border-radius: 999px; cursor: pointer;
+    }
+    .mission-bar .chip-mission:hover { background: rgba(2,132,199,.08); }
+    .mission-bar .chip-mission.active {
+      background: #0284c7; color: #fff; border-color: #0284c7;
+    }
+    .mission-hud {
+      display: none; margin: 12px 0 4px; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid rgba(217,119,6,.35); background: rgba(251,191,36,.12);
+      font-size: 14px; line-height: 1.5;
+    }
+    .mission-hud.show { display: block; }
+    .mission-hud .mission-title { font-weight: 700; color: #b45309; margin: 0 0 4px; }
+    .mission-hud .mission-goal { margin: 0; color: var(--text); }
+    .mission-hud.ok {
+      border-color: rgba(22,163,74,.4); background: rgba(34,197,94,.12);
+    }
+    .mission-hud.ok .mission-title { color: #15803d; }
+    .interact-hint {
+      margin: 12px 0 4px; font-size: 13px; color: var(--muted); line-height: 1.45;
+    }
+    .balance-legend {
+      display: flex; flex-wrap: wrap; gap: 12px 18px; justify-content: center;
+      margin: 12px 0 4px; font-size: 12px; font-weight: 650; color: var(--muted);
+    }
+    .stat-grid { margin-top: 16px; }
+    .balance-legend span::before {
+      content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+      margin-right: 5px; vertical-align: -1px;
+    }
+    .balance-legend .lg-mean::before { background: #fbbf24; }
+    .balance-legend .lg-median::before { background: #34d399; }
+    .balance-legend .lg-mode::before { background: #f472b6; }
+    .balance-legend .lg-dot::before { background: #38bdf8; }
+    .bar-chart-fixed {
+      width: 100%; max-width: 640px; height: 140px; display: block; margin: 12px auto 0;
+      border-radius: 18px; border: 1px solid var(--line); background: #fffaf3;
+    }
+    .compare-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;
+    }
+    @media (max-width: 640px) { .compare-grid { grid-template-columns: 1fr; } }
+    .compare-col {
+      padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .compare-col h3 { margin: 0 0 8px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .stat-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .stat-pill {
+      padding: 6px 10px; border-radius: 999px; font-size: 13px; font-weight: 700;
+      border: 1px solid var(--line); background: #fff;
+    }
+    .stat-pill.mean { color: #d97706; border-color: rgba(217,119,6,.4); }
+    .stat-pill.median { color: #0d9488; border-color: rgba(13,148,136,.4); }
+    .stat-pill.mode { color: #db2777; border-color: rgba(219,39,119,.4); }
+    .stat-card .lbl .katex { font-size: 1.05em; }
+    .freq-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+    .freq-table th, .freq-table td {
+      border: 1px solid var(--line); padding: 8px 10px; text-align: center;
+    }
+    .freq-table th { background: var(--surface-2); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+    .freq-table input {
+      width: 56px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line);
+      font: inherit; font-weight: 700; text-align: center;
+    }
+    .scenario-card {
+      padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line);
+      background: var(--surface-2); margin-bottom: 12px;
+    }
+    .scenario-card h3 { margin: 0 0 6px; font-size: 16px; }
+    .scenario-card p { margin: 0 0 10px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+    .scenario-data {
+      font-family: ui-monospace, monospace; font-size: 13px; padding: 8px 10px;
+      border-radius: 8px; background: #fff; border: 1px dashed var(--line); margin-bottom: 10px;
+      word-break: break-all;
+    }
+    .scenario-step2 { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+    .rule-box {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px; margin-top: 12px;
+    }
+    .rule-card {
+      padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: #fff;
+      font-size: 14px; line-height: 1.5;
+    }
+    .rule-card strong { display: block; margin-bottom: 4px; color: var(--accent); }
+    .transform-sliders { margin: 12px 0; }
+    .transform-sliders .slider-row { margin: 8px 0; }
+    .transform-sliders span.val { font-weight: 700; min-width: 3em; color: var(--accent); font-variant-numeric: tabular-nums; }
+    #more-questions-panel { display: none; margin-top: 16px; }
+    #more-questions-panel.open { display: block; }
+    .section-gap { margin-top: 20px; padding-top: 4px; }
+  </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections"><link rel="stylesheet" href="../../shared/section-quiz.css?v=20260928-sections">
+
+<style id="jm-share-only-css">
+  .jm-back, .jm-tabs, .jm-eyebrow + /* noop */ .x { }
+  .jm-back, .jm-tabs { display: none !important; }
+  main.jm-page > .jm-eyebrow { margin-top: 0; }
+  #panel-concept, #panel-comic, #panel-comics, #panel-summary, #panel-quiz,
+  #panel-game:not(.jm-share-keep), #panel-tools:not(.jm-share-keep) {
+    display: none !important;
+  }
+  #panel-tools.jm-share-keep, #panel-game.jm-share-keep {
+    display: block !important;
+  }
+  #panel-tools.jm-share-keep.hidden, #panel-game.jm-share-keep.hidden {
+    display: block !important;
+  }
+</style>
+</head>
+<body class="paper-labs">
+  <main class="jm-page">
+    <p class="jm-eyebrow">JM31 · Lesson 31</p>
+    <h1>Interactive Tool</h1>
+    <p class="lead">Drop and drag data on a number line, tip the mean like a balance beam, then explore transforms and which average fits each context.</p>
+        <section id="panel-concept" class="jm-panel">
+      <section class="block">
+        <h2>Concept &amp; Formula</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-tools" class="jm-panel jm-share-keep">
+      <div class="subnav" id="jm31-lab-nav" aria-label="Tool labs"></div>
+
+      <div class="lab active" id="lab-averages">
+        <p class="part-title">Lab 1 · Mean · Median · Mode</p>
+        <section class="block">
+          <h2>Play with the averages</h2>
+          <p class="hint">Drop points on the number line, drag them around, and watch mean / median / mode chase the data. Type a value only if you need a precise number.</p>
+          <div class="mission-bar" id="mission-bar" aria-label="Missions">
+            <button class="chip-mission" type="button" data-mission="sandbox">Sandbox</button>
+            <button class="chip-mission" type="button" data-mission="mean6">Make mean = 6</button>
+            <button class="chip-mission" type="button" data-mission="split">Split mean &amp; median</button>
+            <button class="chip-mission" type="button" data-mission="mode3">Force mode = 3</button>
+            <button class="chip-mission" type="button" data-mission="outlier">Survive an outlier</button>
+          </div>
+          <div class="mission-hud" id="mission-hud" aria-live="polite">
+            <p class="mission-title" id="mission-title"></p>
+            <p class="mission-goal" id="mission-goal"></p>
+          </div>
+          <div class="count-row">
+            <input id="avg-in" type="number" min="0" max="20" step="1" value="5" title="Optional precise value">
+            <button class="btn" type="button" id="avg-add">Add</button>
+            <button class="btn" type="button" id="avg-default">Demo set</button>
+            <button class="btn" type="button" id="avg-clear">Clear</button>
+          </div>
+          <div class="chip-list" id="avg-chips"></div>
+          <p class="interact-hint">Click empty space on the line to drop a point · drag a blue dot to move · double-click a dot to remove</p>
+          <svg class="numline-svg" id="avg-numline" viewBox="0 0 720 170" aria-label="Number line with mean as balance point — click to add, drag to move"></svg>
+          <div class="balance-legend">
+            <span class="lg-dot">data</span>
+            <span class="lg-mean">mean</span>
+            <span class="lg-median">median</span>
+            <span class="lg-mode">mode</span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat-card"><div class="val" id="avg-mean">—</div><div class="lbl">Mean</div></div>
+            <div class="stat-card"><div class="val" id="avg-median">—</div><div class="lbl">Median</div></div>
+            <div class="stat-card"><div class="val" id="avg-mode">—</div><div class="lbl">Mode</div></div>
+            <div class="stat-card"><div class="val" id="avg-n">0</div><div class="lbl">How many</div></div>
+          </div>
+          <div class="note-box" id="avg-note">The triangle under the number line marks the mean — the balance point of the data.</div>
+
+          <div class="section-gap" id="avg-bar-section" style="display:none">
+            <p class="split-hint">How often each score appears (0–10)</p>
+            <svg class="bar-chart-fixed" id="avg-bar-chart" viewBox="0 0 640 140" aria-label="Frequency bar chart from current data set"></svg>
+          </div>
+
+          <div class="section-gap">
+            <h2 style="font-size:17px;margin:0 0 8px">Music exam — which part counts more?</h2>
+            <p class="hint">Edit the first three weights; the last one fills whatever is left to 100%. The coloured strip shows each part’s share of the overall score.</p>
+            <div class="weight-col-labels"><span>Part</span><span>Relative size of weight</span><span>Score</span><span>%</span></div>
+            <div class="weight-blocks" id="weight-blocks"></div>
+            <div class="share-wrap">
+              <div class="share-labels" id="weight-share-labels"></div>
+              <div class="share-bar" id="weight-share" role="img" aria-label="Share of each exam part"></div>
+            </div>
+            <svg class="viz-svg" id="weight-viz" viewBox="0 0 720 140" aria-label="Scores on a number line with overall mean as balance point"></svg>
+            <div class="plain-stat">
+              <div class="bubble"><div class="big" id="weight-mean">—</div><div class="small">Overall score</div></div>
+              <div class="bubble"><div class="big" id="weight-wsum">—</div><div class="small">Total weight %</div></div>
+            </div>
+            <p class="note-box" id="weight-formula">Bigger share pulls the overall score toward that part’s mark.</p>
+          </div>
+
+          <div class="section-gap story-card task-box">
+            <p class="story-lead"><strong>Story:</strong> Four classmates scored <strong>2, 4, 6, 8</strong> in a mini-quiz. A transfer student then scores <strong>20</strong> — far above everyone else.</p>
+            <p class="story-meta">Watch the balance before and after the “genius” joins.</p>
+            <div class="twin-label"><span>Before (2, 4, 6, 8)</span><span>After (+20)</span></div>
+            <svg class="viz-svg" id="outlier-viz" viewBox="0 0 720 150" aria-label="Before and after outlier on twin number lines"></svg>
+            <p class="quiz-question">Which average jumped farther when the score 20 arrived?</p>
+            <div class="count-row">
+              <button class="btn" type="button" data-oans="mean">Mean (balance tip)</button>
+              <button class="btn" type="button" data-oans="median">Median (middle score)</button>
+            </div>
+            <p class="feedback" id="outlier-fb"></p>
+          </div>
+
+          <div class="section-gap" style="text-align:center">
+            <button class="btn" type="button" id="more-questions-btn">More questions</button>
+          </div>
+          <div id="more-questions-panel">
+            <section class="block" style="margin-top:12px">
+              <h2>Which average fits?</h2>
+              <p class="hint">Read the data and context — pick the best average for each scenario.</p>
+              <div id="scenario-list"></div>
+            </section>
+          </div>
+        </section>
+      </div>
+
+      <div class="lab" id="lab-transform">
+        <p class="part-title">Lab 2 · Shift &amp; stretch</p>
+        <section class="block">
+          <h2>Everyone moves together</h2>
+          <p class="hint">Imagine every student gets the same bonus (+), or every score is scaled (×). Watch the dots slide or stretch — the three averages move the same way.</p>
+          <div class="count-row">
+            <button class="btn" type="button" data-tpreset="custom">Tiny set</button>
+            <button class="btn" type="button" data-tpreset="notes">Class scores</button>
+            <button class="btn" type="button" data-tpreset="exam">Exam scores</button>
+          </div>
+          <div class="chip-list" id="transform-chips"></div>
+          <div class="transform-sliders">
+            <div class="slider-row">
+              <label for="transform-add">Give everyone a bonus</label>
+              <input id="transform-add" type="range" min="-15" max="15" step="1" value="0">
+              <span class="val" id="transform-add-val">0</span>
+            </div>
+            <div class="slider-row">
+              <label for="transform-mul">Stretch every score by</label>
+              <input id="transform-mul" type="range" min="0.5" max="3" step="0.1" value="1">
+              <span class="val" id="transform-mul-val">×1</span>
+            </div>
+          </div>
+          <div class="twin-label"><span>Before</span><span>After</span></div>
+          <svg class="viz-svg" id="transform-viz" viewBox="0 0 720 150" aria-label="Before and after transform on twin number lines"></svg>
+          <div class="compare-grid">
+            <div class="compare-col">
+              <h3>Before</h3>
+              <div class="stat-row" id="transform-orig"></div>
+            </div>
+            <div class="compare-col">
+              <h3>After</h3>
+              <div class="stat-row" id="transform-new"></div>
+            </div>
+          </div>
+          <div class="rule-box">
+            <div class="rule-card"><strong>Same bonus for all</strong>Every score slides by that bonus — so mean, median and mode each slide by the same amount.</div>
+            <div class="rule-card"><strong>Stretch every score</strong>Gaps between scores grow or shrink together — so mean, median and mode stretch by the same factor.</div>
+          </div>
+          <div class="note-box" id="transform-note">Move the sliders and watch both number lines — the whole cloud of dots moves together.</div>
+        </section>
+      </div>
+    </section>
+        <section id="panel-game" class="jm-panel hidden">
+      <section class="block">
+        <h2>Game</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-comic" class="jm-panel hidden">
+      <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+      <div id="comics-stage"></div>
+      <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+    </section>
+    <section id="panel-summary" class="jm-panel hidden">
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-quiz" class="jm-panel hidden">
+      <div class="quiz-wrap">
+        <div class="quiz-progress-wrap" id="quiz-progress-wrap">
+          <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
+          <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
+        </div>
+        <div id="quiz-root"></div>
+        <div class="quiz-nav" id="quiz-nav">
+          <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
+          <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
+        </div>
+      </div>
+      <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
+    </section>
+  </main>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="../../shared/section-quiz.js?v=20260928-sections"></script>
+  <script defer src="central-tendency-quiz.js?v=20260928-sections"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
+  <script defer src="central-tendency-tools.js?v=20261017d"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="central-tendency-comics.js?v=20260830-fu"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      
+      var avgFormula = document.getElementById("avg-formula");
+      if (window.renderMathInElement && avgFormula) {
+        window.renderMathInElement(avgFormula, {
+          delimiters: [{ left: "\\(", right: "\\)", display: false }],
+          throwOnError: false,
+        });
+      }
+    });
+  </script>
+</body>
+</html>
