@@ -281,7 +281,7 @@
     } else {
       setMode(lv.mode);
     }
-    showOverlay(null);
+    showOverlay("play");
     updateHud();
     draw();
     flashTip(true);
@@ -384,12 +384,11 @@
   }
 
   function showOverlay(which) {
-    els.overlayTitle.classList.toggle("hidden", which !== "title" && which != null);
-    if (which === "title") {
-      els.overlayTitle.classList.remove("hidden");
-      els.overlayClear.classList.add("hidden");
-      els.overlayFail.classList.add("hidden");
-    }
+    // which: "title" | "clear" | "fail" | "play" | null
+    var mode = which || "play";
+    els.overlayTitle.classList.toggle("hidden", mode !== "title");
+    els.overlayClear.classList.toggle("hidden", mode !== "clear");
+    els.overlayFail.classList.toggle("hidden", mode !== "fail");
   }
 
   function pulse(kind) {
