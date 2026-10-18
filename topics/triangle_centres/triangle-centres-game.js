@@ -16,6 +16,7 @@
   var DASH = "#0284c7";
 
   var MODES = [
+    { id: "meet", label: "Meeting Point" },
     { id: "centres", label: "Centre Snap" },
     { id: "angles", label: "Angle Pair Spot" },
     { id: "match", label: "Condition Check" },
@@ -471,7 +472,7 @@
   ];
 
   var state = {
-    mode: "centres",
+    mode: "meet",
     modes: {}, /* modeId -> modeState */
   };
 
@@ -541,6 +542,7 @@
   }
 
   function buildQueue(mode) {
+    if (mode === "meet") return [];
     if (mode !== "match") return uniquePick(bankFor(mode), ROUND, itemKey);
     var bank = MATCH_BANK.filter(function (x) { return x.type !== "factory"; });
     var q = uniquePick(bank, MATCH_PRE, itemKey);
@@ -659,12 +661,24 @@
   function solidTri(A, B, C) {
     return '<polygon points="' + A.x + "," + A.y + " " + B.x + "," + B.y + " " + C.x + "," + C.y +
       '" fill="#e0f2fe" stroke="' + LINE + '" stroke-width="2.2"/>' +
-      label(A, "A", 0, -11) + label(B, "B", -12, 14) + label(C, "C", 12, 14);
+      labelOutside(A, B, C, A, "A") +
+      labelOutside(A, B, C, B, "B") +
+      labelOutside(A, B, C, C, "C");
   }
 
   function label(P, t, dx, dy) {
     return '<text x="' + (P.x + (dx || 0)) + '" y="' + (P.y + (dy || 0)) +
-      '" fill="' + LINE + '" font-size="13" font-weight="700" text-anchor="middle">' + t + "</text>";
+      '" fill="' + LINE + '" font-size="13" font-weight="700" text-anchor="middle" dominant-baseline="middle">' + t + "</text>";
+  }
+
+  /** Place vertex letter outside the triangle, away from the centroid. */
+  function labelOutside(A, B, C, P, t) {
+    var g = { x: (A.x + B.x + C.x) / 3, y: (A.y + B.y + C.y) / 3 };
+    var dx = P.x - g.x;
+    var dy = P.y - g.y;
+    var d = Math.hypot(dx, dy) || 1;
+    var dist = 18;
+    return label(P, t, (dx / d) * dist, (dy / d) * dist);
   }
 
   function meetDot(P) {
@@ -759,10 +773,6 @@
       parts.push(hashMarks(A, C, 0.5, 1), hashMarks(B, C, 0.5, 1));
       parts.push(equalAngleArcs(A, B, C, 1, 16));
       parts.push(equalAngleArcs(B, A, C, 1, 16));
-    } else if (mode === "shape-scalene") {
-      parts.push(hashMarks(A, B, 0.5, 1));
-      parts.push(hashMarks(B, C, 0.5, 2));
-      parts.push(hashMarks(C, A, 0.5, 3));
     } else if (mode === "altitude") {
       var Fa = footOnLine(A, B, C);
       var Fb = footOnLine(B, A, C);
@@ -900,8 +910,16 @@
         '" fill="' + fill + '" stroke="' + LINE + '" stroke-width="2"/>';
     }
     parts.push(poly(L, "#e0f2fe"), poly(R, "#fce7f3"));
-    parts.push(label(L.A, "A", 0, -10), label(L.B, "B", -10, 14), label(L.C, "C", 10, 14));
-    parts.push(label(R.A, "D", 0, -10), label(R.B, "E", -10, 14), label(R.C, "F", 10, 14));
+    parts.push(
+      labelOutside(L.A, L.B, L.C, L.A, "A"),
+      labelOutside(L.A, L.B, L.C, L.B, "B"),
+      labelOutside(L.A, L.B, L.C, L.C, "C")
+    );
+    parts.push(
+      labelOutside(R.A, R.B, R.C, R.A, "D"),
+      labelOutside(R.A, R.B, R.C, R.B, "E"),
+      labelOutside(R.A, R.B, R.C, R.C, "F")
+    );
     var leftEdge = Math.max(L.A.x, L.B.x, L.C.x);
     var rightEdge = Math.min(R.A.x, R.B.x, R.C.x);
     var midX = (leftEdge + rightEdge) / 2;
@@ -1361,9 +1379,45 @@
     saveStore();
   }
 
+  function setMeetVisible(on) {
+    var meet = $("tg-meet");
+    var play = $("tg-play");
+    var done = $("tg-done");
+    if (meet) meet.classList.toggle("hidden", !on);
+    if (on) {
+      if (play) play.classList.add("hidden");
+      if (done) done.classList.add("hidden");
+      if (window.JM28MeetingPoint && window.JM28MeetingPoint.activate) {
+        window.JM28MeetingPoint.activate();
+      }
+    } else {
+      if (window.JM28MeetingPoint && window.JM28MeetingPoint.deactivate) {
+        window.JM28MeetingPoint.deactivate();
+      }
+    }
+  }
+
   function ensureMode(mode, forceNew) {
     stopFactoryTimers();
     state.mode = mode;
+    document.querySelectorAll("[data-tg-mode]").forEach(function (b) {
+      b.classList.toggle("active", b.dataset.tgMode === mode);
+    });
+    var blurb = {
+      meet: "Free-draw from vertices or mid-points. Check answer with three lines — centres mark as G / H / I / O.",
+      centres: "Read the marks, then name the centre or the special line. The meeting point stays unmarked.",
+      angles: "Two parallels cut by a transversal — name the angle pair the HKDSE way.",
+      match: "Name the condition from the marks (3 rounds), then Factory Line (5 boxes). Accept if congruent; Reject if not.",
+    };
+    if ($("tg-blurb")) $("tg-blurb").textContent = blurb[mode] || "";
+
+    if (mode === "meet") {
+      setMeetVisible(true);
+      saveStore();
+      return;
+    }
+
+    setMeetVisible(false);
     var ms = modeState();
     if (forceNew || !ms.queue.length) {
       state.modes[mode] = emptyMode();
@@ -1371,15 +1425,8 @@
       ms.queue = buildQueue(mode);
       ms.results = ms.queue.map(function () { return null; });
     }
-    document.querySelectorAll("[data-tg-mode]").forEach(function (b) {
-      b.classList.toggle("active", b.dataset.tgMode === mode);
-    });
-    var blurb = {
-      centres: "Read the marks, then name the centre or the special line. The meeting point stays unmarked.",
-      angles: "Two parallels cut by a transversal — name the angle pair the HKDSE way.",
-      match: "Name the condition from the marks (3 rounds), then Factory Line (5 boxes). Accept if congruent; Reject if not.",
-    };
-    $("tg-blurb").textContent = blurb[mode] || "";
+    var play = $("tg-play");
+    if (play) play.classList.toggle("hidden", !!ms.done);
     if (ms.done) showDone(ms);
     else renderQ();
     saveStore();
@@ -1446,7 +1493,7 @@
       }
     });
 
-    ensureMode(state.mode || "centres", false);
+    ensureMode(state.mode || "meet", false);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
