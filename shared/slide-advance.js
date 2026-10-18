@@ -42,6 +42,15 @@
       if (e.target && e.target.closest && e.target.closest("a, button")) return;
       nextSlide();
     });
+    // A statement slide auto-plays into its loop; stepping back must skip over it.
+    var lastH = R.getIndices ? R.getIndices().h : 0;
+    R.on("slidechanged", function (e) {
+      var back = e.indexh < lastH;
+      lastH = e.indexh;
+      if (back && e.currentSlide && e.currentSlide.hasAttribute("data-autoslide")) {
+        setTimeout(prevSlide, 0);
+      }
+    });
     window.addEventListener("message", function (e) {
       var data = e.data;
       if (typeof data === "string") {
