@@ -1,11 +1,11 @@
 /* JM29 Game 1 — Identifying quadrilaterals.
- * Opening chapter + the six kingdoms of the parallelogram region.
+ * Opening chapter + the five kingdoms of the parallelogram region.
  */
 (function () {
   "use strict";
 
   var ART = "game/";
-  var V = "?v=20261011-end11";
+  var V = "?v=20261015-marks2";
 
   var TITLE = {
     eyebrow: "JM29 · Game 1",
@@ -164,17 +164,16 @@
     },
   };
 
-  /* Every court offers the same five reasons; only the answer changes. */
+  /* Every court offers the same five reasons; only the answer changes.
+   * Each princess's marks give exactly one of them, with no steps between. */
   var REASONS = [
     "opp. sides equal",
     "opp. \u2220s equal",
     "diags. bisect each other",
-    "2 sides equal and parallel",
-    "opp. sides parallel",
+    "2 sides equal and //",
+    "by definition (opp. sides //)",
   ];
 
-  /* Only the rhombus half of each proof is a reason here; any parallelogram
-   * step is read from the marks and said by the sage. */
   var RH_REASONS = [
     "4 sides equal",
     "diags. \u22a5 each other",
@@ -203,6 +202,12 @@
   var RE_REASONS = [
     "4 \u2220s = 90\u00b0",
     "diags. equal",
+  ];
+
+  var SQ_REASONS = [
+    "4 sides equal and 4 \u2220s = 90\u00b0",
+    "diags. equal and \u22a5 bisect each other",
+    "4 \u2220s = 90\u00b0 and diag. bisects \u2220s",
   ];
 
   var RECTANGLE_OUTRO = [
@@ -252,102 +257,62 @@
     para: { reasons: REASONS, ask: "Which claimant is a true parallelogram?", bed: "court", outro: REGION_OUTRO },
     rhombus: { reasons: RH_REASONS, ask: "Which claimant is a true rhombus?", bed: "rhombus", outro: RHOMBUS_OUTRO },
     rectangle: { reasons: RE_REASONS, ask: "Which claimant is a true rectangle?", bed: "rectangle", outro: RECTANGLE_OUTRO },
-    // No reason step: once the true square is picked the sage proves it.
-    square: { reasons: null, ask: "Which claimant is a true square?", bed: "square", outro: SQUARE_OUTRO },
+    square: { reasons: SQ_REASONS, ask: "Which claimant is a true square?", bed: "square", outro: SQUARE_OUTRO },
   };
 
-  /* Figures live in a 0–120 × 0–100 box.
+  /* Card figures live in a 120 × 100 box and are drawn to scale: every mark
+   * and every measurement is true for the drawing.
    * ticks / arrows are [sideIndex, count]; angles are [vertexIndex, count];
    * diagTicks are [vertexIndex, count] and mark the half-diagonal from that
-   * vertex to where the two diagonals cross. */
-  var SHAPE = {
-    // True parallelograms. These are the ones that flatter the eye, so an
-    // unmarked figure drawn on one of them is the most tempting wrong answer.
-    a: [[18, 20], [98, 20], [86, 80], [6, 80]],
-    b: [[12, 20], [92, 20], [104, 80], [24, 80]],
-    c: [[34, 18], [104, 18], [78, 82], [8, 82]],
-    d: [[22, 22], [102, 22], [92, 78], [12, 78]],
-    e: [[8, 24], [88, 24], [100, 76], [20, 76]],
-    f: [[28, 20], [108, 20], [88, 80], [8, 80]],
+   * vertex to where the two diagonals cross. Side i runs from P[i] to P[i+1].
+   * Measurements: sideLabels [side, text], angleLabels [vertex, text],
+   * halfLabels [vertex, text] on a half-diagonal, splitLabels
+   * [vertex, text, text] for a corner cut by its diagonal, and crossLabel
+   * for the angle between the halves running to P0 and P1. */
+  var DEG = Math.PI / 180;
 
-    // Off by a hair: reads as a parallelogram, but no pair is truly equal or
-    // parallel, so only the marks decide.
-    g: [[20, 10], [112, 36], [68, 90], [0, 52]],
+  /* Shapes are built from real lengths with y pointing up, then scaled into
+   * the card box. rot turns the whole shape anticlockwise, in degrees. */
+  function fit(pts, rot) {
+    var r = (rot || 0) * DEG;
+    var q = pts.map(function (p) {
+      return [p[0] * Math.cos(r) - p[1] * Math.sin(r), -(p[0] * Math.sin(r) + p[1] * Math.cos(r))];
+    });
+    var xs = q.map(function (p) { return p[0]; });
+    var ys = q.map(function (p) { return p[1]; });
+    var minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+    var minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
+    var s = Math.min(74 / (maxX - minX), 60 / (maxY - minY));
+    var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+    return q.map(function (p) {
+      return [Math.round((60 + (p[0] - cx) * s) * 10) / 10, Math.round((50 + (p[1] - cy) * s) * 10) / 10];
+    });
+  }
 
-    // Used once, in Simon. A figure is not drawn to scale: if a side carries
-    // a parallel arrow it is parallel, however crooked the drawing looks.
-    h: [[18, 18], [99, 24], [93, 80], [8, 75]],
-  };
+  // Top and bottom of length a, slanted sides of length b, deg at the bottom-left corner.
+  function para(a, b, deg, rot) {
+    var c = b * Math.cos(deg * DEG), h = b * Math.sin(deg * DEG);
+    return fit([[c, h], [a + c, h], [a, 0], [0, 0]], rot);
+  }
 
-  /* Rhombus region. Every impostor is drawn close enough to a rhombus that
-   * only the marks can rule her out; every true rhombus is drawn exactly. */
-  var RH = {
-    // True rhombi.
-    lean: [[34, 20], [98, 20], [74, 79], [10, 79]],
-    tilt: [[15, 34], [68, 29], [105, 66], [52, 71]],
-    turn: [[14, 40], [67, 17], [106, 60], [53, 83]],
+  // h0–h3 run from each vertex to the crossing; deg is the angle between the halves to P0 and P1.
+  function byDiags(h0, h1, h2, h3, deg, rot) {
+    var t0 = (90 + deg / 2) * DEG, t1 = (90 - deg / 2) * DEG;
+    return fit([
+      [h0 * Math.cos(t0), h0 * Math.sin(t0)],
+      [h1 * Math.cos(t1), h1 * Math.sin(t1)],
+      [-h2 * Math.cos(t0), -h2 * Math.sin(t0)],
+      [-h3 * Math.cos(t1), -h3 * Math.sin(t1)],
+    ], rot);
+  }
 
-    // Kites: diagonals really perpendicular, the long one really bisects its
-    // two corners, sides equal only in touching pairs.
-    kiteDown: [[60, 6], [102, 46], [60, 94], [18, 46]],
+  var ARROWS = [[0, 1], [2, 1], [1, 2], [3, 2]];
+  var PAIRS = [[0, 1], [2, 1], [1, 2], [3, 2]];
+  var ALL_ONE = [[0, 1], [1, 1], [2, 1], [3, 1]];
+  var ALL_RIGHT = [0, 1, 2, 3];
 
-    // Three sides equal, the fourth a little short.
-    three: [[60, 6], [102, 48], [60, 90], [20, 50]],
-
-    // Parallelograms a few degrees and a few units away from a rhombus.
-    paraUp: [[58, 6], [104, 46], [62, 94], [16, 54]],
-    paraLean: [[30, 18], [100, 18], [86, 82], [16, 82]],
-
-    // Near-squares. The rhombus is exact; the others are a rectangle and
-    // trapezia whose marks are all true for the drawing.
-    squarish: [[28, 20], [87, 21], [92, 80], [33, 79]],
-    squareLean: [[34, 22], [90, 22], [84, 78], [28, 78]],
-    rectSquare: [[30, 22], [92, 22], [92, 80], [30, 80]],
-    // Isosceles trapezium with perpendicular diagonals.
-    trapPerp: [[35, 24], [85, 24], [88, 77], [32, 77]],
-    // Top parallel to bottom; top equals the right side.
-    trapAdj: [[30, 22], [86, 22], [80, 78], [20, 78]],
-    // Top parallel to bottom; top and both slanted sides equal.
-    trapThree: [[34, 22], [90, 22], [93, 78], [31, 78]],
-    // Left parallel to right; top, right and bottom equal.
-    trapSide: [[36, 19], [92, 22], [92, 78], [36, 81]],
-  };
-
-  /* Rectangle region. A true rectangle always looks like one, so every
-   * impostor is drawn within a few degrees of a rectangle and only the marks
-   * rule her out. No impostor's marks may force a rectangle by themselves. */
-  var RE = {
-    // True rectangles.
-    wide: [[22, 24], [98, 24], [98, 76], [22, 76]],
-    plain: [[20, 22], [100, 22], [100, 78], [20, 78]],
-    long: [[18, 24], [102, 24], [102, 76], [18, 76]],
-    tall: [[22, 20], [98, 20], [98, 80], [22, 80]],
-    low: [[20, 24], [100, 24], [100, 76], [20, 76]],
-
-    // B and D are the ends of a diameter, so A and C are right angles; B and
-    // D are 92.5° and 87.5°.
-    cyclic: [[19.8, 27.7], [98.6, 24.9], [102, 68.7], [21.4, 75.1]],
-    // Kite about BD with right angles at A and C.
-    rightKite: [[25.5, 21.1], [94.5, 21.1], [82.5, 89], [25.5, 78.9]],
-    // Right-angled trapezium: top parallel to bottom, right angles at A and D.
-    rightTrap: [[20, 22], [96, 22], [102, 78], [20, 78]],
-    // Leans 4 units: a parallelogram, not a rectangle.
-    lean: [[24, 23], [100, 23], [96, 77], [20, 77]],
-    leanBack: [[22, 22], [99, 22], [96, 78], [19, 78]],
-    // Isosceles trapezium: AE = BE and CE = DE.
-    isoTrap: [[27, 23], [93, 23], [98, 77], [22, 77]],
-    // Kite about BD with A = B = C = 86° and D = 102°.
-    kite86: [[24.2, 16.7], [95.8, 14.2], [93.3, 85.8], [30.8, 79.2]],
-    // D = 90°, A = B = 88°, C = 94°.
-    nearRect: [[20, 20], [98, 22.7], [93.9, 80], [20, 80]],
-    // A, B, C lie 44 from the crossing; D lies 51 from it.
-    threeHalves: [[23.1, 26], [96.9, 26], [96.9, 74], [17.2, 77.8]],
-  };
-
-  /* Square region. Every claimant is drawn as the same exact square, so only
-   * the marks decide; every mark is still true for the drawing. */
-  var SQ = [[30, 20], [90, 20], [90, 80], [30, 80]];
-
+  /* Every claimant is a clean, regular shape, and every mark is true for
+   * her drawing. An impostor is ruled out by what her marks fail to show. */
   var LEVELS = [
     {
       id: "para-01",
@@ -360,38 +325,38 @@
       king: "king-para-01.png",
       kingName: "King Leo",
       intro: [
-        { who: "king", lines: ["Find the real princess.", "She is a parallelogram, but she may not look like one."] },
+        { who: "king", lines: ["Find the real princess.", "Every claimant looks like a parallelogram."] },
         { who: "you", lines: ["Then I will read the marks, not the shape."] },
       ],
       cards: [
         {
           name: "Anna",
-          poly: SHAPE.a,
-          why: "Anna carries no marks at all — only a shape that looks right.\nLooking like a parallelogram is not evidence of being one.",
+          poly: para(6, 3.6, 62),
+          ticks: [[0, 1], [2, 1]],
+          why: "Only one pair of Anna's opposite sides is marked equal.\nBoth pairs of opposite sides must be equal.",
         },
         {
           name: "Claire",
-          poly: SHAPE.d,
+          poly: para(6, 4, 68),
           ticks: [[0, 1], [2, 1]],
-          diags: true,
-          diagTicks: [[0, 2], [2, 2]],
-          why: "Claire has one pair of equal sides and one bisected diagonal.\nNeither fact is enough, and together they still prove nothing.",
+          arrows: [[1, 1], [3, 1]],
+          why: "Claire has one pair of opposite sides equal and the other pair parallel.\nThe same pair of opposite sides must be both equal and parallel to prove a parallelogram.",
         },
-        { name: "Mira", poly: SHAPE.g, ticks: [[0, 1], [2, 1], [1, 2], [3, 2]] },
+        { name: "Mira", poly: para(6, 3.6, 65), ticks: PAIRS },
       ],
       answer: 2,
       kingWrong: ["Wrong! You would hand my throne to a thief?", "Guards — take him!"],
-      kingCorrect: ["She does not look like a parallelogram.", "Tell me why she is the one."],
+      kingCorrect: ["Mira. Her marks are only on her sides.", "Tell me why that makes her the one."],
       reasonAnswer: 0,
       reasonWhy: [
         "",
-        "Her equal marks are on the sides, not on the angles.",
-        "No diagonals are drawn in her figure at all.",
-        "Nothing here marks a side as parallel — only as equal.",
-        "Parallel sides are what we must prove, not what we were given.",
+        "No angle is marked in her figure.",
+        "No diagonals are drawn in her figure.",
+        "None of her sides is marked parallel.",
+        "None of her sides is marked parallel.",
       ],
       solve: [
-        { who: "you", lines: ["Both pairs of opposite sides are marked equal,", "so the figure must be a parallelogram. (opp. sides equal)"] },
+        { who: "you", lines: ["Both pairs of her opposite sides are marked equal.", "So she is a parallelogram. (opp. sides equal)"] },
         { who: "king", lines: ["My daughter! Return to me!", "I owe you this peace, sage."] },
       ],
       outro: ["Leo lowers his banners of war.", "The road now climbs east, into the emerald hills of Owen."],
@@ -412,31 +377,31 @@
       cards: [
         {
           name: "Helen",
-          poly: SHAPE.b,
+          poly: para(6.4, 3.8, 60),
           angles: [[0, 1], [2, 1]],
-          why: "Helen shows only one pair of opposite angles equal.\nA kite does the same, so one pair is never enough.",
+          why: "Only one pair of Helen's opposite angles is marked equal.\nBoth pairs of opposite angles must be equal.",
         },
         {
           name: "Grace",
-          poly: SHAPE.e,
-          ticks: [[0, 1], [1, 1], [2, 2], [3, 2]],
-          why: "Grace's equal sides are adjacent, not opposite.\nThose marks describe a kite, which is no parallelogram.",
+          poly: para(5, 5, 65),
+          ticks: [[0, 1], [1, 1]],
+          why: "Grace only has two touching sides marked equal.\nTouching sides prove nothing; we need her opposite sides or opposite angles.",
         },
-        { name: "Alice", poly: SHAPE.f, angles: [[0, 1], [2, 1], [1, 2], [3, 2]] },
+        { name: "Alice", poly: para(6, 4, 64), angles: PAIRS },
       ],
       answer: 2,
       kingWrong: ["You dare guess in my hall?", "My spears are already at the border, sage!"],
       kingCorrect: ["Alice, then. My court is listening.", "Name the reason, and name it exactly."],
       reasonAnswer: 1,
       reasonWhy: [
-        "No side length is marked anywhere in her figure.",
+        "No side is marked equal in her figure.",
         "",
-        "No diagonals are drawn in her figure at all.",
-        "Neither equal sides nor parallel sides are given here.",
-        "Nothing in the figure marks a pair of sides as parallel.",
+        "No diagonals are drawn in her figure.",
+        "No side is marked equal or parallel in her figure.",
+        "None of her sides is marked parallel.",
       ],
       solve: [
-        { who: "you", lines: ["Both pairs of opposite angles are marked equal,", "so the figure must be a parallelogram. (opp. \u2220s equal)"] },
+        { who: "you", lines: ["Both pairs of her opposite angles are marked equal.", "So she is a parallelogram. (opp. \u2220s equal)"] },
         { who: "king", lines: ["Alice. My own stubborn Alice.", "Owen stands down. Go on, sage."] },
       ],
       outro: ["Owen's spears go back into the racks.", "Beyond the hills the red towers of Henry are already waiting."],
@@ -457,33 +422,31 @@
       cards: [
         {
           name: "Nina",
-          poly: SHAPE.a,
-          diags: true,
+          poly: para(6.4, 4, 58),
           diagTicks: [[1, 1], [3, 1]],
-          why: "Nina proves only that one diagonal is cut in half.\nThe second diagonal is still completely unknown.",
+          why: "Only one of Nina's diagonals is marked as cut in half.\nBoth diagonals must bisect each other.",
         },
         {
           name: "Rose",
-          poly: SHAPE.d,
+          poly: para(6.2, 3.8, 60),
           ticks: [[1, 1], [3, 1]],
-          angles: [[0, 1], [2, 1]],
-          why: "Rose has one pair of equal sides and one pair of equal angles.\nBoth are half-conditions, and two halves still prove nothing.",
+          why: "Only one pair of Rose's opposite sides is marked equal.\nBoth pairs of opposite sides must be equal.",
         },
-        { name: "Iris", poly: SHAPE.e, diags: true, diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]] },
+        { name: "Iris", poly: para(6, 4, 64), diagTicks: PAIRS },
       ],
       answer: 2,
       kingWrong: ["A false daughter in the crimson seat!", "You have doomed us all, sage!"],
-      kingCorrect: ["Iris. Hm.", "Say why, and let the whole hall hear it."],
+      kingCorrect: ["Iris. Hm. Not one side of hers is marked.", "Say why, and let the whole hall hear it."],
       reasonAnswer: 2,
       reasonWhy: [
-        "The marks lie on the diagonals, not on the sides.",
-        "The marks lie on the diagonals, not on the angles.",
+        "No side is marked equal in her figure.",
+        "No angle is marked in her figure.",
         "",
         "No side is marked equal or parallel in her figure.",
-        "Nothing in the figure marks a pair of sides as parallel.",
+        "None of her sides is marked parallel.",
       ],
       solve: [
-        { who: "you", lines: ["Each diagonal is cut into two equal halves by the other,", "so the figure must be a parallelogram. (diags. bisect each other)"] },
+        { who: "you", lines: ["Each of her diagonals is marked as cut into two equal halves.", "So the diagonals bisect each other. (diags. bisect each other)"] },
         { who: "king", lines: ["Then I was wrong to reach for my swords.", "Take my apology with you, sage."] },
       ],
       outro: ["Henry bolts his armoury shut.", "Ahead lie the violet spires of Victor."],
@@ -504,34 +467,32 @@
       cards: [
         {
           name: "Paula",
-          poly: SHAPE.f,
-          ticks: [[0, 1], [2, 1]],
-          arrows: [[1, 1], [3, 1]],
-          why: "Paula's equal pair and parallel pair are different pairs.\nAn isosceles trapezium fits that description too.",
+          poly: para(6, 4, 62),
+          arrows: [[0, 1], [2, 1]],
+          ticks: [[1, 1], [3, 1]],
+          why: "Paula's top and bottom are parallel, but it is her slanted sides that are equal.\nThe same pair of opposite sides must be both equal and parallel.",
         },
         {
           name: "Wendy",
-          poly: SHAPE.c,
-          diags: true,
-          diagTicks: [[0, 1], [2, 1]],
-          angles: [[0, 1], [2, 1]],
-          why: "Wendy has one diagonal bisected and one pair of equal angles.\nA kite carries both of those marks, so neither one is decisive.",
+          poly: para(6.4, 3.8, 66),
+          arrows: [[0, 1], [2, 1]],
+          why: "Only one pair of Wendy's opposite sides is marked parallel.\nThat pair must also be marked equal.",
         },
-        { name: "Diana", poly: SHAPE.b, ticks: [[0, 1], [2, 1]], arrows: [[0, 1], [2, 1]] },
+        { name: "Diana", poly: para(6, 4, 68), arrows: [[0, 1], [2, 1]], ticks: [[0, 1], [2, 1]] },
       ],
       answer: 2,
       kingWrong: ["Half a proof is no proof!", "Victor will answer this insult with steel!"],
       kingCorrect: ["Diana carries only one marked pair.", "Convince my court that one pair is enough."],
       reasonAnswer: 3,
       reasonWhy: [
-        "Only one pair of sides is marked equal, not both pairs.",
+        "Only one pair of her sides is marked equal, not both.",
         "No angle is marked in her figure.",
-        "No diagonals are drawn in her figure at all.",
+        "No diagonals are drawn in her figure.",
         "",
-        "Only one pair is marked parallel, so the definition does not apply yet.",
+        "Only one pair of her sides is marked parallel, not both.",
       ],
       solve: [
-        { who: "you", lines: ["One pair of opposite sides is both equal and parallel,", "so the figure must be a parallelogram. (2 sides equal and parallel)"] },
+        { who: "you", lines: ["Her top and bottom are marked equal, and the same two sides are parallel.", "One pair of opposite sides is equal and parallel. (2 sides equal and //)"] },
         { who: "king", lines: ["One pair. Both facts. I see it now.", "Victor is yours to leave in peace."] },
       ],
       outro: ["Victor puts out his war-fires.", "One kingdom remains: the iron-blue keep of Simon."],
@@ -547,98 +508,39 @@
       king: "king-para-05.png",
       kingName: "King Simon",
       intro: [
-        { who: "king", lines: ["Help me find the princess."] },
+        { who: "king", lines: ["Help me find the princess.", "Two of them look perfect. Surely it is one of those."] },
       ],
       cards: [
         {
           name: "Lily",
-          poly: SHAPE.e,
+          poly: para(5, 5, 62),
           arrows: [[0, 1], [2, 1]],
-          angles: [[0, 1], [1, 1]],
-          why: "Lily has one pair of sides parallel and two touching angles equal.\nAn isosceles trapezium carries exactly those two marks.",
+          ticks: [[0, 1], [3, 1]],
+          why: "Only Lily's top and bottom are marked parallel, and her equal sides touch each other.\nBoth pairs of opposite sides must be parallel.",
         },
         {
           name: "Fiona",
-          poly: SHAPE.b,
-          ticks: [[0, 1], [1, 1]],
-          diags: true,
-          diagTicks: [[0, 2], [2, 2]],
-          why: "Fiona has two touching sides equal and one diagonal cut in half.\nA kite carries both of those, and a kite is no parallelogram.",
+          poly: para(6, 4, 63),
+          why: "Fiona carries no marks at all, only a shape that looks right.\nLooking like a parallelogram is not evidence of being one.",
         },
-        { name: "Sarah", poly: SHAPE.h, arrows: [[0, 1], [2, 1], [1, 2], [3, 2]] },
+        { name: "Sarah", poly: para(6, 3.2, 42, -35), arrows: ARROWS },
       ],
       answer: 2,
       kingWrong: ["So the famous sage is a fraud after all!", "Simon marches at dawn!"],
-      kingCorrect: ["Sarah? Her figure is bent out of shape.", "The oldest reason, sage. Say it plainly."],
+      kingCorrect: ["Sarah? She hardly looks like a parallelogram.", "The oldest reason, sage. Say it plainly."],
       reasonAnswer: 4,
       reasonWhy: [
         "No side is marked equal in her figure.",
         "No angle is marked in her figure.",
-        "No diagonals are drawn in her figure at all.",
+        "No diagonals are drawn in her figure.",
         "No side is marked equal, so this reason cannot be used.",
         "",
       ],
       solve: [
-        { who: "you", lines: ["Both pairs of opposite sides are marked parallel,", "so the figure is a parallelogram by definition. (opp. sides parallel)"] },
-        { who: "king", lines: ["Sarah. My daughter.", "Simon is at peace. Ride on, sage."] },
+        { who: "you", lines: ["Both pairs of her opposite sides are marked parallel.", "That is what a parallelogram is. (by definition)"] },
+        { who: "king", lines: ["Sarah. My daughter.", "Simon is at peace. The region is whole again."] },
       ],
-      outro: ["Simon puts his spears back on the wall.", "One court still has not sent word: the shadowed keep of Philip."],
-    },
-    {
-      id: "para-06",
-      chapter: "Parallelogram Region · Kingdom 6",
-      name: "The Shadow Court of Philip",
-      bg: "kd-para-06.png",
-      bgAngry: "kd-para-06-angry.png",
-      bgPuzzled: "kd-para-06-puzzled.png",
-      bgHappy: "kd-para-06-happy.png",
-      king: "king-para-06.png",
-      kingName: "King Philip",
-      intro: [
-        { who: "king", lines: ["Help me find the princess."] },
-      ],
-      cards: [
-        {
-          name: "Mary",
-          poly: SHAPE.c,
-          arrows: [[0, 1], [2, 1]],
-          ticks: [[0, 1], [1, 1]],
-          why: "Mary has one pair parallel and two touching sides equal.\nA trapezium carries both of those marks at once.",
-        },
-        {
-          name: "Laura",
-          poly: SHAPE.a,
-          ticks: [[0, 1], [1, 1]],
-          diags: true,
-          diagTicks: [[0, 2], [2, 2]],
-          why: "Laura has one diagonal halved and two touching sides equal.\nThat describes a kite, and a kite is no parallelogram.",
-        },
-        {
-          name: "Susan",
-          poly: SHAPE.f,
-          arrows: [[0, 1], [2, 1]],
-          diags: true,
-          diagTicks: [[0, 2], [2, 2]],
-        },
-      ],
-      answer: 2,
-      kingWrong: ["Two facts, and you still chose wrongly!", "Philip has waited long enough — to arms!"],
-      kingCorrect: ["Susan shows a parallel pair and half a diagonal.", "Explain how that can possibly be enough."],
-      // The marks put two reasons one congruence apart, so both are accepted.
-      reasonAnswer: [2, 3],
-      reasonWhy: [
-        "No side of her figure is marked equal to another.",
-        "Not one angle is marked in her figure.",
-        "",
-        "",
-        "Only one pair of her sides is marked parallel, not both.",
-      ],
-      solve: [
-        { who: "you", lines: ["The parallel pair makes the alternate angles equal at that diagonal,", "and the diagonal is already cut in half."] },
-        { who: "you", lines: ["So the two triangles are congruent. That halves the second diagonal", "and makes the parallel pair equal — either reason closes the proof."] },
-        { who: "king", lines: ["Susan. All this time, in my own hall.", "Philip withdraws. The region is whole again."] },
-      ],
-      outro: ["Six thrones, six daughters, and every proof answered.", "The parallelogram region lowers its banners at last."],
+      outro: ["Five thrones, five daughters, and every proof answered.", "The parallelogram region lowers its banners at last."],
     },
     {
       id: "rhombus-01",
@@ -652,96 +554,42 @@
       king: "king-rhombus-01.jpg",
       kingName: "King Arthur",
       intro: [
-        { who: "king", lines: ["Help me find the princess."] },
+        { who: "king", lines: ["Help me find the princess.", "Every claimant here looks like a rhombus."] },
       ],
       cards: [
         {
           name: "Emma",
-          poly: RH.three,
-          ticks: [[0, 1], [1, 1], [3, 1], [2, 2]],
-          why: "Emma has a mark on every side, but one of them is || instead of |.\nOnly three sides are equal, so she is not proved to be a rhombus.",
+          poly: para(5, 5, 58),
+          ticks: [[1, 1], [2, 1], [3, 1]],
+          why: "Only three of Emma's sides are marked equal.\nAll four sides must be equal.",
         },
         {
           name: "Olivia",
-          poly: RH.kiteDown,
-          ticks: [[3, 1], [0, 1], [1, 2], [2, 2]],
-          why: "Olivia's equal sides come in two different pairs, | and ||.\nTwo pairs of touching equal sides make a kite, not a rhombus.",
+          poly: para(5, 5, 66),
+          ticks: [[0, 1], [1, 1], [2, 2], [3, 2]],
+          why: "Olivia's equal sides come in two touching pairs, and the pairs are not marked equal to each other.\nAll four sides must be equal.",
         },
-        { name: "Chloe", poly: RH.lean, ticks: [[0, 1], [1, 1], [2, 1], [3, 1]] },
+        { name: "Chloe", poly: para(5, 5, 62), ticks: ALL_ONE },
       ],
       answer: 2,
       kingWrong: ["Wrong! That is not my daughter.", "Guards, seize the sage!"],
-      kingCorrect: ["Chloe? She does not look like a rhombus.", "Tell me why she is the one."],
+      kingCorrect: ["Chloe? Emma and Olivia carry equal marks too.", "Tell me why Chloe is the one."],
       reasonAnswer: 0,
       reasonWhy: [
         "",
-        "No diagonals are drawn in her figure at all.",
+        "No diagonals are drawn in her figure.",
         "No diagonal is drawn, and no angle is marked.",
       ],
       solve: [
-        { who: "you", lines: ["All four sides are marked equal,", "so the figure must be a rhombus. (4 sides equal)"] },
+        { who: "you", lines: ["All four of her sides are marked equal.", "So she is a rhombus. (4 sides equal)"] },
         { who: "king", lines: ["Chloe! My daughter!", "Arthur owes you this peace, sage."] },
       ],
-      outro: ["Arthur lowers his banners of war.", "The road turns south, to the coral halls of Edward."],
-    },
-    {
-      id: "rhombus-02",
-      region: "rhombus",
-      chapter: "Rhombus Region · Kingdom 2",
-      name: "The Coral Court of Edward",
-      bg: "kd-rhombus-02.jpg",
-      bgAngry: "kd-rhombus-02-angry.jpg",
-      bgPuzzled: "kd-rhombus-02-puzzled.jpg",
-      bgHappy: "kd-rhombus-02-happy.jpg",
-      king: "king-rhombus-02.jpg",
-      kingName: "King Edward",
-      intro: [
-        { who: "king", lines: ["Help me find the princess."] },
-      ],
-      cards: [
-        {
-          name: "Sophie",
-          poly: RH.kiteDown,
-          diags: true,
-          rightCross: true,
-          diagTicks: [[1, 1], [3, 1], [0, 2], [2, 3]],
-          why: "Sophie's short diagonal is cut in half, but her long one is not: || and ||| differ.\nPerpendicular diagonals with only one bisected make a kite.",
-        },
-        {
-          name: "Ruby",
-          poly: RH.paraUp,
-          diags: true,
-          diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          crossAngles: 1,
-          why: "Ruby's diagonals bisect each other, but the arcs at the crossing are not right angles.\nVertically opposite angles are always equal, so she is only a parallelogram.",
-        },
-        {
-          name: "Hannah",
-          poly: RH.tilt,
-          diags: true,
-          rightCross: true,
-          diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]],
-        },
-      ],
-      answer: 2,
-      kingWrong: ["Half a fact is no proof!", "Edward's army is ready, sage!"],
-      kingCorrect: ["Hannah? She leans like a stranger.", "Show my court why she is mine."],
-      reasonAnswer: 1,
-      reasonWhy: [
-        "No side of her figure is marked equal.",
-        "",
-        "No corner angle is marked in her figure.",
-      ],
-      solve: [
-        { who: "you", lines: ["The diagonals bisect each other, so she is a parallelogram.", "They also meet at 90\u00b0, so she is a rhombus. (diags. \u22a5 each other)"] },
-        { who: "king", lines: ["Hannah. Come home.", "Edward stands down. Go on, sage."] },
-      ],
-      outro: ["Edward's war drums fall silent.", "Next come the amethyst towers of Oscar."],
+      outro: ["Arthur lowers his banners of war.", "The road turns east, to the amethyst towers of Oscar."],
     },
     {
       id: "rhombus-03",
       region: "rhombus",
-      chapter: "Rhombus Region · Kingdom 3",
+      chapter: "Rhombus Region · Kingdom 2",
       name: "The Amethyst Court of Oscar",
       bg: "kd-rhombus-03.jpg",
       bgAngry: "kd-rhombus-03-angry.jpg",
@@ -755,97 +603,38 @@
       cards: [
         {
           name: "Lucy",
-          poly: RH.rectSquare,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          rightAngles: [0],
-          why: "Lucy's right angle is at a corner, not where the diagonals cross.\nA parallelogram with a right-angled corner is a rectangle.",
+          poly: byDiags(3, 4.5, 3, 4.5, 90, -45),
+          rightCross: true,
+          diagTicks: [[1, 1], [3, 1]],
+          why: "Lucy's diagonals are perpendicular, but only one of them is marked as bisected.\nThe diagonals must bisect each other at right angles.",
         },
         {
           name: "Zoe",
-          poly: RH.trapPerp,
-          arrows: [[0, 1], [2, 1]],
-          diags: true,
-          rightCross: true,
-          why: "Zoe's diagonals are perpendicular, but only one pair of her sides is parallel.\nA trapezium can have perpendicular diagonals too.",
+          poly: byDiags(3.5, 4.5, 3.5, 4.5, 90, -45),
+          diagTicks: PAIRS,
+          why: "Zoe's diagonals are marked as bisecting each other,\nbut nothing marks them as perpendicular.",
         },
-        {
-          name: "Amy",
-          poly: RH.squarish,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          diags: true,
-          rightCross: true,
-        },
+        { name: "Amy", poly: byDiags(3, 4, 3, 4, 90, -45), rightCross: true, diagTicks: PAIRS },
       ],
       answer: 2,
       kingWrong: ["You call that my daughter?", "Oscar will answer with steel!"],
-      kingCorrect: ["Amy. Her sides are only marked parallel.", "Why is that enough?"],
+      kingCorrect: ["Amy. Only her diagonals are marked.", "Why is that enough?"],
       reasonAnswer: 1,
       reasonWhy: [
-        "No side of her figure is marked equal.",
+        "No side is marked equal in her figure.",
         "",
         "No corner angle is marked in her figure.",
       ],
       solve: [
-        { who: "you", lines: ["Both pairs of opposite sides are parallel, so she is a parallelogram.", "Her diagonals also meet at 90\u00b0, so she is a rhombus. (diags. \u22a5 each other)"] },
+        { who: "you", lines: ["Her diagonals cut each other in half, and they meet at a right angle.", "So she is a rhombus. (diags. \u22a5 each other)"] },
         { who: "king", lines: ["Amy, my clever girl.", "Oscar puts away his sword."] },
       ],
-      outro: ["Oscar opens his gates again.", "The moss-green keep of Felix waits ahead."],
-    },
-    {
-      id: "rhombus-04",
-      region: "rhombus",
-      chapter: "Rhombus Region · Kingdom 4",
-      name: "The Moss Court of Felix",
-      bg: "kd-rhombus-04.jpg",
-      bgAngry: "kd-rhombus-04-angry.jpg",
-      bgPuzzled: "kd-rhombus-04-puzzled.jpg",
-      bgHappy: "kd-rhombus-04-happy.jpg",
-      king: "king-rhombus-04.jpg",
-      kingName: "King Felix",
-      intro: [
-        { who: "king", lines: ["Help me find the princess."] },
-      ],
-      cards: [
-        {
-          name: "Ella",
-          poly: RH.paraUp,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          ticks: [[0, 1], [2, 1]],
-          why: "Ella's equal sides are opposite each other.\nEvery parallelogram has that, so it proves nothing new.",
-        },
-        {
-          name: "Megan",
-          poly: RH.trapAdj,
-          arrows: [[0, 1], [2, 1]],
-          ticks: [[0, 1], [1, 1]],
-          why: "Megan has two touching sides equal, but only one pair of sides is parallel.\nShe may be a trapezium, so she is not proved to be a parallelogram.",
-        },
-        {
-          name: "Kate",
-          poly: RH.lean,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          ticks: [[0, 1], [1, 1]],
-        },
-      ],
-      answer: 2,
-      kingWrong: ["Wrong! You insult my house.", "Felix rides to war!"],
-      kingCorrect: ["Kate has only two sides marked equal.", "Convince me that is enough."],
-      reasonAnswer: 0,
-      reasonWhy: [
-        "",
-        "No diagonals are drawn in her figure at all.",
-        "No diagonal is drawn, and no angle is marked.",
-      ],
-      solve: [
-        { who: "you", lines: ["She is a parallelogram, so opposite sides are equal.", "Two touching sides are equal too, so all four sides are equal. (4 sides equal)"] },
-        { who: "king", lines: ["Kate. My Kate.", "Felix lays down his spear."] },
-      ],
-      outro: ["Felix sends his soldiers home.", "Far ahead glow the sapphire halls of Hugo."],
+      outro: ["Oscar opens his gates again.", "Far ahead glow the sapphire halls of Hugo."],
     },
     {
       id: "rhombus-05",
       region: "rhombus",
-      chapter: "Rhombus Region · Kingdom 5",
+      chapter: "Rhombus Region · Kingdom 3",
       name: "The Sapphire Court of Hugo",
       bg: "kd-rhombus-05.jpg",
       bgAngry: "kd-rhombus-05-angry.jpg",
@@ -859,92 +648,34 @@
       cards: [
         {
           name: "Holly",
-          poly: RH.paraLean,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          angles: [[0, 1], [2, 1]],
-          why: "Holly's equal angles are two opposite corners, not two halves of one corner.\nEvery parallelogram has equal opposite angles.",
+          poly: para(5, 5, 65),
+          diagLines: [0, 1],
+          splitAngles: [[3, 1]],
+          why: "Only one of Holly's corners is marked as bisected.\nEvery corner must be cut into two equal angles by a diagonal.",
         },
         {
           name: "Jessica",
-          poly: RH.paraUp,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          diagLines: [0],
-          splitAngles: [[0, 1, 2]],
-          why: "Jessica's diagonal splits the corner into two different angles: one arc and two arcs.\nThat corner is not bisected.",
+          poly: para(5, 5, 56),
+          diagLines: [1],
+          splitAngles: [[1, 1], [3, 1]],
+          why: "Only one of Jessica's diagonals bisects its corners.\nBoth diagonals must bisect the angles they pass through.",
         },
-        {
-          name: "Bella",
-          poly: RH.turn,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          diagLines: [0],
-          splitAngles: [[0, 1]],
-        },
+        { name: "Bella", poly: para(5, 5, 60), diagLines: [0, 1], splitAngles: [[0, 2], [2, 2], [1, 1], [3, 1]] },
       ],
       answer: 2,
       kingWrong: ["The marks were right there, sage!", "Hugo calls his knights!"],
-      kingCorrect: ["Bella? Only one angle is marked.", "Explain it to my court."],
+      kingCorrect: ["Bella? Jessica's corners are split evenly too.", "Explain it to my court."],
       reasonAnswer: 2,
       reasonWhy: [
-        "No side of her figure is marked equal.",
-        "No right angle is marked where the diagonals cross.",
+        "No side is marked equal in her figure.",
+        "Nothing marks her diagonals as perpendicular.",
         "",
       ],
       solve: [
-        { who: "you", lines: ["Her opposite sides are parallel, so she is a parallelogram.", "Her diagonal cuts a corner angle in half, so she is a rhombus. (diag. bisects \u2220s)"] },
-        { who: "king", lines: ["Bella. You found her.", "Hugo is at peace. Ride on, sage."] },
+        { who: "you", lines: ["Each diagonal cuts both of its corners into two equal angles.", "So she is a rhombus. (diag. bisects \u2220s)"] },
+        { who: "king", lines: ["Bella. You found her.", "Hugo is at peace. The region is whole again."] },
       ],
-      outro: ["Hugo's knights unsaddle their horses.", "One court is left: the silver keep of George."],
-    },
-    {
-      id: "rhombus-06",
-      region: "rhombus",
-      chapter: "Rhombus Region · Kingdom 6",
-      name: "The Silver Court of George",
-      bg: "kd-rhombus-06.jpg",
-      bgAngry: "kd-rhombus-06-angry.jpg",
-      bgPuzzled: "kd-rhombus-06-puzzled.jpg",
-      bgHappy: "kd-rhombus-06-happy.jpg",
-      king: "king-rhombus-06.jpg",
-      kingName: "King George",
-      intro: [
-        { who: "king", lines: ["Help me find the princess."] },
-      ],
-      cards: [
-        {
-          name: "Molly",
-          poly: RH.trapSide,
-          arrows: [[1, 1], [3, 1]],
-          ticks: [[0, 1], [1, 1], [2, 1]],
-          why: "Molly's parallel arrows are on the left and right, but her equal top and bottom are not parallel.\nShe may be an isosceles trapezium.",
-        },
-        {
-          name: "Amber",
-          poly: RH.trapThree,
-          arrows: [[0, 1], [2, 1]],
-          ticks: [[3, 1], [0, 1], [1, 1]],
-          why: "Amber's parallel top and bottom are not marked equal; her bottom has no mark.\nA trapezium can have three equal sides.",
-        },
-        {
-          name: "Leah",
-          poly: RH.squareLean,
-          arrows: [[0, 1], [2, 1]],
-          ticks: [[0, 1], [1, 1], [2, 1]],
-        },
-      ],
-      answer: 2,
-      kingWrong: ["Three marks each, and still you chose wrongly!", "George has waited long enough. To arms!"],
-      kingCorrect: ["Leah? Only three sides are marked equal.", "Then how can all four be?"],
-      reasonAnswer: 0,
-      reasonWhy: [
-        "",
-        "No diagonals are drawn in her figure at all.",
-        "No diagonal is drawn, and no angle is marked.",
-      ],
-      solve: [
-        { who: "you", lines: ["Her top and bottom are equal and parallel, so she is a parallelogram.", "Opposite sides are equal, so the fourth side matches too. (4 sides equal)"] },
-        { who: "king", lines: ["Leah. Welcome home.", "George withdraws. The region is whole again."] },
-      ],
-      outro: ["Six thrones, six daughters, and every proof answered.", "The rhombus region lowers its banners at last."],
+      outro: ["Three thrones, three daughters, and every proof answered.", "The rhombus region lowers its banners at last."],
     },
     {
       id: "rectangle-01",
@@ -958,35 +689,33 @@
       king: "king-rectangle-01.jpg",
       kingName: "King Conrad",
       intro: [
-        { who: "king", lines: ["Help me find the princess."] },
+        { who: "king", lines: ["Help me find the princess.", "Every claimant here looks like a rectangle."] },
       ],
       cards: [
         {
           name: "Ivy",
-          poly: RE.cyclic,
-          rightAngles: [0, 2],
-          angles: [[1, 1], [3, 2]],
-          why: "Ivy has a mark at every corner, but only two of them are right angles.\nHer one-arc and two-arc corners are different angles, so neither can be 90\u00b0.",
+          poly: para(6.5, 4, 90),
+          rightAngles: [0, 3],
+          why: "Only two of Ivy's corners are marked as right angles.\nAll four angles must be 90\u00b0.",
         },
         {
           name: "Jade",
-          poly: RE.rightKite,
-          rightAngles: [0, 2],
-          ticks: [[0, 1], [1, 1], [2, 2], [3, 2]],
-          why: "Jade has only two right angles, at opposite corners.\nHer equal sides come in touching pairs, | and ||. That is a kite.",
+          poly: para(6, 3.6, 90),
+          arrows: ARROWS,
+          why: "Jade's sides are marked parallel,\nbut none of her corners is marked as a right angle.",
         },
-        { name: "Clara", poly: RE.wide, rightAngles: [0, 1, 2, 3] },
+        { name: "Clara", poly: para(6, 4, 90), rightAngles: ALL_RIGHT },
       ],
       answer: 2,
       kingWrong: ["A false daughter on my throne?", "Guards, seize the sage!"],
-      kingCorrect: ["Clara? Ivy has a mark at every corner too.", "Tell me why Clara is the one."],
+      kingCorrect: ["Clara? Ivy carries right angles too.", "Tell me why Clara is the one."],
       reasonAnswer: 0,
       reasonWhy: [
         "",
-        "No diagonals are drawn in her figure at all.",
+        "No diagonals are drawn in her figure.",
       ],
       solve: [
-        { who: "you", lines: ["All four angles are marked 90\u00b0,", "so the figure must be a rectangle. (4 \u2220s = 90\u00b0)"] },
+        { who: "you", lines: ["All four of her angles are marked 90\u00b0.", "So she is a rectangle. (4 \u2220s = 90\u00b0)"] },
         { who: "king", lines: ["Clara! My daughter!", "Conrad owes you this peace, sage."] },
       ],
       outro: ["Conrad lowers his banners of war.", "The road runs on to the saffron halls of Rufus."],
@@ -1008,193 +737,31 @@
       cards: [
         {
           name: "Nora",
-          poly: RE.rightTrap,
-          arrows: [[0, 1], [2, 1]],
-          rightAngles: [0, 3],
-          why: "Nora has two right angles, but only one pair of her sides is parallel.\nA right-angled trapezium carries exactly those marks.",
+          poly: byDiags(3.6, 3.6, 3.6, 3.6, 112),
+          diagTicks: [[0, 1], [1, 1], [2, 2], [3, 2]],
+          why: "Nora's top halves match each other, and her bottom halves match each other,\nbut nothing shows her diagonals cut in half. They must bisect each other and be equal.",
         },
         {
           name: "Tessa",
-          poly: RH.squarish,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          diags: true,
-          rightCross: true,
-          why: "Tessa's right angle is where the diagonals cross, not at a corner.\nThat turns a parallelogram into a rhombus, not a rectangle.",
+          poly: byDiags(3.6, 3.6, 3.6, 3.6, 120),
+          diagTicks: PAIRS,
+          why: "Tessa's diagonals are marked as bisecting each other,\nbut the two diagonals are not marked equal.",
         },
-        {
-          name: "Vera",
-          poly: RE.plain,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          rightAngles: [2],
-        },
+        { name: "Vera", poly: byDiags(3.6, 3.6, 3.6, 3.6, 104), diagTicks: ALL_ONE },
       ],
       answer: 2,
       kingWrong: ["You call that my daughter?", "Rufus will answer with steel!"],
-      kingCorrect: ["Vera has only one right angle, and Nora has two.", "Why Vera?"],
-      reasonAnswer: 0,
-      reasonWhy: [
-        "",
-        "No diagonals are drawn in her figure at all.",
-      ],
-      solve: [
-        { who: "you", lines: ["Both pairs of opposite sides are parallel, so she is a parallelogram.", "Co-interior angles add up to 180\u00b0, so one right angle makes all four 90\u00b0. (4 \u2220s = 90\u00b0)"] },
-        { who: "king", lines: ["Vera. Come home.", "Rufus stands down. Go on, sage."] },
-      ],
-      outro: ["Rufus's war drums fall silent.", "Next come the frost-white towers of Frederick."],
-    },
-    {
-      id: "rectangle-03",
-      region: "rectangle",
-      chapter: "Rectangle Region · Kingdom 3",
-      name: "The Frost Court of Frederick",
-      bg: "kd-rectangle-03.jpg",
-      bgAngry: "kd-rectangle-03-angry.jpg",
-      bgPuzzled: "kd-rectangle-03-puzzled.jpg",
-      bgHappy: "kd-rectangle-03-happy.jpg",
-      king: "king-rectangle-03.jpg",
-      kingName: "King Frederick",
-      intro: [
-        { who: "king", lines: ["Help me find the princess."] },
-      ],
-      cards: [
-        {
-          name: "Eva",
-          poly: RE.lean,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          why: "Eva's equal halves lie on the same diagonal, | with | and || with ||.\nThat only says her diagonals bisect each other, and every parallelogram does.",
-        },
-        {
-          name: "Maya",
-          poly: RE.isoTrap,
-          arrows: [[0, 1], [2, 1]],
-          ticks: [[1, 1], [3, 1]],
-          diagTicks: [[0, 2], [1, 2]],
-          why: "Maya's equal sides and her parallel sides are different pairs.\nShe may be an isosceles trapezium, and its diagonals are equal too.",
-        },
-        {
-          name: "Daisy",
-          poly: RE.long,
-          arrows: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          diagTicks: [[0, 1], [1, 1]],
-        },
-      ],
-      answer: 2,
-      kingWrong: ["Wrong! You insult my house.", "Frederick rides to war!"],
-      kingCorrect: ["Daisy? Only two short pieces are marked.", "Convince me that is enough."],
+      kingCorrect: ["Vera? Only her diagonals are marked.", "Why Vera?"],
       reasonAnswer: 1,
       reasonWhy: [
-        "Not one angle is marked in her figure.",
+        "No corner of her figure is marked as a right angle.",
         "",
       ],
       solve: [
-        { who: "you", lines: ["Both pairs of sides are parallel, so she is a parallelogram,", "and her diagonals bisect each other."] },
-        { who: "you", lines: ["Each diagonal is twice its marked half,", "so the two diagonals are equal. (diags. equal)"] },
-        { who: "king", lines: ["Daisy. My Daisy.", "Frederick lays down his spear."] },
+        { who: "you", lines: ["All four halves of her diagonals are marked equal.", "So her diagonals bisect each other and are equal. (diags. equal)"] },
+        { who: "king", lines: ["Vera. Come home.", "Rufus stands down. The region is whole again."] },
       ],
-      outro: ["Frederick opens his gates again.", "The pine-dark keep of Gregor waits ahead."],
-    },
-    {
-      id: "rectangle-04",
-      region: "rectangle",
-      chapter: "Rectangle Region · Kingdom 4",
-      name: "The Pine Court of Gregor",
-      bg: "kd-rectangle-04.jpg",
-      bgAngry: "kd-rectangle-04-angry.jpg",
-      bgPuzzled: "kd-rectangle-04-puzzled.jpg",
-      bgHappy: "kd-rectangle-04-happy.jpg",
-      king: "king-rectangle-04.jpg",
-      kingName: "King Gregor",
-      intro: [
-        { who: "king", lines: ["Help me find the princess."] },
-      ],
-      cards: [
-        {
-          name: "Wren",
-          poly: RE.kite86,
-          angles: [[0, 1], [1, 1], [2, 1]],
-          diags: true,
-          rightCross: true,
-          why: "Wren's right angle is where the diagonals cross, not at a corner.\nWith no 90\u00b0 corner, three equal angles can belong to a kite.",
-        },
-        {
-          name: "Hazel",
-          poly: RE.nearRect,
-          angles: [[0, 1], [1, 1], [2, 2]],
-          rightAngles: [3],
-          why: "Hazel's third marked corner has two arcs, not one, so only two corners are equal.\nTwo equal angles and a right angle do not fix the other two corners.",
-        },
-        {
-          name: "Erin",
-          poly: RE.tall,
-          angles: [[0, 1], [1, 1], [2, 1]],
-          rightAngles: [3],
-        },
-      ],
-      answer: 2,
-      kingWrong: ["The marks were right there, sage!", "Gregor calls his knights!"],
-      kingCorrect: ["Erin? Only one of her angles is a right angle.", "Explain it to my court."],
-      reasonAnswer: 0,
-      reasonWhy: [
-        "",
-        "No diagonals are drawn in her figure at all.",
-      ],
-      solve: [
-        { who: "you", lines: ["Her other three angles are marked equal, and all four add up to 360\u00b0.", "So each is (360\u00b0 \u2212 90\u00b0) \u00f7 3 = 90\u00b0. (4 \u2220s = 90\u00b0)"] },
-        { who: "king", lines: ["Erin. You found her.", "Gregor is at peace. Ride on, sage."] },
-      ],
-      outro: ["Gregor's knights unsaddle their horses.", "One court is left: the plum-dark keep of Silas."],
-    },
-    {
-      id: "rectangle-05",
-      region: "rectangle",
-      chapter: "Rectangle Region · Kingdom 5",
-      name: "The Plum Court of Silas",
-      bg: "kd-rectangle-05.jpg",
-      bgAngry: "kd-rectangle-05-angry.jpg",
-      bgPuzzled: "kd-rectangle-05-puzzled.jpg",
-      bgHappy: "kd-rectangle-05-happy.jpg",
-      king: "king-rectangle-05.jpg",
-      kingName: "King Silas",
-      intro: [
-        { who: "king", lines: ["Help me find the princess."] },
-      ],
-      cards: [
-        {
-          name: "Gwen",
-          poly: RE.leanBack,
-          diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          arcs: [[0, 1, 2, 1], [2, 3, 0, 1]],
-          why: "Gwen's two marked angles are alternate angles between parallel sides.\nEvery parallelogram has them, so they say nothing about her | and || halves.",
-        },
-        {
-          name: "Isla",
-          poly: RE.threeHalves,
-          diagTicks: [[0, 1], [2, 1]],
-          arcs: [[0, 1, 2, 1], [1, 0, 3, 1]],
-          why: "Isla's angles make three halves equal, but her fourth half has no mark.\nThe diagonals are not shown to bisect each other, so she is not proved to be a parallelogram.",
-        },
-        {
-          name: "Faye",
-          poly: RE.low,
-          diagTicks: [[0, 1], [2, 1], [1, 2], [3, 2]],
-          arcs: [[0, 1, 2, 1], [1, 0, 3, 1]],
-        },
-      ],
-      answer: 2,
-      kingWrong: ["Two marked angles each, and still you chose wrongly!", "Silas has waited long enough. To arms!"],
-      kingCorrect: ["Faye? Her | and || halves are different marks.", "Then how can her diagonals be equal?"],
-      reasonAnswer: 1,
-      reasonWhy: [
-        "No right angle is marked anywhere in her figure.",
-        "",
-      ],
-      solve: [
-        { who: "you", lines: ["Her diagonals bisect each other, so she is a parallelogram.", "The two marked angles share the top side, so that triangle is isosceles."] },
-        { who: "you", lines: ["So her | half equals her || half, and all four halves are equal.", "Then the two diagonals are equal. (diags. equal)"] },
-        { who: "king", lines: ["Faye. Welcome home.", "Silas withdraws. The region is whole again."] },
-      ],
-      outro: ["Five thrones, five daughters, and every proof answered.", "The rectangle region lowers its banners at last."],
+      outro: ["Two thrones, two daughters, and every proof answered.", "The rectangle region lowers its banners at last."],
     },
     {
       id: "square-01",
@@ -1208,39 +775,36 @@
       king: "king-square-01.jpg",
       kingName: "King Alaric",
       intro: [
-        { who: "king", lines: ["Help me find the princess.", "Every claimant here is a parallelogram."] },
-        { who: "you", lines: ["A parallelogram is a square only when it has 4 sides equal and 4 \u2220s = 90\u00b0.", "One of the two is not enough."] },
+        { who: "king", lines: ["Help me find the princess.", "Every claimant here looks like a square."] },
+        { who: "you", lines: ["A square needs the rhombus facts and the rectangle facts together.", "One without the other is not enough."] },
       ],
       cards: [
         {
           name: "Lena",
-          poly: SQ,
-          ticks: [[0, 1], [2, 1]],
-          angles: [[0, 1], [1, 1]],
-          why: "Lena's equal sides are opposite sides, and every parallelogram has those.\nHer equal angles make 4 \u2220s = 90\u00b0, but she is only proved to be a rectangle.",
-        },
-        {
-          name: "Rosa",
-          poly: SQ,
-          ticks: [[0, 1], [3, 1]],
-          angles: [[0, 1], [1, 1]],
+          poly: para(4, 4, 90),
+          rightAngles: ALL_RIGHT,
+          ticks: PAIRS,
+          why: "All four of Lena's corners are 90\u00b0, but only her opposite sides are marked equal.\nThat proves a rectangle, not a square.",
         },
         {
           name: "Mabel",
-          poly: SQ,
-          ticks: [[0, 1], [3, 1]],
-          diags: true,
-          rightCross: true,
-          why: "Mabel's right angle is where her diagonals cross, not at a corner.\nEvery rhombus has that, so no corner of hers is proved to be 90\u00b0.",
+          poly: para(4, 4, 90),
+          ticks: ALL_ONE,
+          why: "All four of Mabel's sides are marked equal, but no corner is marked 90\u00b0.\nThat proves a rhombus, not a square.",
         },
+        { name: "Rosa", poly: para(4, 4, 90), rightAngles: ALL_RIGHT, ticks: ALL_ONE },
       ],
-      answer: 1,
+      answer: 2,
       kingWrong: ["Equal sides, and still not a square!", "Alaric has heard enough. To arms!"],
-      kingCorrect: ["Rosa? I see two equal sides and two equal angles.", "That is not four of anything. Prove it."],
+      kingCorrect: ["Rosa? Lena has four right angles too.", "Then prove Rosa is the square."],
+      reasonAnswer: 0,
+      reasonWhy: [
+        "",
+        "No diagonals are drawn in her figure.",
+        "No diagonal is drawn in her figure.",
+      ],
       solve: [
-        { who: "you", lines: ["Her equal sides touch at A. In a parallelogram, opposite sides are equal too.", "So all four sides are equal. (4 sides eq.)"] },
-        { who: "you", lines: ["Her equal angles A and B lie between parallel sides, so they add up to 180\u00b0.", "So each is 90\u00b0, and so are the opposite angles. (4 \u2220s = 90\u00b0)"] },
-        { who: "you", lines: ["4 sides equal and 4 \u2220s = 90\u00b0. She is a square."] },
+        { who: "you", lines: ["All four of her sides are marked equal, and all four angles are 90\u00b0.", "So she is a square. (4 sides equal and 4 \u2220s = 90\u00b0)"] },
         { who: "king", lines: ["Rosa. My daughter.", "Alaric sheathes his sword. Go well, sage."] },
       ],
       outro: ["The cobalt banners come down from the walls.", "Ahead, a rose-coloured court is waiting."],
@@ -1257,40 +821,35 @@
       king: "king-square-02.jpg",
       kingName: "King Bernard",
       intro: [
-        { who: "king", lines: ["Help me find the princess.", "Every claimant here is a parallelogram."] },
+        { who: "king", lines: ["Help me find the princess."] },
       ],
       cards: [
-        {
-          name: "Celia",
-          poly: SQ,
-          diags: true,
-          rightCross: true,
-          arcs: [[0, 1, 2, 1], [1, 0, 3, 1]],
-        },
+        { name: "Celia", poly: byDiags(3, 3, 3, 3, 90), rightCross: true, diagTicks: ALL_ONE },
         {
           name: "Dora",
-          poly: SQ,
-          diags: true,
+          poly: byDiags(3, 3, 3, 3, 90),
           rightCross: true,
-          arcs: [[0, 1, 2, 1], [2, 3, 0, 1]],
-          why: "Dora's two marked angles are alternate angles between parallel sides.\nEvery parallelogram has them, so her diagonals are not proved equal.",
+          diagTicks: PAIRS,
+          why: "Dora's diagonals bisect each other at 90\u00b0, but they are not marked equal.\nThat proves a rhombus, not a square.",
         },
         {
           name: "Ines",
-          poly: SQ,
-          diags: true,
-          rightAngles: [3],
-          arcs: [[0, 1, 2, 1], [1, 0, 3, 1]],
-          why: "Ines has a right angle at D, so she is a rectangle.\nBut nothing says her diagonals cross at 90\u00b0 or her sides are equal.",
+          poly: byDiags(3, 3, 3, 3, 90),
+          diagTicks: ALL_ONE,
+          why: "Ines's diagonals are equal and bisect each other, but nothing marks them as perpendicular.\nThat proves a rectangle, not a square.",
         },
       ],
       answer: 0,
-      kingWrong: ["Marked angles everywhere, and you read them wrong!", "Bernard's patience is gone. To arms!"],
-      kingCorrect: ["Celia? Not one of her corners is marked.", "How can she have four right angles?"],
+      kingWrong: ["Marked diagonals everywhere, and you read them wrong!", "Bernard's patience is gone. To arms!"],
+      kingCorrect: ["Celia? Not one of her corners is marked.", "How can she be a square?"],
+      reasonAnswer: 1,
+      reasonWhy: [
+        "No side is marked equal and no corner is marked in her figure.",
+        "",
+        "No corner of her figure is marked as a right angle.",
+      ],
       solve: [
-        { who: "you", lines: ["Her diagonals cross at 90\u00b0, so she is a rhombus. (4 sides eq.)", "Her two marked angles share side AB, so EA = EB."] },
-        { who: "you", lines: ["Her diagonals bisect each other, so all four halves are equal.", "Equal diagonals make her a rectangle. (4 \u2220s = 90\u00b0)"] },
-        { who: "you", lines: ["4 sides equal and 4 \u2220s = 90\u00b0. She is a square."] },
+        { who: "you", lines: ["All four halves of her diagonals are equal, and they meet at 90\u00b0.", "So she is a square. (diags. equal and \u22a5 bisect each other)"] },
         { who: "king", lines: ["Celia! You have come home.", "Bernard opens his gates to you, sage."] },
       ],
       outro: ["Bernard's knights step aside.", "One court is left: the bronze hall of Magnus."],
@@ -1307,40 +866,38 @@
       king: "king-square-03.jpg",
       kingName: "King Magnus",
       intro: [
-        { who: "king", lines: ["Help me find the princess.", "Every claimant here is a parallelogram."] },
+        { who: "king", lines: ["Help me find the princess."] },
       ],
       cards: [
         {
           name: "Pearl",
-          poly: SQ,
+          poly: para(4, 4, 90),
+          arrows: ARROWS,
           diagLines: [0],
           splitAngles: [[0, 1]],
-          angles: [[1, 2], [3, 2]],
-          why: "Pearl's equal angles B and D are opposite angles, and every parallelogram has those.\nShe is a rhombus, but no corner is proved to be 90\u00b0.",
+          why: "Pearl's diagonal bisects her corner, but none of her corners is marked 90\u00b0.\nShe needs both facts to be a square.",
         },
         {
           name: "Sylvia",
-          poly: SQ,
+          poly: para(5, 4, 90),
+          rightAngles: ALL_RIGHT,
           diagLines: [0],
-          rightAngles: [1],
-          arcs: [[0, 1, 2, 1], [2, 3, 0, 1]],
-          why: "Sylvia's two arcs are \u2220BAC and \u2220DCA: alternate angles, and every parallelogram has them.\nAC is not shown to bisect any angle, so she is only a rectangle.",
+          splitAngles: [[0, 2, 1]],
+          why: "All four of Sylvia's corners are 90\u00b0, but her diagonal cuts one into two different angles.\nThat corner is not bisected, so she is only a rectangle.",
         },
-        {
-          name: "Thea",
-          poly: SQ,
-          diagLines: [0],
-          splitAngles: [[0, 1]],
-          rightAngles: [1],
-        },
+        { name: "Thea", poly: para(4, 4, 90), rightAngles: ALL_RIGHT, diagLines: [0], splitAngles: [[0, 1]] },
       ],
       answer: 2,
-      kingWrong: ["Two daughters with one right angle each, and you chose the false one!", "Magnus rides to war!"],
-      kingCorrect: ["Thea? Sylvia also has a right angle and two equal arcs.", "Why her and not Sylvia?"],
+      kingWrong: ["Two daughters with four right angles each, and you chose the false one!", "Magnus rides to war!"],
+      kingCorrect: ["Thea? Sylvia has four right angles and a diagonal too.", "Why her and not Sylvia?"],
+      reasonAnswer: 2,
+      reasonWhy: [
+        "No side is marked equal in her figure.",
+        "Only one diagonal is drawn, and nothing is marked where diagonals cross.",
+        "",
+      ],
       solve: [
-        { who: "you", lines: ["Thea's two arcs are both at A, so her diagonal AC bisects angle A.", "So she is a rhombus. (4 sides eq.)"] },
-        { who: "you", lines: ["She is a parallelogram with a right angle at B.", "So all four angles are 90\u00b0. (4 \u2220s = 90\u00b0)"] },
-        { who: "you", lines: ["4 sides equal and 4 \u2220s = 90\u00b0. She is a square."] },
+        { who: "you", lines: ["All four of her angles are 90\u00b0, and her diagonal cuts a corner into two equal angles.", "So she is a square. (4 \u2220s = 90\u00b0 and diag. bisects \u2220s)"] },
         { who: "king", lines: ["Thea. Welcome home, my girl.", "Magnus yields. The last war is over."] },
       ],
       outro: ["Three thrones, three daughters, and not one sword drawn.", "The last banners in the land are lowered."],
@@ -1538,7 +1095,8 @@
     var P = spec.poly;
 
     // diagLines picks single diagonals: 0 runs P0–P2, 1 runs P1–P3.
-    var lines = spec.diags || spec.diagTicks ? [0, 1] : spec.diagLines || [];
+    var crossed = spec.diags || spec.diagTicks || spec.rightCross || spec.crossLabel || spec.halfLabels;
+    var lines = crossed ? [0, 1] : spec.diagLines || [];
     lines.forEach(function (k) {
       fig.appendChild(svg("line", { class: "qg-diag", x1: P[k][0], y1: P[k][1], x2: P[k + 2][0], y2: P[k + 2][1] }));
     });
@@ -1555,8 +1113,13 @@
       var shift = shared[t[0]] > 1 ? -8 : 0;
       segMarks(P[t[0]], P[(t[0] + 1) % P.length], t[1], "tick", shift).forEach(function (m) { fig.appendChild(m); });
     });
+    // Arcs and labels at a split corner reach far along its sides, so arrows there slide away from it.
+    var split = {};
+    (spec.splitAngles || []).forEach(function (t) { split[t[0]] = true; });
     (spec.arrows || []).forEach(function (t) {
       var shift = shared[t[0]] > 1 ? 8 : 0;
+      if (split[t[0]]) shift += 9;
+      if (split[(t[0] + 1) % 4]) shift -= 9;
       var from = P[t[0]];
       var to = P[(t[0] + 1) % P.length];
       // Walking the outline reverses sides 2 and 3, so flip them back and the
@@ -1573,11 +1136,21 @@
     });
     // A diagonal from vertex v splits that corner: [v, count] marks both
     // parts equal, [v, count, other] marks them as two different angles.
+    // Each part's arc stops short of the diagonal; touching arcs would read as one mark on the whole corner.
+    function turn(v, a) {
+      return [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a)];
+    }
+    function partArcs(cur, a, b, count) {
+      var dir = (a[0] * b[1] - a[1] * b[0]) > 0 ? 1 : -1;
+      var span = Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1])));
+      var gap = Math.min(12 * DEG, span / 3.2) * dir;
+      arcMarks(cur, turn(a, gap), turn(b, -gap), count, 12).forEach(function (m) { fig.appendChild(m); });
+    }
     (spec.splitAngles || []).forEach(function (t) {
       var cur = P[t[0]];
       var along = unit(cur, P[(t[0] + 2) % 4]);
-      arcMarks(cur, unit(cur, P[(t[0] + 3) % 4]), along, t[1], 11).forEach(function (m) { fig.appendChild(m); });
-      arcMarks(cur, along, unit(cur, P[(t[0] + 1) % 4]), t[2] || t[1], 11).forEach(function (m) { fig.appendChild(m); });
+      partArcs(cur, unit(cur, P[(t[0] + 3) % 4]), along, t[1]);
+      partArcs(cur, along, unit(cur, P[(t[0] + 1) % 4]), t[2] || t[1]);
     });
     // [v, a, b, count] marks the angle at P[v] between the rays to P[a] and
     // P[b]; pointing at the opposite vertex measures against the diagonal.
@@ -1608,6 +1181,73 @@
     if (spec.crossAngles) {
       arcMarks(mid, unit(mid, P[0]), unit(mid, P[1]), spec.crossAngles, 6).forEach(function (m) { fig.appendChild(m); });
       arcMarks(mid, unit(mid, P[2]), unit(mid, P[3]), spec.crossAngles, 6).forEach(function (m) { fig.appendChild(m); });
+    }
+
+    var centre = [(P[0][0] + P[1][0] + P[2][0] + P[3][0]) / 4, (P[0][1] + P[1][1] + P[2][1] + P[3][1]) / 4];
+    function label(x, y, text) {
+      var t = svg("text", { class: "qg-label", x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 });
+      t.textContent = text;
+      fig.appendChild(t);
+    }
+    // A label sits further out sideways than up or down, because the text is wider than it is tall.
+    function awayFrom(at, n, base) {
+      var off = base + 4.5 * Math.abs(n[0]);
+      return [at[0] + n[0] * off, at[1] + n[1] * off];
+    }
+    function bisector(u1, u2) {
+      var b = [u1[0] + u2[0], u1[1] + u2[1]];
+      var len = Math.hypot(b[0], b[1]) || 1;
+      return [b[0] / len, b[1] / len];
+    }
+    function halfAngle(u1, u2) {
+      return Math.acos(Math.max(-1, Math.min(1, u1[0] * u2[0] + u1[1] * u2[1]))) / 2;
+    }
+
+    (spec.sideLabels || []).forEach(function (t) {
+      var a = P[t[0]], b = P[(t[0] + 1) % 4];
+      var d = unit(a, b);
+      var m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      var n = [-d[1], d[0]];
+      if (n[0] * (m[0] - centre[0]) + n[1] * (m[1] - centre[1]) < 0) n = [-n[0], -n[1]];
+      var at = awayFrom(m, n, 5.5);
+      label(at[0], at[1], t[1]);
+    });
+    (spec.angleLabels || []).forEach(function (t) {
+      var cur = P[t[0]];
+      var u1 = unit(cur, P[(t[0] + 3) % 4]), u2 = unit(cur, P[(t[0] + 1) % 4]);
+      arcMarks(cur, u1, u2, 1, 6).forEach(function (m) { fig.appendChild(m); });
+      var r = Math.min(22, Math.max(12, 6 / Math.sin(halfAngle(u1, u2))));
+      var u = bisector(u1, u2);
+      label(cur[0] + u[0] * r, cur[1] + u[1] * r, t[1]);
+    });
+    (spec.splitLabels || []).forEach(function (t) {
+      var cur = P[t[0]];
+      var along = unit(cur, P[(t[0] + 2) % 4]);
+      [[unit(cur, P[(t[0] + 3) % 4]), t[1]], [unit(cur, P[(t[0] + 1) % 4]), t[2]]].forEach(function (part) {
+        var r = Math.min(30, Math.max(19, 7 / Math.sin(halfAngle(part[0], along))));
+        var u = bisector(part[0], along);
+        label(cur[0] + u[0] * r, cur[1] + u[1] * r, part[1]);
+      });
+    });
+    // A half-diagonal's label goes into the wider of the two corners beside it.
+    (spec.halfLabels || []).forEach(function (t) {
+      var v = t[0];
+      var d = unit(P[v], mid);
+      var m = [(P[v][0] + mid[0]) / 2, (P[v][1] + mid[1]) / 2];
+      var ray = unit(mid, P[v]);
+      var next = unit(mid, P[(v + 1) % 4]), prev = unit(mid, P[(v + 3) % 4]);
+      var toward = halfAngle(ray, next) >= halfAngle(ray, prev) ? next : prev;
+      var n = [-d[1], d[0]];
+      if (n[0] * toward[0] + n[1] * toward[1] < 0) n = [-n[0], -n[1]];
+      var at = awayFrom(m, n, 4.5);
+      label(at[0], at[1], t[1]);
+    });
+    if (spec.crossLabel) {
+      var c0 = unit(mid, P[0]), c1 = unit(mid, P[1]);
+      arcMarks(mid, c0, c1, 1, 6).forEach(function (m) { fig.appendChild(m); });
+      var cu = bisector(c0, c1);
+      var cr = Math.max(12, 6 / Math.sin(halfAngle(c0, c1)));
+      label(mid[0] + cu[0] * cr, mid[1] + cu[1] * cr, spec.crossLabel);
     }
 
     return fig;
@@ -2614,49 +2254,25 @@
 
     el.reasons.innerHTML = "";
     el.reasons.classList.remove("locked");
-    var selected = [];
-    var buttons = {};
-    var submit = document.createElement("button");
 
     // Reason positions must not reveal the answer. Keep the source index on
     // each button so shuffling never changes which reason it represents.
     var texts = REGIONS[regionOf(data)].reasons;
     var seats = lv.reasonOrder.filter(function (i) { return i < texts.length; });
     seats.forEach(function (i, seat) {
-      var text = texts[i];
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = "qg-reason";
       btn.style.setProperty("--i", seat);
-      btn.textContent = text;
-      btn.setAttribute("aria-pressed", "false");
+      btn.textContent = texts[i];
       btn.addEventListener("click", function (e) {
         e.stopPropagation();
-        if (!lv.picking || lv.busy) return;
-        var at = selected.indexOf(i);
-        if (at >= 0) selected.splice(at, 1);
-        else selected.push(i);
-        var on = selected.indexOf(i) >= 0;
-        btn.classList.toggle("selected", on);
-        btn.setAttribute("aria-pressed", on ? "true" : "false");
-        submit.disabled = selected.length === 0;
+        chooseReason(i, btn);
       });
-      buttons[i] = btn;
       el.reasons.appendChild(btn);
     });
 
-    submit.type = "button";
-    submit.className = "qg-reason qg-reason-submit";
-    submit.style.setProperty("--i", texts.length);
-    submit.textContent = "Submit";
-    submit.disabled = true;
-    submit.addEventListener("click", function (e) {
-      e.stopPropagation();
-      submitReasons(selected.slice(), buttons);
-    });
-    el.reasons.appendChild(submit);
-
-    el.ask.textContent = "Select all valid reasons for " + data.cards[data.answer].name + ".";
+    el.ask.textContent = "Choose the reason for " + data.cards[data.answer].name + ".";
     el.ask.classList.add("on");
     el.reasonWrap.classList.add("on");
     lv.picking = true;
@@ -2668,33 +2284,16 @@
     el.reasonWrap.classList.remove("on");
   }
 
-  /* Most courts accept a single reason. Where the given marks put two reasons
-   * exactly one step away, reasonAnswer lists every index that counts. */
-  function reasonAccepted(data, i) {
-    var ans = data.reasonAnswer;
-    return ans instanceof Array ? ans.indexOf(i) >= 0 : i === ans;
-  }
-
-  function correctReasons(data) {
-    return data.reasonAnswer instanceof Array ? data.reasonAnswer.slice() : [data.reasonAnswer];
-  }
-
-  function sameReasonSet(data, selected) {
-    var correct = correctReasons(data);
-    if (selected.length !== correct.length) return false;
-    return correct.every(function (i) { return selected.indexOf(i) >= 0; });
-  }
-
-  function submitReasons(selected, buttons) {
+  function chooseReason(i, btn) {
     if (!lv.picking || lv.busy) return;
     var data = lv.data;
     lv.picking = false;
     // The verdict animation owns the screen until the king answers.
     lv.busy = true;
 
-    if (sameReasonSet(data, selected)) {
+    if (i === data.reasonAnswer) {
       playSample("sfx-right.mp3");
-      selected.forEach(function (i) { buttons[i].classList.add("right"); });
+      btn.classList.add("right");
       el.reasons.classList.add("locked");
       later(function () {
         hideReasons();
@@ -2709,11 +2308,8 @@
     }
 
     playReasonMiss();
-    var wrong = selected.filter(function (i) { return !reasonAccepted(data, i); });
-    wrong.forEach(function (i) { buttons[i].classList.add("wrong"); });
-    var explanation = wrong.length
-      ? data.reasonWhy[wrong[0]]
-      : "That route works, but another marked route works too. Select every valid reason.";
+    btn.classList.add("wrong");
+    var explanation = data.reasonWhy[i];
     lv.reasonMiss += 1;
 
     if (lv.reasonMiss === 1) {
@@ -2845,7 +2441,7 @@
       var raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return null;
       var data = JSON.parse(raw);
-      if (!data || data.v !== 1) return null;
+      if (!data || data.v !== 2) return null;
       if (data.spot !== "chapter" && data.spot !== "level" && data.spot !== "region-outro" && data.spot !== "region-cleared") return null;
       return data;
     } catch (err) {
@@ -2856,7 +2452,7 @@
   function writeSave(patch) {
     var prev = readSave() || {};
     var next = {
-      v: 1,
+      v: 2,
       seenIntro: true,
       region: prev.region || "para",
       level: typeof prev.level === "number" ? prev.level : 0,
@@ -3013,7 +2609,7 @@
     paintCard(
       "Chapter 1",
       "The Parallelogram Region",
-      "Six kingdoms, and every court wants a different proof. Read the marks on each claimant — " +
+      "Five kingdoms, and every court wants a different reason. Read the marks on each claimant — " +
       "the relic rewinds time only three times.",
       [
         { label: "Start journey", run: function () { rewinds = MAX_REWIND; startLevel(0); } },
@@ -3036,8 +2632,8 @@
       paintCard(
         "Region cleared",
         "The Parallelogram Region is safe",
-        "All five reasons proved: opposite sides equal, opposite angles equal, diagonals bisecting, " +
-        "one pair equal and parallel, and both pairs parallel — and in Philip, two facts joined into one. " +
+        "All five reasons proved: opposite sides equal, opposite angles equal, diagonals bisecting each other, " +
+        "one pair equal and parallel, and the definition itself. " +
         "Next: the Rhombus Region, where a parallelogram alone is not enough.",
         [
           { label: "Enter the Rhombus Region", run: function () { rewinds = MAX_REWIND; startLevel(regionFirst("rhombus")); } },
@@ -3048,8 +2644,8 @@
       paintCard(
         "Region cleared",
         "The Rhombus Region is safe",
-        "Four sides equal, diagonals at right angles, and a diagonal bisecting its angles — " +
-        "and in George, a fourth side proved from three. Next: the Rectangle Region, where every corner counts.",
+        "Four sides equal, diagonals at right angles, and a diagonal bisecting its angles. " +
+        "Next: the Rectangle Region, where every corner counts.",
         [
           { label: "Enter the Rectangle Region", run: function () { rewinds = MAX_REWIND; startLevel(regionFirst("rectangle")); } },
           { label: "Replay rhombus kingdoms", ghost: true, run: replay },
@@ -3059,8 +2655,8 @@
       paintCard(
         "Region cleared",
         "The Rectangle Region is safe",
-        "Four right angles and equal diagonals — reached from one right angle, from three equal corners, " +
-        "and in Silas from an isosceles triangle. Next: the Square Region, where one proof is never enough.",
+        "Four right angles and equal diagonals. " +
+        "Next: the Square Region, where one fact is never enough.",
         [
           { label: "Enter the Square Region", run: function () { rewinds = MAX_REWIND; startLevel(regionFirst("square")); } },
           { label: "Replay rectangle kingdoms", ghost: true, run: replay },
@@ -3178,7 +2774,10 @@
 
   function gamesOpen() {
     var panel = document.getElementById("panel-games");
-    return !!(panel && !panel.classList.contains("hidden"));
+    var game = document.getElementById("qg-game");
+    if (!panel || panel.classList.contains("hidden")) return false;
+    if (game && game.classList.contains("game-off")) return false;
+    return true;
   }
 
   function init() {
@@ -3282,9 +2881,32 @@
     });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
+  function initGameSwitch() {
+    var nav = document.getElementById("games-subnav");
+    if (!nav || nav.dataset.ready) return;
+    nav.dataset.ready = "1";
+    nav.addEventListener("click", function (event) {
+      var btn = event.target.closest ? event.target.closest("[data-game]") : null;
+      if (!btn || !nav.contains(btn)) return;
+      var name = btn.getAttribute("data-game");
+      var princess = document.getElementById("qg-game");
+      var theorem = document.getElementById("thm-game");
+      if (princess) princess.classList.toggle("game-off", name !== "princess");
+      if (theorem) theorem.classList.toggle("game-off", name !== "theorem");
+      var chips = nav.querySelectorAll("[data-game]");
+      var i;
+      for (i = 0; i < chips.length; i++) chips[i].classList.toggle("active", chips[i] === btn);
+    });
+  }
+
+  function boot() {
     init();
+    initGameSwitch();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
   }
 })();

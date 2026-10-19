@@ -1,0 +1,281 @@
+/* JM29 Game 2 — theorem solitaire */
+
+.ts-game {
+  --ts-w: 188px;
+  --ts-stock: 92px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, .45), transparent 42%),
+    linear-gradient(180deg, #1f6b45 0%, #185c3a 100%);
+  color: #f8fafc;
+  user-select: none;
+}
+
+.ts-task {
+  margin: 0;
+  max-width: 640px;
+  color: rgba(255, 255, 255, .88);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.ts-board {
+  position: relative;
+  container-type: inline-size;
+  min-height: 460px;
+}
+
+.ts-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.ts-waste { position: relative; width: var(--ts-w); min-height: 128px; }
+.ts-under {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  z-index: 4;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #0f172a;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.ts-stock {
+  width: var(--ts-stock);
+  height: 128px;
+  padding: 0;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(45deg, #172554 0 8px, #1d4ed8 8px 16px);
+  color: #fff;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 5px 4px 0 rgba(15, 23, 42, .35);
+}
+.ts-stock.empty {
+  background: rgba(248, 250, 252, .92);
+  color: #1e3a8a;
+  border-style: dashed;
+  box-shadow: none;
+}
+.ts-stock.dead { opacity: .45; cursor: default; }
+.ts-stock:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+.ts-aces {
+  display: flex;
+  gap: 10px;
+  margin-top: 146px;
+}
+
+.ts-found {
+  width: var(--ts-w);
+  min-height: 148px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px;
+  border: 2px dashed rgba(255, 255, 255, .55);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .08);
+}
+.ts-found-a { font-size: 42px; font-weight: 800; color: rgba(255, 255, 255, .45); line-height: 1; }
+.ts-found.filled { border-style: solid; background: #fff; }
+.ts-found.filled.s-mid { border-color: #2563eb; color: #1e3a8a; }
+.ts-found.filled.s-int { border-color: #16a34a; color: #14532d; }
+.ts-found.filled.s-none { border-color: #64748b; color: #334155; }
+.ts-found-kicker { font-size: 22px; font-weight: 800; line-height: 1; }
+.ts-found-name { font-size: 16px; font-weight: 800; text-align: center; }
+.ts-found-top { font-size: 14px; font-weight: 700; text-align: center; line-height: 1.3; }
+.ts-found-count { font-size: 12px; font-weight: 700; opacity: .7; }
+
+.ts-dragons {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-top: 14px;
+}
+
+.ts-col { width: var(--ts-w); flex: 0 0 var(--ts-w); position: relative; }
+.ts-col.empty {
+  box-sizing: border-box;
+  width: var(--ts-w);
+  height: 188px;
+  min-height: 188px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, .55);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .06);
+}
+.ts-empty-label { color: rgba(255, 255, 255, .7); font-weight: 800; }
+
+.ts-stack { position: relative; width: 100%; }
+.ts-stack .ts-card,
+.ts-stack .ts-banner,
+.ts-stack .ts-backstrip {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ts-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-sizing: border-box;
+  width: var(--ts-w);
+  padding: 8px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fffdf5;
+  color: #0f172a;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, .08);
+}
+.ts-draggable { cursor: grab; touch-action: none; }
+.ts-dragging { opacity: .35; }
+.ts-card .ts-fig { width: 100%; height: auto; max-height: 108px; display: block; }
+.ts-line { fill: none; stroke: #16181c; stroke-width: 1.8; stroke-linejoin: round; }
+.ts-mark { fill: none; stroke: #b91c1c; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ts-pt { font-size: 8px; font-weight: 700; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
+.ts-len { font-size: 8px; font-weight: 700; fill: #1d4ed8; text-anchor: middle; dominant-baseline: central; }
+.ts-given { font-size: 13px; line-height: 1.35; }
+.ts-concl { font-size: 14px; font-weight: 800; color: #1e3a8a; }
+
+.ts-ace {
+  min-height: 140px;
+  justify-content: space-between;
+  background: #fff;
+}
+.ts-ace.s-mid { border-color: #2563eb; color: #1d4ed8; }
+.ts-ace.s-int { border-color: #16a34a; color: #15803d; }
+.ts-ace.s-none { border-color: #64748b; color: #475569; }
+.ts-ace-corner { font-size: 20px; font-weight: 800; line-height: 1; }
+.ts-ace-br { align-self: flex-end; }
+.ts-ace-name { font-size: 18px; font-weight: 800; text-align: center; }
+
+.ts-banner {
+  height: 34px;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border: 2px solid #e2e8f0;
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  background: #fffdf5;
+  color: #1e3a8a;
+  font-size: 13px;
+  font-weight: 800;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ts-backstrip {
+  height: 64px;
+  border: 2px solid #dbe4f0;
+  border-radius: 10px 10px 6px 6px;
+  background: repeating-linear-gradient(45deg, #172554 0 7px, #1d4ed8 7px 14px);
+}
+
+.ts-found.ts-over,
+.ts-col.ts-over { outline: 3px solid #fff; outline-offset: 2px; }
+
+.ts-feedback {
+  min-height: 2.8em;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.ts-feedback.ok { color: #fff; font-weight: 800; }
+.ts-feedback.bad { color: #fee2e2; font-weight: 700; }
+
+.ts-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ts-btn {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #14532d;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.ts-btn.ghost { background: rgba(255, 255, 255, .16); color: #fff; }
+.ts-btn:disabled { opacity: .4; cursor: default; }
+.ts-moves { margin-left: auto; color: rgba(255, 255, 255, .8); font-size: 14px; font-weight: 800; }
+
+.ts-ghost {
+  position: fixed;
+  z-index: 1000;
+  width: 188px;
+  pointer-events: none;
+  filter: drop-shadow(0 14px 18px rgba(15, 23, 42, .28));
+  transform: rotate(1.5deg);
+}
+.ts-ghost .ts-card { width: 100%; }
+.ts-ghost-n {
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #1e3a8a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ts-won .ts-found.filled { animation: tsBounce .7s ease; }
+.ts-won .ts-aces .ts-found:nth-child(2) { animation-delay: .1s; }
+.ts-won .ts-aces .ts-found:nth-child(3) { animation-delay: .2s; }
+
+.ts-shake { animation: tsShake .4s ease-out; }
+@keyframes tsShake {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+@keyframes tsBounce {
+  0%, 100% { transform: translateY(0); }
+  35% { transform: translateY(-18px); }
+  55% { transform: translateY(0); }
+  75% { transform: translateY(-8px); }
+}
+
+body.ts-grabbing, body.ts-grabbing * { cursor: grabbing !important; }
+
+@container (max-width: 900px) {
+  .ts-corner { position: static; justify-content: flex-end; margin-bottom: 12px; }
+  .ts-aces { margin-top: 0; flex-wrap: wrap; }
+  .ts-dragons { flex-wrap: wrap; }
+  .ts-board { min-height: 0; }
+}
+
+@media (max-width: 820px) {
+  .ts-corner { position: static; justify-content: flex-end; }
+  .ts-aces { margin-top: 12px; flex-wrap: wrap; }
+  .ts-dragons { flex-wrap: wrap; }
+  .ts-board { min-height: 0; }
+}

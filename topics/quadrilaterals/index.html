@@ -115,7 +115,8 @@
     html.file-preview .deck-advance { pointer-events: none; }
     #family-subnav, #reason-subnav { margin-top: -4px; }
     #family-subnav.hidden, #reason-subnav.hidden { display: none; }
-  </style>  <link rel="stylesheet" href="quadrilaterals-game.css?v=20261011-end11">
+</style>  <link rel="stylesheet" href="quadrilaterals-game.css?v=20261019-split">
+  <link rel="stylesheet" href="theorem-sort-game.css?v=20261019-ts13">
   <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
 </head>
@@ -226,11 +227,21 @@
     </section>
 
         <section id="panel-games" class="jm-panel hidden">
-      <section class="block">
+      <div class="subnav" id="games-subnav" aria-label="Games">
+        <button class="chip active" type="button" data-game="princess">Princesses</button>
+        <button class="chip" type="button" data-game="theorem">Which theorem?</button>
+      </div>
+      <section class="block" id="qg-game">
         <p class="part-title">Game 1 · Identifying quadrilaterals</p>
         <h2>The Search for the True Princesses</h2>
-        <p class="hint">Click the scene (or press Space) to move the story on. Opening chapter plus all six kingdoms of the parallelogram region.</p>
+        <p class="hint">Click the scene (or press Space) to move the story on.</p>
         <div class="qg-stage" id="qg-stage" role="application" aria-label="Identifying quadrilaterals — story game"></div>
+      </section>
+      <section class="block game-off" id="thm-game">
+        <p class="part-title">Game 2 · Mid-point theorem vs intercept theorem</p>
+        <h2>Which theorem?</h2>
+        <p class="hint">Solitaire: three aces, two columns, draw pile at the top right.</p>
+        <div class="ts-game" id="ts-game"></div>
       </section>
     </section>
 <section id="panel-comics" class="jm-panel hidden">
@@ -257,7 +268,8 @@
   <script defer src="quadrilaterals-tools.js?v=20260830e"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="quadrilaterals-comics.js?v=20260913-geometry-v14"></script>
-  <script defer src="quadrilaterals-game.js?v=20261011-end11"></script>
+  <script defer src="quadrilaterals-game.js?v=20261019-split"></script>
+  <script defer src="theorem-sort-game.js?v=20261019-ts13"></script>
   <script>
     if (location.protocol === "file:") {
       document.documentElement.classList.add("file-preview");
