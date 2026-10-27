@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JM24 · Signal Room</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <link rel="stylesheet" href="signal-room.css?v=20261011-modal1">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif; }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); letter-spacing:-.03em; }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    #panel-games { margin:0; }
+    #panel-games .block { border:none!important; background:transparent!important; padding:0!important; box-shadow:none!important; }
+  </style>
+</head>
+<body class="paper-labs">
+  <main class="jm-page">
+    <p class="jm-eyebrow">JM24</p>
+    <h1>Signal Room</h1>
+    <p class="lead">Binary signals for a storm rescue — story, challenge, and rescuer modes.</p>
+    <section id="panel-games" class="jm-panel">
+      <section class="block" id="sig-game" aria-label="Signal Room">
+        <div id="sig-room">
+          <svg class="sig-scene" viewBox="0 0 1600 900" role="group" aria-label="Signal room control desk">
+            <defs>
+              <linearGradient id="sg-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#060b12"/>
+                <stop offset=".55" stop-color="#162230"/>
+                <stop offset="1" stop-color="#2c3d4d"/>
+              </linearGradient>
+              <linearGradient id="sg-sea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#2b475c"/>
+                <stop offset="1" stop-color="#10212f"/>
+              </linearGradient>
+              <linearGradient id="sg-beam" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0" stop-color="#fff6c6" stop-opacity=".95"/>
+                <stop offset=".5" stop-color="#fff6c6" stop-opacity=".3"/>
+                <stop offset="1" stop-color="#fff6c6" stop-opacity="0"/>
+              </linearGradient>
+              <radialGradient id="sg-lamp">
+                <stop offset="0" stop-color="#fffbe0"/>
+                <stop offset=".45" stop-color="#ffd76a" stop-opacity=".7"/>
+                <stop offset="1" stop-color="#ffb43a" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="sg-btn-glow">
+                <stop offset="0" stop-color="#ff7a5e" stop-opacity=".95"/>
+                <stop offset=".55" stop-color="#ff3b2a" stop-opacity=".45"/>
+                <stop offset="1" stop-color="#ff3b2a" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="sg-amber">
+                <stop offset="0" stop-color="#ffd27a" stop-opacity=".9"/>
+                <stop offset="1" stop-color="#ffb53b" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="sg-radar">
+                <stop offset="0" stop-color="#1a4d25"/>
+                <stop offset="1" stop-color="#04120a"/>
+              </radialGradient>
+              <linearGradient id="sg-sweep" gradientUnits="userSpaceOnUse" x1="70" y1="0" x2="30" y2="-76">
+                <stop offset="0" stop-color="#8dff98" stop-opacity=".6"/>
+                <stop offset="1" stop-color="#8dff98" stop-opacity="0"/>
+              </linearGradient>
+              <radialGradient id="sg-screen" cx=".5" cy=".45" r=".7">
+                <stop offset="0" stop-color="#2a6e31" stop-opacity=".5"/>
+                <stop offset="1" stop-color="#000" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="sg-vignette" cx=".5" cy=".42" r=".8">
+                <stop offset=".5" stop-color="#000" stop-opacity="0"/>
+                <stop offset="1" stop-color="#000" stop-opacity=".62"/>
+              </radialGradient>
+              <radialGradient id="sg-cloud-a">
+                <stop offset="0" stop-color="#293850"/>
+                <stop offset=".55" stop-color="#293850" stop-opacity=".92"/>
+                <stop offset="1" stop-color="#293850" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="sg-cloud-b">
+                <stop offset="0" stop-color="#0c131e"/>
+                <stop offset=".6" stop-color="#0c131e" stop-opacity=".9"/>
+                <stop offset="1" stop-color="#0c131e" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="sg-cloud-c">
+                <stop offset="0" stop-color="#3f546f" stop-opacity=".8"/>
+                <stop offset="1" stop-color="#3f546f" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="sg-rock" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#4d5053"/>
+                <stop offset="1" stop-color="#232527"/>
+              </linearGradient>
+              <linearGradient id="sg-tower-body" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#f4eddd"/>
+                <stop offset=".55" stop-color="#d8cfbb"/>
+                <stop offset="1" stop-color="#857d71"/>
+              </linearGradient>
+              <linearGradient id="sg-tower-band" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#cf3f31"/>
+                <stop offset=".55" stop-color="#a62a20"/>
+                <stop offset="1" stop-color="#5a140f"/>
+              </linearGradient>
+              <linearGradient id="sg-console" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#5a6350"/>
+                <stop offset="1" stop-color="#394033"/>
+              </linearGradient>
+              <linearGradient id="sg-panel" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#4e5742"/>
+                <stop offset="1" stop-color="#394133"/>
+              </linearGradient>
+              <linearGradient id="sg-bezel-dark" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#3c4138"/>
+                <stop offset="1" stop-color="#1c1f1a"/>
+              </linearGradient>
+              <linearGradient id="sg-ring" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#8d948a"/>
+                <stop offset=".55" stop-color="#3c413a"/>
+                <stop offset="1" stop-color="#1d201b"/>
+              </linearGradient>
+              <radialGradient id="sg-rivet" cx=".35" cy=".3" r=".8">
+                <stop offset="0" stop-color="#aab1a4"/>
+                <stop offset=".65" stop-color="#4b5146"/>
+                <stop offset="1" stop-color="#20241e"/>
+              </radialGradient>
+              <radialGradient id="sg-cap-off" cx=".38" cy=".32" r=".78">
+                <stop offset="0" stop-color="#c9463a"/>
+                <stop offset=".55" stop-color="#8a1c14"/>
+                <stop offset="1" stop-color="#450a06"/>
+              </radialGradient>
+              <radialGradient id="sg-cap-on" cx=".4" cy=".35" r=".78">
+                <stop offset="0" stop-color="#fff3cf"/>
+                <stop offset=".3" stop-color="#ff7c5c"/>
+                <stop offset=".75" stop-color="#e8301f"/>
+                <stop offset="1" stop-color="#96140e"/>
+              </radialGradient>
+              <linearGradient id="sg-red-top" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#b43a2d"/>
+                <stop offset="1" stop-color="#8a241b"/>
+              </linearGradient>
+              <linearGradient id="sg-red-box" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#9a2a21"/>
+                <stop offset="1" stop-color="#5f1711"/>
+              </linearGradient>
+              <linearGradient id="sg-grip" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#dc5b4d"/>
+                <stop offset=".55" stop-color="#a62a20"/>
+                <stop offset="1" stop-color="#58120c"/>
+              </linearGradient>
+              <linearGradient id="sg-rod" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#555b53"/>
+                <stop offset=".4" stop-color="#d2d7cc"/>
+                <stop offset=".6" stop-color="#8d938b"/>
+                <stop offset="1" stop-color="#343832"/>
+              </linearGradient>
+              <linearGradient id="sg-brass" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#d4b877"/>
+                <stop offset="1" stop-color="#8f7442"/>
+              </linearGradient>
+              <linearGradient id="sg-shade-down" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#000" stop-opacity="0"/>
+                <stop offset="1" stop-color="#000" stop-opacity=".5"/>
+              </linearGradient>
+              <linearGradient id="sg-shade-up" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#000" stop-opacity=".45"/>
+                <stop offset="1" stop-color="#000" stop-opacity="0"/>
+              </linearGradient>
+
+              <pattern id="sg-scan" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="3" fill="#000" opacity=".25"/></pattern>
+              <clipPath id="sg-glass"><rect x="280" y="48" width="1040" height="328" rx="10"/></clipPath>
+              <clipPath id="sg-screen-clip"><rect x="582" y="652" width="436" height="144" rx="16"/></clipPath>
+              <clipPath id="sg-room-clip"><path clip-rule="evenodd" d="M0 0 H1600 V900 H0 Z M280 48 H1320 V376 H280 Z M582 652 H1018 V796 H582 Z M85 628 A100 100 0 1 0 285 628 A100 100 0 1 0 85 628 Z"/></clipPath>
+
+              <filter id="sg-wood" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency=".004 .16" numOctaves="4" seed="3" result="n"/>
+                <feColorMatrix in="n" type="matrix" values=".9 0 0 0 -.12  .62 0 0 0 -.1  .36 0 0 0 -.07  0 0 0 0 1" result="wood"/>
+                <feComposite in="wood" in2="SourceGraphic" operator="in"/>
+              </filter>
+              <filter id="sg-wood-dark" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency=".005 .12" numOctaves="4" seed="9" result="n"/>
+                <feColorMatrix in="n" type="matrix" values=".8 0 0 0 -.16  .52 0 0 0 -.12  .3 0 0 0 -.08  0 0 0 0 1" result="wood"/>
+                <feComposite in="wood" in2="SourceGraphic" operator="in"/>
+              </filter>
+              <filter id="sg-grain" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="11" stitchTiles="stitch"/>
+                <feColorMatrix type="matrix" values=".33 .33 .33 0 0  .33 .33 .33 0 0  .33 .33 .33 0 0  0 0 0 0 .13"/>
+              </filter>
+              <filter id="sg-grime" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency=".006" numOctaves="3" seed="4"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 .05  0 0 0 0 .04  0 0 0 0 .03  -1.1 0 0 0 .52"/>
+              </filter>
+              <filter id="sg-rough" x="-.3" y="-.3" width="1.6" height="1.6">
+                <feTurbulence type="fractalNoise" baseFrequency=".07" numOctaves="3" seed="5" result="n"/>
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+              <filter id="sg-shadow" x="-25%" y="-25%" width="150%" height="170%">
+                <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000" flood-opacity=".55"/>
+              </filter>
+              <filter id="sg-shadow-sm" x="-30%" y="-30%" width="160%" height="180%">
+                <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".6"/>
+              </filter>
+
+              <g id="sg-cloud-back">
+                <g fill="url(#sg-cloud-a)">
+                  <ellipse cx="320" cy="96" rx="170" ry="60"/><ellipse cx="470" cy="70" rx="140" ry="58"/>
+                  <ellipse cx="610" cy="104" rx="190" ry="62"/><ellipse cx="770" cy="74" rx="160" ry="66"/>
+                  <ellipse cx="920" cy="104" rx="200" ry="60"/><ellipse cx="1080" cy="78" rx="170" ry="68"/>
+                  <ellipse cx="1230" cy="102" rx="190" ry="60"/><ellipse cx="1330" cy="82" rx="150" ry="58"/>
+                </g>
+                <g fill="url(#sg-cloud-c)">
+                  <ellipse cx="300" cy="70" rx="90" ry="26"/><ellipse cx="450" cy="48" rx="76" ry="24"/>
+                  <ellipse cx="580" cy="78" rx="100" ry="26"/><ellipse cx="745" cy="48" rx="84" ry="26"/>
+                  <ellipse cx="890" cy="80" rx="110" ry="24"/><ellipse cx="1055" cy="52" rx="90" ry="26"/>
+                  <ellipse cx="1205" cy="78" rx="100" ry="24"/>
+                </g>
+              </g>
+              <g id="sg-cloud-front" fill="url(#sg-cloud-b)">
+                <ellipse cx="300" cy="36" rx="180" ry="50"/><ellipse cx="510" cy="22" rx="160" ry="46"/>
+                <ellipse cx="710" cy="42" rx="210" ry="52"/><ellipse cx="930" cy="26" rx="170" ry="48"/>
+                <ellipse cx="1130" cy="40" rx="200" ry="50"/><ellipse cx="1310" cy="28" rx="150" ry="46"/>
+              </g>
+              <g id="sg-waveset" fill="none" stroke="#7f9db3" stroke-width="2.5" stroke-linecap="round" opacity=".5">
+                <path d="M290 262 q10 -6 20 0 M380 272 q12 -7 24 0 M470 258 q10 -6 20 0 M560 280 q12 -7 24 0 M650 266 q10 -6 20 0 M740 256 q10 -5 20 0 M830 274 q12 -7 24 0 M920 262 q10 -6 20 0 M1010 284 q12 -7 24 0 M1100 268 q10 -6 20 0 M1190 258 q10 -5 20 0 M1280 276 q12 -7 24 0"/>
+              </g>
+              <g id="sg-tower">
+                <ellipse cy="2" rx="32" ry="5" fill="#000" opacity=".4"/>
+                <path d="M-25 0 L-17 -120 H17 L25 0 Z" fill="url(#sg-tower-body)"/>
+                <path d="M-18.3 -100 H18.3 L19.7 -80 H-19.7 Z" fill="url(#sg-tower-band)"/>
+                <path d="M-21.1 -58 H21.1 L22.5 -38 H-22.5 Z" fill="url(#sg-tower-band)"/>
+                <path d="M-25 0 L-17 -120 H17 L25 0 Z" fill="none" stroke="#2a2420" stroke-width="2" stroke-linejoin="round"/>
+                <rect x="-4" y="-73" width="8" height="12" rx="3" fill="#1a1d20"/>
+                <rect x="-7" y="-22" width="14" height="22" rx="6" fill="#1a1d20" stroke="#0e1012" stroke-width="1.5"/>
+                <rect x="-27" y="-129" width="54" height="10" rx="3" fill="#2d3033" stroke="#121416" stroke-width="2"/>
+                <path d="M-22 -129 V-139 H22 V-129 M-11 -129 V-139 M0 -129 V-139 M11 -129 V-139" fill="none" stroke="#1c1f22" stroke-width="2"/>
+                <rect x="-14" y="-160" width="28" height="22" rx="2" fill="none" stroke="#1c1f22" stroke-width="2.5"/>
+                <path d="M-4 -160 V-138 M4 -160 V-138" stroke="#1c1f22" stroke-width="1.5"/>
+                <path d="M-20 -160 L0 -180 L20 -160 Z" fill="url(#sg-tower-band)" stroke="#2a2420" stroke-width="2" stroke-linejoin="round"/>
+                <circle cy="-183" r="4" fill="#2d3033" stroke="#121416" stroke-width="1.5"/>
+              </g>
+            </defs>
+
+            <!-- Timber wall -->
+            <rect width="1600" height="440" fill="#4a3220" filter="url(#sg-wood)"/>
+            <g fill="#000" opacity=".07"><rect y="74" width="1600" height="74"/><rect y="222" width="1600" height="74"/><rect y="370" width="1600" height="70"/></g>
+            <path d="M0 74 H1600 M0 148 H1600 M0 222 H1600 M0 296 H1600 M0 370 H1600" stroke="#1a110a" stroke-width="3"/>
+            <path d="M0 77 H1600 M0 151 H1600 M0 225 H1600 M0 299 H1600 M0 373 H1600" stroke="#7b5a3a" stroke-width="1" opacity=".4"/>
+            <g fill="#2a1a0e"><rect x="222" width="20" height="440"/><rect x="1358" width="20" height="440"/></g>
+            <g fill="#7b5a3a" opacity=".4"><rect x="224" width="3" height="440"/><rect x="1360" width="3" height="440"/></g>
+            <g fill="#15100b"><rect x="239" width="3" height="440"/><rect x="1375" width="3" height="440"/></g>
+            <g fill="#15100b">
+              <circle cx="232" cy="37" r="2.5"/><circle cx="232" cy="111" r="2.5"/><circle cx="232" cy="185" r="2.5"/><circle cx="232" cy="259" r="2.5"/><circle cx="232" cy="333" r="2.5"/>
+              <circle cx="1368" cy="37" r="2.5"/><circle cx="1368" cy="111" r="2.5"/><circle cx="1368" cy="185" r="2.5"/><circle cx="1368" cy="259" r="2.5"/><circle cx="1368" cy="333" r="2.5"/>
+              <circle cx="60" cy="37" r="2.5"/><circle cx="60" cy="185" r="2.5"/><circle cx="60" cy="333" r="2.5"/>
+              <circle cx="1540" cy="111" r="2.5"/><circle cx="1540" cy="259" r="2.5"/><circle cx="1540" cy="400" r="2.5"/>
+            </g>
+            <rect y="330" width="1600" height="110" fill="url(#sg-shade-down)"/>
+
+            <!-- Observation window: the station stands on the same rocky island as the lighthouses -->
+            <g clip-path="url(#sg-glass)">
+              <rect x="280" y="48" width="1040" height="328" fill="url(#sg-sky)"/>
+              <g class="sg-clouds sg-clouds-back"><use href="#sg-cloud-back"/><use href="#sg-cloud-back" x="1040"/></g>
+              <g class="sg-bolt" id="sig-bolt">
+                <path d="M930 60 L905 128 L926 132 L892 196 L914 200 L880 246" fill="none" stroke="#9fb8ff" stroke-width="12" stroke-opacity=".35" stroke-linejoin="round"/>
+                <path d="M930 60 L905 128 L926 132 L892 196 L914 200 L880 246" fill="none" stroke="#f4f8ff" stroke-width="4" stroke-linejoin="round"/>
+              </g>
+              <g fill="#22314a" opacity=".9">
+                <ellipse cx="400" cy="238" rx="170" ry="14"/><ellipse cx="760" cy="234" rx="210" ry="12"/><ellipse cx="1150" cy="238" rx="190" ry="14"/>
+              </g>
+              <rect x="280" y="246" width="1040" height="80" fill="url(#sg-sea)"/>
+              <rect x="280" y="236" width="1040" height="22" fill="#7a8ea0" opacity=".1"/>
+              <rect x="280" y="244" width="1040" height="3" fill="#5a7690" opacity=".6"/>
+              <g class="sg-waves"><use href="#sg-waveset"/><use href="#sg-waveset" x="1040"/></g>
+              <g class="sg-spray" fill="#e6eef2">
+                <path d="M306 302 q2 -14 10 -12 q2 -16 13 -8 q7 -14 13 2 q9 -6 12 18 z"/>
+                <path d="M464 302 q2 -14 10 -12 q2 -16 13 -8 q7 -14 13 2 q9 -6 12 18 z"/>
+                <path d="M620 302 q2 -14 10 -12 q2 -16 13 -8 q7 -14 13 2 q9 -6 12 18 z"/>
+                <path d="M776 302 q2 -14 10 -12 q2 -16 13 -8 q7 -14 13 2 q9 -6 12 18 z"/>
+                <path d="M932 302 q2 -14 10 -12 q2 -16 13 -8 q7 -14 13 2 q9 -6 12 18 z"/>
+                <path d="M1088 302 q2 -14 10 -12 q2 -16 13 -8 q7 -14 13 2 q9 -6 12 18 z"/>
+                <path d="M1246 302 q2 -14 10 -12 q2 -16 13 -8 q7 -14 13 2 q9 -6 12 18 z"/>
+              </g>
+
+              <!-- Low rocky island, restored to the original nearly level shoreline. -->
+              <path d="M280 304 C330 300 370 302 410 302 C470 302 520 296 566 298 C620 300 680 300 722 300 C780 300 830 296 878 297 C940 298 990 302 1034 301 C1090 300 1150 298 1190 299 C1240 300 1290 304 1320 302 V376 H280 Z" fill="url(#sg-rock)" stroke="#121314" stroke-width="2"/>
+              <g fill="#000" opacity=".18">
+                <path d="M420 330 c40 -10 90 -4 120 8 c-30 14 -90 16 -120 -8z"/>
+                <path d="M840 340 c50 -12 110 -6 150 6 c-40 14 -110 18 -150 -6z"/>
+                <path d="M1120 326 c30 -8 70 -2 90 8 c-20 10 -70 12 -90 -8z"/>
+                <path d="M600 316 c20 -6 50 -2 64 6 c-14 8 -50 10 -64 -6z"/>
+              </g>
+              <path d="M280 336 C500 326 1100 326 1320 336 V376 H280 Z" fill="#1e2022"/>
+              <g fill="none" stroke="#111213" stroke-width="1.5" opacity=".7">
+                <path d="M520 312 l22 14 l-6 18 M960 318 l-18 12 l8 20 M700 330 l30 10 M1240 314 l-20 16 M440 320 l12 10 M1060 326 l16 8"/>
+              </g>
+
+              <g class="sig-house" data-index="0" transform="translate(410 302) scale(.92)">
+                <path class="sg-beam" d="M-11 -149 L-84 -430 H84 L11 -149 Z" fill="url(#sg-beam)"/>
+                <circle class="sg-glow" cy="-149" r="40" fill="url(#sg-lamp)"/>
+                <rect class="sg-lamp" x="-14" y="-160" width="28" height="22"/>
+                <use href="#sg-tower"/>
+              </g>
+              <g class="sig-house" data-index="1" transform="translate(566 298) scale(.92)">
+                <path class="sg-beam" d="M-11 -149 L-84 -430 H84 L11 -149 Z" fill="url(#sg-beam)"/>
+                <circle class="sg-glow" cy="-149" r="40" fill="url(#sg-lamp)"/>
+                <rect class="sg-lamp" x="-14" y="-160" width="28" height="22"/>
+                <use href="#sg-tower"/>
+              </g>
+              <g class="sig-house" data-index="2" transform="translate(722 300) scale(.92)">
+                <path class="sg-beam" d="M-11 -149 L-84 -430 H84 L11 -149 Z" fill="url(#sg-beam)"/>
+                <circle class="sg-glow" cy="-149" r="40" fill="url(#sg-lamp)"/>
+                <rect class="sg-lamp" x="-14" y="-160" width="28" height="22"/>
+                <use href="#sg-tower"/>
+              </g>
+              <g class="sig-house" data-index="3" transform="translate(878 297) scale(.92)">
+                <path class="sg-beam" d="M-11 -149 L-84 -430 H84 L11 -149 Z" fill="url(#sg-beam)"/>
+                <circle class="sg-glow" cy="-149" r="40" fill="url(#sg-lamp)"/>
+                <rect class="sg-lamp" x="-14" y="-160" width="28" height="22"/>
+                <use href="#sg-tower"/>
+              </g>
+              <g class="sig-house" data-index="4" transform="translate(1034 301) scale(.92)">
+                <path class="sg-beam" d="M-11 -149 L-84 -430 H84 L11 -149 Z" fill="url(#sg-beam)"/>
+                <circle class="sg-glow" cy="-149" r="40" fill="url(#sg-lamp)"/>
+                <rect class="sg-lamp" x="-14" y="-160" width="28" height="22"/>
+                <use href="#sg-tower"/>
+              </g>
+              <g class="sig-house" data-index="5" transform="translate(1190 299) scale(.92)">
+                <path class="sg-beam" d="M-11 -149 L-84 -430 H84 L11 -149 Z" fill="url(#sg-beam)"/>
+                <circle class="sg-glow" cy="-149" r="40" fill="url(#sg-lamp)"/>
+                <rect class="sg-lamp" x="-14" y="-160" width="28" height="22"/>
+                <use href="#sg-tower"/>
+              </g>
+
+              <!-- Original low foreground rocks; all six lighthouse bodies remain clearly visible. -->
+              <path d="M280 376 L280 334 C300 318 334 322 354 338 C376 334 396 350 402 376 Z" fill="#35383b" stroke="#111213" stroke-width="2"/>
+              <path d="M286 338 C302 326 326 328 344 338" fill="none" stroke="#5b6064" stroke-width="2" opacity=".6"/>
+              <path d="M1320 376 L1320 328 C1300 316 1270 322 1254 340 C1234 338 1218 356 1212 376 Z" fill="#35383b" stroke="#111213" stroke-width="2"/>
+              <path d="M1262 338 C1278 326 1298 326 1314 334" fill="none" stroke="#5b6064" stroke-width="2" opacity=".6"/>
+              <g fill="#3f4347" stroke="#121314" stroke-width="1.5">
+                <ellipse cx="470" cy="364" rx="16" ry="8"/><ellipse cx="640" cy="352" rx="10" ry="5"/><ellipse cx="980" cy="358" rx="14" ry="7"/><ellipse cx="1130" cy="366" rx="18" ry="8"/><ellipse cx="560" cy="370" rx="9" ry="4"/><ellipse cx="820" cy="368" rx="12" ry="5"/>
+              </g>
+              <g fill="none" stroke="#6a6f74" stroke-width="1.5" opacity=".6">
+                <path d="M460 360 q10 -5 20 0 M974 354 q8 -4 14 0 M1120 362 q10 -5 22 0"/>
+              </g>
+
+              <g class="sg-clouds sg-clouds-front"><use href="#sg-cloud-front"/><use href="#sg-cloud-front" x="1040"/></g>
+              <rect class="sg-flash" x="280" y="48" width="1040" height="328"/>
+              <path d="M330 48 L420 48 L300 376 L280 376 L280 190 Z" fill="#fff" opacity=".035"/>
+              <path d="M1150 48 L1200 48 L1080 376 L1030 376 Z" fill="#fff" opacity=".03"/>
+            </g>
+            <path fill-rule="evenodd" d="M268 20 H1332 Q1352 20 1352 40 V392 Q1352 412 1332 412 H268 Q248 412 248 392 V40 Q248 20 268 20 Z M290 48 H1310 Q1320 48 1320 58 V366 Q1320 376 1310 376 H290 Q280 376 280 366 V58 Q280 48 290 48 Z" fill="#3d2412" filter="url(#sg-wood-dark)"/>
+            <path fill-rule="evenodd" d="M268 20 H1332 Q1352 20 1352 40 V392 Q1352 412 1332 412 H268 Q248 412 248 392 V40 Q248 20 268 20 Z M290 48 H1310 Q1320 48 1320 58 V366 Q1320 376 1310 376 H290 Q280 376 280 366 V58 Q280 48 290 48 Z" fill="none" stroke="#150d07" stroke-width="3"/>
+            <path d="M268 23 H1332 Q1349 23 1349 40 V392" fill="none" stroke="#8a6644" stroke-width="1.5" opacity=".35"/>
+            <rect x="280" y="48" width="1040" height="328" rx="10" fill="none" stroke="#0d0a07" stroke-width="5"/>
+            <rect x="284" y="52" width="1032" height="320" rx="8" fill="none" stroke="#000" stroke-opacity=".3" stroke-width="5"/>
+            <g class="sg-rivet" fill="url(#sg-rivet)">
+              <circle cx="300" cy="34" r="4"/><circle cx="460" cy="34" r="4"/><circle cx="620" cy="34" r="4"/><circle cx="780" cy="34" r="4"/><circle cx="940" cy="34" r="4"/><circle cx="1100" cy="34" r="4"/><circle cx="1260" cy="34" r="4"/>
+              <circle cx="300" cy="394" r="4"/><circle cx="460" cy="394" r="4"/><circle cx="620" cy="394" r="4"/><circle cx="940" cy="394" r="4"/><circle cx="1100" cy="394" r="4"/><circle cx="1260" cy="394" r="4"/>
+              <circle cx="264" cy="110" r="4"/><circle cx="264" cy="212" r="4"/><circle cx="264" cy="314" r="4"/>
+              <circle cx="1336" cy="110" r="4"/><circle cx="1336" cy="314" r="4"/>
+            </g>
+
+            <!-- Wall papers -->
+            <g class="sig-chart-note" id="sig-chart-note" transform="translate(42 70) rotate(-4)" aria-label="Nautical chart: LAT 35, LNG 14" filter="url(#sg-shadow)">
+              <path d="M4 6 L40 0 L78 8 L120 2 L166 6 L170 60 L164 120 L170 180 L166 236 L120 240 L70 234 L24 240 L2 232 L6 170 L0 110 L5 50 Z" fill="#d9c79e" stroke="#6a583a" stroke-width="2"/>
+              <!-- sea wash, grid, a compact island, and the station marked X -->
+              <path d="M10 16 L160 12 L158 138 L12 140 Z" fill="#9db4bb" opacity=".45"/>
+              <path d="M10 46 H160 M10 78 H160 M10 110 H160 M42 14 V140 M78 14 V140 M114 14 V140" stroke="#5f7a80" stroke-width="1" opacity=".45"/>
+              <path d="M12 24 h4 M12 40 h4 M12 56 h4 M12 72 h4 M12 88 h4 M12 104 h4 M12 120 h4 M30 14 v4 M56 14 v4 M82 14 v4 M108 14 v4 M134 14 v4" stroke="#3f5257" stroke-width="1.2" opacity=".7"/>
+              <path d="M70 98 c-8 -8 -8 -22 2 -30 c8 -6 14 -2 22 -8 c10 -8 24 -8 32 0 c8 6 6 16 14 22 c6 6 2 16 -6 20 c-10 6 -18 0 -28 4 c-12 6 -28 2 -36 -8z" fill="#cdbd8c" stroke="#5f4c2c" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M80 92 c-4 -8 -2 -16 6 -22 c8 -6 16 -2 22 -6 c8 -4 16 -2 20 4 c4 6 2 14 8 18 c-8 2 -14 0 -22 4 c-10 4 -24 6 -34 2z" fill="none" stroke="#8f7a50" stroke-width="1" opacity=".7"/>
+              <path d="M92 76 c6 -4 12 -4 18 0 M112 84 c6 -4 12 -2 16 2" fill="none" stroke="#8f7a50" stroke-width="1" opacity=".6"/>
+              <path d="M102 78 l10 10 M112 78 l-10 10" stroke="#a6261f" stroke-width="3.5" stroke-linecap="round"/>
+              <g transform="translate(144 122)" stroke="#3f5257" fill="#3f5257">
+                <path d="M0 -12 L4 2 L0 -1 L-4 2 Z"/>
+                <path d="M0 -12 V12 M-10 0 H10" fill="none" stroke-width="1"/>
+                <text y="-14" font-size="8" font-weight="700" text-anchor="middle" stroke="none" font-family="Courier New, monospace">N</text>
+              </g>
+              <rect class="sig-chart-glow" x="12" y="146" width="148" height="82" rx="10"/>
+              <text class="sg-hand" x="22" y="180">LAT: 35</text>
+              <text class="sg-hand" x="22" y="216">LNG: 14</text>
+              <circle cx="85" cy="10" r="7" fill="url(#sg-rivet)" stroke="#1c1f1a" stroke-width="1.5"/>
+            </g>
+
+            <g class="sig-note" id="sig-cipher-note" role="button" tabindex="0" aria-label="Open complete signal code" aria-expanded="false" aria-controls="sig-note-modal" transform="translate(1384 60) rotate(3)">
+              <g class="sig-note-lift" filter="url(#sg-shadow)">
+                <path d="M0 4 L176 0 L180 178 L150 210 L2 208 Z" fill="#e6d08a" stroke="#6d5a2c" stroke-width="2"/>
+                <path d="M180 178 L150 210 L156 182 Z" fill="#c4ac66" stroke="#6d5a2c" stroke-width="1.5"/>
+                <text class="sg-type sg-type-head" x="90" y="44">CIPHER CODE</text>
+                <text class="sg-type" x="24" y="82">A=1</text><text class="sg-type" x="100" y="82">B=2</text>
+                <text class="sg-type" x="24" y="110">C=3</text><text class="sg-type" x="100" y="110">D=4</text>
+                <text class="sg-type" x="80" y="134">…</text>
+                <text class="sg-type" x="24" y="160">Y=25</text><text class="sg-type" x="100" y="160">Z=26</text>
+                <text class="sg-type" x="24" y="190">0=30 … 9=39</text>
+                <circle cx="90" cy="10" r="7" fill="url(#sg-rivet)" stroke="#1c1f1a" stroke-width="1.5"/>
+              </g>
+            </g>
+
+            <!-- Steel control console -->
+            <rect x="0" y="436" width="1600" height="464" fill="url(#sg-console)"/>
+            <rect x="0" y="438" width="1600" height="22" fill="url(#sg-shade-up)"/>
+            <rect x="0" y="412" width="1600" height="26" fill="#2c3127" stroke="#101310" stroke-width="2"/>
+            <path d="M0 415 H1600" stroke="#5f6855" stroke-width="2" opacity=".7"/>
+            <path d="M0 439 H1600" stroke="#78826a" stroke-width="2" opacity=".5"/>
+            <g fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="1.5">
+              <path d="M90 450 L240 452 M1290 448 L1500 450 M1300 840 L1460 838 M500 838 L560 836"/>
+            </g>
+            <g class="sg-panel" fill="url(#sg-panel)">
+              <rect x="40" y="462" width="290" height="366" rx="14"/>
+              <rect x="350" y="456" width="900" height="372" rx="14"/>
+              <rect x="1270" y="462" width="290" height="366" rx="14"/>
+            </g>
+            <g fill="none" stroke="#6c765e" stroke-width="1.5" opacity=".5">
+              <path d="M56 463.5 H314 M366 457.5 H1234 M1286 463.5 H1544"/>
+            </g>
+            <g class="sg-rust" filter="url(#sg-rough)">
+              <path d="M342 444 c14 -2 26 6 20 14 c-8 6 -22 4 -26 -4 c-2 -6 0 -8 6 -10z"/>
+              <path d="M1252 842 c18 -4 30 4 24 12 c-8 6 -26 6 -30 -2 c-2 -6 0 -8 6 -10z"/>
+              <path d="M70 800 c16 -8 36 -2 38 10 c2 12 -14 18 -30 14 c-16 -4 -22 -16 -8 -24z"/>
+              <path d="M1530 470 c10 -4 20 2 18 10 c-2 8 -12 10 -18 6 c-6 -4 -6 -12 0 -16z"/>
+              <path d="M1200 470 c8 -2 14 4 12 10 c-2 6 -10 6 -14 2 c-4 -4 -2 -10 2 -12z"/>
+            </g>
+            <g class="sg-rivet" fill="url(#sg-rivet)">
+              <circle cx="58" cy="480" r="4.5"/><circle cx="312" cy="480" r="4.5"/><circle cx="58" cy="810" r="4.5"/><circle cx="312" cy="810" r="4.5"/>
+              <circle cx="368" cy="474" r="4.5"/><circle cx="1232" cy="474" r="4.5"/><circle cx="368" cy="810" r="4.5"/><circle cx="1232" cy="810" r="4.5"/>
+              <circle cx="1288" cy="480" r="4.5"/><circle cx="1542" cy="480" r="4.5"/><circle cx="1288" cy="810" r="4.5"/><circle cx="1542" cy="810" r="4.5"/>
+            </g>
+            <rect x="0" y="846" width="1600" height="54" fill="#2f352a"/>
+            <path d="M0 846 H1600" stroke="#101310" stroke-width="3"/>
+            <path d="M0 849 H1600" stroke="#4c5443" stroke-width="1.5" opacity=".6"/>
+            <g fill="#1a1e17">
+              <rect x="620" y="866" width="34" height="10" rx="5"/><rect x="666" y="866" width="34" height="10" rx="5"/><rect x="712" y="866" width="34" height="10" rx="5"/><rect x="758" y="866" width="34" height="10" rx="5"/>
+              <rect x="804" y="866" width="34" height="10" rx="5"/><rect x="850" y="866" width="34" height="10" rx="5"/><rect x="896" y="866" width="34" height="10" rx="5"/><rect x="942" y="866" width="34" height="10" rx="5"/>
+            </g>
+            <g class="sg-rivet" fill="url(#sg-rivet)"><circle cx="40" cy="873" r="4.5"/><circle cx="300" cy="873" r="4.5"/><circle cx="1300" cy="873" r="4.5"/><circle cx="1560" cy="873" r="4.5"/></g>
+
+            <!-- Radar -->
+            <g class="sig-radar" transform="translate(185 628)">
+              <circle r="118" fill="url(#sg-ring)" stroke="#121410" stroke-width="3" filter="url(#sg-shadow-sm)"/>
+              <circle r="106" fill="#0a0c09" stroke="#2c312a" stroke-width="2"/>
+              <circle r="100" fill="url(#sg-radar)"/>
+              <g fill="none" stroke="#5cd16b" stroke-opacity=".3" stroke-width="2">
+                <circle r="33"/><circle r="66"/>
+                <path d="M-100 0 H100 M0 -100 V100"/>
+              </g>
+              <path d="M-34 12 q10 -14 30 -8 q22 6 28 -4 q10 14 -6 22 q-24 10 -52 -10z" fill="#3fae55" fill-opacity=".35"/>
+              <g class="sig-radar-sweep">
+                <path d="M0 0 L100 0 A100 100 0 0 0 64.28 -76.6 Z" fill="url(#sg-sweep)"/>
+                <path d="M0 0 L100 0" stroke="#b0ffb6" stroke-width="3"/>
+              </g>
+              <g fill="#c6ffcb">
+                <circle class="sig-blip" data-index="0" cx="-73.3" cy="-26.7" r="6"/>
+                <circle class="sig-blip" data-index="1" cx="-52.2" cy="-58" r="6"/>
+                <circle class="sig-blip" data-index="2" cx="-18.9" cy="-75.7" r="6"/>
+                <circle class="sig-blip" data-index="3" cx="18.9" cy="-75.7" r="6"/>
+                <circle class="sig-blip" data-index="4" cx="52.2" cy="-58" r="6"/>
+                <circle class="sig-blip" data-index="5" cx="73.3" cy="-26.7" r="6"/>
+                <circle r="5"/>
+              </g>
+              <circle r="100" fill="none" stroke="#000" stroke-opacity=".5" stroke-width="6"/>
+              <path d="M-76 -48 A92 92 0 0 1 18 -92" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="8" stroke-linecap="round"/>
+              <g class="sg-rivet" fill="url(#sg-rivet)"><circle cx="-82" cy="-82" r="4.5"/><circle cx="82" cy="-82" r="4.5"/><circle cx="-82" cy="82" r="4.5"/><circle cx="82" cy="82" r="4.5"/></g>
+            </g>
+            <g transform="translate(185 790)">
+              <rect x="-60" y="-18" width="120" height="34" rx="4" fill="url(#sg-brass)" stroke="#4d3d20" stroke-width="2"/>
+              <text class="sg-plate-text" y="7">RADAR</text>
+            </g>
+
+            <!-- Lighthouse buttons -->
+            <g class="sig-switches" aria-label="Lighthouse controls">
+              <g class="sig-switch" data-index="0" role="button" tabindex="0" aria-pressed="false" aria-label="Toggle lighthouse 32" transform="translate(410 556)">
+                <text class="sg-label" y="-64">2<tspan class="sg-exp" dy="-13">5</tspan></text>
+                <circle class="sg-bezel" r="48" fill="url(#sg-ring)"/><circle class="sg-bezel-inner" r="40"/>
+                <g class="sg-cap"><circle class="sg-cap-glow" r="56" fill="url(#sg-btn-glow)"/><circle class="sg-cap-base" r="32" fill="url(#sg-cap-off)" filter="url(#sg-shadow-sm)"/><circle class="sg-cap-lit" r="32" fill="url(#sg-cap-on)"/><ellipse class="sg-cap-shine" cx="-10" cy="-13" rx="13" ry="7"/></g>
+              </g>
+              <g class="sig-switch" data-index="1" role="button" tabindex="0" aria-pressed="false" aria-label="Toggle lighthouse 16" transform="translate(566 556)">
+                <text class="sg-label" y="-64">2<tspan class="sg-exp" dy="-13">4</tspan></text>
+                <circle class="sg-bezel" r="48" fill="url(#sg-ring)"/><circle class="sg-bezel-inner" r="40"/>
+                <g class="sg-cap"><circle class="sg-cap-glow" r="56" fill="url(#sg-btn-glow)"/><circle class="sg-cap-base" r="32" fill="url(#sg-cap-off)" filter="url(#sg-shadow-sm)"/><circle class="sg-cap-lit" r="32" fill="url(#sg-cap-on)"/><ellipse class="sg-cap-shine" cx="-10" cy="-13" rx="13" ry="7"/></g>
+              </g>
+              <g class="sig-switch" data-index="2" role="button" tabindex="0" aria-pressed="false" aria-label="Toggle lighthouse 8" transform="translate(722 556)">
+                <text class="sg-label" y="-64">2<tspan class="sg-exp" dy="-13">3</tspan></text>
+                <circle class="sg-bezel" r="48" fill="url(#sg-ring)"/><circle class="sg-bezel-inner" r="40"/>
+                <g class="sg-cap"><circle class="sg-cap-glow" r="56" fill="url(#sg-btn-glow)"/><circle class="sg-cap-base" r="32" fill="url(#sg-cap-off)" filter="url(#sg-shadow-sm)"/><circle class="sg-cap-lit" r="32" fill="url(#sg-cap-on)"/><ellipse class="sg-cap-shine" cx="-10" cy="-13" rx="13" ry="7"/></g>
+              </g>
+              <g class="sig-switch" data-index="3" role="button" tabindex="0" aria-pressed="false" aria-label="Toggle lighthouse 4" transform="translate(878 556)">
+                <text class="sg-label" y="-64">2<tspan class="sg-exp" dy="-13">2</tspan></text>
+                <circle class="sg-bezel" r="48" fill="url(#sg-ring)"/><circle class="sg-bezel-inner" r="40"/>
+                <g class="sg-cap"><circle class="sg-cap-glow" r="56" fill="url(#sg-btn-glow)"/><circle class="sg-cap-base" r="32" fill="url(#sg-cap-off)" filter="url(#sg-shadow-sm)"/><circle class="sg-cap-lit" r="32" fill="url(#sg-cap-on)"/><ellipse class="sg-cap-shine" cx="-10" cy="-13" rx="13" ry="7"/></g>
+              </g>
+              <g class="sig-switch" data-index="4" role="button" tabindex="0" aria-pressed="false" aria-label="Toggle lighthouse 2" transform="translate(1034 556)">
+                <text class="sg-label" y="-64">2<tspan class="sg-exp" dy="-13">1</tspan></text>
+                <circle class="sg-bezel" r="48" fill="url(#sg-ring)"/><circle class="sg-bezel-inner" r="40"/>
+                <g class="sg-cap"><circle class="sg-cap-glow" r="56" fill="url(#sg-btn-glow)"/><circle class="sg-cap-base" r="32" fill="url(#sg-cap-off)" filter="url(#sg-shadow-sm)"/><circle class="sg-cap-lit" r="32" fill="url(#sg-cap-on)"/><ellipse class="sg-cap-shine" cx="-10" cy="-13" rx="13" ry="7"/></g>
+              </g>
+              <g class="sig-switch" data-index="5" role="button" tabindex="0" aria-pressed="false" aria-label="Toggle lighthouse 1" transform="translate(1190 556)">
+                <text class="sg-label" y="-64">2<tspan class="sg-exp" dy="-13">0</tspan></text>
+                <circle class="sg-bezel" r="48" fill="url(#sg-ring)"/><circle class="sg-bezel-inner" r="40"/>
+                <g class="sg-cap"><circle class="sg-cap-glow" r="56" fill="url(#sg-btn-glow)"/><circle class="sg-cap-base" r="32" fill="url(#sg-cap-off)" filter="url(#sg-shadow-sm)"/><circle class="sg-cap-lit" r="32" fill="url(#sg-cap-on)"/><ellipse class="sg-cap-shine" cx="-10" cy="-13" rx="13" ry="7"/></g>
+              </g>
+            </g>
+
+            <!-- Decoder CRT -->
+            <g class="sig-crt" aria-live="polite">
+              <rect x="560" y="630" width="480" height="186" rx="22" fill="url(#sg-bezel-dark)" stroke="#111410" stroke-width="3" filter="url(#sg-shadow-sm)"/>
+              <rect x="582" y="652" width="436" height="144" rx="16" fill="#08190c" stroke="#030703" stroke-width="3"/>
+              <rect x="582" y="652" width="436" height="144" rx="16" fill="url(#sg-screen)"/>
+              <text class="sg-crt-text" x="610" y="696">CURRENT SIGNAL: <tspan id="sig-signal">—</tspan></text>
+              <g id="sig-buffer" class="sig-buffer">
+                <g transform="translate(610 714)"><rect width="58" height="56" rx="6"/><text class="sig-slot-char" x="29" y="40"></text></g>
+                <g transform="translate(682 714)"><rect width="58" height="56" rx="6"/><text class="sig-slot-char" x="29" y="40"></text></g>
+                <g transform="translate(754 714)"><rect width="58" height="56" rx="6"/><text class="sig-slot-char" x="29" y="40"></text></g>
+                <g transform="translate(826 714)"><rect width="58" height="56" rx="6"/><text class="sig-slot-char" x="29" y="40"></text></g>
+              </g>
+              <rect class="sg-crt-cursor" x="904" y="762" width="18" height="6" fill="#9ef59a"/>
+              <g clip-path="url(#sg-screen-clip)">
+                <rect x="582" y="652" width="436" height="144" fill="url(#sg-scan)"/>
+                <rect class="sg-crt-roll" x="582" y="652" width="436" height="24" fill="#9ef59a" opacity=".06"/>
+                <path d="M596 664 Q800 650 1004 664 L1004 676 Q800 662 596 676 Z" fill="#fff" opacity=".05"/>
+              </g>
+              <rect x="582" y="652" width="436" height="144" rx="16" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="5"/>
+              <g class="sg-rivet" fill="url(#sg-rivet)"><circle cx="574" cy="644" r="3.5"/><circle cx="1026" cy="644" r="3.5"/><circle cx="574" cy="802" r="3.5"/><circle cx="1026" cy="802" r="3.5"/></g>
+            </g>
+
+            <!-- Transmit throttle: the Π handle is hinged half-way along the two slots (fixed brackets).
+                 Seen from the side it sweeps a fan: upright = idle (OFF), swung forward/down towards you = send (ON).
+                 The rods and grip are posed by signal-room.js (pseudo-3D: foreshortened rods, grip grows as it comes closer).
+                 Paint order: housing → slots → rivets/plate/lamp → rods → brackets → grip, so the grip is always on top. -->
+            <g class="sig-lever" id="sig-lever" role="button" tabindex="0" aria-pressed="false" aria-label="Pull transmit lever down">
+              <rect x="1286" y="440" width="232" height="384" fill="transparent"/>
+              <rect x="1330" y="800" width="172" height="14" rx="3" fill="#23261f" stroke="#121410" stroke-width="2"/>
+              <path d="M1470 540 L1484 548 L1504 704 L1504 798 L1490 806 L1490 700 Z" fill="#4e120c" stroke="#2a0906" stroke-width="1.5"/>
+              <path class="sg-housing-top" d="M1340 700 L1360 540 H1470 L1490 700 Z" fill="url(#sg-red-top)"/>
+              <rect class="sg-housing-front" x="1340" y="700" width="150" height="106" fill="url(#sg-red-box)"/>
+              <path d="M1340 700 H1490" stroke="#d1685a" stroke-width="1.5" opacity=".45"/>
+              <path d="M1362 542 H1468" stroke="#d1685a" stroke-width="1.5" opacity=".35"/>
+              <g class="sg-rust" filter="url(#sg-rough)"><path d="M1352 676 c12 -4 22 2 18 10 c-6 6 -18 4 -20 -2 c-2 -4 -2 -6 2 -8z"/><path d="M1466 584 c8 -2 14 4 10 10 c-4 4 -12 2 -12 -4 c0 -2 0 -4 2 -6z"/><path d="M1450 786 c10 -4 20 0 18 8 c-2 6 -14 6 -18 2 c-4 -4 -4 -8 0 -10z"/></g>
+              <rect x="1376" y="559" width="18" height="126" rx="9" fill="#0d0605"/>
+              <rect x="1436" y="559" width="18" height="126" rx="9" fill="#0d0605"/>
+              <rect x="1378" y="561" width="14" height="122" rx="7" fill="none" stroke="#000" stroke-opacity=".6" stroke-width="2"/>
+              <rect x="1438" y="561" width="14" height="122" rx="7" fill="none" stroke="#000" stroke-opacity=".6" stroke-width="2"/>
+              <g class="sg-rivet" fill="url(#sg-rivet)"><circle cx="1350" cy="712" r="3.5"/><circle cx="1480" cy="712" r="3.5"/><circle cx="1350" cy="796" r="3.5"/><circle cx="1480" cy="796" r="3.5"/></g>
+              <rect x="1358" y="762" width="92" height="32" rx="3" fill="url(#sg-brass)" stroke="#4d3d20" stroke-width="2"/>
+              <text class="sg-plate-text sg-plate-small" x="1404" y="784">TRANSMIT</text>
+              <circle class="sg-send-glow" cx="1468" cy="778" r="24" fill="url(#sg-amber)"/>
+              <circle class="sg-send-lamp" cx="1468" cy="778" r="8"/>
+              <!-- OFF / ON scale on the panel, left of the housing (OFF = handle up, ON = handle down) -->
+              <g class="sg-onoff">
+                <text class="sg-onoff-off" x="1306" y="508">OFF</text>
+                <path d="M1306 524 V716 M1300 532 L1306 524 L1312 532 M1300 708 L1306 716 L1312 708"/>
+                <text class="sg-onoff-on" x="1306" y="740">ON</text>
+              </g>
+              <g class="sig-handle" id="sig-handle" filter="url(#sg-shadow)">
+                <path id="sig-rod-l" d="M1378 622 H1392 L1392 520 H1378 Z" fill="url(#sg-rod)" stroke="#1c1f1b" stroke-width="1.5" stroke-linejoin="round"/>
+                <path id="sig-rod-r" d="M1438 622 H1452 L1452 520 H1438 Z" fill="url(#sg-rod)" stroke="#1c1f1b" stroke-width="1.5" stroke-linejoin="round"/>
+              </g>
+              <!-- fixed pivot brackets, half-way along the slots: the rods hinge here and never leave this spot -->
+              <g class="sg-bracket">
+                <rect x="1372" y="610" width="26" height="24" rx="5" fill="#2b2e2a" stroke="#101210" stroke-width="2"/>
+                <rect x="1432" y="610" width="26" height="24" rx="5" fill="#2b2e2a" stroke="#101210" stroke-width="2"/>
+                <circle cx="1385" cy="622" r="4.5" fill="url(#sg-rivet)" stroke="#121410" stroke-width="1.2"/>
+                <circle cx="1445" cy="622" r="4.5" fill="url(#sg-rivet)" stroke="#121410" stroke-width="1.2"/>
+              </g>
+              <g class="sig-handle sig-grip-g" id="sig-grip-g" filter="url(#sg-shadow)" transform="translate(1415 502)">
+                <g id="sig-nuts">
+                  <rect x="-40" y="16" width="20" height="8" rx="2" fill="#4a4f47" stroke="#1c1f1b" stroke-width="1"/>
+                  <rect x="20" y="16" width="20" height="8" rx="2" fill="#4a4f47" stroke="#1c1f1b" stroke-width="1"/>
+                </g>
+                <rect class="sg-grip" x="-65" y="-20" width="130" height="40" rx="20" fill="url(#sg-grip)"/>
+                <rect x="-53" y="-13" width="106" height="8" rx="4" fill="#fff" opacity=".18"/>
+                <path d="M-22 -8 V10 M-11 -8 V10 M0 -8 V10 M11 -8 V10 M22 -8 V10" stroke="#000" stroke-opacity=".22" stroke-width="2.5"/>
+              </g>
+            </g>
+            <rect width="1600" height="900" fill="#000" filter="url(#sg-grime)" clip-path="url(#sg-room-clip)" pointer-events="none"/>
+            <rect width="1600" height="900" fill="#000" filter="url(#sg-grain)" clip-path="url(#sg-room-clip)" pointer-events="none"/>
+            <rect class="sg-room-flash" width="1600" height="900"/>
+            <rect class="sg-vignette" width="1600" height="900" fill="url(#sg-vignette)"/>
+          </svg>
+          <canvas class="sig-rain" id="sig-rain"></canvas>
+
+          <div class="sig-note-modal" id="sig-note-modal" role="dialog" aria-modal="true" aria-label="Complete signal code" hidden>
+            <div class="sig-code-sheet">
+              <button type="button" class="sig-note-close" id="sig-note-close" aria-label="Close code sheet">×</button>
+              <h3>Signal code</h3>
+              <div class="sig-alphabet">
+                <span>A = 1</span><span>B = 2</span><span>C = 3</span><span>D = 4</span><span>E = 5</span><span>F = 6</span><span>G = 7</span>
+                <span>H = 8</span><span>I = 9</span><span>J = 10</span><span>K = 11</span><span>L = 12</span><span>M = 13</span><span>N = 14</span>
+                <span>O = 15</span><span>P = 16</span><span>Q = 17</span><span>R = 18</span><span>S = 19</span><span>T = 20</span><span>U = 21</span>
+                <span>V = 22</span><span>W = 23</span><span>X = 24</span><span>Y = 25</span><span>Z = 26</span>
+              </div>
+              <p class="sig-digits">0 = 30 · 1 = 31 · 2 = 32 · 3 = 33 · 4 = 34<br>5 = 35 · 6 = 36 · 7 = 37 · 8 = 38 · 9 = 39</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="signal-room.js?v=20261011-story5"></script>
+  <script src="signal-room-story.js?v=20261011-story23"></script>
+  <script src="signal-room-rescue.js?v=20261011-rescue6"></script>
+  <script src="signal-room-challenge.js?v=20261011-ch7"></script>
+</body>
+</html>
