@@ -245,7 +245,7 @@
       border-color: transparent !important; color: #fff !important;
       box-shadow: 0 8px 20px rgba(14,165,233,.28);
     }
-    .tg-actions .btn.hidden, .tg-done.hidden, #tg-play.hidden { display: none; }
+    .tg-actions .btn.hidden, .tg-done.hidden, #tg-play.hidden, #tg-switch.hidden { display: none; }
     .tg-done {
       margin-top: 6px; padding: 28px 18px; border-radius: 18px; text-align: center;
       border: 1px solid rgba(2,132,199,.2);
@@ -371,6 +371,11 @@
       from { opacity: 1; }
       to { left: -16%; opacity: .35; }
     }
+    .tg-box.tg-box-skip {
+      /* duration set inline — 2.5× belt speed rush left */
+      transition-property: left, opacity;
+      transition-timing-function: linear;
+    }
     .tg-factory-actions {
       display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; align-items: center;
     }
@@ -434,24 +439,47 @@
     .mp-title { margin:0; font-size:clamp(22px,3.5vw,30px); font-weight:800; letter-spacing:-.02em; }
     .mp-tagline { margin:6px 0 0; color:var(--mp-mute); font-size:13px; line-height:1.45; max-width:40em; }
     .mp-hud {
-      display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:0 0 10px;
+      display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin:0 0 10px;
+      width:100%;
     }
-    @media (max-width:720px) { .mp-hud { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width:720px) {
+      .mp-hud { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    }
     .mp-stat {
-      padding:8px 10px; border-radius:12px; background:#fff; border:1px solid rgba(2,132,199,.14);
+      padding:8px 10px; border-radius:12px;
+      background:#fff; border:1px solid rgba(2,132,199,.14);
       box-shadow:0 2px 8px rgba(14,116,144,.05);
     }
     .mp-stat .lbl { display:block; font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--mp-mute); }
     .mp-stat .val { display:block; margin-top:2px; font-size:16px; font-weight:800; color:var(--mp-ink); font-variant-numeric:tabular-nums; }
     .mp-energy {
-      grid-column:1 / -1; height:12px; border-radius:999px; background:#e2e8f0; overflow:hidden;
+      grid-column:1 / -1; position:relative; height:14px; border-radius:999px;
+      background:#e2e8f0; overflow:hidden;
       border:1px solid rgba(2,132,199,.12);
     }
     .mp-energy > span {
       display:block; height:100%; width:100%;
       background:linear-gradient(90deg,#38bdf8,#0ea5e9 55%,#f59e0b);
-      transition:width .2s ease;
+      transition:width .55s cubic-bezier(.22,.8,.2,1);
     }
+    .mp-life-mark {
+      position:absolute; top:0; bottom:0; width:2px; background:#0f172a;
+      transform:translateX(-50%); z-index:2; pointer-events:none;
+    }
+    .mp-root.mp-flash-bad {
+      box-shadow:0 0 0 3px rgba(225,29,72,.45), 0 10px 28px rgba(14,116,144,.08);
+      animation: mp-flash-red .45s ease;
+    }
+    @keyframes mp-flash-red {
+      0% { background-color: rgba(254,202,202,.55); }
+      100% { background-color: transparent; }
+    }
+    .mp-stage-flash {
+      pointer-events:none; position:absolute; inset:0; opacity:0; z-index:4;
+      background:radial-gradient(circle at 50% 40%, rgba(251,113,133,.28), transparent 55%);
+      transition:opacity .25s ease;
+    }
+    .mp-stage-flash.mp-stage-flash-on { opacity:1; }
     .mp-tip {
       margin:0 0 10px; padding:10px 12px; border-radius:12px; font-size:13px; line-height:1.45;
       background:rgba(2,132,199,.07); border:1px solid rgba(2,132,199,.16); color:#334155;
@@ -499,7 +527,10 @@
     .mp-solution-label {
       margin:0 0 6px; font-size:12px; font-weight:800; color:#0c4a6e; letter-spacing:.01em;
     }
-    #mp-svg-sol { display:block; width:100%; height:auto; margin:0; }
+    #mp-svg-sol {
+      display:block; width:100%; height:auto; margin:0;
+      aspect-ratio:460 / 360;
+    }
     .mp-overlay {
       position:absolute; inset:0; z-index:5;
       display:flex; align-items:center; justify-content:center;
@@ -528,11 +559,29 @@
     .mp-clear-bar .mp-clear-copy { flex:1 1 160px; min-width:140px; }
     .mp-clear-bar .mp-clear-copy strong { display:block; font-size:14px; color:#92400e; }
     .mp-clear-bar .mp-clear-copy p { margin:2px 0 0; font-size:12px; color:#78716c; }
-    .mp-clear-bar .btn { border-radius:999px !important; font-weight:800 !important; }
+    .mp-clear-bar .mp-clear-actions {
+      display:flex; gap:8px; flex:0 0 auto;
+    }
+    .mp-clear-bar .mp-clear-actions .btn {
+      border-radius:999px !important; font-weight:800 !important;
+      padding:8px 16px !important;
+    }
+    .mp-rules {
+      margin:0 0 14px; padding:0; list-style:none; text-align:left;
+      font-size:13px; line-height:1.55; color:#475569;
+    }
+    .mp-rules li {
+      display:flex; gap:8px; align-items:baseline;
+      padding:4px 0; border-bottom:1px dashed rgba(148,163,184,.35);
+    }
+    .mp-rules li:last-child { border-bottom:none; }
+    .mp-rules .mp-rule-k { flex:0 0 3.2em; font-weight:800; color:#b45309; }
     .mp-clear-bar .btn.primary {
       background:linear-gradient(90deg,#38bdf8,#0ea5e9) !important;
       border-color:transparent !important; color:#fff !important;
     }
+    .mp-pill.hidden { display:none !important; }
+    .mp-solution-label:empty { display:none; }
 
   </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
@@ -659,11 +708,16 @@
           </div>
 
           <div class="mp-hud" aria-label="Game status">
-            <div class="mp-stat"><span class="lbl">Level</span><span class="val" id="mp-level">1 / 12</span></div>
+            <div class="mp-stat"><span class="lbl">Level</span><span class="val" id="mp-level">1 / 10</span></div>
+            <div class="mp-stat"><span class="lbl">Stars</span><span class="val" id="mp-stars-total">0 / 30</span></div>
             <div class="mp-stat"><span class="lbl">Combo</span><span class="val" id="mp-combo">0</span></div>
-            <div class="mp-stat"><span class="lbl">Crystals</span><span class="val" id="mp-crystals">0 / 1</span></div>
             <div class="mp-stat"><span class="lbl">Lines</span><span class="val" id="mp-locked">0</span></div>
-            <div class="mp-energy" aria-label="Energy"><span id="mp-energy-fill"></span></div>
+            <div class="mp-stat"><span class="lbl">Timer</span><span class="val" id="mp-timer-val">0s</span></div>
+            <div class="mp-energy" aria-label="Lives" title="3 lives">
+              <span id="mp-energy-fill"></span>
+              <i class="mp-life-mark" style="left:33.333%"></i>
+              <i class="mp-life-mark" style="left:66.666%"></i>
+            </div>
           </div>
 
           <p class="mp-tip" id="mp-tip">Drag from a vertex or a side mid-point. Release anywhere — find the centre yourself.</p>
@@ -671,7 +725,7 @@
           <div class="mp-meta-row">
             <span class="mp-pill" id="mp-act">Act 1 · Learn the four lines</span>
             <span class="mp-pill hot">Target: <span id="mp-crystal-name">Centroid</span></span>
-            <span class="mp-pill">Draw: <span id="mp-line-name">medians</span></span>
+            <span class="mp-pill" id="mp-draw-pill">Draw: <span id="mp-line-name">medians</span></span>
             <div class="mp-timers hidden" id="mp-timers">
               <span class="mp-pill">Swap <b id="mp-timer-switch">12s</b></span>
               <span class="mp-pill">Left <b id="mp-timer-level">90s</b></span>
@@ -680,11 +734,17 @@
 
           <div class="mp-stage-wrap">
             <svg id="mp-svg" viewBox="0 0 460 360" role="img" aria-label="Meeting Point playfield"></svg>
+            <div class="mp-stage-flash" id="mp-stage-flash" aria-hidden="true"></div>
 
             <div class="mp-overlay" id="mp-overlay-title">
               <div class="mp-card">
                 <h3>Meeting Point</h3>
                 <p>Drag from blue handles (vertices or mid-points). Lines end where you release. With three lines on the board, press Check answer.</p>
+                <ul class="mp-rules" aria-label="Star rules">
+                  <li><span class="mp-rule-k">3★</span><span>≤30s</span></li>
+                  <li><span class="mp-rule-k">2★</span><span>≤45s</span></li>
+                  <li><span class="mp-rule-k">1★</span><span>&gt;45s</span></li>
+                </ul>
                 <button class="btn primary" type="button" id="mp-start">Start</button>
               </div>
             </div>
@@ -705,13 +765,15 @@
               <strong id="mp-clear-title">Cleared</strong>
               <p id="mp-clear-msg"></p>
             </div>
-            <button class="btn primary" type="button" id="mp-next">Next level</button>
-            <button class="btn" type="button" id="mp-retry">Replay</button>
+            <div class="mp-clear-actions">
+              <button class="btn primary" type="button" id="mp-next">Next level</button>
+              <button class="btn" type="button" id="mp-retry">Replay</button>
+            </div>
           </div>
 
           <div class="mp-solution hidden" id="mp-solution">
             <p class="mp-solution-label" id="mp-solution-label">Correct construction</p>
-            <svg id="mp-svg-sol" viewBox="0 0 460 360" role="img" aria-label="Correct special lines"></svg>
+            <svg id="mp-svg-sol" viewBox="0 0 460 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Correct special lines"></svg>
           </div>
 
           <div class="mp-actions">
@@ -797,9 +859,9 @@
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="triangle-centres-comics.js?v=20260830-fu"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
-  <script defer src="triangle-centres-tools.js?v=20260830j"></script>
-  <script defer src="triangle-centres-game.js?v=20261018q"></script>
-  <script defer src="meeting-point-game.js?v=20261018q"></script>
+  <script defer src="triangle-centres-tools.js?v=20261023e"></script>
+  <script defer src="triangle-centres-game.js?v=20261029-share"></script>
+  <script defer src="meeting-point-game.js?v=20261029-share"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       

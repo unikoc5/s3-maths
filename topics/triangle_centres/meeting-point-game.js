@@ -10,15 +10,17 @@
   var W = 460;
   var H = 360;
   var HIT = 10;
-  var PERP_COS = 0.07; /* |cos| below this ≈ perpendicular (tighter) */
-  var CENTRE_TOL = 3.5; /* tighter concurrence check */
-  var CLUSTER_TOL = 5;
-  var SIDE_EQ = 5; /* px — sides closer than this share tick count */
-  var BISECTOR_COS = 0.985; /* ~10° from true bisector */
+  var PERP_COS = 0.03; /* |cos| for showing ⊥ — only when truly ~90° */
+  var CENTRE_TOL = 5.5; /* answer check — looser freehand OK */
+  var CLUSTER_TOL = 6;
+  var DIR_MATCH = 0.965; /* ~15° of true special line — forgiving */
+  var SIDE_EQ_FRAC = 0.06; /* relative — equal sides share tick count */
+  var SIDE_EQ_MIN = 14; /* px floor after fitToView */
+  var BISECTOR_COS = 0.9985; /* equal-angle arcs — ~3° of true bisector */
+  var VERTEX_SKIP = 14; /* no ⊥ mark sitting on a corner (A/B/C) */
   var HANDLE = "#0284c7";
   var DELETE_HINT = "Delete a line (hover + double-click) to remove it.";
-  var ENERGY_MAX = 100;
-  var ENERGY_MISS = 12;
+  var LIVES_MAX = 3;
   var LABELS = ["A", "B", "C"];
   var TICK = "#dc2626";
   var MARK = "#2563eb";
@@ -35,7 +37,7 @@
     altitude: {
       centre: "Orthocentre",
       line: "altitudes",
-      tip: "Draw three altitudes (vertex ⊥ opposite side). In an obtuse triangle the meeting point may lie outside.",
+      tip: "Draw three altitudes (vertex ⊥ opposite side).",
     },
     bisector: {
       centre: "In-centre",
@@ -48,6 +50,7 @@
       tip: "Draw three perpendicular bisectors from the side mid-points. Acute → inside; right → on a side; obtuse → outside.",
     },
   };
+  var HARD_TIP = "Find the target centre. Draw the three special lines that meet there — no other hints.";
 
   /* Compact shapes centred in the smaller viewBox */
   var SHAPES = {
@@ -99,6 +102,12 @@
       { x: 70, y: 230 },
       { x: 330, y: 230 },
     ],
+    /* true equilateral — all sides equal → same tick count */
+    equilateral: [
+      { x: 80, y: 250 },
+      { x: 320, y: 250 },
+      { x: 200, y: 250 - Math.sqrt(3) * 120 },
+    ],
     scalene: [
       { x: 55, y: 205 },
       { x: 335, y: 245 },
@@ -106,22 +115,26 @@
     ],
   };
 
-  var LEVELS = [
+  /* Pool of unique mode+shape levels; each run shuffles and takes 10 */
+  var LEVEL_BANK = [
     { act: 1, mode: "median", shape: "scalene", title: "Medians → Centroid" },
     { act: 1, mode: "altitude", shape: "obtuse", title: "Altitudes → Orthocentre (obtuse)" },
-    { act: 1, mode: "bisector", shape: "isosceles", title: "Bisectors → In-centre" },
+    { act: 1, mode: "bisector", shape: "equilateral", title: "Bisectors → In-centre" },
     { act: 1, mode: "perp", shape: "obtuse2", title: "Perp. bisectors (obtuse)" },
     { act: 2, mode: "median", shape: "right", title: "Medians (right-angled)" },
     { act: 2, mode: "altitude", shape: "acute2", title: "Altitudes (acute)" },
     { act: 2, mode: "perp", shape: "right2", title: "Circumcentre on the hypotenuse" },
     { act: 2, mode: "bisector", shape: "obtuse3", title: "In-centre (obtuse)" },
-    { act: 3, switch: true, crystals: 3, switchMs: 14000, timeLimit: 100, title: "Centre scramble I", shapes: ["obtuse", "scalene", "isosceles"] },
-    { act: 3, switch: true, crystals: 3, switchMs: 12000, timeLimit: 85, title: "Centre scramble II", shapes: ["obtuse2", "right", "acute2"] },
-    { act: 3, switch: true, crystals: 4, switchMs: 10000, timeLimit: 75, title: "Centre scramble III", shapes: ["obtuse3", "isosceles2", "right2", "scalene"] },
-    { act: 3, switch: true, crystals: 4, switchMs: 8000, timeLimit: 60, title: "Line master", shapes: ["obtuse", "obtuse2", "right", "acute", "scalene"], boss: true },
+    { act: 3, mode: "altitude", shape: "isosceles", title: "Altitudes (isosceles)" },
+    { act: 3, mode: "perp", shape: "acute", title: "Circumcentre (acute)" },
+    { act: 3, mode: "median", shape: "isosceles2", title: "Medians (isosceles)" },
+    { act: 3, mode: "bisector", shape: "acute", title: "In-centre (acute)" },
+    { act: 3, mode: "altitude", shape: "right", title: "Orthocentre (right-angled)" },
+    { act: 3, mode: "perp", shape: "scalene", title: "Circumcentre (scalene)" },
+    { act: 3, mode: "median", shape: "equilateral", title: "Medians (equilateral)" },
+    { act: 3, mode: "altitude", shape: "obtuse3", title: "Orthocentre (obtuse again)" },
   ];
-
-  var SWITCH_ORDER = ["median", "altitude", "bisector", "perp"];
+  var LEVELS = LEVEL_BANK.slice(0, 10);
 
   var state = {
     levelIdx: 0,
@@ -129,7 +142,7 @@
     verts: null,
     mode: "median",
     lines: [], /* { a, b, from: {kind,index} } */
-    energy: ENERGY_MAX,
+    lives: LIVES_MAX,
     combo: 0,
     maxCombo: 0,
     misses: 0,
@@ -141,11 +154,14 @@
     switchEndsAt: 0,
     levelTimer: null,
     levelEndsAt: 0,
+    tickTimer: null,
+    gameOver: false,
     drag: null,
     hoverLine: -1,
     pointer: null,
     running: false,
     stars: 0,
+    totalStars: 0,
     overlay: "title",
   };
 
@@ -232,6 +248,22 @@
     return circumcentre(v);
   }
 
+  function triangleArea(v) {
+    return Math.abs(
+      (v[0].x * (v[1].y - v[2].y) + v[1].x * (v[2].y - v[0].y) + v[2].x * (v[0].y - v[1].y)) / 2
+    );
+  }
+
+  /** Inradius r = Area / s — reliable tangency to all three sides. */
+  function inradiusOf(v) {
+    var a = dist(v[1], v[2]);
+    var b = dist(v[0], v[2]);
+    var c = dist(v[0], v[1]);
+    var s = (a + b + c) / 2;
+    if (s < 1e-6) return 0;
+    return triangleArea(v) / s;
+  }
+
   function fitToView(verts, mode) {
     var src = cloneVerts(verts);
     var c0 = trueCentre(mode, src);
@@ -239,6 +271,31 @@
     if (c0) pts.push(c0);
     var i;
     for (i = 0; i < 3; i++) pts.push(mid(src[i], src[(i + 1) % 3]));
+    /* leave room for circumcircle / incircle so answer-key circles stay on-canvas */
+    if (c0 && mode === "perp") {
+      var R = dist(c0, src[0]);
+      pts.push(
+        { x: c0.x + R, y: c0.y },
+        { x: c0.x - R, y: c0.y },
+        { x: c0.x, y: c0.y + R },
+        { x: c0.x, y: c0.y - R }
+      );
+    }
+    if (c0 && mode === "bisector") {
+      var rIn = inradiusOf(src);
+      pts.push(
+        { x: c0.x + rIn, y: c0.y },
+        { x: c0.x - rIn, y: c0.y },
+        { x: c0.x, y: c0.y + rIn },
+        { x: c0.x, y: c0.y - rIn }
+      );
+    }
+    /* obtuse altitudes: include exterior feet so side extensions stay on-canvas */
+    if (mode === "altitude") {
+      for (i = 0; i < 3; i++) {
+        pts.push(foot(src[i], src[(i + 1) % 3], src[(i + 2) % 3]));
+      }
+    }
     var minX = Infinity;
     var minY = Infinity;
     var maxX = -Infinity;
@@ -275,16 +332,76 @@
 
   function levelDef() { return LEVELS[state.levelIdx]; }
 
-  function pickShape(lv) {
-    if (lv.shapes && lv.shapes.length) {
-      return lv.shapes[Math.floor(Math.random() * lv.shapes.length)];
+  /** Last 3 levels of a run — no line-type hints */
+  function isHardLevel() {
+    return state.levelIdx >= LEVELS.length - 3;
+  }
+
+  function rightAngleVertex(v) {
+    var i;
+    for (i = 0; i < 3; i++) {
+      var V = v[i];
+      var P = v[(i + 1) % 3];
+      var Q = v[(i + 2) % 3];
+      if (Math.abs(dot(unit(V, P), unit(V, Q))) < PERP_COS) return i;
     }
+    return -1;
+  }
+
+  function appendTriangleRightAngle(svg, v) {
+    var ri = rightAngleVertex(v);
+    if (ri < 0) return;
+    var V = v[ri];
+    var P = v[(ri + 1) % 3];
+    var Q = v[(ri + 2) % 3];
+    svg.appendChild(rightAngleMark(V, P, Q));
+  }
+
+  function shuffleLevels() {
+    var pool = LEVEL_BANK.slice();
+    var i, j, t;
+    for (i = pool.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1));
+      t = pool[i];
+      pool[i] = pool[j];
+      pool[j] = t;
+    }
+    var seen = {};
+    LEVELS = [];
+    for (i = 0; i < pool.length && LEVELS.length < 10; i++) {
+      var key = pool[i].mode + "|" + pool[i].shape;
+      if (seen[key]) continue;
+      seen[key] = true;
+      LEVELS.push(pool[i]);
+    }
+  }
+
+  function pickShape(lv) {
     return lv.shape || "acute";
   }
 
   function clearTimers() {
     if (state.switchTimer) { clearInterval(state.switchTimer); state.switchTimer = null; }
     if (state.levelTimer) { clearInterval(state.levelTimer); state.levelTimer = null; }
+    if (state.tickTimer) { clearInterval(state.tickTimer); state.tickTimer = null; }
+  }
+
+  function updateLevelClock() {
+    if (!els.timerVal) return;
+    var sec = 0;
+    if (state.startedAt) {
+      sec = Math.min(999, Math.max(0, Math.floor((Date.now() - state.startedAt) / 1000)));
+    }
+    els.timerVal.textContent = sec + "s";
+  }
+
+  function startLevelClock() {
+    if (state.tickTimer) clearInterval(state.tickTimer);
+    updateLevelClock();
+    state.tickTimer = setInterval(function () {
+      if (!state.running) return;
+      updateLevelClock();
+    }, 250);
   }
 
   function handlePoint(kind, index) {
@@ -304,21 +421,37 @@
     drawSolution();
   }
 
+  /** Full mission reset (lives, stars, combo, level) — used after Game over / Start. */
+  function resetRunState() {
+    state.combo = 0;
+    state.maxCombo = 0;
+    state.totalStars = 0;
+    state.stars = 0;
+    state.lives = LIVES_MAX;
+    state.gameOver = false;
+    state.crystalsDone = 0;
+    state.misses = 0;
+    state.crystalLit = false;
+    state.levelIdx = 0;
+  }
+
   function startLevel(idx) {
     clearTimers();
     hideClearBar();
+    /* fresh run only — keep combo when advancing to the next level */
+    if (idx === 0) {
+      shuffleLevels();
+      resetRunState();
+    }
     state.levelIdx = Math.max(0, Math.min(LEVELS.length - 1, idx));
     var lv = levelDef();
     var shape = pickShape(lv);
-    var mode0 = lv.switch ? SWITCH_ORDER[0] : (lv.mode || "median");
+    var mode0 = lv.mode || "median";
     state.mode = mode0;
-    applyVerts(SHAPES[shape], mode0);
-    state.energy = ENERGY_MAX;
-    state.combo = 0;
-    state.maxCombo = 0;
+    applyVerts(SHAPES[shape] || SHAPES.acute, mode0);
     state.misses = 0;
-    state.crystalsDone = 0;
     state.crystalLit = false;
+    state.gameOver = false;
     state.startedAt = Date.now();
     state.overlay = "play";
     state.running = true;
@@ -326,74 +459,41 @@
     state.reveal = null;
     state.lines = [];
     state.hoverLine = -1;
-    if (lv.switch) {
-      state.switchEndsAt = Date.now() + (lv.switchMs || 12000);
-      state.switchTimer = setInterval(onSwitchTick, 200);
-      state.levelEndsAt = Date.now() + (lv.timeLimit || 90) * 1000;
-      state.levelTimer = setInterval(onLevelTick, 200);
-    }
     showOverlay("play");
+    startLevelClock();
+    updateLivesBar(false);
     updateHud();
     draw();
     drawSolution();
   }
 
-  function onSwitchTick() {
-    if (!state.running || state.overlay !== "play") return;
-    updateTimers();
-    if (state.switchEndsAt - Date.now() > 0) return;
-    var i = SWITCH_ORDER.indexOf(state.mode);
-    setMode(SWITCH_ORDER[(i + 1) % SWITCH_ORDER.length]);
-    state.energy = Math.max(0, state.energy - 8);
-    state.combo = 0;
-    state.switchEndsAt = Date.now() + (levelDef().switchMs || 12000);
-    pulse("warn");
-    if (state.energy <= 0) failLevel("Out of energy — the target centre changed too soon.");
-  }
-
-  function onLevelTick() {
-    if (!state.running || state.overlay !== "play") return;
-    updateTimers();
-    if (Date.now() >= state.levelEndsAt) failLevel("Time is up — the crystal never lit.");
+  function restartMission() {
+    resetRunState();
+    startLevel(0);
   }
 
   function updateTimers() {
     if (!els.timerRow) return;
-    var lv = levelDef();
-    if (lv.switch) {
-      els.timerSwitch.textContent = Math.max(0, Math.ceil((state.switchEndsAt - Date.now()) / 1000)) + "s";
-      els.timerLevel.textContent = Math.max(0, Math.ceil((state.levelEndsAt - Date.now()) / 1000)) + "s";
-      els.timerRow.classList.remove("hidden");
-    } else {
-      els.timerRow.classList.add("hidden");
-    }
+    els.timerRow.classList.add("hidden");
   }
 
   function starsForClear() {
+    /* time only: 3★ ≤30s · 2★ ≤45s · 1★ >45s */
     var elapsed = (Date.now() - state.startedAt) / 1000;
-    var s = 3;
-    if (state.misses > 2 || state.energy < 40) s = 2;
-    if (state.misses > 5 || state.energy < 20 || elapsed > 100) s = 1;
-    return s;
+    if (elapsed <= 30) return 3;
+    if (elapsed <= 45) return 2;
+    return 1;
   }
 
-  function clearCrystal() {
+  function onLevelClear() {
     state.crystalLit = true;
-    state.crystalsDone += 1;
     pulse("ok");
+    state.stars = starsForClear();
+    state.totalStars = Math.min(30, (state.totalStars || 0) + state.stars);
     updateHud();
-    var lv = levelDef();
-    var need = lv.switch ? (lv.crystals || 3) : 1;
-    if (state.crystalsDone >= need) {
-      state.stars = starsForClear();
-      state.running = false;
-      clearTimers();
-      showClear();
-      return;
-    }
-    var i = SWITCH_ORDER.indexOf(state.mode);
-    setMode(SWITCH_ORDER[(i + 1) % SWITCH_ORDER.length]);
-    state.switchEndsAt = Date.now() + (lv.switchMs || 12000);
+    state.running = false;
+    clearTimers();
+    showClear();
   }
 
   function failLevel(msg) {
@@ -422,27 +522,62 @@
     return segs;
   }
 
+  function vertexLabelPos(P) {
+    var g = centroid(state.verts);
+    var dx = P.x - g.x;
+    var dy = P.y - g.y;
+    var d = Math.hypot(dx, dy) || 1;
+    return { x: P.x + (dx / d) * 14, y: P.y + (dy / d) * 14 };
+  }
+
   function bestLabelOffset(c, segs) {
-    var opts = [
-      { x: 16, y: -14 }, { x: -16, y: -14 }, { x: 16, y: 14 }, { x: -16, y: 14 },
-      { x: 0, y: -18 }, { x: 0, y: 18 }, { x: 18, y: 0 }, { x: -18, y: 0 },
-      { x: 14, y: -6 }, { x: -14, y: 6 },
-    ];
+    var nearVert = false;
+    var avoid = [];
+    if (state.verts) {
+      state.verts.forEach(function (P) {
+        avoid.push(P);
+        avoid.push(vertexLabelPos(P));
+        if (dist(c, P) < 24) nearVert = true;
+      });
+    }
+    var base = nearVert ? 28 : 16;
+    var opts = [];
+    var k;
+    for (k = 0; k < 16; k++) {
+      var ang = (k / 16) * Math.PI * 2;
+      opts.push({ x: Math.cos(ang) * base, y: Math.sin(ang) * base });
+      if (nearVert) opts.push({ x: Math.cos(ang) * (base + 12), y: Math.sin(ang) * (base + 12) });
+    }
     var g = state.verts ? centroid(state.verts) : c;
     var rdx = c.x - g.x;
     var rdy = c.y - g.y;
     var rd = Math.hypot(rdx, rdy) || 1;
-    opts.push({ x: (rdx / rd) * 18, y: (rdy / rd) * 18 });
+    if (nearVert) {
+      /* H on a vertex: put H toward triangle interior; A/B/C stay exterior */
+      opts.push({ x: -rdx / rd * (base + 8), y: -rdy / rd * (base + 8) });
+      opts.push({ x: -rdy / rd * base, y: rdx / rd * base });
+      opts.push({ x: rdy / rd * base, y: -rdx / rd * base });
+    } else {
+      opts.push({ x: (rdx / rd) * 18, y: (rdy / rd) * 18 });
+    }
     var best = opts[0];
-    var bestScore = -1;
+    var bestScore = -1e9;
     opts.forEach(function (off) {
       var p = { x: c.x + off.x, y: c.y + off.y };
       var minD = 1000;
       (segs || []).forEach(function (S) {
         minD = Math.min(minD, distPointToSeg(p, S[0], S[1]));
       });
-      minD = Math.min(minD, dist(p, c)); /* prefer not sitting on the spot */
-      var score = minD + Math.hypot(off.x, off.y) * 0.05;
+      avoid.forEach(function (q) {
+        minD = Math.min(minD, dist(p, q));
+      });
+      /* strongly prefer clear of A/B/C labels (≥16px) */
+      var labelClear = 40;
+      avoid.forEach(function (q) {
+        labelClear = Math.min(labelClear, dist(p, q));
+      });
+      var score = minD + Math.hypot(off.x, off.y) * 0.04 + labelClear * 1.2;
+      if (labelClear < 16) score -= 80;
       if (score > bestScore) { bestScore = score; best = off; }
     });
     return best;
@@ -469,26 +604,74 @@
     svg.appendChild(t);
   }
 
-  function showFinishBar(ok) {
+  function showFinishBar(ok, opts) {
     /* always show after Check / Skip — does not cover the figure */
+    opts = opts || {};
     state.overlay = "clear";
     state.running = false;
     clearTimers();
+    updateLevelClock();
     if (els.clearBar) els.clearBar.classList.remove("hidden");
     var stars = ok ? (state.stars || starsForClear()) : 0;
     state.stars = stars;
     els.clearStars.textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
-    els.clearTitle.textContent = ok
-      ? levelDef().title + " · Cleared"
-      : levelDef().title + " · See solution";
-    els.clearMsg.textContent = ok
-      ? ("Best combo " + state.maxCombo + " · Retries " + state.misses + " · Energy left " + Math.round(state.energy))
-      : "Correct figure shown below · Next level or Replay";
-    if (els.nextBtn) {
-      els.nextBtn.textContent = state.levelIdx >= LEVELS.length - 1 ? "Play again" : "Next level";
+    var meta = MODE_META[state.mode];
+    var clearName = isHardLevel() ? meta.centre : levelDef().title;
+    var lastQ = state.levelIdx >= LEVELS.length - 1;
+    var gameOver = !!opts.gameOver || !!state.gameOver;
+    if (gameOver) {
+      els.clearTitle.textContent = "Game over";
+      els.clearMsg.textContent = "Out of lives · Stars " + (state.totalStars || 0) + " / 30 · Jump to Centre Snap or replay";
+      if (els.retryBtn) els.retryBtn.textContent = "Replay mission";
+      if (els.nextBtn) els.nextBtn.textContent = "Next mission";
+    } else {
+      els.clearTitle.textContent = ok
+        ? clearName + " · Cleared"
+        : clearName + " · See solution";
+      els.clearMsg.textContent = ok
+        ? ("Best combo " + state.maxCombo + " · Lives " + state.lives + " / " + LIVES_MAX)
+        : (lastQ
+          ? "Answer key below · Next mission or Replay mission"
+          : "Answer key below · Next level or Replay");
+      if (els.retryBtn) els.retryBtn.textContent = lastQ ? "Replay mission" : "Replay";
+      if (els.nextBtn) els.nextBtn.textContent = lastQ ? "Next mission" : "Next level";
     }
     showOverlay("play");
     updateHud();
+  }
+
+  function updateLivesBar(animate) {
+    if (!els.energyFill) return;
+    var pct = Math.max(0, Math.min(100, (state.lives / LIVES_MAX) * 100));
+    els.energyFill.style.transition = animate
+      ? "width .55s cubic-bezier(.22,.8,.2,1), background .2s ease"
+      : "none";
+    els.energyFill.style.width = pct + "%";
+  }
+
+  function loseLife() {
+    if (state.lives <= 0) return false;
+    state.lives -= 1;
+    pulse("bad");
+    if (els.root) {
+      els.root.classList.remove("mp-flash-bad");
+      void els.root.offsetWidth;
+      els.root.classList.add("mp-flash-bad");
+      setTimeout(function () { els.root.classList.remove("mp-flash-bad"); }, 520);
+    }
+    if (els.stageFlash) {
+      els.stageFlash.classList.remove("mp-stage-flash-on");
+      void els.stageFlash.offsetWidth;
+      els.stageFlash.classList.add("mp-stage-flash-on");
+      setTimeout(function () { els.stageFlash.classList.remove("mp-stage-flash-on"); }, 520);
+    }
+    updateLivesBar(true);
+    updateHud();
+    if (state.lives <= 0) {
+      state.gameOver = true;
+      return true;
+    }
+    return false;
   }
 
   function showClear() {
@@ -519,20 +702,21 @@
   function updateHud() {
     var lv = levelDef();
     var meta = MODE_META[state.mode];
+    var hard = isHardLevel();
     els.levelNum.textContent = (state.levelIdx + 1) + " / " + LEVELS.length;
     els.actLabel.textContent =
       lv.act === 1 ? "Act 1 · Learn the four lines" :
       lv.act === 2 ? "Act 2 · Shape challenges" :
-      "Act 3 · Centre scramble";
-    els.energyFill.style.width = Math.max(0, Math.min(100, state.energy)) + "%";
-    els.combo.textContent = String(state.combo);
-    els.crystals.textContent = lv.switch
-      ? state.crystalsDone + " / " + (lv.crystals || 3)
-      : (state.crystalLit ? "1 / 1" : "0 / 1");
+      "Act 3 · Mixed centres";
+    updateLivesBar(false);
+    updateLevelClock();
+    if (els.starsTotal) els.starsTotal.textContent = (state.totalStars || 0) + " / 30";
+    if (els.combo) els.combo.textContent = String(state.combo);
     els.lockedCount.textContent = String(state.lines.length);
-    els.tip.textContent = meta.tip + " " + DELETE_HINT;
+    els.tip.textContent = (hard ? HARD_TIP : meta.tip) + " " + DELETE_HINT;
     els.crystalName.textContent = meta.centre;
-    els.lineName.textContent = meta.line;
+    if (els.lineName) els.lineName.textContent = meta.line;
+    if (els.drawPill) els.drawPill.classList.toggle("hidden", hard);
     if (els.checkBtn) {
       els.checkBtn.disabled = !(
         state.running && state.overlay === "play" && state.lines.length >= 3 && !state.reveal
@@ -582,34 +766,76 @@
     return Math.abs(dot({ x: u.x / du, y: u.y / du }, { x: w.x / dw, y: w.y / dw })) < PERP_COS;
   }
 
-  function perpHitsForSegment(a, b) {
-    var hits = [];
-    var dir = sub(b, a);
-    var segs = [];
+  function nearAnyVertex(p, tol) {
+    if (!state.verts || !p) return false;
     var i;
     for (i = 0; i < 3; i++) {
-      segs.push([state.verts[i], state.verts[(i + 1) % 3]]);
+      if (dist(p, state.verts[i]) < tol) return true;
     }
-    state.lines.forEach(function (L) {
-      if (Math.abs(L.a.x - a.x) < 0.5 && Math.abs(L.a.y - a.y) < 0.5
-        && Math.abs(L.b.x - b.x) < 0.5 && Math.abs(L.b.y - b.y) < 0.5) return;
-      segs.push([L.a, L.b]);
-    });
-    segs.forEach(function (S) {
-      var side = sub(S[1], S[0]);
-      if (!isPerp(dir, side)) return;
-      var hit = intersectLines(a, b, S[0], S[1]);
-      if (!hit) return;
-      if (hit.t < -0.08 || hit.t > 1.08) return;
-      /* allow feet on side extensions beyond the segment */
-      if (hit.u < -0.55 || hit.u > 1.55) return;
+    return false;
+  }
+
+  /**
+   * ⊥ only where the drawn segment actually cuts a triangle side (or extension).
+   * Never for two player-lines crossing, never on corners, never in median/bisector mode.
+   */
+  function perpHitsForSegment(a, b) {
+    var hits = [];
+    if (!state.verts) return hits;
+    /* only altitude / perp-bisector tasks show right-angle marks */
+    if (state.mode !== "altitude" && state.mode !== "perp") return hits;
+    var dir = sub(b, a);
+    var i;
+    for (i = 0; i < 3; i++) {
+      var S0 = state.verts[i];
+      var S1 = state.verts[(i + 1) % 3];
+      var side = sub(S1, S0);
+      if (!isPerp(dir, side)) continue;
+      var hit = intersectLines(a, b, S0, S1);
+      if (!hit) continue;
+      /* drawn segment must reach the cut (really cut the side) */
+      if (hit.t < -0.02 || hit.t > 1.02) continue;
+      /* foot on side or its extension (obtuse altitudes) */
+      if (hit.u < -2.8 || hit.u > 3.8) continue;
+      if (nearAnyVertex(hit, VERTEX_SKIP)) continue;
       var alongLine = dist(hit, a) <= dist(hit, b) ? b : a;
       if (dist(hit, a) < 1.5) alongLine = b;
       if (dist(hit, b) < 1.5) alongLine = a;
-      var alongSide = dist(hit, S[0]) <= dist(hit, S[1]) ? S[1] : S[0];
+      var alongSide = dist(hit, S0) <= dist(hit, S1) ? S1 : S0;
       hits.push({ x: hit.x, y: hit.y, alongLine: alongLine, alongSide: alongSide });
-    });
+    }
     return hits;
+  }
+
+  /** At most one ⊥ mark per location. */
+  function dedupePerpHits(hits) {
+    var out = [];
+    hits.forEach(function (h) {
+      if (out.some(function (o) { return dist(o, h) < 10; })) return;
+      out.push(h);
+    });
+    return out;
+  }
+
+  function collectPerpMarks(a, b, from) {
+    if (state.mode !== "altitude" && state.mode !== "perp") return [];
+    var hits = perpHitsForSegment(a, b).slice();
+    /* perp-bisector from a mid-point: mark at that mid only if the line cuts there */
+    if (state.mode === "perp" && from && from.kind === "side" && state.verts) {
+      var S0 = state.verts[from.index];
+      var S1 = state.verts[(from.index + 1) % 3];
+      if (isPerp(sub(b, a), sub(S1, S0))) {
+        var M = mid(S0, S1);
+        var onSeg = dist(M, foot(M, a, b)) <= 4;
+        var tHit = intersectLines(a, b, S0, S1);
+        var cuts = tHit && tHit.t >= -0.02 && tHit.t <= 1.02;
+        if (onSeg && cuts && !nearAnyVertex(M, VERTEX_SKIP)) {
+          var alongLine = dist(a, M) <= dist(b, M) ? b : a;
+          hits.push({ x: M.x, y: M.y, alongLine: alongLine, alongSide: S1 });
+        }
+      }
+    }
+    return dedupePerpHits(hits);
   }
 
   function meetPointOfLines(lines) {
@@ -636,15 +862,26 @@
   function evaluateLines() {
     var c = trueCentre(state.mode, state.verts);
     if (!c || state.lines.length < 3) return { ok: false, point: null, trueC: c };
+    /* looser: ≥3 player lines through the true centre is enough */
     var through = state.lines.filter(function (L) {
       return dist(c, foot(c, L.a, L.b)) < CENTRE_TOL;
     });
-    if (through.length < 3) return { ok: false, point: null, trueC: c };
-    var meet = meetPointOfLines(through);
-    if (!meet || dist(meet, c) > CENTRE_TOL) {
-      return { ok: false, point: meet, trueC: c };
-    }
-    return { ok: true, point: meet, trueC: c };
+    if (through.length >= 3) return { ok: true, point: c, trueC: c };
+    /* fallback: match special-line directions with a soft angle tolerance */
+    var correct = correctSpecialLines(state.mode, state.verts);
+    if (correct.length < 3) return { ok: false, point: null, trueC: c };
+    var matched = 0;
+    correct.forEach(function (CL) {
+      var cu = unit(CL.a, CL.b);
+      var okLine = state.lines.some(function (L) {
+        var lu = unit(L.a, L.b);
+        if (Math.abs(dot(lu, cu)) < DIR_MATCH) return false;
+        return dist(c, foot(c, L.a, L.b)) < CENTRE_TOL * 1.25;
+      });
+      if (okLine) matched += 1;
+    });
+    if (matched >= 3) return { ok: true, point: c, trueC: c };
+    return { ok: false, point: null, trueC: c };
   }
 
   function checkAnswer() {
@@ -652,33 +889,39 @@
     var result = evaluateLines();
     state.reveal = {
       ok: !!result.ok,
-      /* spot on player figure only when correct */
+      /* spot on player figure only when correct — never show answer key then */
       point: result.ok ? (result.point || result.trueC) : null,
       trueC: result.trueC,
     };
     if (result.ok) {
       state.combo += 1;
       state.maxCombo = Math.max(state.maxCombo, state.combo);
-      clearCrystal();
+      onLevelClear();
     } else {
       onMiss();
-      showFinishBar(false);
+      var dead = loseLife();
+      draw();
+      drawSolution();
+      showFinishBar(false, { gameOver: dead });
+      return;
     }
     updateHud();
     draw();
-    drawSolution();
+    drawSolution(); /* hides when ok */
   }
 
   function skipLevel() {
     var c = trueCentre(state.mode, state.verts);
     state.reveal = { ok: false, point: null, trueC: c, skipped: true };
     state.stars = 0;
+    state.combo = 0;
+    var dead = loseLife();
     state.running = false;
     clearTimers();
     updateHud();
     draw();
     drawSolution();
-    showFinishBar(false);
+    showFinishBar(false, { gameOver: dead });
   }
 
   var SIDE_EXT_BEYOND = 16; /* must drag this far past the cut */
@@ -769,6 +1012,26 @@
     }));
   }
 
+  /**
+   * Answer-key / obtuse altitudes: if the foot lies outside the opposite side,
+   * draw a grey dashed extension of that side out to (and slightly past) the foot
+   * so the ⊥ mark sits on a visible line.
+   */
+  function appendAltitudeFootExtension(svg, v, vi) {
+    var V = v[vi];
+    var A = v[(vi + 1) % 3];
+    var B = v[(vi + 2) % 3];
+    var F = foot(V, A, B);
+    if (F.t >= -0.02 && F.t <= 1.02) return;
+    var nearer = F.t < 0 ? A : B;
+    var beyond = add(F, unit(nearer, F), SIDE_EXT_OVERSHOOT);
+    svg.appendChild(E("line", {
+      x1: nearer.x, y1: nearer.y, x2: beyond.x, y2: beyond.y,
+      stroke: "#64748b", "stroke-width": 1.7, "stroke-dasharray": "3 3.5",
+      "stroke-linecap": "round",
+    }));
+  }
+
   function correctSpecialLines(mode, v) {
     var c = trueCentre(mode, v);
     var lines = [];
@@ -783,17 +1046,32 @@
         });
       }
     } else if (mode === "altitude") {
+      /* span foot AND orthocentre — obtuse: H is opposite the foot from the vertex */
       for (i = 0; i < 3; i++) {
         var f = foot(v[i], v[(i + 1) % 3], v[(i + 2) % 3]);
-        var len = Math.max(dist(v[i], f), dist(v[i], c)) + 22;
-        lines.push({ a: v[i], b: add(v[i], unit(v[i], f), len) });
+        var uAlt = unit(v[i], f);
+        var alongF = dist(v[i], f);
+        var alongH = (c.x - v[i].x) * uAlt.x + (c.y - v[i].y) * uAlt.y;
+        var tMin = Math.min(0, alongF, alongH) - 22;
+        var tMax = Math.max(0, alongF, alongH) + 22;
+        lines.push({
+          a: add(v[i], uAlt, tMin),
+          b: add(v[i], uAlt, tMax),
+        });
       }
     } else if (mode === "bisector") {
+      /* vertex → through I → opposite side (so every ray visibly passes through the centre) */
       for (i = 0; i < 3; i++) {
-        lines.push({
-          a: v[i],
-          b: add(v[i], unit(v[i], c), dist(v[i], c) + 28),
-        });
+        var oppA = v[(i + 1) % 3];
+        var oppB = v[(i + 2) % 3];
+        var hit = intersectLines(v[i], c, oppA, oppB);
+        var end;
+        if (hit && hit.t > 0.05) {
+          end = add(v[i], unit(v[i], hit), dist(v[i], hit) + 10);
+        } else {
+          end = add(v[i], unit(v[i], c), dist(v[i], c) + 36);
+        }
+        lines.push({ a: v[i], b: end });
       }
     } else {
       for (i = 0; i < 3; i++) {
@@ -806,6 +1084,29 @@
     return lines;
   }
 
+  /**
+   * True SVG <circle> — circumcircle (O) or incircle (I).
+   * Always recomputes the true centre from verts so radius stays exact.
+   */
+  function appendSolutionCircle(svg, mode, v) {
+    if (!v) return;
+    if (mode !== "perp" && mode !== "bisector") return;
+    var c = trueCentre(mode, v);
+    if (!c) return;
+    var r = mode === "perp" ? dist(c, v[0]) : inradiusOf(v);
+    if (!(r > 1)) return;
+    svg.appendChild(E("circle", {
+      cx: String(c.x),
+      cy: String(c.y),
+      r: String(r),
+      fill: "rgba(37,99,235,.07)",
+      stroke: MARK,
+      "stroke-width": "2.2",
+      "stroke-dasharray": "6 4",
+      "stroke-opacity": "0.95",
+    }));
+  }
+
   function drawSolution() {
     if (!els.solution || !els.svgSol) return;
     /* wrong Check or Skip — never when correct */
@@ -815,8 +1116,8 @@
       while (els.svgSol.firstChild) els.svgSol.removeChild(els.svgSol.firstChild);
       return;
     }
-    var meta = MODE_META[state.mode];
-    els.solutionLabel.textContent = "Correct · " + meta.line + " → " + meta.centre;
+    /* no spoiler title — finish bar already says “See solution” */
+    if (els.solutionLabel) els.solutionLabel.textContent = "";
     var svg = els.svgSol;
     while (svg.firstChild) svg.removeChild(svg.firstChild);
     var defs = E("defs", {});
@@ -831,43 +1132,75 @@
       points: v.map(function (p) { return p.x + "," + p.y; }).join(" "),
       fill: "rgba(255,255,255,.92)", stroke: INK, "stroke-width": 2.2,
     }));
+    appendTriangleRightAngle(svg, v);
+    /* median / perp: equal-length marks on both halves (mid-point cut) */
+    if (state.mode === "median" || state.mode === "perp") {
+      var tickCounts = sideTickCounts(v);
+      var s;
+      for (s = 0; s < 3; s++) {
+        var sa = v[s];
+        var sb = v[(s + 1) % 3];
+        var sm = mid(sa, sb);
+        var tc = tickCounts[s];
+        svg.appendChild(hashHalf(sa, sm, tc));
+        svg.appendChild(hashHalf(sm, sb, tc));
+      }
+    }
     var solLines = correctSpecialLines(state.mode, v);
     var solSegs = solLines.map(function (L) { return [L.a, L.b]; });
+    var solPerp = [];
     solLines.forEach(function (L, i) {
       if (state.mode === "altitude") {
-        appendOppositeSideExtension(svg, L.a, L.b, { kind: "vertex", index: i });
+        appendAltitudeFootExtension(svg, v, i);
+        var B = v[(i + 1) % 3];
+        var C = v[(i + 2) % 3];
+        var F = foot(v[i], B, C);
+        if (!nearAnyVertex(F, VERTEX_SKIP)) {
+          solPerp.push({ x: F.x, y: F.y, alongLine: v[i], alongSide: B });
+        }
       }
       if (state.mode === "perp") {
-        appendOriginPerpMark(svg, L.a, L.b, { kind: "side", index: i });
+        var S0 = v[i];
+        var S1 = v[(i + 1) % 3];
+        var M = mid(S0, S1);
+        if (!nearAnyVertex(M, VERTEX_SKIP)) {
+          solPerp.push({ x: M.x, y: M.y, alongLine: L.b, alongSide: S1 });
+        }
       }
       svg.appendChild(E("line", {
         x1: L.a.x, y1: L.a.y, x2: L.b.x, y2: L.b.y,
         stroke: DASH, "stroke-width": 2.2, "stroke-dasharray": "7 4", "stroke-linecap": "round",
       }));
+      /* bisector solution: equal angles → same n; distinct angles → different n; 錯開 radii */
+      if (state.mode === "bisector") {
+        var V = v[i];
+        var P = v[(i + 1) % 3];
+        var Q = v[(i + 2) % 3];
+        var Ipt = trueCentre("bisector", v) || L.b;
+        appendEqualAnglePair(svg, V, P, Q, Ipt, equalAngleMarkPlan(v)[i]);
+      }
     });
-    appendCentreSpot(
-      svg,
-      state.reveal.trueC || trueCentre(state.mode, v),
-      state.mode,
-      solSegs
-    );
+    dedupePerpHits(solPerp).forEach(function (hit) {
+      svg.appendChild(rightAngleMark(hit, hit.alongLine, hit.alongSide));
+    });
+    var solC = trueCentre(state.mode, v) || state.reveal.trueC;
+    /* reveal step: circumcircle (O) or incircle (I) — true radius, tangent / through vertices */
+    appendSolutionCircle(svg, state.mode, v);
+    appendCentreSpot(svg, solC, state.mode, solSegs);
     var i;
     for (i = 0; i < 3; i++) {
       svg.appendChild(E("circle", {
         cx: v[i].x, cy: v[i].y, r: 4.5,
         fill: HANDLE, stroke: "none",
       }));
-      svg.appendChild(labelOutside(v[i], LABELS[i]));
+      svg.appendChild(labelOutside(v[i], LABELS[i], solC));
     }
   }
 
   function onMiss() {
     state.misses += 1;
     state.combo = 0;
-    state.energy = Math.max(0, state.energy - ENERGY_MISS);
-    pulse("bad");
     updateHud();
-    if (state.energy <= 0) failLevel("Out of energy — redraw more carefully.");
   }
 
   function rightAngleMark(corner, alongA, alongB) {
@@ -888,6 +1221,7 @@
   }
 
   function appendOriginPerpMark(svg, a, b, from) {
+    /* kept for solution panel; player draw uses collectPerpMarks (deduped) */
     if (!from || !state.verts || from.kind !== "side") return;
     var S0 = state.verts[from.index];
     var S1 = state.verts[(from.index + 1) % 3];
@@ -898,11 +1232,7 @@
     svg.appendChild(rightAngleMark(M, alongLine, S1));
   }
 
-  function shortArcPath(V, P, Q, r) {
-    var u1 = unit(V, P);
-    var u2 = unit(V, Q);
-    var a1 = Math.atan2(u1.y, u1.x);
-    var a2 = Math.atan2(u2.y, u2.x);
+  function shortArcPathFromAngles(V, a1, a2, r) {
     var d = a2 - a1;
     while (d <= -Math.PI) d += 2 * Math.PI;
     while (d > Math.PI) d -= 2 * Math.PI;
@@ -911,11 +1241,71 @@
     return "M " + p1.x + " " + p1.y + " A " + r + " " + r + " 0 0 " + (d > 0 ? 1 : 0) + " " + p2.x + " " + p2.y;
   }
 
+  function shortArcPath(V, P, Q, r) {
+    var a1 = Math.atan2(P.y - V.y, P.x - V.x);
+    var a2 = Math.atan2(Q.y - V.y, Q.x - V.x);
+    return shortArcPathFromAngles(V, a1, a2, r);
+  }
+
   function equalAngleArc(V, P, Q, r) {
     return E("path", {
       d: shortArcPath(V, P, Q, r),
       fill: "none", stroke: MARK, "stroke-width": 1.7, "stroke-linecap": "round",
     });
+  }
+
+  function vertexAngleRad(v, i) {
+    var V = v[i];
+    var P = v[(i + 1) % 3];
+    var Q = v[(i + 2) % 3];
+    return Math.acos(Math.max(-1, Math.min(1, dot(unit(V, P), unit(V, Q)))));
+  }
+
+  /**
+   * Curve-count per vertex for bisector equal-angle marks.
+   * Same angle size → same count; distinct sizes get 1, 2, … by first occurrence.
+   * Equilateral → all 1. Scalene / right → three different counts.
+   */
+  function equalAngleMarkPlan(v) {
+    var angs = [vertexAngleRad(v, 0), vertexAngleRad(v, 1), vertexAngleRad(v, 2)];
+    var ANG_TOL = 0.07;
+    var counts = [1, 1, 1];
+    var groups = [];
+    var i, g, found;
+    for (i = 0; i < 3; i++) {
+      found = false;
+      for (g = 0; g < groups.length; g++) {
+        if (Math.abs(groups[g].ang - angs[i]) < ANG_TOL) {
+          groups[g].idx.push(i);
+          found = true;
+          break;
+        }
+      }
+      if (!found) groups.push({ ang: angs[i], idx: [i] });
+    }
+    var rank = 0;
+    groups.forEach(function (gr) {
+      rank += 1;
+      gr.idx.forEach(function (vi) { counts[vi] = rank; });
+    });
+    return counts;
+  }
+
+  /**
+   * Two half-signs at a vertex: same curve count, but 錯開 — different radii.
+   * 1 curve → farther out (previous single-arc distance).
+   * 2+ curves → shorter pack, same gap:stagger ratio between arcs.
+   */
+  function appendEqualAnglePair(svg, V, P, Q, I, count) {
+    var n = Math.max(1, count || 1);
+    var base = n === 1 ? 14 : 8;
+    var gap = n === 1 ? 7 : 4;
+    var stagger = n === 1 ? 4 : 2.3;
+    var k;
+    for (k = 0; k < n; k++) {
+      svg.appendChild(equalAngleArc(V, P, I, base + k * gap));
+      svg.appendChild(equalAngleArc(V, I, Q, base + stagger + k * gap));
+    }
   }
 
   function bisectorHitForSegment(a, b) {
@@ -939,28 +1329,36 @@
       var bis = { x: bx / bl, y: by / bl };
       if (dot(dir, bis) < BISECTOR_COS) continue;
       var I = add(V, bis, 36);
-      return { V: V, P: P, Q: Q, I: I };
+      return { V: V, P: P, Q: Q, I: I, vi: i };
     }
     return null;
   }
 
+  /**
+   * Equal-angle half-arcs only when a true angle bisector is drawn.
+   * Curve count from equalAngleMarkPlan; halves are 錯開 (different radii).
+   */
   function appendBisectorMarks(svg, a, b) {
     var hit = bisectorHitForSegment(a, b);
     if (!hit) return;
-    svg.appendChild(equalAngleArc(hit.V, hit.P, hit.I, 14));
-    svg.appendChild(equalAngleArc(hit.V, hit.I, hit.Q, 18.5));
+    appendEqualAnglePair(
+      svg, hit.V, hit.P, hit.Q, hit.I,
+      equalAngleMarkPlan(state.verts)[hit.vi]
+    );
   }
 
   function sideTickCounts(v) {
     /* sides 0=AB, 1=BC, 2=CA — equal lengths share a mark; distinct lengths get 1,2,3 */
     var lens = [dist(v[0], v[1]), dist(v[1], v[2]), dist(v[2], v[0])];
+    var avg = (lens[0] + lens[1] + lens[2]) / 3;
+    var tol = Math.max(SIDE_EQ_MIN, avg * SIDE_EQ_FRAC);
     var order = [0, 1, 2].sort(function (i, j) { return lens[i] - lens[j]; });
     var counts = [1, 1, 1];
     counts[order[0]] = 1;
     var rank = 1;
     var i;
     for (i = 1; i < 3; i++) {
-      if (Math.abs(lens[order[i]] - lens[order[i - 1]]) <= SIDE_EQ) {
+      if (Math.abs(lens[order[i]] - lens[order[i - 1]]) <= tol) {
         counts[order[i]] = counts[order[i - 1]];
       } else {
         rank += 1;
@@ -992,13 +1390,18 @@
     return g;
   }
 
-  function labelOutside(P, t) {
+  function labelOutside(P, t, avoidCentre) {
     var g = centroid(state.verts);
     var dx = P.x - g.x;
     var dy = P.y - g.y;
     var d = Math.hypot(dx, dy) || 1;
-    var x = P.x + (dx / d) * 14;
-    var y = P.y + (dy / d) * 14;
+    var distOut = 14;
+    /* if centre (e.g. H) sits on this vertex, push A/B/C further out */
+    if (avoidCentre && dist(P, avoidCentre) < 22) {
+      distOut = 26;
+    }
+    var x = P.x + (dx / d) * distOut;
+    var y = P.y + (dy / d) * distOut;
     var el = E("text", {
       x: x, y: y, "text-anchor": "middle", "dominant-baseline": "middle",
       fill: INK, "font-size": "12", "font-weight": "800",
@@ -1025,6 +1428,7 @@
       points: v.map(function (p) { return p.x + "," + p.y; }).join(" "),
       fill: "rgba(255,255,255,.35)", stroke: INK, "stroke-width": 2.2,
     }));
+    appendTriangleRightAngle(svg, v);
 
     /* ticks above fill so they stay vivid */
     var tickCounts = sideTickCounts(v);
@@ -1038,7 +1442,7 @@
       svg.appendChild(hashHalf(m, b, tc));
     }
 
-    /* conditional opposite-side extensions (obtuse + vertex drag past cut) */
+    /* side extensions while dragging and on committed lines (obtuse altitudes) */
     state.lines.forEach(function (L) {
       appendOppositeSideExtension(svg, L.a, L.b, L.from);
     });
@@ -1051,7 +1455,8 @@
       );
     }
 
-    /* player lines: only the segment dragged (start → release) */
+    /* player lines + ⊥ marks (deduped across all lines — ≤1 per point) */
+    var allPerp = [];
     state.lines.forEach(function (L, i) {
       var col = i === state.hoverLine ? HOT : DASH;
       svg.appendChild(E("line", {
@@ -1060,10 +1465,7 @@
         "stroke-dasharray": "7 4", "stroke-linecap": "round",
         class: "mp-line", "data-line": String(i),
       }));
-      appendOriginPerpMark(svg, L.a, L.b, L.from);
-      perpHitsForSegment(L.a, L.b).forEach(function (hit) {
-        svg.appendChild(rightAngleMark(hit, hit.alongLine, hit.alongSide));
-      });
+      collectPerpMarks(L.a, L.b, L.from).forEach(function (hit) { allPerp.push(hit); });
       appendBisectorMarks(svg, L.a, L.b);
     });
 
@@ -1074,15 +1476,17 @@
         x1: start.x, y1: start.y, x2: state.pointer.x, y2: state.pointer.y,
         stroke: "#64748b", "stroke-width": 2.2, "stroke-dasharray": "6 4", "stroke-linecap": "round",
       }));
-      appendOriginPerpMark(svg, start, state.pointer, state.drag);
-      perpHitsForSegment(start, state.pointer).forEach(function (hit) {
-        svg.appendChild(rightAngleMark(hit, hit.alongLine, hit.alongSide));
-      });
+      collectPerpMarks(start, state.pointer, state.drag).forEach(function (hit) { allPerp.push(hit); });
       appendBisectorMarks(svg, start, state.pointer);
     }
+    dedupePerpHits(allPerp).forEach(function (hit) {
+      svg.appendChild(rightAngleMark(hit, hit.alongLine, hit.alongSide));
+    });
 
-    /* centre spot on player figure only after a correct Check */
-    if (state.reveal && state.reveal.ok && state.reveal.point) {
+    /* centre + circumcircle / incircle after a correct Check */
+    var showC = state.reveal && state.reveal.ok && state.reveal.point;
+    if (showC) {
+      appendSolutionCircle(svg, state.mode, v);
       appendCentreSpot(svg, state.reveal.point, state.mode);
     }
 
@@ -1093,7 +1497,7 @@
         fill: HANDLE, stroke: "none",
         style: "cursor:crosshair",
       }));
-      svg.appendChild(labelOutside(v[i], LABELS[i]));
+      svg.appendChild(labelOutside(v[i], LABELS[i], showC ? state.reveal.point : null));
     }
     for (i = 0; i < 3; i++) {
       m = mid(v[i], v[(i + 1) % 3]);
@@ -1182,22 +1586,51 @@
   }
 
   function wireUi() {
-    els.startBtn.addEventListener("click", function () { startLevel(0); });
-    els.retryBtn.addEventListener("click", function () { startLevel(state.levelIdx); });
+    els.startBtn.addEventListener("click", function () { restartMission(); });
     els.retryFailBtn.addEventListener("click", function () { startLevel(state.levelIdx); });
     els.nextBtn.addEventListener("click", function () {
-      if (state.levelIdx >= LEVELS.length - 1) startLevel(0);
-      else startLevel(state.levelIdx + 1);
+      if (state.gameOver) {
+        /* full reset then jump to Centre Snap (or restart Meeting Point) */
+        hideClearBar();
+        resetRunState();
+        state.running = false;
+        state.overlay = "title";
+        state.reveal = null;
+        state.lines = [];
+        updateLivesBar(false);
+        updateHud();
+        var chipGo = document.querySelector('[data-tg-mode="centres"]');
+        if (chipGo) chipGo.click();
+        else restartMission();
+        return;
+      }
+      if (state.levelIdx >= LEVELS.length - 1) {
+        resetRunState();
+        var chipEnd = document.querySelector('[data-tg-mode="centres"]');
+        if (chipEnd) chipEnd.click();
+        else restartMission();
+        return;
+      }
+      startLevel(state.levelIdx + 1);
+    });
+    els.retryBtn.addEventListener("click", function () {
+      if (state.gameOver) {
+        restartMission();
+        return;
+      }
+      startLevel(state.levelIdx);
     });
     els.menuBtn.addEventListener("click", function () {
       clearTimers();
       hideClearBar();
+      resetRunState();
       state.running = false;
       state.overlay = "title";
       state.mode = "median";
       applyVerts(SHAPES.acute, "median");
       state.lines = [];
       state.reveal = null;
+      updateLivesBar(false);
       draw();
       drawSolution();
       updateHud();
@@ -1208,8 +1641,28 @@
     }
     els.skipBtn.addEventListener("click", function () {
       if (state.overlay === "clear") {
-        if (state.levelIdx < LEVELS.length - 1) startLevel(state.levelIdx + 1);
-        else startLevel(0);
+        if (state.gameOver) {
+          hideClearBar();
+          resetRunState();
+          state.running = false;
+          state.overlay = "title";
+          state.reveal = null;
+          state.lines = [];
+          updateLivesBar(false);
+          updateHud();
+          var chipSkip = document.querySelector('[data-tg-mode="centres"]');
+          if (chipSkip) chipSkip.click();
+          else restartMission();
+          return;
+        }
+        if (state.levelIdx >= LEVELS.length - 1) {
+          resetRunState();
+          var chipLast = document.querySelector('[data-tg-mode="centres"]');
+          if (chipLast) chipLast.click();
+          else restartMission();
+          return;
+        }
+        startLevel(state.levelIdx + 1);
         return;
       }
       skipLevel();
@@ -1219,15 +1672,18 @@
   function cacheEls() {
     els.root = document.getElementById("mp-root");
     els.svg = document.getElementById("mp-svg");
+    els.stageFlash = document.getElementById("mp-stage-flash");
     els.tip = document.getElementById("mp-tip");
     els.crystalName = document.getElementById("mp-crystal-name");
     els.lineName = document.getElementById("mp-line-name");
+    els.drawPill = document.getElementById("mp-draw-pill");
     els.levelNum = document.getElementById("mp-level");
     els.actLabel = document.getElementById("mp-act");
     els.energyFill = document.getElementById("mp-energy-fill");
+    els.starsTotal = document.getElementById("mp-stars-total");
     els.combo = document.getElementById("mp-combo");
-    els.crystals = document.getElementById("mp-crystals");
     els.lockedCount = document.getElementById("mp-locked");
+    els.timerVal = document.getElementById("mp-timer-val");
     els.timerRow = document.getElementById("mp-timers");
     els.timerSwitch = document.getElementById("mp-timer-switch");
     els.timerLevel = document.getElementById("mp-timer-level");
@@ -1252,17 +1708,18 @@
 
   function activate() {
     if (!els.root) return;
-    if (state.overlay === "play" && state.running) {
-      draw();
-      updateHud();
-      return;
-    }
-    if (state.overlay === "clear") {
+    state.drag = null;
+    /* resume mid-level after visiting another mission (deactivate only pauses) */
+    if (state.overlay === "play") {
+      state.running = true;
+      showOverlay("play");
+      hideClearBar();
+    } else if (state.overlay === "clear") {
       showOverlay("play");
       if (els.clearBar) els.clearBar.classList.remove("hidden");
     } else if (state.overlay === "fail") {
       showOverlay("fail");
-    } else if (state.overlay !== "play") {
+    } else {
       showOverlay("title");
     }
     draw();
@@ -1271,7 +1728,8 @@
 
   function deactivate() {
     clearTimers();
-    state.running = false;
+    state.drag = null;
+    /* pause only — do not clear running/overlay or drag breaks on return */
   }
 
   function init() {

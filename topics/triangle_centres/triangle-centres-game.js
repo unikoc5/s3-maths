@@ -645,12 +645,20 @@
     return out;
   }
 
+  /** Two half-signs, 錯開. 1 curve → farther (old); 2+ → shorter pack. */
   function bisectorArcs(V, P, Q, I, count, baseR) {
-    /* halves at slightly different radii so they stay separate without a large gap */
-    var r0 = baseR == null ? 14 : baseR;
-    var gap = 4.5;
-    var r1 = r0 + gap + 2.5;
-    return equalAngleArcs(V, P, I, count, r0) + equalAngleArcs(V, I, Q, count, r1);
+    var multi = count > 1;
+    var scale = multi ? 0.55 : 1;
+    var r0 = (baseR == null ? 14 : baseR) * scale;
+    var gap = 4.5 * scale;
+    var stagger = 3 * scale;
+    var out = "";
+    var k;
+    for (k = 0; k < count; k++) {
+      out += '<path d="' + shortArc(V, P, I, r0 + k * gap) + '" fill="none" stroke="' + MARK + '" stroke-width="1.6"/>';
+      out += '<path d="' + shortArc(V, I, Q, r0 + stagger + k * gap) + '" fill="none" stroke="' + MARK + '" stroke-width="1.6"/>';
+    }
+    return out;
   }
 
   function dashLine(p, q) {
@@ -798,15 +806,17 @@
       parts.push(dashLine(B, extend(B, Hb, 28)));
       parts.push(dashLine(C, extend(C, Hc, 28)));
       if (shape === "right") {
+        /* scalene right: three different angles → 1 / 2 / 3 curves */
         parts.push(rightAngleMark(B, A, C));
         parts.push(bisectorArcs(A, B, C, Ha, 1, 14));
-        parts.push(bisectorArcs(B, A, C, Hb, 2, 16));
+        parts.push(bisectorArcs(B, A, C, Hb, 2, 14));
         parts.push(bisectorArcs(C, A, B, Hc, 3, 14));
       } else {
+        /* isosceles: equal base angles share curve count */
         parts.push(hashMarks(A, B, 0.45, 1), hashMarks(A, C, 0.45, 1));
         parts.push(bisectorArcs(A, B, C, Ha, 1, 14));
-        parts.push(bisectorArcs(B, A, C, Hb, 2, 16));
-        parts.push(bisectorArcs(C, A, B, Hc, 2, 16));
+        parts.push(bisectorArcs(B, A, C, Hb, 2, 14));
+        parts.push(bisectorArcs(C, A, B, Hc, 2, 14));
       }
     } else if (mode === "perp") {
       if (shape === "right") parts.push(rightAngleMark(B, A, C));
@@ -1027,12 +1037,23 @@
     var maxScore = n;
     var pct2 = maxScore ? Math.round((ms.score / maxScore) * 100) : 0;
     $("tg-done-score").textContent = ms.score + " / " + maxScore + " (" + pct2 + "%)";
-    void pct;
-    $("tg-done-msg").textContent = pct === 100
-      ? "Flawless clear — every mark read correctly."
-      : pct >= 70
-        ? "Mission cleared. Replay or jump to the next arena."
-        : "Warm-up done. Visit the Interactive Tool, then come back for another run.";
+    var modeIdx = MODES.findIndex(function (m) { return m.id === state.mode; });
+    var isFinal = modeIdx >= 0 && modeIdx === MODES.length - 1;
+    var switchBtn = $("tg-switch");
+    if (switchBtn) switchBtn.classList.toggle("hidden", isFinal);
+    if (isFinal) {
+      $("tg-done-msg").textContent = pct === 100
+        ? "Arena champion! A perfect final run — every mark, every call. The Geometry Arena crown is yours."
+        : pct >= 70
+          ? "Victory lap complete! You smashed the final mission and claimed the Arena. Replay any mission to go for a flawless crown."
+          : "You crossed the finish line! The Arena remembers its finishers — replay the final mission and chase a higher score.";
+    } else {
+      $("tg-done-msg").textContent = pct === 100
+        ? "Flawless clear — every mark read correctly."
+        : pct >= 70
+          ? "Mission cleared. Replay or jump to the next arena."
+          : "Warm-up done. Visit the Interactive Tool, then come back for another run.";
+    }
     updateProgressBar(ms);
   }
 
@@ -1093,6 +1114,18 @@
     });
   }
 
+  function setFactoryContinueLabel(answered) {
+    var cont = $("tg-factory-continue");
+    if (!cont) return;
+    cont.classList.remove("hidden");
+    if (!answered) {
+      cont.textContent = "Skip";
+      return;
+    }
+    var ms = modeState();
+    cont.textContent = ms.index + 1 >= ms.queue.length ? "Mission results" : "Continue";
+  }
+
   function revealFactoryResult(ok, tip, choice) {
     var ms = modeState();
     var item = ms.queue[ms.index];
@@ -1107,14 +1140,11 @@
     }
     var msg = ok ? ("Correct — " + tip) : ("Incorrect — " + tip);
     if (choice === "timeout") msg = "Too slow — " + tip;
+    if (choice === "skip") msg = "Skipped — " + tip;
     $("tg-fb").className = "tg-fb " + (ok ? "ok" : "bad");
     $("tg-fb").textContent = msg;
     flashArena(ok);
-    var cont = $("tg-factory-continue");
-    if (cont) {
-      cont.classList.remove("hidden");
-      cont.textContent = ms.index + 1 >= ms.queue.length ? "Mission results" : "Continue";
-    }
+    setFactoryContinueLabel(true);
     setHud(ms);
     saveStore();
   }
@@ -1131,7 +1161,7 @@
     factoryRun.locked = true;
     var item = modeState().queue[modeState().index];
     var saidAccept = choice === "accept";
-    var ok = choice === "timeout" ? false : (saidAccept === item.accept);
+    var ok = (choice === "timeout" || choice === "skip") ? false : (saidAccept === item.accept);
     var box = factoryRun.boxEl;
     if (factoryRun.onSlideEnd) box.removeEventListener("animationend", factoryRun.onSlideEnd);
 
@@ -1141,6 +1171,7 @@
     $("tg-fb").className = "tg-fb";
 
     var parent = box.parentElement;
+    var parentW = parent ? parent.getBoundingClientRect().width : 1;
     var curLeft = box.getBoundingClientRect().left - (parent ? parent.getBoundingClientRect().left : 0);
     box.style.animation = "none";
     box.style.left = curLeft + "px";
@@ -1165,6 +1196,21 @@
     } else if (choice === "timeout") {
       box.classList.add("tg-box-timeout");
       box.addEventListener("animationend", onAnimDone);
+    } else if (choice === "skip") {
+      /* 2.5× belt speed rush left off-screen, then reveal tip */
+      var fullSpanPct = 94; /* 82% → -12% */
+      var curPct = (curLeft / (parentW || 1)) * 100;
+      var remainPct = Math.max(4, curPct - (-16));
+      var rushMs = Math.max(140, Math.round((remainPct / fullSpanPct) * (BOX_MS / 2.5)));
+      box.classList.add("tg-box-skip");
+      box.style.transition = "left " + rushMs + "ms linear, opacity " + rushMs + "ms linear";
+      void box.offsetWidth;
+      box.style.left = "-18%";
+      box.style.opacity = "0.35";
+      factoryRun.pendingTimer = setTimeout(function () {
+        box.style.visibility = "hidden";
+        afterBoxAnim(ok, item.tip, choice);
+      }, rushMs + 40);
     } else {
       /* accept: rush to tunnel, then drop onto the current pile top */
       factoryRun.accepted += 1;
@@ -1198,8 +1244,7 @@
     $("tg-factory-req").textContent = item.req || item.q;
     $("tg-factory-fig").innerHTML = drawMatchFig(item.fig);
     $("tg-factory-prog").textContent = "Box " + (item.boxIndex + 1) + " / " + item.boxTotal;
-    var cont = $("tg-factory-continue");
-    if (cont) cont.classList.add("hidden");
+    setFactoryContinueLabel(false);
     var box = $("tg-box");
     box.className = "tg-box";
     box.innerHTML = "";
@@ -1250,7 +1295,7 @@
         '<div class="tg-factory-actions">' +
           '<button type="button" class="btn tg-reject-btn" id="tg-reject">Reject</button>' +
           '<button type="button" class="btn primary tg-accept-btn" id="tg-accept">Accept</button>' +
-          '<button type="button" class="btn primary hidden" id="tg-factory-continue">Continue</button>' +
+          '<button type="button" class="btn primary" id="tg-factory-continue">Skip</button>' +
         '</div>' +
         '<p class="tg-factory-prog" id="tg-factory-prog"></p>' +
       '</div>';
@@ -1266,6 +1311,10 @@
     $("tg-accept").onclick = function () { factoryChoose("accept"); };
     $("tg-reject").onclick = function () { factoryChoose("reject"); };
     $("tg-factory-continue").onclick = function () {
+      if (!ms.answered) {
+        factoryChoose("skip");
+        return;
+      }
       ms.factoryAccepted = factoryRun ? factoryRun.accepted : ms.factoryAccepted;
       var done = ms.index + 1 >= ms.queue.length;
       stopFactoryTimers();
@@ -1406,7 +1455,7 @@
     var blurb = {
       meet: "Free-draw from vertices or mid-points. Check answer with three lines — centres mark as G / H / I / O.",
       centres: "Read the marks, then name the centre or the special line. The meeting point stays unmarked.",
-      angles: "Two parallels cut by a transversal — name the angle pair the HKDSE way.",
+      angles: "Two parallels cut by a transversal — name the angle pair.",
       match: "Name the condition from the marks (3 rounds), then Factory Line (5 boxes). Accept if congruent; Reject if not.",
     };
     if ($("tg-blurb")) $("tg-blurb").textContent = blurb[mode] || "";
