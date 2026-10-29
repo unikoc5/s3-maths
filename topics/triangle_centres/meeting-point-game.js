@@ -148,6 +148,19 @@
     "Beautifully done. Every clear centre you find makes the next one kinder. Shall we try another?",
     "Well spotted, and so patiently drawn. I'm glad you're here learning this — keep going at your pace.",
   ];
+  /* Rotating bag so Game over never feels copy-pasted */
+  var GAME_OVER_MSGS = [
+    "Lives rest for now, but your eye for centres is still growing. You gathered {stars} star{s} this run — that effort matters. When you're ready, Centre Snap awaits, or replay and meet the lines again with me.",
+    "Out of lives is not out of learning. Those {stars} star{s} mark real courage on the page. Take a breath; jump to Centre Snap for a fresh angle, or replay whenever your heart says try again.",
+    "You gave this run everything you had — {stars} star{s} of quiet focus. Rest is part of mastery. Centre Snap is a gentle next step, or replay and we'll walk the constructions side by side.",
+    "Even when lives run out, the picture you built stays with you. {stars} star{s} earned with care. I'm proud of how you stayed with it — visit Centre Snap, or come back for another warm try.",
+    "A pause, not an ending. Your {stars} star{s} prove you're listening to the triangle. Soften your shoulders; Centre Snap can lighten the mood, or replay when you want another chance to shine.",
+    "Lives empty, spirit full. {stars} star{s} from this journey are yours to keep. Learning loves a second chance — Centre Snap next, or replay and find those meeting points again with kindness.",
+    "You didn't fail; you practised bravely until the lives were spent. Hold your {stars} star{s} close. Centre Snap offers a new rhythm, or replay so we can grow the centres together once more.",
+    "What a sincere effort — {stars} star{s} gathered before the pause. Tomorrow's you will thank today's try. Slip into Centre Snap, or replay when curiosity pulls you back to the figure.",
+  ];
+  var _gameOverBag = [];
+  var _lastGameOverMsg = "";
 
   var state = {
     levelIdx: 0,
@@ -742,6 +755,33 @@
     return ENCOURAGE_OK[Math.floor(Math.random() * ENCOURAGE_OK.length)];
   }
 
+  function refillGameOverBag() {
+    _gameOverBag = GAME_OVER_MSGS.slice();
+    var i, j, t;
+    for (i = _gameOverBag.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1));
+      t = _gameOverBag[i];
+      _gameOverBag[i] = _gameOverBag[j];
+      _gameOverBag[j] = t;
+    }
+    /* Avoid opening with the same line we just showed */
+    if (_gameOverBag.length > 1 && _gameOverBag[0] === _lastGameOverMsg) {
+      t = _gameOverBag[0];
+      _gameOverBag[0] = _gameOverBag[1];
+      _gameOverBag[1] = t;
+    }
+  }
+
+  function pickGameOverMsg() {
+    var stars = state.totalStars || 0;
+    if (!_gameOverBag.length) refillGameOverBag();
+    var tpl = _gameOverBag.shift();
+    _lastGameOverMsg = tpl;
+    return tpl
+      .replace(/\{stars\}/g, String(stars))
+      .replace(/\{s\}/g, stars === 1 ? "" : "s");
+  }
+
   /**
    * Heartfelt + targeted teaching: which lines find the required centre,
    * vs what the drawing looks like — then soft encouragement.
@@ -784,7 +824,7 @@
     var coach = opts.msg || state.finishMsg || "";
     if (gameOver) {
       els.clearTitle.textContent = "Game over";
-      els.clearMsg.textContent = "Out of lives · Stars " + (state.totalStars || 0) + " / 30 · Jump to Centre Snap or replay";
+      els.clearMsg.textContent = pickGameOverMsg();
       if (els.retryBtn) els.retryBtn.textContent = "Replay mission";
       if (els.nextBtn) els.nextBtn.textContent = "Next mission";
     } else {
