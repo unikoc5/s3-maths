@@ -32,21 +32,25 @@
     median: {
       centre: "Centroid",
       line: "medians",
+      how: "three medians (each vertex to the mid-point of the opposite side)",
       tip: "Draw three medians (vertex → mid-point of the opposite side). Release freely — find where they meet.",
     },
     altitude: {
       centre: "Orthocentre",
       line: "altitudes",
+      how: "three altitudes (from each vertex perpendicular to the opposite side)",
       tip: "Draw three altitudes (vertex ⊥ opposite side).",
     },
     bisector: {
       centre: "In-centre",
       line: "angle bisectors",
+      how: "three angle bisectors (splitting each vertex angle in half)",
       tip: "Draw three angle bisectors from the vertices. They meet at a point inside the triangle.",
     },
     perp: {
       centre: "Circumcentre",
       line: "perpendicular bisectors",
+      how: "three perpendicular bisectors (through each side’s mid-point at right angles)",
       tip: "Draw three perpendicular bisectors from the side mid-points. Acute → inside; right → on a side; obtuse → outside.",
     },
   };
@@ -138,11 +142,11 @@
 
   var ALL_MODES = ["median", "altitude", "bisector", "perp"];
   var ENCOURAGE_OK = [
-    "Great work — that centre is clear. Keep going!",
-    "Nice! You're reading the triangle well. On to the next one.",
-    "Spot on! Momentum looks good — stay with it.",
-    "Excellent meeting point. Ready for another challenge?",
-    "Well done! Keep that careful drawing going.",
+    "I'm proud of how carefully you drew that — your meeting point shines. Let's keep walking this path together.",
+    "That was lovely work. You're really listening to the triangle; I'm right here cheering you on for the next one.",
+    "Yes — you found it with such calm focus. Hold onto that feeling; the next centre is waiting for you.",
+    "Beautifully done. Every clear centre you find makes the next one kinder. Shall we try another?",
+    "Well spotted, and so patiently drawn. I'm glad you're here learning this — keep going at your pace.",
   ];
 
   var state = {
@@ -467,10 +471,33 @@
     });
   }
 
+  /**
+   * After a correct answer: prefer a different centre next so the run feels fresh
+   * (still random among remaining non-matching modes).
+   */
+  function preferFreshNextMode() {
+    var next = state.levelIdx + 1;
+    if (next >= LEVELS.length) return;
+    var cur = state.mode;
+    if (LEVELS[next].mode !== cur) return;
+    var candidates = [];
+    var i;
+    for (i = next + 1; i < LEVELS.length; i++) {
+      if (LEVELS[i].mode !== cur) candidates.push(i);
+    }
+    if (!candidates.length) return;
+    var pick = candidates[Math.floor(Math.random() * candidates.length)];
+    var tmp = LEVELS[next];
+    LEVELS[next] = LEVELS[pick];
+    LEVELS[pick] = tmp;
+  }
+
   function advanceToNextLevel() {
     if (state.retryMode) {
       bringModeToNext(state.retryMode);
       state.retryMode = null;
+    } else {
+      preferFreshNextMode();
     }
     startLevel(state.levelIdx + 1);
   }
@@ -706,24 +733,36 @@
   }
 
   function pickEncourageOk() {
-    var idx = Math.min(ENCOURAGE_OK.length - 1, Math.max(0, (state.combo || 1) - 1));
     if (state.combo >= 3) {
-      return "Combo ×" + state.combo + "! Brilliant — keep that focus going.";
+      return (
+        "Combo ×" + state.combo +
+        " — what steady care. I'm really proud of you; let's keep this warm streak going."
+      );
     }
-    return ENCOURAGE_OK[idx % ENCOURAGE_OK.length];
+    return ENCOURAGE_OK[Math.floor(Math.random() * ENCOURAGE_OK.length)];
   }
 
+  /**
+   * Heartfelt + targeted teaching: name the construction they need vs what
+   * their drawing looks like, then soft encouragement to look at the key.
+   */
   function comfortWrongMsg(confusedMode) {
-    var need = MODE_META[state.mode] ? MODE_META[state.mode].centre : "target centre";
+    var meta = MODE_META[state.mode];
+    var need = meta ? meta.centre : "target centre";
+    var needHow = meta ? meta.how : "the three special lines for that centre";
     if (confusedMode && MODE_META[confusedMode]) {
-      var seemed = MODE_META[confusedMode].centre;
+      var wrong = MODE_META[confusedMode];
       return (
-        "You seem to be answering the " + seemed + " instead of the " + need +
-        ". That's a common mix-up — take a breath, check the answer key, then you'll get it."
+        "Hey, it's alright — I can see the care in your lines. They look a lot like " +
+        wrong.how + ", which meet at the " + wrong.centre +
+        ". For the " + need + " we need, lean on " + needHow +
+        " instead. Peek at the answer key with me; you've got this, and we'll practise it again soon."
       );
     }
     return (
-      "Not quite the " + need + " this time. No stress — study the key below and try the next question."
+      "This one didn't land yet, and that is okay — learning rarely is a straight line. " +
+      "The " + need + " comes from " + needHow +
+      ". Take a gentle look at the key below; I'm right here when you're ready for the next step."
     );
   }
 
