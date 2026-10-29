@@ -136,6 +136,15 @@
   ];
   var LEVELS = LEVEL_BANK.slice(0, 10);
 
+  var ALL_MODES = ["median", "altitude", "bisector", "perp"];
+  var ENCOURAGE_OK = [
+    "Great work — that centre is clear. Keep going!",
+    "Nice! You're reading the triangle well. On to the next one.",
+    "Spot on! Momentum looks good — stay with it.",
+    "Excellent meeting point. Ready for another challenge?",
+    "Well done! Keep that careful drawing going.",
+  ];
+
   var state = {
     levelIdx: 0,
     rawVerts: null,
@@ -163,6 +172,8 @@
     stars: 0,
     totalStars: 0,
     overlay: "title",
+    retryMode: null, /* adaptive: failed centre → next question */
+    finishMsg: "", /* coach message under the clear title */
   };
 
   var els = {};
@@ -357,23 +368,111 @@
     svg.appendChild(rightAngleMark(V, P, Q));
   }
 
-  function shuffleLevels() {
-    var pool = LEVEL_BANK.slice();
+  function shuffleArr(arr) {
     var i, j, t;
-    for (i = pool.length - 1; i > 0; i--) {
+    for (i = arr.length - 1; i > 0; i--) {
       j = Math.floor(Math.random() * (i + 1));
-      t = pool[i];
-      pool[i] = pool[j];
-      pool[j] = t;
+      t = arr[i];
+      arr[i] = arr[j];
+      arr[j] = t;
     }
+    return arr;
+  }
+
+  /** Build 10 levels so every centre (G/H/I/O) appears at least once. */
+  function shuffleLevels() {
+    var byMode = { median: [], altitude: [], bisector: [], perp: [] };
+    LEVEL_BANK.forEach(function (lv) {
+      if (byMode[lv.mode]) byMode[lv.mode].push(lv);
+    });
+    ALL_MODES.forEach(function (m) { shuffleArr(byMode[m]); });
+    var picked = [];
     var seen = {};
-    LEVELS = [];
-    for (i = 0; i < pool.length && LEVELS.length < 10; i++) {
-      var key = pool[i].mode + "|" + pool[i].shape;
+    /* seed: one of each centre */
+    ALL_MODES.forEach(function (m) {
+      var lv = byMode[m].shift();
+      if (!lv) return;
+      seen[lv.mode + "|" + lv.shape] = true;
+      picked.push(lv);
+    });
+    var rest = [];
+    ALL_MODES.forEach(function (m) {
+      byMode[m].forEach(function (lv) { rest.push(lv); });
+    });
+    shuffleArr(rest);
+    var i;
+    for (i = 0; i < rest.length && picked.length < 10; i++) {
+      var key = rest[i].mode + "|" + rest[i].shape;
       if (seen[key]) continue;
       seen[key] = true;
-      LEVELS.push(pool[i]);
+      picked.push(rest[i]);
     }
+    shuffleArr(picked);
+    LEVELS = picked.slice(0, 10);
+  }
+
+  function pickBankLevel(mode, avoidShape) {
+    var pool = LEVEL_BANK.filter(function (lv) {
+      return lv.mode === mode && lv.shape !== avoidShape;
+    });
+    if (!pool.length) {
+      pool = LEVEL_BANK.filter(function (lv) { return lv.mode === mode; });
+    }
+    if (!pool.length) return null;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  /** After a miss: bring that centre forward as the next question (adaptive). */
+  function bringModeToNext(mode) {
+    if (!mode) return;
+    var next = state.levelIdx + 1;
+    if (next >= LEVELS.length) return;
+    var i;
+    for (i = next; i < LEVELS.length; i++) {
+      if (LEVELS[i].mode === mode) {
+        if (i !== next) {
+          var tmp = LEVELS[next];
+          LEVELS[next] = LEVELS[i];
+          LEVELS[i] = tmp;
+        }
+        return;
+      }
+    }
+    /* no future level with this mode — replace next from bank, then repair coverage */
+    var avoid = levelDef() ? levelDef().shape : null;
+    var repl = pickBankLevel(mode, avoid);
+    if (repl) LEVELS[next] = repl;
+    repairModeCoverage();
+  }
+
+  function repairModeCoverage() {
+    var counts = { median: 0, altitude: 0, bisector: 0, perp: 0 };
+    LEVELS.forEach(function (lv) { counts[lv.mode] += 1; });
+    ALL_MODES.forEach(function (m) {
+      if (counts[m] > 0) return;
+      var donor = -1;
+      var i;
+      for (i = Math.max(0, state.levelIdx + 1); i < LEVELS.length; i++) {
+        if (counts[LEVELS[i].mode] > 1) {
+          donor = i;
+          break;
+        }
+      }
+      if (donor < 0) return;
+      var pick = pickBankLevel(m, null);
+      if (!pick) return;
+      counts[LEVELS[donor].mode] -= 1;
+      LEVELS[donor] = pick;
+      counts[m] += 1;
+    });
+  }
+
+  function advanceToNextLevel() {
+    if (state.retryMode) {
+      bringModeToNext(state.retryMode);
+      state.retryMode = null;
+    }
+    startLevel(state.levelIdx + 1);
   }
 
   function pickShape(lv) {
@@ -433,6 +532,8 @@
     state.misses = 0;
     state.crystalLit = false;
     state.levelIdx = 0;
+    state.retryMode = null;
+    state.finishMsg = "";
   }
 
   function startLevel(idx) {
@@ -493,7 +594,7 @@
     updateHud();
     state.running = false;
     clearTimers();
-    showClear();
+    showFinishBar(true, { msg: state.finishMsg || pickEncourageOk() });
   }
 
   function failLevel(msg) {
@@ -604,6 +705,28 @@
     svg.appendChild(t);
   }
 
+  function pickEncourageOk() {
+    var idx = Math.min(ENCOURAGE_OK.length - 1, Math.max(0, (state.combo || 1) - 1));
+    if (state.combo >= 3) {
+      return "Combo ×" + state.combo + "! Brilliant — keep that focus going.";
+    }
+    return ENCOURAGE_OK[idx % ENCOURAGE_OK.length];
+  }
+
+  function comfortWrongMsg(confusedMode) {
+    var need = MODE_META[state.mode] ? MODE_META[state.mode].centre : "target centre";
+    if (confusedMode && MODE_META[confusedMode]) {
+      var seemed = MODE_META[confusedMode].centre;
+      return (
+        "You seem to be answering the " + seemed + " instead of the " + need +
+        ". That's a common mix-up — take a breath, check the answer key, then you'll get it."
+      );
+    }
+    return (
+      "Not quite the " + need + " this time. No stress — study the key below and try the next question."
+    );
+  }
+
   function showFinishBar(ok, opts) {
     /* always show after Check / Skip — does not cover the figure */
     opts = opts || {};
@@ -619,6 +742,7 @@
     var clearName = isHardLevel() ? meta.centre : levelDef().title;
     var lastQ = state.levelIdx >= LEVELS.length - 1;
     var gameOver = !!opts.gameOver || !!state.gameOver;
+    var coach = opts.msg || state.finishMsg || "";
     if (gameOver) {
       els.clearTitle.textContent = "Game over";
       els.clearMsg.textContent = "Out of lives · Stars " + (state.totalStars || 0) + " / 30 · Jump to Centre Snap or replay";
@@ -628,11 +752,15 @@
       els.clearTitle.textContent = ok
         ? clearName + " · Cleared"
         : clearName + " · See solution";
-      els.clearMsg.textContent = ok
-        ? ("Best combo " + state.maxCombo + " · Lives " + state.lives + " / " + LIVES_MAX)
-        : (lastQ
-          ? "Answer key below · Next mission or Replay mission"
-          : "Answer key below · Next level or Replay");
+      if (ok) {
+        els.clearMsg.textContent = coach
+          || (pickEncourageOk() + " · Lives " + state.lives + " / " + LIVES_MAX);
+      } else {
+        els.clearMsg.textContent = coach
+          || (lastQ
+            ? "Answer key below · Next mission or Replay mission"
+            : "Answer key below · Next level or Replay");
+      }
       if (els.retryBtn) els.retryBtn.textContent = lastQ ? "Replay mission" : "Replay";
       if (els.nextBtn) els.nextBtn.textContent = lastQ ? "Next mission" : "Next level";
     }
@@ -672,10 +800,6 @@
       return true;
     }
     return false;
-  }
-
-  function showClear() {
-    showFinishBar(true);
   }
 
   function hideClearBar() {
@@ -859,17 +983,59 @@
     return avg;
   }
 
+  function scoreModeMatch(mode, v, lines) {
+    var c = trueCentre(mode, v);
+    if (!c || !lines || lines.length < 1) return 0;
+    var through = 0;
+    lines.forEach(function (L) {
+      if (dist(c, foot(c, L.a, L.b)) < CENTRE_TOL * 1.35) through += 1;
+    });
+    var special = correctSpecialLines(mode, v);
+    var matched = 0;
+    special.forEach(function (CL) {
+      var cu = unit(CL.a, CL.b);
+      var hit = lines.some(function (L) {
+        if (Math.abs(dot(unit(L.a, L.b), cu)) < DIR_MATCH) return false;
+        return dist(c, foot(c, L.a, L.b)) < CENTRE_TOL * 1.4;
+      });
+      if (hit) matched += 1;
+    });
+    return Math.max(through, matched);
+  }
+
+  /** If the drawing fits another centre better, return that mode id. */
+  function detectConfusedMode() {
+    var target = state.mode;
+    var targetScore = scoreModeMatch(target, state.verts, state.lines);
+    var best = null;
+    var bestScore = 0;
+    ALL_MODES.forEach(function (m) {
+      if (m === target) return;
+      var s = scoreModeMatch(m, state.verts, state.lines);
+      if (s > bestScore) {
+        bestScore = s;
+        best = m;
+      }
+    });
+    if (best && bestScore >= 2 && bestScore > targetScore) return best;
+    return null;
+  }
+
   function evaluateLines() {
     var c = trueCentre(state.mode, state.verts);
-    if (!c || state.lines.length < 3) return { ok: false, point: null, trueC: c };
+    if (!c || state.lines.length < 3) {
+      return { ok: false, point: null, trueC: c, confused: detectConfusedMode() };
+    }
     /* looser: ≥3 player lines through the true centre is enough */
     var through = state.lines.filter(function (L) {
       return dist(c, foot(c, L.a, L.b)) < CENTRE_TOL;
     });
-    if (through.length >= 3) return { ok: true, point: c, trueC: c };
+    if (through.length >= 3) return { ok: true, point: c, trueC: c, confused: null };
     /* fallback: match special-line directions with a soft angle tolerance */
     var correct = correctSpecialLines(state.mode, state.verts);
-    if (correct.length < 3) return { ok: false, point: null, trueC: c };
+    if (correct.length < 3) {
+      return { ok: false, point: null, trueC: c, confused: detectConfusedMode() };
+    }
     var matched = 0;
     correct.forEach(function (CL) {
       var cu = unit(CL.a, CL.b);
@@ -880,8 +1046,8 @@
       });
       if (okLine) matched += 1;
     });
-    if (matched >= 3) return { ok: true, point: c, trueC: c };
-    return { ok: false, point: null, trueC: c };
+    if (matched >= 3) return { ok: true, point: c, trueC: c, confused: null };
+    return { ok: false, point: null, trueC: c, confused: detectConfusedMode() };
   }
 
   function checkAnswer() {
@@ -896,13 +1062,17 @@
     if (result.ok) {
       state.combo += 1;
       state.maxCombo = Math.max(state.maxCombo, state.combo);
+      state.retryMode = null;
+      state.finishMsg = pickEncourageOk();
       onLevelClear();
     } else {
       onMiss();
+      state.retryMode = state.mode; /* adaptive: retest this centre next */
+      state.finishMsg = comfortWrongMsg(result.confused);
       var dead = loseLife();
       draw();
       drawSolution();
-      showFinishBar(false, { gameOver: dead });
+      showFinishBar(false, { gameOver: dead, msg: state.finishMsg });
       return;
     }
     updateHud();
@@ -915,13 +1085,17 @@
     state.reveal = { ok: false, point: null, trueC: c, skipped: true };
     state.stars = 0;
     state.combo = 0;
+    state.retryMode = state.mode;
+    state.finishMsg =
+      "Skipped the " + (MODE_META[state.mode] ? MODE_META[state.mode].centre : "centre") +
+      ". That's okay — peek at the key, then we'll practise it again soon.";
     var dead = loseLife();
     state.running = false;
     clearTimers();
     updateHud();
     draw();
     drawSolution();
-    showFinishBar(false, { gameOver: dead });
+    showFinishBar(false, { gameOver: dead, msg: state.finishMsg });
   }
 
   var SIDE_EXT_BEYOND = 16; /* must drag this far past the cut */
@@ -1611,13 +1785,14 @@
         else restartMission();
         return;
       }
-      startLevel(state.levelIdx + 1);
+      advanceToNextLevel();
     });
     els.retryBtn.addEventListener("click", function () {
       if (state.gameOver) {
         restartMission();
         return;
       }
+      /* Replay same level — keep retryMode so Next still adapts after another miss */
       startLevel(state.levelIdx);
     });
     els.menuBtn.addEventListener("click", function () {
@@ -1662,7 +1837,7 @@
           else restartMission();
           return;
         }
-        startLevel(state.levelIdx + 1);
+        advanceToNextLevel();
         return;
       }
       skipLevel();
