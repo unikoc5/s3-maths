@@ -743,8 +743,8 @@
   }
 
   /**
-   * Heartfelt + targeted teaching: name the construction they need vs what
-   * their drawing looks like, then soft encouragement to look at the key.
+   * Heartfelt + targeted teaching: which lines find the required centre,
+   * vs what the drawing looks like — then soft encouragement.
    */
   function comfortWrongMsg(confusedMode) {
     var meta = MODE_META[state.mode];
@@ -753,16 +753,16 @@
     if (confusedMode && MODE_META[confusedMode]) {
       var wrong = MODE_META[confusedMode];
       return (
-        "Hey, it's alright — I can see the care in your lines. They look a lot like " +
-        wrong.how + ", which meet at the " + wrong.centre +
-        ". For the " + need + " we need, lean on " + needHow +
-        " instead. Peek at the answer key with me; you've got this, and we'll practise it again soon."
+        "I'm glad you tried — your drawing shows real care. To find the " + need +
+        ", we actually use " + needHow +
+        ", not " + wrong.how + " (those meet at the " + wrong.centre +
+        "). Have a kind look at the answer key; mistakes like this are how the picture becomes clear, and I'll walk the next step with you."
       );
     }
     return (
-      "This one didn't land yet, and that is okay — learning rarely is a straight line. " +
-      "The " + need + " comes from " + needHow +
-      ". Take a gentle look at the key below; I'm right here when you're ready for the next step."
+      "This one didn't click yet, and that is perfectly human. Remember: the " + need +
+      " grows from " + needHow +
+      ". Softly check the key below — you're not alone in this, and every try is teaching your eye."
     );
   }
 
@@ -1125,9 +1125,14 @@
     state.stars = 0;
     state.combo = 0;
     state.retryMode = state.mode;
-    state.finishMsg =
-      "Skipped the " + (MODE_META[state.mode] ? MODE_META[state.mode].centre : "centre") +
-      ". That's okay — peek at the key, then we'll practise it again soon.";
+    var sm = MODE_META[state.mode];
+    state.finishMsg = sm
+      ? (
+        "Skipping is okay — rest is part of learning. When you're ready, the " + sm.centre +
+        " comes from " + sm.how +
+        ". Glance at the key; we'll meet this centre again soon, gently."
+      )
+      : "Skipping is okay. Peek at the key — we'll practise this centre again soon.";
     var dead = loseLife();
     state.running = false;
     clearTimers();
