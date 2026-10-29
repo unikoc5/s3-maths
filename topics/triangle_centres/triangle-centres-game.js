@@ -1188,9 +1188,9 @@
 
     if (choice === "reject") {
       box.innerHTML =
-        '<span class="tg-flame tg-flame-a" aria-hidden="true"></span>' +
-        '<span class="tg-flame tg-flame-b" aria-hidden="true"></span>' +
-        '<span class="tg-flame tg-flame-c" aria-hidden="true"></span>';
+        '<span class="tg-flame tg-flame-a" aria-hidden="true"><span class="tg-flame-core"></span></span>' +
+        '<span class="tg-flame tg-flame-b" aria-hidden="true"><span class="tg-flame-core"></span></span>' +
+        '<span class="tg-flame tg-flame-c" aria-hidden="true"><span class="tg-flame-core"></span></span>';
       box.classList.add("tg-box-reject", "tg-box-burning");
       box.addEventListener("animationend", onAnimDone);
     } else if (choice === "timeout") {

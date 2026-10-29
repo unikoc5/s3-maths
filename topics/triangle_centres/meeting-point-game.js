@@ -148,6 +148,21 @@
     "Beautifully done. Every clear centre you find makes the next one kinder. Shall we try another?",
     "Well spotted, and so patiently drawn. I'm glad you're here learning this — keep going at your pace.",
   ];
+  /* Combo ≥3: sincere rotating bag (never the same line twice in a row) */
+  var COMBO_MSGS = [
+    "Combo ×{n} — your hands are learning the truth of these lines. I see the care; hold this warmth a little longer.",
+    "Combo ×{n} — three clear meetings in a row… that focus is rare and real. I'm quietly proud of you.",
+    "Combo ×{n} — the triangle is answering you. Stay soft with yourself; this streak is earned kindness.",
+    "Combo ×{n} — what a lovely rhythm. Each centre you find is a small promise kept. Let's cherish the next one too.",
+    "Combo ×{n} — you didn't rush; you listened. That sincerity shows. Keep this gentle fire alive.",
+    "Combo ×{n} — look how steady you've become. I'm here beside you — one more careful meeting, when you're ready.",
+    "Combo ×{n} — this streak isn't luck; it's patience drawn on the page. Treasure it; we'll grow it together.",
+    "Combo ×{n} — your eye is waking up. I'm genuinely glad you're here — breathe, then gift yourself the next centre.",
+    "Combo ×{n} — warm streak, warm heart. You earned every spark. Shall we carry this feeling into the next figure?",
+    "Combo ×{n} — so many clear meetings… thank you for staying with the work. Your effort moves me; keep going kindly.",
+  ];
+  var _comboBag = [];
+  var _lastComboMsg = "";
   /* Rotating bag so Game over never feels copy-pasted */
   var GAME_OVER_MSGS = [
     "Lives rest for now, but your eye for centres is still growing. You gathered {stars} star{s} this run — that effort matters. When you're ready, Centre Snap awaits, or replay and meet the lines again with me.",
@@ -745,13 +760,31 @@
     svg.appendChild(t);
   }
 
-  function pickEncourageOk() {
-    if (state.combo >= 3) {
-      return (
-        "Combo ×" + state.combo +
-        " — what steady care. I'm really proud of you; let's keep this warm streak going."
-      );
+  function refillComboBag() {
+    _comboBag = COMBO_MSGS.slice();
+    var i, j, t;
+    for (i = _comboBag.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1));
+      t = _comboBag[i];
+      _comboBag[i] = _comboBag[j];
+      _comboBag[j] = t;
     }
+    if (_comboBag.length > 1 && _comboBag[0] === _lastComboMsg) {
+      t = _comboBag[0];
+      _comboBag[0] = _comboBag[1];
+      _comboBag[1] = t;
+    }
+  }
+
+  function pickComboMsg() {
+    if (!_comboBag.length) refillComboBag();
+    var tpl = _comboBag.shift();
+    _lastComboMsg = tpl;
+    return tpl.replace(/\{n\}/g, String(state.combo));
+  }
+
+  function pickEncourageOk() {
+    if (state.combo >= 3) return pickComboMsg();
     return ENCOURAGE_OK[Math.floor(Math.random() * ENCOURAGE_OK.length)];
   }
 

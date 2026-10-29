@@ -340,19 +340,44 @@
     }
     .tg-box.tg-box-burning { overflow: visible; }
     .tg-flame {
-      position: absolute; left: 50%; bottom: 30%; width: 22px; height: 36px;
-      margin-left: -11px; border-radius: 50% 50% 20% 20%;
-      background: radial-gradient(circle at 50% 70%, #fde68a 0%, #f97316 45%, #dc2626 75%, transparent 78%);
-      opacity: 0; pointer-events: none; z-index: 4;
-      animation: tg-flame-up .75s ease forwards;
+      position: absolute; left: 50%; bottom: 22%; width: 30px; height: 48px;
+      margin-left: -15px; opacity: 0; pointer-events: none; z-index: 4;
+      filter: drop-shadow(0 0 8px rgba(249,115,22,.85));
+      animation: tg-flame-up .9s ease-out forwards;
     }
-    .tg-flame-b { margin-left: -22px; width: 18px; height: 30px; animation-delay: .05s; }
-    .tg-flame-c { margin-left: 2px; width: 16px; height: 28px; animation-delay: .1s; }
+    .tg-flame-core {
+      display: block; width: 100%; height: 100%; position: relative;
+      background:
+        radial-gradient(ellipse 45% 35% at 50% 72%, #fff7ed 0%, #fde68a 28%, transparent 55%),
+        linear-gradient(to top, #b91c1c 0%, #dc2626 18%, #ea580c 42%, #f97316 62%, #fbbf24 82%, #fef3c7 100%);
+      clip-path: polygon(
+        50% 0%, 58% 8%, 68% 22%, 78% 38%, 82% 52%, 76% 66%, 64% 80%, 54% 92%, 50% 100%,
+        46% 92%, 36% 80%, 24% 66%, 18% 52%, 22% 38%, 32% 22%, 42% 8%
+      );
+      transform-origin: 50% 100%;
+      animation: tg-flame-flicker .22s ease-in-out infinite;
+    }
+    .tg-flame-core::after {
+      content: ""; position: absolute; left: 28%; bottom: 8%; width: 44%; height: 58%;
+      background: radial-gradient(ellipse at 50% 80%, #fffbeb 0%, #fde68a 40%, #fb923c 70%, transparent 78%);
+      clip-path: polygon(50% 0%, 70% 28%, 78% 55%, 62% 82%, 50% 100%, 38% 82%, 22% 55%, 30% 28%);
+      opacity: .95;
+    }
+    .tg-flame-b { margin-left: -28px; width: 22px; height: 38px; animation-delay: .04s; }
+    .tg-flame-b .tg-flame-core { animation-delay: .04s; animation-duration: .18s; }
+    .tg-flame-c { margin-left: 4px; width: 20px; height: 36px; animation-delay: .09s; }
+    .tg-flame-c .tg-flame-core { animation-delay: .09s; animation-duration: .26s; }
     @keyframes tg-flame-up {
-      0% { opacity: 0; transform: translateY(8px) scale(.6); }
-      25% { opacity: 1; transform: translateY(-6px) scale(1.15); }
-      70% { opacity: .95; transform: translateY(-18px) scale(1.05); }
-      100% { opacity: 0; transform: translateY(-32px) scale(.8); }
+      0% { opacity: 0; transform: translateY(10px) scale(.55); }
+      18% { opacity: 1; transform: translateY(-4px) scale(1.12); }
+      55% { opacity: 1; transform: translateY(-16px) scale(1.05); }
+      100% { opacity: 0; transform: translateY(-36px) scale(.75); }
+    }
+    @keyframes tg-flame-flicker {
+      0%, 100% { transform: scaleX(1) scaleY(1) skewX(0deg); }
+      20% { transform: scaleX(1.12) scaleY(.9) skewX(-4deg); }
+      45% { transform: scaleX(.88) scaleY(1.12) skewX(3deg); }
+      70% { transform: scaleX(1.08) scaleY(.94) skewX(-2deg); }
     }
     .tg-box.tg-box-reject {
       animation: tg-box-burn .85s ease forwards !important;
@@ -860,8 +885,8 @@
   <script defer src="triangle-centres-comics.js?v=20260830-fu"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
   <script defer src="triangle-centres-tools.js?v=20261023e"></script>
-  <script defer src="triangle-centres-game.js?v=20261029-over"></script>
-  <script defer src="meeting-point-game.js?v=20261029-over"></script>
+  <script defer src="triangle-centres-game.js?v=20261029-flame"></script>
+  <script defer src="meeting-point-game.js?v=20261029-flame"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       
