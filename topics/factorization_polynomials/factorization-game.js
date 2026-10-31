@@ -595,7 +595,7 @@
   function snakeFoodDims(item) {
     if (!isPhoneCompact()) return item;
     const ctx = SN.ctx || (SN.canvas && SN.canvas.getContext("2d"));
-    const cell = SN.cell || Math.max(14, (SN.canvas && SN.canvas.width ? SN.canvas.width / SN.cols : 18));
+    const cell = SN.cell || Math.max(14, (SN.canvas && snakeSize() ? snakeSize() / SN.cols : 18));
     if (!ctx) return item;
     const m = snakeMeasureFoodBox(ctx, item, cell);
     return Object.assign({}, item, { w: m.w, h: m.h, metrics: m });
@@ -711,7 +711,8 @@
   }
   function snakeUpdateHud(message, cls) {
     SN.levelEl.textContent = SN.level;
-    SN.livesEl.textContent = SN.lives;
+    const lives = Math.max(0, Math.min(3, SN.lives));
+    SN.livesEl.textContent = "\u2665".repeat(lives) + "\u2661".repeat(3 - lives);
     SN.scoreEl.textContent = SN.score;
     SN.msg.textContent = message || "";
     SN.msg.className = "snake-msg" + (cls ? " " + cls : "");
@@ -720,6 +721,7 @@
     SN.running = false;
     clearInterval(SN.loop);
     snakeUpdateHud(message, cls);
+    snakeDraw();
   }
   function snakeLoseLife(reason) {
     SN.lives--;
@@ -786,31 +788,44 @@
     const padX = 6;
     const padY = 4;
     const minSize = 8;
-    let size = Math.min(16, Math.floor((bh - padY * 2) * 0.52));
+    let size = Math.min(22, Math.floor((bh - padY * 2) * 0.52));
     const maxW = bw - padX * 2;
     const maxH = bh - padY * 2;
     do {
-      ctx.font = "900 " + size + "px JetBrains Mono, monospace";
+      ctx.font = "800 " + size + "px JetBrains Mono, monospace";
       const tw = ctx.measureText(text).width;
       const th = size * 1.12;
       if (tw <= maxW && th <= maxH) break;
       size--;
     } while (size > minSize);
-    ctx.font = "900 " + size + "px JetBrains Mono, monospace";
+    ctx.font = "800 " + size + "px JetBrains Mono, monospace";
     return { size };
+  }
+  function snakeFoodCard(ctx, f, bx, by, bw, bh) {
+    const gcf = f.type === "gcf";
+    const radius = gcf ? Math.min(bw, bh) / 2 : Math.min(10, bh / 3);
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,.4)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetY = 3;
+    const g = ctx.createLinearGradient(0, by, 0, by + bh);
+    if (gcf) { g.addColorStop(0, "#fff4c7"); g.addColorStop(1, "#fbbf24"); }
+    else { g.addColorStop(0, "#ffffff"); g.addColorStop(1, "#dcecff"); }
+    ctx.fillStyle = g;
+    roundRect(ctx, bx, by, bw, bh, radius, true, false);
+    ctx.restore();
+    ctx.strokeStyle = gcf ? "#d97706" : "#7dd3fc";
+    ctx.lineWidth = 2;
+    roundRect(ctx, bx + 1, by + 1, bw - 2, bh - 2, Math.max(0, radius - 1), false, true);
+    ctx.fillStyle = gcf ? "#78350f" : "#0f2a44";
   }
   function snakeDrawFoodItem(ctx, f, x, y, bw, bh) {
     const phone = isPhoneCompact();
-    const radius = f.type === "gcf" ? 5 : 8;
     if (phone && f.metrics) {
       const m = f.metrics;
       const bx = x + (bw - m.boxW) / 2;
       const by = y + (bh - m.boxH) / 2;
-      ctx.fillStyle = f.type === "gcf" ? "#fde68a" : "#cbd5e1";
-      ctx.strokeStyle = "#0f172a";
-      ctx.lineWidth = 1.5;
-      roundRect(ctx, bx, by, m.boxW, m.boxH, radius, true, true);
-      ctx.fillStyle = "#0f172a";
+      snakeFoodCard(ctx, f, bx, by, m.boxW, m.boxH);
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.font = "900 " + m.fontSize + "px JetBrains Mono, monospace";
@@ -827,35 +842,106 @@
     }
     const text = snakeFoodText(f);
     const metrics = snakeDrawFoodText(ctx, text, x, y, bw, bh);
-    ctx.fillStyle = f.type === "gcf" ? "#fde68a" : "#cbd5e1";
-    ctx.strokeStyle = "#0f172a";
-    ctx.lineWidth = 2;
-    const pad = f.type === "gcf" ? 2 : 3;
-    roundRect(ctx, x + pad, y + pad, bw - pad * 2, bh - pad * 2, radius, true, true);
-    ctx.fillStyle = "#0f172a";
+    const pad = f.type === "gcf" ? 3 : 4;
+    snakeFoodCard(ctx, f, x + pad, y + pad, bw - pad * 2, bh - pad * 2);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = "900 " + metrics.size + "px JetBrains Mono, monospace";
-    ctx.fillText(text, x + bw / 2, y + bh / 2);
+    ctx.font = "800 " + metrics.size + "px JetBrains Mono, monospace";
+    ctx.fillText(text, x + bw / 2, y + bh / 2 + 1);
+  }
+  function snakeSize() {
+    return SN.size || (SN.canvas ? SN.canvas.width : 0);
+  }
+  function snakeDrawSnake(ctx, c) {
+    const body = SN.snake;
+    const n = body.length;
+    if (!n) return;
+    const center = (p) => [p.x * c + c / 2, p.y * c + c / 2];
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,.45)";
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 2;
+    ctx.strokeStyle = "#14532d";
+    ctx.lineWidth = c * 0.8;
+    ctx.beginPath();
+    body.forEach((p, i) => {
+      const [x, y] = center(p);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.restore();
+    for (let i = n - 1; i > 0; i--) {
+      const [x1, y1] = center(body[i]);
+      const [x2, y2] = center(body[i - 1]);
+      const t = n > 1 ? i / (n - 1) : 0;
+      ctx.strokeStyle = "hsl(142, 62%, " + (56 - t * 16) + "%)";
+      ctx.lineWidth = c * 0.66;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    }
+    const [hx, hy] = center(body[0]);
+    const d = SN.dir;
+    ctx.fillStyle = "#4ade80";
+    ctx.strokeStyle = "#14532d";
+    ctx.lineWidth = Math.max(1.5, c * 0.07);
+    ctx.beginPath(); ctx.arc(hx, hy, c * 0.47, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    const sx = -d.y, sy = d.x;
+    [1, -1].forEach((s) => {
+      const ex = hx + d.x * c * 0.12 + sx * c * 0.2 * s;
+      const ey = hy + d.y * c * 0.12 + sy * c * 0.2 * s;
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath(); ctx.arc(ex, ey, c * 0.14, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#0f172a";
+      ctx.beginPath(); ctx.arc(ex + d.x * c * 0.05, ey + d.y * c * 0.05, c * 0.075, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+  function snakeDrawOverlay(ctx, W, H) {
+    if (SN.running) return;
+    let title, sub, color;
+    if (SN.won) {
+      title = "You win!"; sub = "All 5 levels cleared"; color = "#86efac";
+    } else if (SN.lives <= 0) {
+      title = "Game over"; sub = "Press Restart Snake to try again"; color = "#fca5a5";
+    } else {
+      title = "Ready?"; color = "#ffffff";
+      sub = isPhoneCompact() ? "Tap Start Snake to play" : "Press Start Snake \u00B7 Arrow keys / WASD";
+    }
+    ctx.fillStyle = "rgba(8,15,30,.6)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const ts = Math.max(24, W * 0.085);
+    ctx.font = "700 " + ts + "px Hanken Grotesk, system-ui, sans-serif";
+    ctx.fillStyle = color;
+    ctx.fillText(title, W / 2, H / 2 - ts * 0.45);
+    ctx.font = "600 " + Math.max(12, W * 0.032) + "px Hanken Grotesk, system-ui, sans-serif";
+    ctx.fillStyle = "rgba(226,232,240,.88)";
+    ctx.fillText(sub, W / 2, H / 2 + ts * 0.55);
   }
   function snakeDraw() {
     if (!SN.ctx) return;
-    const ctx = SN.ctx, W = SN.canvas.width, H = SN.canvas.height;
+    const ctx = SN.ctx, W = snakeSize(), H = W;
+    const dpr = SN.dpr || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     SN.cell = W / SN.cols;
+    const c = SN.cell;
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = "#07101f"; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = "rgba(148,163,184,.12)";
-    for (let i = 0; i <= SN.cols; i++) { ctx.beginPath(); ctx.moveTo(i * SN.cell, 0); ctx.lineTo(i * SN.cell, H); ctx.stroke(); }
-    for (let j = 0; j <= SN.rows; j++) { ctx.beginPath(); ctx.moveTo(0, j * SN.cell); ctx.lineTo(W, j * SN.cell); ctx.stroke(); }
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "#14284a");
+    bg.addColorStop(1, "#0b1629");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "rgba(255,255,255,.03)";
+    for (let i = 0; i < SN.cols; i++) {
+      for (let j = 0; j < SN.rows; j++) if ((i + j) % 2 === 0) ctx.fillRect(i * c, j * c, c, c);
+    }
     SN.foods.forEach((f) => {
-      const x = f.x * SN.cell, y = f.y * SN.cell;
-      const bw = SN.cell * f.w, bh = SN.cell * f.h;
-      snakeDrawFoodItem(ctx, f, x, y, bw, bh);
+      const x = f.x * c, y = f.y * c;
+      snakeDrawFoodItem(ctx, f, x, y, c * f.w, c * f.h);
     });
-    SN.snake.forEach((p, i) => {
-      ctx.fillStyle = i === 0 ? "#fb923c" : "#fde047";
-      roundRect(ctx, p.x * SN.cell + 3, p.y * SN.cell + 3, SN.cell - 6, SN.cell - 6, 7, true, false);
-    });
+    snakeDrawSnake(ctx, c);
+    snakeDrawOverlay(ctx, W, H);
   }
   function roundRect(ctx, x, y, w, h, r, fill, stroke) {
     ctx.beginPath();
@@ -906,31 +992,29 @@
         size = Math.min(wrap.clientWidth - 12, window.innerHeight * 0.4, 380);
       }
     } else if (isTabletTouch()) {
-      // iPad: the stylesheet box (width:min(100%,760px) + max-height:78vh) goes
-      // non-square in landscape while the canvas buffer stays square, so WebKit
-      // stretches the drawing. Force the CSS box to the exact square buffer size.
-      size = Math.min(wrap.clientWidth - 24, window.innerHeight * 0.62, 640);
-      if (size >= 100) {
-        const cssPx = Math.floor(size);
-        SN.canvas.style.width = cssPx + "px";
-        SN.canvas.style.height = cssPx + "px";
-        SN.canvas.style.maxWidth = "100%";
-        SN.canvas.style.maxHeight = "none";
-        SN.canvas.style.aspectRatio = "1 / 1";
-      }
+      size = Math.min(wrap.clientWidth - 28, window.innerHeight * 0.62, 640);
     } else {
-      size = Math.min(wrap.clientWidth - 24, window.innerHeight * 0.42, 520);
+      size = Math.min(wrap.clientWidth - 28, window.innerHeight * 0.68, 720);
     }
     if (size < 100) return;
     const px = Math.floor(size);
-    const sizeChanged = SN.canvas.width !== px || SN.canvas.height !== px;
+    const dpr = Math.min(3, window.devicePixelRatio || 1);
+    const sizeChanged = SN.size !== px;
     const prevCols = SN.cols;
     const prevRows = SN.rows;
     snakeApplyGrid();
     const gridChanged = prevCols !== SN.cols || prevRows !== SN.rows;
-    SN.canvas.width = px;
-    SN.canvas.height = px;
-    SN.cell = SN.canvas.width / SN.cols;
+    SN.size = px;
+    SN.dpr = dpr;
+    SN.canvas.width = Math.round(px * dpr);
+    SN.canvas.height = Math.round(px * dpr);
+    // Height stays auto so the box remains square if max-width clamps it.
+    SN.canvas.style.width = px + "px";
+    SN.canvas.style.height = "auto";
+    SN.canvas.style.maxWidth = "100%";
+    SN.canvas.style.maxHeight = "none";
+    SN.canvas.style.aspectRatio = "1 / 1";
+    SN.cell = px / SN.cols;
     if (isPhoneCompact() && SN.cur && (sizeChanged || gridChanged || !SN.foods.length)) snakeFoodSpots();
     snakeDraw();
   }
@@ -951,7 +1035,7 @@
         document.querySelectorAll("[data-snake-mode]").forEach((x) => x.classList.toggle("active", x === b));
         SN.mode = b.dataset.snakeMode;
         SN.running = false; clearInterval(SN.loop);
-        SN.level = 1; SN.lives = 3; SN.score = 0; SN.gcfCollected = false; SN.startBtn.textContent = "Start Snake";
+        SN.level = 1; SN.lives = 3; SN.score = 0; SN.won = false; SN.gcfCollected = false; SN.startBtn.textContent = "Start Snake";
         SN.cur = snakeQuestion(); snakeResetBody(); snakeFoodSpots(); snakeRenderPrompt(); snakeUpdateHud(""); snakeDraw();
       });
     });
@@ -976,12 +1060,10 @@
     if (modeName === "snake") {
       mountSnake();
       snakeDraw();
-      if (isPhoneCompact()) {
-        requestAnimationFrame(() => {
-          resizeSnakeBoard();
-          requestAnimationFrame(resizeSnakeBoard);
-        });
-      }
+      requestAnimationFrame(() => {
+        resizeSnakeBoard();
+        requestAnimationFrame(resizeSnakeBoard);
+      });
     }
   }
 

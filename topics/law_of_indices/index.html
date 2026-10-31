@@ -431,23 +431,6 @@
     #ix-game .ix-face, .ix-ghost .ix-face { margin: 0; font-size: 18px; line-height: 1.3; min-height: 68px; display: flex; align-items: center; justify-content: center; }
     #ix-game .feedback { text-align: center; }
     #ix-game .ix-actions { display: flex; justify-content: center; margin-top: 8px; }
-    /* TEMP pick-level: delete before publish */
-    #ix-game .ix-pick {
-      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
-      gap: 8px; margin: 0 0 14px; padding: 8px 10px;
-      border: 2px dashed #94a3b8; border-radius: 12px; background: #f8fafc;
-      color: #475569; font-size: 14px; font-weight: 700;
-    }
-    #ix-game .ix-pick label { display: flex; align-items: center; gap: 6px; }
-    #ix-game .ix-pick select {
-      font: inherit; font-weight: 800; color: #1e293b;
-      padding: 6px 8px; border: 2px solid #1e293b; border-radius: 8px; background: #fff;
-    }
-    #ix-game .ix-pick button {
-      margin: 0; padding: 6px 14px; cursor: pointer;
-      border: 2px solid #1e293b; border-radius: 999px; background: #fff; color: #1e293b;
-      font: inherit; font-weight: 800;
-    }
     #ix-play { position: relative; }
     #ix-game .ix-restart { top: 0; right: 0; }
     #panel-games .game-off { display: none; }
@@ -1471,13 +1454,6 @@
         <button class="chip" type="button" data-game="signal">Signal Room</button>
       </div>
       <section class="block" id="ix-game">
-        <!-- TEMP pick-level: delete before publish -->
-        <div class="ix-pick" id="ix-pick">
-          <span>Pick level</span>
-          <label>Set <select id="ix-pick-set"></select></label>
-          <label>Level <select id="ix-pick-level"></select></label>
-          <button type="button" id="ix-pick-go">Go</button>
-        </div>
         <div id="ix-intro">
           <p class="ix-kicker">Indices Club</p>
           <h2 class="ix-game-title">Index cards</h2>
@@ -2338,8 +2314,8 @@
   <script src="comics-manifest.js?v=20260906-short-hair"></script>
   <script src="../../shared/jm-comics-engine.js?v=20260906-comicw"></script>
   <script src="indices-comics.js?v=20260926-noprologue"></script>
-  <script src="law-of-indices-game.js?v=20261007-ranks3"></script>
-  <script src="law-of-indices-sci-game.js?v=20261011-sound5"></script>
+  <script src="law-of-indices-game.js?v=20261024-nopick"></script>
+  <script src="law-of-indices-sci-game.js?v=20261024-train1"></script>
   <script src="signal-room.js?v=20261011-story5"></script>
   <script src="signal-room-story.js?v=20261011-story23"></script>
   <script src="signal-room-rescue.js?v=20261011-rescue6"></script>

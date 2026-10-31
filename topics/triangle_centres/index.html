@@ -185,12 +185,14 @@
         <button class="chip" type="button" data-deck="orthocentre">Orthocentre (challenge)</button>
         <button class="chip" type="button" data-deck="inside-outside">Inside or outside?</button>
         <button class="chip" type="button" data-deck="isosceles-equilateral">Isosceles &amp; equilateral</button>
+        <button class="chip" type="button" data-deck="perp-bisector">⊥ bisector</button>
+        <button class="chip" type="button" data-deck="angle-bisector">∠ bisector</button>
       </div>
       <div class="deck-wrap">
         <iframe id="deck-frame" src="../../slides/triangle_centres/circumcentre/index.html" title="JM28 concept slides"></iframe>
         <div class="deck-advance" id="deck-advance" role="presentation"></div>
       </div>
-      <p class="hint">Click / Space = next. Left = previous. The key property of each centre, and which centres can lie outside the triangle.</p>
+      <p class="hint">Click / Space = next. Left = previous. The four centres, then placement, special triangles, and the two bisector lemmas.</p>
       </section>
     </section>
 <section id="panel-tools" class="jm-panel hidden">
@@ -364,6 +366,8 @@
       }
       var base = "../../slides/triangle_centres/";
       var DECKS = {
+        "perp-bisector": base + "perp-bisector/index.html",
+        "angle-bisector": base + "angle-bisector/index.html",
         "circumcentre": base + "circumcentre/index.html",
         "in-centre": base + "in-centre/index.html",
         "centroid": base + "centroid/index.html",

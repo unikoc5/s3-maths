@@ -28,23 +28,12 @@
 
   var TRAINING = [
     {
-      name: "BIG NUMBERS", kind: "label",
-      crates: ["7 243 000"],
-      task: "A crate arrives: 7 243 000. Send its label in standard form.",
-      say: [
-        "Lesson 1: big numbers. The train only reads labels like a \u00d7 10\u207f, where a is at least 1 and less than 10.",
-        "Move the decimal point LEFT until only ONE digit is in front of it. That gives a. Count the jumps. That gives n.",
-      ],
-      steps: [{ m: 7.243, e: 6, act: "ship", hint: "Is a at least 1 and less than 10? Count every jump of the decimal point to get n." }],
-      done: "Nice! Big numbers get a positive n.",
-    },
-    {
       name: "SMALL NUMBERS", kind: "label",
       crates: ["0.00056"],
       task: "A crate arrives: 0.00056. Send its label in standard form.",
       say: [
-        "Lesson 2: small numbers. This crate holds less than 1: 0.00056.",
-        "Move the decimal point RIGHT until the first non-zero digit is in front of it. Count the jumps. Small numbers get a NEGATIVE n.",
+        "Lesson 1: small numbers. This crate holds less than 1: 0.00056.",
+        "The train only reads labels like a \u00d7 10\u207f, where a is at least 1 and less than 10. Move the decimal point RIGHT until the first non-zero digit is in front of it. Count the jumps. Small numbers get a NEGATIVE n.",
       ],
       steps: [{ m: 5.6, e: -4, act: "ship", hint: "Don't forget the minus sign on n. And a must be at least 1 and less than 10." }],
       done: "Correct! A number smaller than 1 has a negative n.",
@@ -54,7 +43,7 @@
       crates: [label(4, 9), label(5, 2)],
       task: "Tie 4 \u00d7 10\u2079 and 5 \u00d7 10\u00b2 together. Send the raw answer first.",
       say: [
-        "Lesson 3: tying crates. When two crates are tied together, their labels MULTIPLY: multiply the front numbers and ADD the powers of 10.",
+        "Lesson 2: tying crates. When two crates are tied together, their labels MULTIPLY: multiply the front numbers and ADD the powers of 10.",
         "Type exactly what you get, even if it breaks the rule. Don't fix it yet!",
       ],
       steps: [
@@ -68,30 +57,12 @@
       done: "Great! Tie first, fix second. That's how this station works.",
     },
     {
-      name: "SPLIT AND FIX (\u00f7)", kind: "op", op: "\u00f7", verb: "Divide",
-      crates: [label(2, 3), label(4, 5)],
-      task: "Split 2 \u00d7 10\u00b3 by 4 \u00d7 10\u2075. Send the raw answer first.",
-      say: [
-        "Lesson 4: splitting. A \u00f7 sign means divide: divide the front numbers and SUBTRACT the powers (first power minus second power).",
-        "Type the raw answer first, even if a is less than 1.",
-      ],
-      steps: [
-        {
-          m: 0.5, e: -2, act: "tie-held",
-          hint: "Divide the front numbers and subtract the powers. Type that raw answer first.",
-          after: "HELD again! This time a is less than 1. Make a 10 times bigger, and take 1 away from n.",
-        },
-        { m: 5, e: -3, act: "ship", hint: "a must be at least 1. If a gets 10 times bigger, n goes down by 1." },
-      ],
-      done: "Well done! a too big: n goes up. a too small: n goes down.",
-    },
-    {
       name: "ADD (+)", kind: "add", op: "+",
       vals: [[2.4, 5], [3, 4]],
       total: { m: 2.7, e: 5 },
       task: "Add 2.4 \u00d7 10\u2075 and 3 \u00d7 10\u2074. Click one crate, then change its label so both powers match.",
       say: [
-        "Lesson 5: adding. You can only add labels with the SAME power of 10.",
+        "Lesson 3: adding. You can only add labels with the SAME power of 10.",
         "Click ONE crate. Then change its label so its power matches the other crate. The amount inside must stay the same.",
       ],
       done: "Excellent! Same power first, then add. On your own shift, you can also send the total in one go.",
@@ -108,6 +79,8 @@
   var POW_TEXT = { "2": "\u00b2", "3": "\u00b3", "0": "\u2070", "-1": "\u207b\u00b9", "0.5": " to the power 0.5", "1/3": " to the power 1/3" };
 
   var TIPS = {
+    big: "A big number! Move the decimal point LEFT until one digit is in front. Count the jumps. That is n.",
+    div: "A \u00f7 sign means divide: divide the front numbers and SUBTRACT the powers.",
     sub: "New job: subtracting! It works like adding: make the powers the same first.",
     sq: "New cargo: a crate with a power! (a \u00d7 10\u207f)\u00b2 means square BOTH parts: a\u00b2 and (10\u207f)\u00b2.",
     cube: "Power 3! Cube the front number, and multiply the power of 10 by 3.",
@@ -250,6 +223,7 @@
       name: big ? "BIG NUMBER" : "SMALL NUMBER", kind: "label", crates: [text],
       task: "A crate arrives: " + text + ". Send its label in standard form.",
       steps: [{ m: m, e: e, act: "ship" }],
+      tips: big ? ["big"] : [],
     };
   }
 
@@ -261,7 +235,7 @@
       var raw = split ? { m: round(a.m / b.m), e: a.e - b.e } : { m: round(a.m * b.m), e: a.e + b.e };
       var answer = split ? over(a, b) : times(a, b);
       if (!tidy(answer) || !tidy(raw)) continue;
-      return calcDock(split ? "SPLIT (\u00f7)" : "TIE (\u00d7)", [{ v: a }, { v: b }], [op], answer, raw, []);
+      return calcDock(split ? "SPLIT (\u00f7)" : "TIE (\u00d7)", [{ v: a }, { v: b }], [op], answer, raw, split ? ["div"] : []);
     }
     return null;
   }
@@ -1132,14 +1106,9 @@
     }));
   }
 
-  async function fastFix(raw, filed, ticket) {
-    var bundle = await tie(raw, true);
+  async function fastFix(filed, ticket) {
+    var bundle = await tie(filed, true);
     if (ticket !== run) return null;
-    await stampHeld(bundle);
-    if (ticket !== run) return null;
-    await wait(100);
-    if (ticket !== run) return null;
-    await retag(bundle, filed);
     return bundle;
   }
 
@@ -1326,7 +1295,7 @@
     refreshMode();
     el("mx-strikes").hidden = !!dock.training;
     if (!dock.training) showStrikes();
-    el("mx-dock").textContent = dock.code + " \u00b7 " + dock.name;
+    el("mx-dock").textContent = dock.code;
     el("cargo-container").innerHTML = "";
     el("mx-a").value = "";
     el("mx-n").value = "";
@@ -1408,7 +1377,7 @@
 
     if (dock.training && dockIndex === TRAINING.length - 1) {
       var lines = [
-        "You know all " + TRAINING.length + " rules now! From here on, you work alone. I'll be watching from the control room.",
+        "Training is over! From here on, you work alone. I'll be watching from the control room.",
         "On your own shift, you can skip steps. If you can work out the final label in your head, send it straight away!",
         "The jobs get harder as you go, and every load pays $" + PAY + ". Three mistakes and you're FIRED. Good luck!",
       ];
@@ -1639,7 +1608,7 @@
     var raw = dock.raw;
     var bundle;
     if (raw && !legal(raw.m)) {
-      bundle = await fastFix(label(raw.m, raw.e), filed, ticket);
+      bundle = await fastFix(filed, ticket);
       if (!bundle || ticket !== run) return;
       await departAndNext(bundle, filed, ticket, shortcut(PRAISE_TIE));
       return;
@@ -1700,7 +1669,7 @@
     lockInput(true);
 
     if (shortcut) {
-      var fixed = await fastFix(label(step.m, step.e), filed, ticket);
+      var fixed = await fastFix(filed, ticket);
       if (!fixed || ticket !== run) return;
       await departAndNext(fixed, filed, ticket, PRAISE_TIE);
       return;

@@ -43,7 +43,7 @@
   <main class="jm-page">
     <p class="jm-eyebrow">JM28</p>
     <h1>Concept Animations</h1>
-    <p class="lead">Manim concept decks only — circumcentre, in-centre, centroid, orthocentre, and related checks.</p>
+    <p class="lead">Manim concept decks only — circumcentre, in-centre, centroid, orthocentre, related checks, and the two bisector lemmas.</p>
 
     <div class="subnav" id="concept-subnav" aria-label="Concept decks">
       <button class="chip active" type="button" data-deck="circumcentre">Circumcentre</button>
@@ -52,6 +52,8 @@
       <button class="chip" type="button" data-deck="orthocentre">Orthocentre (challenge)</button>
       <button class="chip" type="button" data-deck="inside-outside">Inside or outside?</button>
       <button class="chip" type="button" data-deck="isosceles-equilateral">Isosceles &amp; equilateral</button>
+      <button class="chip" type="button" data-deck="perp-bisector">⊥ bisector</button>
+      <button class="chip" type="button" data-deck="angle-bisector">∠ bisector</button>
     </div>
 
     <div class="deck-wrap">
@@ -73,7 +75,9 @@
         "centroid": base + "centroid/index.html",
         "orthocentre": base + "orthocentre/index.html",
         "inside-outside": base + "inside-outside/index.html",
-        "isosceles-equilateral": base + "isosceles-equilateral/index.html"
+        "isosceles-equilateral": base + "isosceles-equilateral/index.html",
+        "perp-bisector": base + "perp-bisector/index.html",
+        "angle-bisector": base + "angle-bisector/index.html"
       };
       var frame = document.getElementById("deck-frame");
       var params = new URLSearchParams(location.search);

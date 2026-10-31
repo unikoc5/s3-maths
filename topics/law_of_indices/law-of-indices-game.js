@@ -354,54 +354,6 @@
     played = [];
     phase = "play";
     render();
-    syncPick();
-  }
-
-  /* TEMP pick-level: delete before publish */
-  function syncPick() {
-    var setSel = document.getElementById("ix-pick-set");
-    var lvSel = document.getElementById("ix-pick-level");
-    if (setSel) setSel.value = String(setIndex);
-    if (lvSel) lvSel.value = String(levelIndex);
-  }
-
-  function fillPick() {
-    var setSel = document.getElementById("ix-pick-set");
-    var lvSel = document.getElementById("ix-pick-level");
-    if (!setSel || !lvSel) return;
-    var i;
-    var opt;
-    setSel.innerHTML = "";
-    for (i = 0; i < SETS.length; i++) {
-      opt = document.createElement("option");
-      opt.value = String(i);
-      opt.textContent = String(i + 1);
-      setSel.appendChild(opt);
-    }
-    lvSel.innerHTML = "";
-    var count = SETS[0].length;
-    for (i = 0; i < count; i++) {
-      opt = document.createElement("option");
-      opt.value = String(i);
-      opt.textContent = String(i + 1);
-      lvSel.appendChild(opt);
-    }
-    syncPick();
-  }
-
-  function jumpToPicked() {
-    var setSel = document.getElementById("ix-pick-set");
-    var lvSel = document.getElementById("ix-pick-level");
-    if (!setSel || !lvSel) return;
-    var s = parseInt(setSel.value, 10);
-    var l = parseInt(lvSel.value, 10);
-    if (isNaN(s) || s < 0 || s >= SETS.length) return;
-    if (isNaN(l) || l < 0 || l >= SETS[s].length) return;
-    setIndex = s;
-    levelIndex = l;
-    started = true;
-    startLevel();
-    showPlay();
   }
 
   function goLabel() {
@@ -446,10 +398,7 @@
     var restart = document.getElementById("ix-restart");
     if (restart) restart.addEventListener("click", startLevel);
     hasProgress = loadProgress();
-    fillPick();
     paintMath(document.getElementById("ix-intro"));
-    var pickGo = document.getElementById("ix-pick-go");
-    if (pickGo) pickGo.addEventListener("click", jumpToPicked);
     var go = document.getElementById("ix-go");
     if (go) {
       go.addEventListener("click", function () {
