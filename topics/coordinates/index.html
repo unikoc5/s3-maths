@@ -63,6 +63,9 @@
     }
     .step-nav.visible { display: flex; }
     .step-nav .step-label { font-size: 14px; font-weight: 600; color: var(--muted); min-width: 100px; text-align: center; }
+    #lab-slope .slope-lead { margin: 0 0 20px; line-height: 1.7; overflow: visible; }
+    #lab-slope .slope-lead .katex { font-size: 1em; }
+    #lab-slope .tool-toggle-row { margin-top: 4px; }
     .centre-fig { width: 100%; max-width: 520px; display: block; margin: 0 auto; border-radius: 14px; border: 1px solid var(--line); }
     #comics-subnav { margin-bottom: 14px; }
     .comic-figure {
@@ -78,8 +81,11 @@
       height: auto;
       vertical-align: middle;
     }
+    .summary-sheet { margin: 12px auto 0; max-width: 720px; }
+    .summary-sheet img { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 20px rgba(15,23,42,.12); }
   </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="harbour-grid.css?v=20261104-hg3">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
@@ -132,7 +138,7 @@
         <p class="part-title">Part 2 · Slope</p>
         <section class="block">
           <h2>What is slope?</h2>
-          <p class="hint">Slope \(m = \dfrac{\Delta y}{\Delta x}\): how much \(y\) changes for each 1 unit step in \(x\).</p>
+          <p class="hint slope-lead">Slope \(m = \frac{\Delta y}{\Delta x}\): how much \(y\) changes for each 1 unit step in \(x\).</p>
           <div class="tool-toggle-row" id="slope-mode-btns"></div>
           <div class="step-nav" id="perp-step-nav">
             <button type="button" class="btn" id="perp-prev">← Back</button>
@@ -194,9 +200,12 @@
       </div>
     </section>
         <section id="panel-games" class="jm-panel hidden">
-      <section class="block">
-        <h2>Games</h2>
-        <p class="hint">Coming soon.</p>
+      <section class="block hg-game-shell">
+        <p class="part-title">Game · Harbour Grid</p>
+        <h2>Harbour Grid: Bo's Way Home</h2>
+        <p class="hint">2 a.m. in Victoria Harbour: a lost baby sea creature, a sonic cannon, and you on the coordinate grid. Story mode runs a warm-up and five chapters (distance, slope, parallel and perpendicular lines, mid-point and section formula, centres of a triangle). Challenge mode gives fresh random rounds every time.</p>
+        <nav class="hg-tabs" id="hg-tabs" aria-label="Harbour Grid chapters"></nav>
+        <div class="hg-stage" id="hg-stage" role="application" aria-label="Harbour Grid"></div>
       </section>
     </section>
 <section id="panel-comics" class="jm-panel hidden">
@@ -207,7 +216,10 @@
     <section id="panel-summary" class="jm-panel hidden">
       <section class="block">
         <h2>Summary</h2>
-        <p class="hint">Coming soon.</p>
+        <p class="hint">Coordinates of straight lines — read it the night before the test.</p>
+        <figure class="summary-sheet">
+          <img src="summary/summary-1.jpg?v=20261104k" alt="JM33 Coordinates summary — distance, slope, parallel and perpendicular, mid-point and section formula, four centres and exam tricks" loading="lazy">
+        </figure>
       </section>
     </section>
     <section id="panel-quiz" class="jm-panel hidden">
@@ -221,8 +233,9 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
-  <script defer src="coordinates-tools.js?v=20260829h"></script>
+  <script defer src="coordinates-tools.js?v=20260910-par-vert"></script>
   <script defer src="coordinates-comics.js?v=20260829-fu"></script>
+  <script defer src="harbour-grid.js?v=20261104-hg3"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();

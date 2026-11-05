@@ -8,16 +8,14 @@
   var COL = {
     ink: "#1e2a32",
     muted: "#5a6b74",
-    teal: "#0d9488",
-    mark: "#e07a1a",
-    good: "#059669",
-    bad: "#e85d4c",
+    x: "#4f77b7",
+    y: "#4f957f",
+    line: "#8a9aa3",
+    orange: "#d97706",
+    point: "#111827",
     axis: "#8a9aa3",
     grid: "rgba(30,42,50,.08)",
-    fill: "rgba(13,148,136,.12)",
-    b: "#0d9488",
-    c: "#3d7eb8",
-    amber: "#d97706",
+    fill: "rgba(79,119,183,.10)",
   };
 
   var LABS = [
@@ -61,6 +59,11 @@
   var secM = 2;
   var secN = 1;
   var perpStep = 0;
+  var steepStep = 0;
+  var STEEP_MAX = 5;
+  var parallelC2 = -2;
+  var parallelHandle = { x: 3, y: 0.25 };
+  var parallelDragging = false;
   var steepPlacements = { pool: [], slots: [null, null, null, null] };
   var drag = null;
   var activeLab = "distance";
@@ -161,15 +164,64 @@
     });
   }
 
-  function svgTex(svg, px, tex, w, h, col) {
+  function svgTex(svg, px, tex, w, h, col, fontPx) {
+    w = w || 130;
+    h = h || 28;
     var fo = E("foreignObject", {
-      x: px.x, y: px.y - (h || 28), width: w || 130, height: h || 36,
+      x: px.x, y: px.y - h / 2, width: w, height: h,
     });
     var div = document.createElement("div");
-    div.style.cssText = "font-size:15px;font-weight:700;color:" + (col || COL.ink) + ";line-height:1.2";
+    div.style.cssText = "font-size:" + (fontPx || 14) + "px;font-weight:700;color:" + (col || COL.ink) + ";line-height:1.1;white-space:nowrap;pointer-events:none;font-family:inherit";
     div.innerHTML = K(tex);
     fo.appendChild(div);
     svg.appendChild(fo);
+  }
+
+  function clampPlot(p) {
+    return {
+      x: Math.max(40, Math.min(460, p.x)),
+      y: Math.max(28, Math.min(470, p.y)),
+    };
+  }
+
+  function atXY(mx, my) {
+    return clampPlot(toPx({ x: mx, y: my }));
+  }
+
+  function addPlainLabel(svg, p, text, col, size) {
+    var t = E("text", {
+      x: p.x, y: p.y,
+      fill: col || COL.ink,
+      "font-size": size || 13,
+      "font-weight": 700,
+      "text-anchor": "middle",
+      "dominant-baseline": "middle",
+    });
+    t.textContent = text;
+    svg.appendChild(t);
+    return t;
+  }
+
+  function nearLine(m, c, x, side, dist) {
+    dist = dist == null ? 0.85 : dist;
+    var len = Math.hypot(1, m) || 1;
+    var nx = -m / len;
+    var ny = 1 / len;
+    if (side < 0) { nx = -nx; ny = -ny; }
+    return { x: x + nx * dist, y: m * x + c + ny * dist };
+  }
+
+  function texAt(svg, mx, my, tex, col) {
+    var p = atXY(mx, my);
+    svgTex(svg, { x: p.x, y: p.y }, tex, 140, 26, col, 14);
+  }
+
+  function plainAt(svg, mx, my, text, col, size) {
+    addPlainLabel(svg, atXY(mx, my), text, col, size);
+  }
+
+  function pairTex(name, xNum, xDen, yNum, yDen) {
+    return "\\mathrm{" + name + "}(" + fracTex(xNum, xDen) + "," + fracTex(yNum, yDen) + ")";
   }
 
   function signed(n) {
@@ -213,7 +265,7 @@
   function seg(p, q, col, w, dash) {
     var el = E("line", {
       x1: p.x, y1: p.y, x2: q.x, y2: q.y,
-      stroke: col || COL.teal, "stroke-width": w || 2.5, "stroke-linecap": "round",
+      stroke: col || COL.line, "stroke-width": w || 2.5, "stroke-linecap": "round",
     });
     if (dash) el.setAttribute("stroke-dasharray", dash);
     return el;
@@ -228,7 +280,7 @@
     var c = { x: V.x + u2.x * size, y: V.y + u2.y * size };
     return E("polyline", {
       points: [a.x, a.y, b.x, b.y, c.x, c.y].join(" "),
-      fill: "none", stroke: COL.mark, "stroke-width": 1.8,
+      fill: "none", stroke: COL.line, "stroke-width": 1.8,
     });
   }
 
@@ -238,7 +290,7 @@
   }
 
   function dot(p, col, r) {
-    return E("circle", { cx: p.x, cy: p.y, r: r || 6, fill: col || COL.teal });
+    return E("circle", { cx: p.x, cy: p.y, r: r || 5, fill: col || COL.point });
   }
 
   function label(p, text, col, dx, dy) {
@@ -280,22 +332,22 @@
     var dy = B.y - A.y;
     var corner = toPx({ x: B.x, y: A.y });
 
-    svg.appendChild(seg(pa, corner, COL.c, 2, "6 4"));
-    svg.appendChild(seg(corner, pb, COL.good, 2, "6 4"));
-    svg.appendChild(seg(pa, pb, COL.teal, 3.5));
+    svg.appendChild(seg(pa, corner, COL.x, 2, "6 4"));
+    svg.appendChild(seg(corner, pb, COL.y, 2, "6 4"));
+    svg.appendChild(seg(pa, pb, COL.line, 3.5));
     svg.appendChild(rightAngle(corner, pa, pb, 12));
 
-    svg.appendChild(dot(pa, COL.mark, 8));
-    svg.appendChild(dot(pb, COL.b, 8));
-    svg.appendChild(labelAway(pa, corner, "A", COL.mark, 16));
-    svg.appendChild(labelAway(pb, corner, "B", COL.b, 16));
+    svg.appendChild(dot(pa, COL.point, 5));
+    svg.appendChild(dot(pb, COL.point, 5));
+    svg.appendChild(labelAway(pa, corner, "A", COL.ink, 16));
+    svg.appendChild(labelAway(pb, corner, "B", COL.ink, 16));
     svg.appendChild(label(
       { x: (pa.x + corner.x) / 2, y: pa.y + 28 },
-      "|Δx| = " + Math.abs(dx), COL.c, 0, 0
+      "|Δx| = " + Math.abs(dx), COL.x, 0, 0
     ));
     svg.appendChild(label(
       { x: corner.x + 8, y: (corner.y + pb.y) / 2 },
-      "|Δy| = " + Math.abs(dy), COL.good, 0, 4
+      "|Δy| = " + Math.abs(dy), COL.y, 0, 4
     ));
 
     svg.appendChild(dragHandle(pa, "ab", 0));
@@ -313,10 +365,10 @@
 
   /* ── Lab 2: Slope ── */
   var STEEP_LINES = [
-    { id: "mh", m: 0.5, c: -1, col: COL.teal, tex: "m = \\tfrac{1}{2}", val: 0.5, labelX: 3.2, lx: 10, ly: -6 },
-    { id: "p2", m: 2, c: 2, col: COL.c, tex: "m = 2", val: 2, labelX: -2.4, lx: 12, ly: 14 },
-    { id: "mnh", m: -0.5, c: 3, col: COL.amber, tex: "m = -\\tfrac{1}{2}", val: -0.5, labelX: -4, lx: 8, ly: 22 },
-    { id: "mn2", m: -2, c: -2, col: COL.bad, tex: "m = -2", val: -2, labelX: 2.2, lx: -92, ly: 10 },
+    { id: "mh", m: 0.5, col: COL.x, tex: "m = \\tfrac{1}{2}", plain: "m = 1/2", val: 0.5 },
+    { id: "p2", m: 2, col: COL.x, tex: "m = 2", plain: "m = 2", val: 2 },
+    { id: "mnh", m: -0.5, col: COL.y, tex: "m = -\\tfrac{1}{2}", plain: "m = -1/2", val: -0.5 },
+    { id: "mn2", m: -2, col: COL.y, tex: "m = -2", plain: "m = -2", val: -2 },
   ];
   var STEEP_SORT_ORDER = ["mn2", "mnh", "mh", "p2"];
 
@@ -340,25 +392,32 @@
     var dy = SLOPE_B.y - SLOPE_A.y;
     var corner = toPx({ x: SLOPE_B.x, y: SLOPE_A.y });
 
-    svg.appendChild(seg(pa, corner, COL.c, 2, "5 4"));
-    svg.appendChild(seg(corner, pb, COL.good, 2, "5 4"));
-    svg.appendChild(seg(pa, pb, COL.teal, 3.5));
+    svg.appendChild(seg(pa, corner, COL.x, 2, "5 4"));
+    svg.appendChild(seg(corner, pb, COL.y, 2, "5 4"));
+    svg.appendChild(seg(pa, pb, COL.line, 3.5));
     svg.appendChild(rightAngle(corner, pa, pb, 12));
-    svg.appendChild(dot(pa, COL.mark, 8));
-    svg.appendChild(dot(pb, COL.b, 8));
-    svg.appendChild(labelAway(pa, corner, "A", COL.mark, 16));
-    svg.appendChild(labelAway(pb, corner, "B", COL.b, 16));
+    svg.appendChild(dot(pa, COL.point, 5));
+    svg.appendChild(dot(pb, COL.point, 5));
+    svg.appendChild(labelAway(pa, corner, "A", COL.ink, 16));
+    svg.appendChild(labelAway(pb, corner, "B", COL.ink, 16));
     svg.appendChild(label(
       { x: (pa.x + corner.x) / 2, y: pa.y + 28 },
-      "run = " + Math.abs(dx), COL.c, 0, 0
+      "run = " + Math.abs(dx), COL.x, 0, 0
     ));
     svg.appendChild(label(
       { x: corner.x + 10, y: (corner.y + pb.y) / 2 },
-      "rise = " + Math.abs(dy), COL.good, 0, 4
+      "rise = " + Math.abs(dy), COL.y, 0, 4
     ));
+    svg.appendChild(dragHandle(pa, "slopeab", 0));
+    svg.appendChild(dragHandle(pb, "slopeab", 1));
 
-    km(document.getElementById("slope-formula"),
-      "m = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{" + dy + "}{" + dx + "} = \\dfrac{3}{4}", true);
+    if (dx === 0) {
+      km(document.getElementById("slope-formula"),
+        "m = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{" + dy + "}{0}\\;\\text{is undefined}", true);
+    } else {
+      km(document.getElementById("slope-formula"),
+        "m = \\dfrac{\\Delta y}{\\Delta x} = \\dfrac{" + dy + "}{" + dx + "} = " + fracTex(dy, dx), true);
+    }
     setNote(document.getElementById("slope-note"),
       "<strong>Why \\(\\dfrac{\\Delta y}{\\Delta x}\\)?</strong> We treat horizontal \\(x\\) as the step forward and ask how much \\(y\\) rises or falls. " +
       "If the line is flat, \\(m=0\\); if vertical, \\(\\Delta x=0\\) and \\(m\\) is undefined. " +
@@ -372,40 +431,93 @@
     return null;
   }
 
-  function renderSlopeSteep(svg) {
-    STEEP_LINES.forEach(function (L) {
-      svg.appendChild(lineMC(L.m, L.c, L.col, 4, 1));
-      var p = toPx({ x: L.labelX, y: L.m * L.labelX + L.c });
-      svgTex(svg, { x: p.x + L.lx, y: p.y + L.ly }, L.tex, 112, 34, L.col);
-    });
+  function drawSteepLine(svg, L, x, side, plain) {
+    svg.appendChild(lineThroughOrigin(L.m, L.col, 2.25, 1));
+    var q = nearLine(L.m, 0, x, side, 0.85);
+    if (plain) plainAt(svg, q.x, q.y, L.plain, L.col, 12);
+    else texAt(svg, q.x, q.y, L.tex, L.col);
+  }
 
-    setNote(document.getElementById("slope-note"),
-      "<strong>Order slopes from smallest to largest</strong> on the number line — this is <em>not</em> the same as who looks steepest. " +
-      "For example, \\(m = -2\\) looks steeper than \\(m = -\\tfrac{1}{2}\\), but \\(-2 < -\\tfrac{1}{2}\\), so \\(-2\\) is the <em>smaller</em> slope value. " +
-      "Remember \\(-1 > -100\\) on the number line — a steeper-looking negative slope can still be numerically smaller. " +
-      "Drag the four cards into order, then press <em>Check order</em>.");
+  function renderSlopeSteep(svg) {
+    if (steepStep === 0) drawSteepLine(svg, STEEP_LINES[0], 5, -1);
+    else if (steepStep === 1) drawSteepLine(svg, STEEP_LINES[1], 3.2, -1);
+    else if (steepStep === 2) drawSteepLine(svg, STEEP_LINES[2], -4.2, 1);
+    else if (steepStep === 3) drawSteepLine(svg, STEEP_LINES[3], 2.6, 1);
+    else if (steepStep === 4) {
+      drawSteepLine(svg, steepLineById("mnh"), -4.6, 1);
+      drawSteepLine(svg, steepLineById("mn2"), 2.8, 1);
+    } else {
+      drawSteepLine(svg, steepLineById("p2"), 3.2, -1, true);
+      drawSteepLine(svg, steepLineById("mh"), 5.6, -1, true);
+      drawSteepLine(svg, steepLineById("mnh"), -5.2, 1, true);
+      drawSteepLine(svg, steepLineById("mn2"), 3.2, 1, true);
+    }
+
+    var formulaEl = document.getElementById("slope-formula");
+    var noteEl = document.getElementById("slope-note");
+    if (formulaEl) formulaEl.style.display = steepStep === 5 ? "none" : "";
+    if (noteEl) noteEl.style.display = steepStep === 5 ? "none" : "";
+
+    if (steepStep === 0) {
+      km(formulaEl, "m = \\tfrac{1}{2}", true);
+      setNote(noteEl,
+        "<strong>Step 1.</strong> A gentle uphill: \\(m = \\tfrac{1}{2}\\). " +
+        "For every 2 units right, the line rises only 1. Press <em>Next</em>.");
+    } else if (steepStep === 1) {
+      km(formulaEl, "m = 2", true);
+      setNote(noteEl,
+        "<strong>Step 2.</strong> \\(m = 2\\) is much steeper than \\(m = \\tfrac{1}{2}\\): " +
+        "it rises 2 for every 1 unit right. Larger positive slope \\(\\Rightarrow\\) steeper uphill.");
+    } else if (steepStep === 2) {
+      km(formulaEl, "m = -\\tfrac{1}{2}", true);
+      setNote(noteEl,
+        "<strong>Step 3.</strong> \\(m = -\\tfrac{1}{2}\\) has the same look-steepness as \\(m = \\tfrac{1}{2}\\), but it goes downhill. " +
+        "Visual steepness uses \\(|m|\\); the sign only tells up or down.");
+    } else if (steepStep === 3) {
+      km(formulaEl, "m = -2", true);
+      setNote(noteEl,
+        "<strong>Step 4.</strong> \\(m = -2\\) looks steeper than \\(m = -\\tfrac{1}{2}\\), because \\(|-2| > |-\\tfrac{1}{2}|\\). Press <em>Next</em> to compare the two green lines.");
+    } else if (steepStep === 4) {
+      km(formulaEl, "-2 < -\\tfrac{1}{2}", true);
+      setNote(noteEl,
+        "<strong>The two green lines.</strong> \\(m=-2\\) looks steeper than \\(m=-\\tfrac{1}{2}\\) — that part is true. " +
+        "But both slopes are <em>negative</em>. A flatter downhill is closer to 0, so its slope is <em>larger</em>: " +
+        "\\(-\\tfrac{1}{2}\\) is nearer 0 than \\(-2\\), therefore \\(-\\tfrac{1}{2} > -2\\). " +
+        "Looking steeper does not mean a larger slope once the sign is negative.");
+    }
   }
 
   function renderSlopeParallel(svg) {
     var m = 0.75;
     var c1 = 1;
-    var c2 = -2;
-    [-GRID, GRID].forEach(function (x) {
-      var p1 = toPx({ x: x, y: m * x + c1 });
-      var p2 = toPx({ x: x, y: m * x + c2 });
-    });
+    var c2 = parallelC2;
     var pA = toPx({ x: -GRID, y: m * (-GRID) + c1 });
     var pB = toPx({ x: GRID, y: m * GRID + c1 });
     var pC = toPx({ x: -GRID, y: m * (-GRID) + c2 });
     var pD = toPx({ x: GRID, y: m * GRID + c2 });
-    svg.appendChild(seg(pA, pB, COL.teal, 3));
-    svg.appendChild(seg(pC, pD, COL.c, 3));
-    svg.appendChild(label(toPx({ x: 3, y: m * 3 + c1 }), "L₁: m = " + fmt(m), COL.teal));
-    svg.appendChild(label(toPx({ x: 3, y: m * 3 + c2 }), "L₂: m = " + fmt(m), COL.c));
+    svg.appendChild(seg(pA, pB, COL.x, 2.5));
+    svg.appendChild(seg(pC, pD, COL.x, 2.2, "12 6 0 6"));
+    var l1x = -5;
+    var l2x = 4;
+    addPlainLabel(svg, atXY(l1x, m * l1x + c1 + 2), "L1: m = " + fmt(m), COL.x, 13);
+    addPlainLabel(svg, atXY(l2x, m * l2x + c2 - 2), "L2: m = " + fmt(m), COL.x, 13);
+    var l2Hit = seg(pC, pD, "transparent", 20);
+    l2Hit.setAttribute("data-parallel", "l2");
+    l2Hit.setAttribute("pointer-events", "stroke");
+    l2Hit.style.cursor = "move";
+    svg.appendChild(l2Hit);
 
-    km(document.getElementById("slope-formula"), "m_1 = m_2 \\Rightarrow \\text{parallel (or the same line if they coincide)}", true);
-    setNote(document.getElementById("slope-note"),
-      "Same slope \\(\\Rightarrow\\) same steepness. Different \\(y\\)-intercepts \\(\\Rightarrow\\) parallel distinct lines. If they also share a point, they are the same line.");
+    if (Math.abs(c2 - c1) < 1e-9) {
+      km(document.getElementById("slope-formula"),
+        "L_1 = L_2 \\Rightarrow \\text{infinitely many points of intersection}", true);
+      setNote(document.getElementById("slope-note"),
+        "<strong>L₁ and L₂ overlap（無限個交點）</strong> — drag the dashed L₂ away. Slope stays the same.");
+    } else {
+      km(document.getElementById("slope-formula"),
+        "m_1=m_2,\\;c_1\\ne c_2 \\Rightarrow \\text{no intersection}", true);
+      setNote(document.getElementById("slope-note"),
+        "<strong>L₁ and L₂ do not overlap（沒有交點）</strong> — drag the dashed L₂ onto L₁. Slope does not change.");
+    }
   }
 
   function renderSlopePerp(svg) {
@@ -421,32 +533,37 @@
       svg.appendChild(el);
     }
 
-    addLine(m1, COL.teal, 4, null, 1);
-    svgTex(svg, toPx({ x: 4, y: m1 * 4 }), "L_1:\\; m_1 = \\tfrac{2}{3}", 120, 36);
+    addLine(m1, COL.x, 2.5, null, 1);
+    (function () {
+      var q = nearLine(m1, 0, 5.1, -1, 1.05);
+      texAt(svg, q.x, q.y, "L_1:\\; m_1 = \\tfrac{2}{3}", COL.x);
+    })();
 
     if (perpStep === 1) {
-      addLine(mRight, COL.bad, 2.5, "10 6", 0.95);
-      svgTex(svg, toPx({ x: -5, y: mRight * (-5) }), "L_2:\\; m_2 < 0", 110, 36);
+      addLine(mRight, COL.y, 2.2, "10 6", 0.95);
+      (function () {
+        var q = nearLine(mRight, 0, 3.2, 1, 0.9);
+        texAt(svg, q.x, q.y, "L_2:\\; m_2 < 0", COL.y);
+      })();
       var o = toPx({ x: 0, y: 0 });
       svg.appendChild(rightAngle(o, toPx({ x: 4, y: m1 * 4 }), toPx({ x: 4, y: mRight * 4 }), 14));
     }
     if (perpStep === 2) {
-      addLine(mWrong, COL.bad, 2.5, "10 6", 0.95);
-      svgTex(svg, toPx({ x: 5, y: mWrong * 5 }), "m_2 = -\\tfrac{2}{3}\\; \\text{✗}", 130, 36);
+      addLine(mWrong, COL.line, 2.2, "10 6", 0.95);
+      (function () {
+        var q = nearLine(mWrong, 0, 3.8, 1, 0.9);
+        texAt(svg, q.x, q.y, "m_2 = -\\tfrac{2}{3}\\; \\text{✗}", COL.line);
+      })();
     }
     if (perpStep >= 3) {
-      addLine(mRight, COL.good, 4, null, 1);
-      svgTex(svg, toPx({ x: -5, y: mRight * (-5) }), "L_2:\\; m_2 = -\\tfrac{3}{2}\\; \\text{✓}", 140, 36);
+      addLine(mRight, COL.y, 2.5, null, 1);
+      (function () {
+        var q = nearLine(mRight, 0, 3.2, 1, 0.9);
+        texAt(svg, q.x, q.y, "L_2:\\; m_2 = -\\tfrac{3}{2}\\; \\text{✓}", COL.y);
+      })();
       var o2 = toPx({ x: 0, y: 0 });
       svg.appendChild(rightAngle(o2, toPx({ x: 4, y: m1 * 4 }), toPx({ x: 4, y: mRight * 4 }), 14));
     }
-
-    var stepLbl = document.getElementById("perp-step-label");
-    var prevBtn = document.getElementById("perp-prev");
-    var nextBtn = document.getElementById("perp-next");
-    if (stepLbl) stepLbl.textContent = "Step " + (perpStep + 1) + " / 4";
-    if (prevBtn) prevBtn.disabled = perpStep === 0;
-    if (nextBtn) nextBtn.disabled = perpStep === 3;
 
     if (perpStep === 0) {
       km(document.getElementById("slope-formula"), "m_1 \\times m_2 = -1 \\text{ ?}", true);
@@ -456,7 +573,7 @@
     } else if (perpStep === 1) {
       km(document.getElementById("slope-formula"), "m_1 > 0 \\Rightarrow m_2 < 0", true);
       setNote(document.getElementById("slope-note"),
-        "<strong>Step 2.</strong> The red dashed line is perpendicular to the blue line. " +
+        "<strong>Step 2.</strong> The green dashed line is perpendicular to the blue line. " +
         "Since \\(m_1 = \\tfrac{2}{3} > 0\\), the perpendicular slope \\(m_2\\) must be <em>negative</em> (\\(m_2 < 0\\)). " +
         "Opposite signs \\(\\Rightarrow m_1 \\times m_2\\) is negative.");
     } else if (perpStep === 2) {
@@ -473,6 +590,17 @@
     }
   }
 
+  function updateSlopeStepNav() {
+    var stepLbl = document.getElementById("perp-step-label");
+    var prevBtn = document.getElementById("perp-prev");
+    var nextBtn = document.getElementById("perp-next");
+    var max = slopeMode === "steep" ? STEEP_MAX : 3;
+    var step = slopeMode === "steep" ? steepStep : perpStep;
+    if (stepLbl) stepLbl.textContent = "Step " + (step + 1) + " / " + (max + 1);
+    if (prevBtn) prevBtn.disabled = step === 0;
+    if (nextBtn) nextBtn.disabled = step === max;
+  }
+
   function renderSlope() {
     var svg = document.getElementById("slope-svg");
     if (!svg) return;
@@ -480,10 +608,13 @@
     drawGrid(svg);
     var steepRow = document.getElementById("steep-sort");
     var stepNav = document.getElementById("perp-step-nav");
-    if (steepRow) steepRow.classList.toggle("visible", slopeMode === "steep");
-    if (stepNav) stepNav.classList.toggle("visible", slopeMode === "perp");
+    if (steepRow) steepRow.classList.toggle("visible", slopeMode === "steep" && steepStep === 5);
+    if (stepNav) stepNav.classList.toggle("visible", slopeMode === "perp" || slopeMode === "steep");
+    updateSlopeStepNav();
     var formulaEl = document.getElementById("slope-formula");
-    if (formulaEl) formulaEl.style.display = slopeMode === "steep" ? "none" : "";
+    if (formulaEl && slopeMode !== "steep") formulaEl.style.display = "";
+    var noteEl = document.getElementById("slope-note");
+    if (noteEl && slopeMode !== "steep") noteEl.style.display = "";
     if (slopeMode === "basic") renderSlopeBasic(svg);
     else if (slopeMode === "steep") renderSlopeSteep(svg);
     else if (slopeMode === "parallel") renderSlopeParallel(svg);
@@ -499,14 +630,40 @@
 
     var pa = toPx(A);
     var pb = toPx(B);
-    svg.appendChild(seg(pa, pb, COL.muted, 2, "4 4"));
-    svg.appendChild(dot(pa, COL.mark, 8));
-    svg.appendChild(dot(pb, COL.b, 8));
-    var midCorner = toPx({ x: B.x, y: A.y });
-    svg.appendChild(labelAway(pa, midCorner, "A(" + A.x + "," + A.y + ")", COL.mark, 26));
-    svg.appendChild(labelAway(pb, midCorner, "B(" + B.x + "," + B.y + ")", COL.b, 26));
     svg.appendChild(dragHandle(pa, "ab", 0));
     svg.appendChild(dragHandle(pb, "ab", 1));
+
+    function coordName(name, x, y) {
+      return name + "(" + fmt(x) + "," + fmt(y) + ")";
+    }
+    function segUp(a, b) {
+      var n = perpVec(unit(a, b));
+      if (n.y > 0) n = { x: -n.x, y: -n.y };
+      return n;
+    }
+    function addCoordLabel(pt, dir, text) {
+      var d = Math.hypot(dir.x, dir.y) || 1;
+      var ux = dir.x / d;
+      var uy = dir.y / d;
+      var gap = 22 + Math.min(20, Math.max(0, text.length - 5) * 1.4);
+      var x = Math.max(30, Math.min(470, pt.x + ux * gap));
+      var y = Math.max(18, Math.min(482, pt.y + uy * gap));
+      var anchor = "middle";
+      if (ux > 0.4) anchor = "start";
+      else if (ux < -0.4) anchor = "end";
+      var t = E("text", {
+        x: x, y: y,
+        fill: COL.ink, "font-size": 14, "font-weight": 700,
+        "text-anchor": anchor, "dominant-baseline": "middle",
+      });
+      t.textContent = text;
+      svg.appendChild(t);
+    }
+    function addEndLabel(endPt, otherPt, text) {
+      var u = unit(otherPt, endPt);
+      var n = segUp(pa, pb);
+      addCoordLabel(endPt, { x: u.x * 0.9 + n.x * 0.55, y: u.y * 0.9 + n.y * 0.55 }, text);
+    }
 
     var ratioRow = document.getElementById("mid-ratio-row");
     if (ratioRow) ratioRow.style.display = midMode === "section" ? "flex" : "none";
@@ -514,13 +671,18 @@
     if (midMode === "mid") {
       var M = { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 };
       var pm = toPx(M);
-      svg.appendChild(dot(pm, COL.c, 9));
-      svg.appendChild(label(pm, "M", COL.c, 12, 4));
+      svg.appendChild(seg(pa, pb, COL.line, 2.4));
+      svg.appendChild(dot(pa, COL.point, 5));
+      svg.appendChild(dot(pb, COL.point, 5));
+      svg.appendChild(dot(pm, COL.point, 5));
+      addEndLabel(pa, pb, coordName("A", A.x, A.y));
+      addEndLabel(pb, pa, coordName("B", B.x, B.y));
+      addCoordLabel(pm, segUp(pa, pb), coordName("M", M.x, M.y));
       km(document.getElementById("mid-formula"),
         "M = \\left(\\dfrac{" + A.x + "+" + B.x + "}{2},\\; \\dfrac{" + A.y + "+" + B.y + "}{2}\\right) = "
         + pairFracTex(A.x + B.x, 2, A.y + B.y, 2), true);
       setNote(document.getElementById("mid-note"),
-        "Mid-point = average of coordinates — same idea as the mean of two numbers. Example: \\(A(1,1)\\) and \\(B(5,4)\\) give \\(M\\left(3,\\,\\tfrac{5}{2}\\right)\\).");
+        "Mid-point = average of coordinates — same idea as the mean of two numbers.");
     } else {
       var m = secM;
       var n = secN;
@@ -529,17 +691,38 @@
         y: (n * A.y + m * B.y) / (m + n),
       };
       var pp = toPx(P);
-      svg.appendChild(dot(pp, COL.c, 9));
-      svg.appendChild(label(pp, "P", COL.c, 12, 4));
+      svg.appendChild(seg(pa, pp, COL.orange, 3.2));
+      svg.appendChild(seg(pp, pb, COL.y, 3.2));
+      var apMid = lerpPt(pa, pp, 0.5);
+      var pbMid = lerpPt(pp, pb, 0.5);
+      var nDown = perpVec(unit(pa, pb));
+      if (nDown.y < 0) nDown = { x: -nDown.x, y: -nDown.y };
+      var nUp = { x: -nDown.x, y: -nDown.y };
+      addPlainLabel(svg, { x: apMid.x + nDown.x * 30, y: apMid.y + nDown.y * 30 }, "m = " + m, COL.orange, 13);
+      addPlainLabel(svg, { x: pbMid.x + nDown.x * 30, y: pbMid.y + nDown.y * 30 }, "n = " + n, COL.y, 13);
+      svg.appendChild(dot(pa, COL.point, 5));
+      svg.appendChild(dot(pb, COL.point, 5));
+      svg.appendChild(dot(pp, COL.point, 5));
+      addEndLabel(pa, pb, coordName("A", A.x, A.y));
+      addEndLabel(pb, pa, coordName("B", B.x, B.y));
       var pxNum = n * A.x + m * B.x;
       var pyNum = n * A.y + m * B.y;
       var den = m + n;
+      var pDir = { x: nUp.x * 0.7 + unit(pa, pb).x * 0.15, y: nUp.y * 0.7 + unit(pa, pb).y * 0.15 };
+      var pd = Math.hypot(pDir.x, pDir.y) || 1;
+      var pLab = {
+        x: Math.max(28, Math.min(360, pp.x + (pDir.x / pd) * 30)),
+        y: Math.max(22, Math.min(478, pp.y + (pDir.y / pd) * 30)),
+      };
+      svgTex(svg, { x: pLab.x - 8, y: pLab.y },
+        pairTex("P", pxNum, den, pyNum, den), 140, 26, COL.ink, 14);
       km(document.getElementById("mid-formula"),
         "P = \\left(\\dfrac{" + n + "\\cdot" + A.x + "+" + m + "\\cdot" + B.x + "}{" + den + "},\\; "
         + "\\dfrac{" + n + "\\cdot" + A.y + "+" + m + "\\cdot" + B.y + "}{" + den + "}\\right) = "
         + pairFracTex(pxNum, den, pyNum, den), true);
       setNote(document.getElementById("mid-note"),
-        "Ratio \\(m:n\\) from \\(A\\) means \\(AP:PB = m:n\\). Weight \\(B\\) by \\(m\\) and \\(A\\) by \\(n\\), then divide by \\(m+n\\) — a weighted average. When \\(m = n\\) you get the mid-point.");
+        "Orange \\(AP\\) and green \\(PB\\) show the ratio \\(m:n\\) from \\(A\\), so \\(AP:PB = m:n\\). " +
+        "Weight \\(B\\) by \\(m\\) and \\(A\\) by \\(n\\), then divide by \\(m+n\\). When \\(m = n\\) you get the mid-point.");
     }
     renderKatex(document.getElementById("lab-midpt"));
   }
@@ -560,15 +743,15 @@
       var off = (i - (count - 1) / 2) * gap;
       var a = { x: c.x + u.x * off - n.x * len / 2, y: c.y + u.y * off - n.y * len / 2 };
       var b = { x: c.x + u.x * off + n.x * len / 2, y: c.y + u.y * off + n.y * len / 2 };
-      g.appendChild(seg(a, b, col || COL.mark, 2));
+      g.appendChild(seg(a, b, col || COL.line, 2));
     }
     return g;
   }
 
   function halfSideTicks(p1, m, p2, count) {
     var g = E("g", {});
-    g.appendChild(hashMarks(p1, m, 0.5, count, COL.mark, 9));
-    g.appendChild(hashMarks(m, p2, 0.5, count, COL.mark, 9));
+    g.appendChild(hashMarks(p1, m, 0.5, count, COL.line, 9));
+    g.appendChild(hashMarks(m, p2, 0.5, count, COL.line, 9));
     return g;
   }
 
@@ -594,11 +777,11 @@
       var mid2 = aI + gap;
       g.appendChild(E("path", {
         d: shortArcPath(V, aP, mid1, r),
-        fill: "none", stroke: COL.mark, "stroke-width": 1.6,
+        fill: "none", stroke: COL.line, "stroke-width": 1.6,
       }));
       g.appendChild(E("path", {
         d: shortArcPath(V, mid2, aQ, r),
-        fill: "none", stroke: COL.mark, "stroke-width": 1.6,
+        fill: "none", stroke: COL.line, "stroke-width": 1.6,
       }));
     }
     return g;
@@ -754,7 +937,7 @@
       { dx: 20, dy: 20 },
     ];
     ["A", "B", "C"].forEach(function (name, i) {
-      svg.appendChild(dot(px[i], [COL.mark, COL.b, COL.c][i], 7));
+      svg.appendChild(dot(px[i], COL.point, 4.5));
       svg.appendChild(label(
         { x: px[i].x + labelOff[i].dx, y: px[i].y + labelOff[i].dy },
         name, COL.ink, 0, 0
@@ -796,16 +979,16 @@
 
     if (centMode === "I") {
       v.forEach(function (vi, i) {
-        svg.appendChild(seg(px[i], { x: I.x, y: I.y }, COL.c, 2, "6 4"));
+        svg.appendChild(seg(px[i], { x: I.x, y: I.y }, COL.x, 2, "6 4"));
         svg.appendChild(bisectorArcMarks(vi, v[(i + 1) % 3], v[(i + 2) % 3], I, arcPlan[i], 16));
       });
       var r = distPointToSeg(I, v[0], v[1]);
       svg.appendChild(E("circle", {
         cx: I.x, cy: I.y, r: r,
-        fill: "none", stroke: COL.good, "stroke-width": 2,
+        fill: "none", stroke: COL.y, "stroke-width": 2,
       }));
-      svg.appendChild(dot({ x: I.x, y: I.y }, COL.good, 7));
-      svg.appendChild(label({ x: I.x + 12, y: I.y - 10 }, "I", COL.good, 0, 0));
+      svg.appendChild(dot({ x: I.x, y: I.y }, COL.point, 4.5));
+      svg.appendChild(label({ x: I.x + 12, y: I.y - 10 }, "I", COL.ink, 0, 0));
       km(document.getElementById("cent-formula"), "\\text{In-centre } I", true);
       setNote(document.getElementById("cent-note"),
         "\\(I\\) = intersection of the three <strong>angle bisectors 角平分線</strong>. " +
@@ -821,16 +1004,16 @@
           var towardM = (M.x - O.x) * n.x + (M.y - O.y) * n.y;
           if (towardM < 0) { n = { x: -n.x, y: -n.y }; }
           var onCircle = { x: O.x + n.x * rad, y: O.y + n.y * rad };
-          svg.appendChild(seg(O, onCircle, COL.bad, 2, "7 5"));
+          svg.appendChild(seg(O, onCircle, COL.x, 2, "7 5"));
           markRightAt(M, { x: M.x + unit(p, q).x * 18, y: M.y + unit(p, q).y * 18 }, onCircle, 10);
           svg.appendChild(halfSideTicks(p, M, q, sideTicks[sideIdx]));
         });
         svg.appendChild(E("circle", {
           cx: O.x, cy: O.y, r: rad,
-          fill: "none", stroke: COL.bad, "stroke-width": 2,
+          fill: "none", stroke: COL.y, "stroke-width": 2,
         }));
-        svg.appendChild(dot({ x: O.x, y: O.y }, COL.bad, 8));
-        svg.appendChild(labelAway(O, G, "O", COL.bad, 18));
+        svg.appendChild(dot({ x: O.x, y: O.y }, COL.point, 5));
+        svg.appendChild(labelAway(O, G, "O", COL.ink, 18));
       }
       km(document.getElementById("cent-formula"), "\\text{Circumcentre } O", true);
       setNote(document.getElementById("cent-note"),
@@ -844,12 +1027,12 @@
         var p2 = v[k];
         var M = midp(p1, p2);
         var sideIdx = (i + 1) % 3;
-        svg.appendChild(seg(px[i], M, COL.mark, 2.5));
-        svg.appendChild(dot(M, COL.muted, 4));
+        svg.appendChild(seg(px[i], M, COL.x, 2.5));
+        svg.appendChild(dot(M, COL.point, 2.5));
         svg.appendChild(halfSideTicks(p1, M, p2, sideTicks[sideIdx]));
       });
-      svg.appendChild(dot({ x: G.x, y: G.y }, COL.mark, 7));
-      svg.appendChild(label({ x: G.x + 12, y: G.y + 4 }, "G", COL.mark, 0, 0));
+      svg.appendChild(dot({ x: G.x, y: G.y }, COL.point, 4.5));
+      svg.appendChild(label({ x: G.x + 12, y: G.y + 4 }, "G", COL.ink, 0, 0));
       km(document.getElementById("cent-formula"), "\\text{Centroid } G", true);
       setNote(document.getElementById("cent-note"),
         "\\(G\\) = intersection of the three <strong>medians 中線</strong>. " +
@@ -859,12 +1042,12 @@
         var j = (i + 1) % 3;
         var k = (i + 2) % 3;
         var F = footOnLine(vi, v[j], v[k]);
-        svg.appendChild(seg(px[i], F, COL.teal, 2.5));
+        svg.appendChild(seg(px[i], F, COL.x, 2.5));
         markRightAt(F, px[i], v[j], 10);
       });
       if (H) {
-        svg.appendChild(dot({ x: H.x, y: H.y }, COL.b, 8));
-        svg.appendChild(labelAway(H, G, "H", COL.b, 18));
+        svg.appendChild(dot({ x: H.x, y: H.y }, COL.point, 5));
+        svg.appendChild(labelAway(H, G, "H", COL.ink, 18));
       }
       km(document.getElementById("cent-formula"), "\\text{Orthocentre } H", true);
       setNote(document.getElementById("cent-note"),
@@ -1072,13 +1255,15 @@
       var el = e.target;
       if (el.dataset[key] == null) return;
       drag = +el.dataset[key];
-      el.setPointerCapture(e.pointerId);
+      svg.setPointerCapture(e.pointerId);
     });
     svg.addEventListener("pointermove", function (e) {
       if (drag == null) return;
       var p = clampGrid(fromPx(pt(e, svg)));
       if (key === "ab") {
         if (drag === 0) A = p; else B = p;
+      } else if (key === "slopeab") {
+        if (drag === 0) SLOPE_A = p; else SLOPE_B = p;
       } else if (key === "abc") {
         /* centres are static */
       }
@@ -1086,6 +1271,26 @@
     });
     svg.addEventListener("pointerup", function () { drag = null; });
     svg.addEventListener("pointercancel", function () { drag = null; });
+  }
+
+  function bindParallelDrag(svg) {
+    svg.addEventListener("pointerdown", function (e) {
+      if (!e.target || e.target.dataset.parallel !== "l2") return;
+      parallelDragging = true;
+      svg.setPointerCapture(e.pointerId);
+    });
+    svg.addEventListener("pointermove", function (e) {
+      if (!parallelDragging || slopeMode !== "parallel") return;
+      var p = fromPx(pt(e, svg));
+      var next = p.y - 0.75 * p.x;
+      next = Math.max(-10, Math.min(10, Math.round(next * 4) / 4));
+      if (Math.abs(next - 1) < 0.26) next = 1;
+      parallelC2 = next;
+      parallelHandle = { x: p.x, y: 0.75 * p.x + next };
+      renderSlope();
+    });
+    svg.addEventListener("pointerup", function () { parallelDragging = false; });
+    svg.addEventListener("pointercancel", function () { parallelDragging = false; });
   }
 
   function init() {
@@ -1099,8 +1304,9 @@
     bindBtns("slope-mode-btns", SLOPE_MODES, slopeMode, function (id) {
       slopeMode = id;
       if (id !== "perp") perpStep = 0;
+      if (id !== "steep") steepStep = 0;
       var sr = document.getElementById("steep-sort");
-      if (sr) sr.classList.toggle("visible", id === "steep");
+      if (sr) sr.classList.remove("visible");
       renderSlope();
     });
 
@@ -1114,19 +1320,33 @@
       renderCentres();
     });
 
-    ["dist-svg", "slope-svg", "mid-svg"].forEach(function (id) {
-      var svg = document.getElementById(id);
-      if (!svg) return;
-      bindSvgDrag(svg, "ab");
-    });
+    var distSvg = document.getElementById("dist-svg");
+    var slopeSvg = document.getElementById("slope-svg");
+    var midSvg = document.getElementById("mid-svg");
+    if (distSvg) bindSvgDrag(distSvg, "ab");
+    if (slopeSvg) {
+      bindSvgDrag(slopeSvg, "slopeab");
+      bindParallelDrag(slopeSvg);
+    }
+    if (midSvg) bindSvgDrag(midSvg, "ab");
 
     var perpPrev = document.getElementById("perp-prev");
     var perpNext = document.getElementById("perp-next");
     if (perpPrev) perpPrev.addEventListener("click", function () {
-      if (perpStep > 0) { perpStep--; renderSlope(); }
+      if (slopeMode === "steep") {
+        if (steepStep > 0) { steepStep--; renderSlope(); }
+      } else if (perpStep > 0) {
+        perpStep--;
+        renderSlope();
+      }
     });
     if (perpNext) perpNext.addEventListener("click", function () {
-      if (perpStep < 3) { perpStep++; renderSlope(); }
+      if (slopeMode === "steep") {
+        if (steepStep < STEEP_MAX) { steepStep++; renderSlope(); }
+      } else if (perpStep < 3) {
+        perpStep++;
+        renderSlope();
+      }
     });
 
     initSteepSort();
