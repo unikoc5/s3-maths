@@ -39,8 +39,11 @@
       min-width: 100%;
       box-sizing: border-box;
     }
+    .summary-sheet { margin: 12px auto 0; max-width: 1000px; }
+    .summary-sheet img { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 20px rgba(15,23,42,.12); }
   </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="proto/proto.css?v=20261015-heist4">
 </head>
 <body class="paper-labs guibiao-page">
   <main class="jm-page">
@@ -133,9 +136,12 @@
     </section>
 
         <section id="panel-games" class="jm-panel hidden">
-      <section class="block">
-        <h2>Games</h2>
-        <p class="hint">Coming soon.</p>
+      <section class="block lvp-game-shell">
+        <p class="part-title">Game 1 · Laser Vault</p>
+        <h2>Laser Vault — The Midnight Vector</h2>
+        <p class="hint">Play as Phantom in a four-chapter mission. Use gradient, angles of depression, reflection and bearings to infiltrate Crane Tower and recover the stolen Atlas Chip.</p>
+        <nav class="lvp-tabs" id="lvp-tabs" aria-label="Mission chapters"></nav>
+        <div class="lvp-stage" id="lvp-stage" role="application" aria-label="Laser Vault: The Midnight Vector"></div>
       </section>
     </section>
 <section id="panel-comics" class="jm-panel hidden">
@@ -146,7 +152,10 @@
     <section id="panel-summary" class="jm-panel hidden">
       <section class="block">
         <h2>Summary</h2>
-        <p class="hint">Coming soon.</p>
+        <p class="hint">Application of trigonometry — read it the night before the test.</p>
+        <figure class="summary-sheet">
+          <img src="summary/summary-1.jpg?v=20261104a" alt="JM35 Application of Trigonometry summary — gradient, inclination, elevation and depression, bearings" loading="lazy">
+        </figure>
       </section>
     </section>
     <section id="panel-quiz" class="jm-panel hidden">
@@ -163,6 +172,7 @@
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="guibiao-tools.js?v=20260830a"></script>
   <script defer src="trigo-applications-comics.js?v=20260829-fu"></script>
+  <script defer src="proto/proto.js?v=20261015-heist4"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
