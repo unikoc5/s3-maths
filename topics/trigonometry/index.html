@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
@@ -911,8 +911,11 @@
       cursor: pointer;
     }
     html.file-preview .deck-advance { pointer-events: none; }
+    .summary-sheet { margin: 12px auto 0; max-width: 1000px; }
+    .summary-sheet img { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 20px rgba(15,23,42,.12); }
   </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="blackout-voyage.css?v=20261104-cockpit4">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
@@ -1099,8 +1102,10 @@
 
         <section id="panel-games" class="jm-panel hidden">
       <section class="block">
-        <h2>Games</h2>
-        <p class="hint">Coming soon.</p>
+        <p class="part-title">Game 1 · Trigonometric relations</p>
+        <h2>Blackout Voyage</h2>
+        <p class="hint">No calculators — exact values only. Work through special angles, identities, complementary angles and proofs. Every wrong answer costs 1000 ft of altitude; hit the sea and the chapter restarts. Clear a chapter with full altitude for three stars.</p>
+        <div class="bv-stage" id="bv-stage" role="application" aria-label="Blackout Voyage"></div>
       </section>
     </section>
 <section id="panel-comics" class="jm-panel hidden">
@@ -1111,7 +1116,10 @@
     <section id="panel-summary" class="jm-panel hidden">
       <section class="block">
         <h2>Summary</h2>
-        <p class="hint">Coming soon.</p>
+        <p class="hint">Summary — read it the night before the test.</p>
+        <figure class="summary-sheet">
+          <img src="summary/summary-1.jpg?v=20261104i" alt="JM34 Trigonometric Relations Summary — identities, complementary angles, triangle construction, special angles and exact values" loading="lazy">
+        </figure>
       </section>
     </section>
     <section id="panel-quiz" class="jm-panel hidden">
@@ -1128,6 +1136,7 @@
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="trigonometry-tools.js?v=20260926-pyth3"></script>
   <script defer src="trigo-relations-comics.js?v=20260829-fu"></script>
+  <script defer src="blackout-voyage.js?v=20261104-cockpit4"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
