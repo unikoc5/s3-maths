@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>信號試玩</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: #1e293b;
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 70% 40% at 50% 0%, rgba(79, 195, 247, .28), transparent 60%),
+        linear-gradient(180deg, #f8fafc, #e7eef5);
+    }
+    main { width: min(640px, 100%); margin: 0 auto; padding: 20px 18px 32px; }
+    h1 { margin: 0; text-align: center; font-size: 28px; letter-spacing: -.03em; }
+    .modes { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
+    button.mode {
+      padding: 8px 18px; border: 2px solid #1e293b; border-radius: 999px;
+      background: #fff; color: #1e293b; font: inherit; font-weight: 800; font-size: 16px;
+      cursor: pointer;
+    }
+    button.mode.on { background: #4FC3F7; box-shadow: 0 3px 0 #1e293b; }
+    .book {
+      display: grid; grid-template-columns: repeat(13, 1fr); gap: 4px;
+      margin-top: 16px;
+    }
+    .book span {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 4px 0 3px; border-radius: 8px; background: #fff;
+      border: 1px solid #dbe3ec; line-height: 1.1;
+    }
+    .book b { font-size: 13px; }
+    .book i { font-style: normal; font-size: 11px; font-weight: 700; color: #64748b; }
+    .task { margin: 16px 0 0; text-align: center; font-size: 22px; font-weight: 800; }
+    .task b { font-size: 32px; letter-spacing: .12em; }
+    .task .now { color: #0284c7; }
+    .note { margin: 6px 0 0; text-align: center; color: #64748b; font-size: 15px; }
+    .lamps { display: flex; justify-content: center; gap: 10px; margin-top: 18px; }
+    .lamp {
+      width: 64px; padding: 0; border: 0; background: transparent;
+      font: inherit; color: inherit; text-align: center;
+    }
+    .lamp.live { cursor: pointer; }
+    .bit { display: block; height: 26px; font-size: 20px; font-weight: 800; color: #94a3b8; }
+    .lamp.on .bit { color: #1e293b; }
+    .bulb {
+      width: 46px; height: 46px; margin: 0 auto; border-radius: 50%;
+      border: 3px solid #1e293b; background: #e2e8f0;
+    }
+    .lamp.on .bulb {
+      background: #4FC3F7;
+      box-shadow: 0 0 0 5px #d7f1fb, 0 0 16px rgba(79, 195, 247, .85);
+    }
+    .place { display: block; margin-top: 6px; font-size: 15px; font-weight: 800; color: #64748b; }
+    .answer { display: flex; justify-content: center; margin-top: 18px; }
+    .answer[hidden] { display: none; }
+    .answer input {
+      width: 88px; padding: 10px 8px; border-radius: 14px;
+      border: 3px solid #1e293b; background: #fff; color: #1e293b;
+      font: inherit; font-size: 32px; font-weight: 800; text-align: center;
+      text-transform: uppercase;
+    }
+    .actions { display: flex; justify-content: center; margin-top: 16px; }
+    button.act {
+      padding: 10px 22px; border: 2px solid #1e293b; border-radius: 999px;
+      background: #4FC3F7; color: #1e293b; font: inherit; font-weight: 800; font-size: 16px;
+      cursor: pointer; box-shadow: 0 4px 0 #1e293b;
+    }
+    .feedback { margin: 14px 0 0; min-height: 1.4em; text-align: center; font-size: 18px; font-weight: 800; }
+    .feedback.ok { color: #15803d; }
+    .feedback.bad { color: #b45309; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>信號試玩</h1>
+    <div class="modes">
+      <button type="button" class="mode on" id="mode-read">收信</button>
+      <button type="button" class="mode" id="mode-send">發信</button>
+    </div>
+    <div class="book" id="book"></div>
+    <p class="task" id="task"></p>
+    <p class="note" id="note"></p>
+    <div class="lamps" id="lamps"></div>
+    <div class="answer" id="answer" hidden>
+      <input id="guess" maxlength="1" autocapitalize="characters" autocomplete="off" aria-label="字母">
+    </div>
+    <p class="feedback" id="feedback"></p>
+    <div class="actions">
+      <button type="button" class="act" id="go">送出</button>
+    </div>
+  </main>
+  <script>
+    var PLACES = [16, 8, 4, 2, 1];
+    var READ_WORD = "CAT";
+    var SEND_WORD = "SUN";
+    var mode = "read";
+    var index = 0;
+    var mine = [0, 0, 0, 0, 0];
+    var holding = false;
+    var heard = "";
+
+    function letterOf(n) {
+      if (n < 1 || n > 26) return "";
+      return String.fromCharCode(64 + n);
+    }
+
+    function numberOf(ch) {
+      return ch.charCodeAt(0) - 64;
+    }
+
+    function bitsOf(n) {
+      return PLACES.map(function (place) {
+        if (n >= place) {
+          n -= place;
+          return 1;
+        }
+        return 0;
+      });
+    }
+
+    function valueOf(bits) {
+      var total = 0;
+      PLACES.forEach(function (place, i) { if (bits[i]) total += place; });
+      return total;
+    }
+
+    function pattern(bits) {
+      return bits.map(function (bit) { return bit ? "1" : "0"; }).join("");
+    }
+
+    function setFeedback(kind, text) {
+      var feedback = document.getElementById("feedback");
+      feedback.className = "feedback" + (kind ? " " + kind : "");
+      feedback.textContent = text;
+    }
+
+    function buildBook() {
+      var html = "";
+      for (var n = 1; n <= 26; n++) {
+        html += "<span><b>" + letterOf(n) + "</b><i>" + n + "</i></span>";
+      }
+      document.getElementById("book").innerHTML = html;
+    }
+
+    function draw(bits, clickable) {
+      document.getElementById("lamps").innerHTML = PLACES.map(function (place, i) {
+        var on = bits[i] ? " on" : "";
+        var tag = clickable ? "button" : "div";
+        var type = clickable ? ' type="button"' : "";
+        return "<" + tag + type + ' class="lamp' + (clickable ? " live" : "") + on + '" data-i="' + i + '">' +
+          '<span class="bit">' + (bits[i] ? "1" : "0") + "</span>" +
+          '<div class="bulb"></div><span class="place">' + place + "</span></" + tag + ">";
+      }).join("");
+      if (!clickable) return;
+      document.querySelectorAll(".lamp.live").forEach(function (lamp) {
+        lamp.addEventListener("click", function () {
+          if (holding) return;
+          var i = +lamp.getAttribute("data-i");
+          mine[i] = mine[i] ? 0 : 1;
+          setFeedback("", "");
+          draw(mine, true);
+        });
+      });
+    }
+
+    function showRead() {
+      mode = "read";
+      holding = false;
+      heard = "";
+      index = 0;
+      document.getElementById("mode-read").className = "mode on";
+      document.getElementById("mode-send").className = "mode";
+      document.getElementById("answer").hidden = false;
+      document.getElementById("guess").value = "";
+      document.getElementById("go").textContent = "送出";
+      setFeedback("", "");
+      paintRead();
+      document.getElementById("guess").focus();
+    }
+
+    function paintRead() {
+      var blanks = READ_WORD.split("").map(function (_, i) {
+        return i < heard.length ? heard.charAt(i) : "·";
+      }).join(" ");
+      document.getElementById("task").innerHTML = "對方說：<b>" + blanks + "</b>";
+      document.getElementById("note").textContent = "讀這排燈，對照上面的表，填一個字母。送出之前不公布是哪一個。";
+      draw(bitsOf(numberOf(READ_WORD.charAt(index))), false);
+    }
+
+    function showSend() {
+      mode = "send";
+      holding = false;
+      index = 0;
+      document.getElementById("mode-send").className = "mode on";
+      document.getElementById("mode-read").className = "mode";
+      document.getElementById("answer").hidden = true;
+      document.getElementById("go").textContent = "送出";
+      setFeedback("", "");
+      paintSend();
+    }
+
+    function paintSend() {
+      var word = SEND_WORD.split("").map(function (ch, i) {
+        return i === index ? '<span class="now">' + ch + "</span>" : ch;
+      }).join("");
+      document.getElementById("task").innerHTML = "跟對方說 <b>" + word + "</b>";
+      document.getElementById("note").textContent = "點燈送出藍色那個字母。送出之前不告訴你現在是幾。";
+      mine = [0, 0, 0, 0, 0];
+      draw(mine, true);
+    }
+
+    function sentText(n) {
+      var letter = letterOf(n);
+      if (letter) return "送出去的是 " + n + "，" + letter + "。";
+      return "送出去的是 " + n + "，對照表沒有這個字母。";
+    }
+
+    document.getElementById("mode-read").addEventListener("click", showRead);
+    document.getElementById("mode-send").addEventListener("click", showSend);
+
+    document.getElementById("go").addEventListener("click", function () {
+      if (mode === "read") {
+        if (holding === "done") { showRead(); return; }
+        if (holding) {
+          index += 1;
+          holding = false;
+          document.getElementById("guess").value = "";
+          document.getElementById("go").textContent = "送出";
+          setFeedback("", "");
+          paintRead();
+          document.getElementById("guess").focus();
+          return;
+        }
+        var typed = document.getElementById("guess").value.trim().toUpperCase();
+        if (!/^[A-Z]$/.test(typed)) {
+          setFeedback("bad", "填一個字母。");
+          return;
+        }
+        var target = READ_WORD.charAt(index);
+        if (typed !== target) {
+          setFeedback("bad", "不是這個字母。");
+          return;
+        }
+        heard += target;
+        var n = numberOf(target);
+        if (index === READ_WORD.length - 1) {
+          holding = "done";
+          document.getElementById("task").innerHTML = "對方說：<b>" + READ_WORD.split("").join(" ") + "</b>";
+          document.getElementById("go").textContent = "再收一次";
+          setFeedback("ok", "是 " + n + "，" + target + "。對方說的是 " + READ_WORD + "。");
+        } else {
+          holding = true;
+          document.getElementById("go").textContent = "下一封";
+          setFeedback("ok", "是 " + n + "，" + target + "。");
+        }
+        return;
+      }
+
+      if (holding === "done") { showSend(); return; }
+      if (holding) {
+        index += 1;
+        holding = false;
+        document.getElementById("go").textContent = "送出";
+        setFeedback("", "");
+        paintSend();
+        return;
+      }
+      var want = SEND_WORD.charAt(index);
+      var got = valueOf(mine);
+      if (got !== numberOf(want)) {
+        setFeedback("bad", sentText(got));
+        return;
+      }
+      if (index === SEND_WORD.length - 1) {
+        holding = "done";
+        document.getElementById("go").textContent = "再發一次";
+        setFeedback("ok", "送出 " + got + "，" + want + "。" + SEND_WORD + " 送到了。");
+        draw(mine, false);
+      } else {
+        holding = true;
+        document.getElementById("go").textContent = "下一個字母";
+        setFeedback("ok", "送出 " + got + "，" + want + "。燈是 " + pattern(mine) + "。");
+        draw(mine, false);
+      }
+    });
+
+    document.getElementById("guess").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") document.getElementById("go").click();
+    });
+
+    buildBook();
+    showRead();
+  </script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+﻿/* JM28 summary sheets */
+.jm28-sheet {
+  position: relative;
+  margin-top: 0.25rem;
+  padding: 1.35rem 1.25rem 1.5rem;
+  background-color: #f6f1e4;
+  background-image: radial-gradient(#e3d5bf 1.15px, transparent 1.25px);
+  background-size: 16px 16px;
+  border: 3px solid #2c2c2c;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(60, 42, 20, 0.12);
+  overflow: hidden;
+}
+
+.jm28-sheet-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.jm28-bulb {
+  width: 34px;
+  height: 44px;
+  flex: none;
+}
+
+.jm28-ribbon {
+  position: relative;
+  margin: 0;
+  padding: 0.45rem 2.4rem 0.55rem;
+  background: #f6e6b4;
+  border: 2.5px solid #2c2c2c;
+  text-align: center;
+  min-width: min(100%, 28rem);
+}
+
+.jm28-ribbon:before,
+.jm28-ribbon:after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  width: 14px;
+  background: #ecd48a;
+  border: 2.5px solid #2c2c2c;
+}
+
+.jm28-ribbon:before {
+  left: -12px;
+  border-right: none;
+  transform: skewY(12deg);
+}
+
+.jm28-ribbon:after {
+  right: -12px;
+  border-left: none;
+  transform: skewY(-12deg);
+}
+
+.jm28-ribbon h2 {
+  margin: 0;
+  font-family: Fraunces, Georgia, serif;
+  font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #2a2418;
+}
+
+.jm28-ribbon p {
+  margin: 0.1rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #3d3424;
+}
+
+.jm28-quote {
+  width: min(46rem, 100%);
+  margin: 0.9rem auto 1rem;
+  padding: 0.45rem 1.1rem;
+  background: #e7f3fb;
+  border: 2px solid #b9d6ec;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: #243646;
+}
+
+.jm28-sheet-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.jm28-group {
+  grid-column: 1 / -1;
+  margin: 0.15rem 0 0;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #2a2418;
+}
+
+.jm28-card {
+  position: relative;
+  border: 2.5px dashed #2c2c2c;
+  border-radius: 14px;
+  padding: 0.8rem 0.85rem 0.75rem;
+}
+
+.jm28-card-median { background: #f8e7a0; }
+.jm28-card-altitude { background: #d4e7f8; }
+.jm28-card-bisector { background: #d5edd9; }
+.jm28-card-perp { background: #f8d4c4; }
+.jm28-card-trans { background: #f6e7c4; }
+.jm28-card-corr { background: #f8d4e0; }
+.jm28-card-alt { background: #d7eef0; }
+.jm28-card-cointerior { background: #e4dff6; }
+.jm28-card-aaa { background: #f7e3b0; }
+.jm28-card-prop { background: #d9e8c8; }
+.jm28-card-ratio { background: #f8dcc8; }
+.jm28-card-sss { background: #d4e4f5; }
+.jm28-card-sas { background: #e7d8f2; }
+.jm28-card-asa { background: #f6e0ea; }
+.jm28-card-aas { background: #d8f0e4; }
+.jm28-card-rhs { background: #f3e6c0; }
+.jm28-card-ass { background: #f6d6d0; }
+
+.jm28-card-top {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, 0.85fr) 1.25fr;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.jm28-card h3 {
+  margin: 0;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.2rem;
+  line-height: 1.15;
+  color: #2a2418;
+}
+
+.jm28-card-perp h3,
+.jm28-card-corr h3,
+.jm28-card-alt h3,
+.jm28-card-cointerior h3,
+.jm28-card-prop h3,
+.jm28-card-ratio h3,
+.jm28-card-rhs h3,
+.jm28-card-ass h3 {
+  font-size: 1.02rem;
+}
+
+.jm28-card h3 span {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: "Microsoft JhengHei", "PingFang HK", "Noto Sans TC", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.jm28-card p {
+  margin: 0.45rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: #2a2418;
+}
+
+.jm28-card p.zh {
+  margin-top: 0.12rem;
+  font-weight: 700;
+  font-family: "Microsoft JhengHei", "PingFang HK", "Noto Sans TC", sans-serif;
+}
+
+.jm28-note {
+  font-size: 0.82rem !important;
+  font-style: italic;
+}
+
+.jm28-diagram {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.jm28-diagram text {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  fill: #2a2418;
+  paint-order: stroke fill;
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+
+.jm28-diagram text.jm28-ang,
+.jm28-diagram text.jm28-len {
+  font-size: 12px;
+  stroke-width: 3.5px;
+}
+
+.jm28-card-median .jm28-diagram text,
+.jm28-centre-centroid .jm28-diagram text { stroke: #f8e7a0; }
+.jm28-card-altitude .jm28-diagram text,
+.jm28-centre-ortho .jm28-diagram text { stroke: #d4e7f8; }
+.jm28-card-bisector .jm28-diagram text,
+.jm28-centre-in .jm28-diagram text { stroke: #d5edd9; }
+.jm28-card-perp .jm28-diagram text,
+.jm28-centre-circum .jm28-diagram text { stroke: #f8d4c4; }
+.jm28-card-trans .jm28-diagram text { stroke: #f6e7c4; }
+.jm28-card-corr .jm28-diagram text { stroke: #f8d4e0; }
+.jm28-card-alt .jm28-diagram text { stroke: #d7eef0; }
+.jm28-card-cointerior .jm28-diagram text { stroke: #e4dff6; }
+.jm28-card-aaa .jm28-diagram text { stroke: #f7e3b0; }
+.jm28-card-prop .jm28-diagram text { stroke: #d9e8c8; }
+.jm28-card-ratio .jm28-diagram text { stroke: #f8dcc8; }
+.jm28-card-sss .jm28-diagram text { stroke: #d4e4f5; }
+.jm28-card-sas .jm28-diagram text { stroke: #e7d8f2; }
+.jm28-card-asa .jm28-diagram text { stroke: #f6e0ea; }
+.jm28-card-aas .jm28-diagram text { stroke: #d8f0e4; }
+.jm28-card-rhs .jm28-diagram text { stroke: #f3e6c0; }
+.jm28-card-ass .jm28-diagram text { stroke: #f6d6d0; }
+
+.jm28-ray,
+.jm28-arrow {
+  fill: none;
+  stroke: #2b2b2b;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.jm28-trans {
+  fill: none;
+  stroke: #c45c32;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+}
+
+.jm28-wedge { stroke: none; }
+.jm28-wedge-corr { fill: #d35400; fill-opacity: 0.78; }
+.jm28-wedge-alt { fill: #2f74b5; fill-opacity: 0.78; }
+.jm28-wedge-int { fill: #1f8a4c; fill-opacity: 0.78; }
+
+.jm28-mark {
+  fill: none;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.jm28-mark-median { stroke: #c4841a; }
+.jm28-mark-altitude { stroke: #2f74b5; }
+.jm28-mark-bisector { stroke: #2f8a55; }
+.jm28-mark-perp {
+  stroke: #c45c32;
+  stroke-dasharray: 6 4;
+}
+
+.jm28-tick,
+.jm28-right,
+.jm28-arc {
+  fill: none;
+  stroke: #2b2b2b;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.jm28-clip {
+  position: absolute;
+  top: -12px;
+  left: 22px;
+  width: 14px;
+  height: 26px;
+  border: 2.5px solid #8d939c;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+
+.jm28-clip:after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 8px;
+  width: 6px;
+  height: 14px;
+  border: 2px solid #b4bac2;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+}
+
+.jm28-tape {
+  position: absolute;
+  top: -9px;
+  left: 16px;
+  width: 48px;
+  height: 16px;
+  background: rgba(168, 184, 156, 0.85);
+  transform: rotate(-10deg);
+  border-radius: 2px;
+}
+
+.jm28-star {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+}
+
+.jm28-star {
+  background:
+    linear-gradient(#2c2c2c, #2c2c2c) center/2px 100% no-repeat,
+    linear-gradient(#2c2c2c, #2c2c2c) center/100% 2px no-repeat;
+  transform: rotate(20deg);
+}
+
+.jm28-star:before,
+.jm28-star:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(#2c2c2c, #2c2c2c) center/2px 100% no-repeat;
+}
+
+.jm28-star:before { transform: rotate(45deg); }
+.jm28-star:after { transform: rotate(-45deg); }
+
+.jm28-star-a { top: 18px; left: 18px; }
+.jm28-star-b { top: 22px; right: 22px; }
+
+.jm28-sheet + .jm28-sheet {
+  margin-top: 1.35rem;
+}
+
+.jm28-centre {
+  display: grid;
+  grid-template-columns: minmax(13rem, 0.72fr) 1.7fr;
+  gap: 0.65rem 0.85rem;
+  align-items: center;
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.8rem 0.7rem;
+  border: 2.5px dashed #2c2c2c;
+  border-radius: 14px;
+}
+
+.jm28-centre-in { background: #d5edd9; }
+.jm28-centre-centroid { background: #f8e7a0; }
+.jm28-centre-circum { background: #f8d4c4; }
+.jm28-centre-ortho { background: #d4e7f8; }
+
+.jm28-centre h3 {
+  margin: 0;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.2rem;
+  line-height: 1.15;
+  color: #2a2418;
+}
+
+.jm28-centre h3 span {
+  display: block;
+  margin-top: 0.12rem;
+  font-family: "Microsoft JhengHei", "PingFang HK", "Noto Sans TC", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.jm28-centre p {
+  margin: 0.4rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: #2a2418;
+}
+
+.jm28-centre p.zh {
+  margin-top: 0.12rem;
+  font-weight: 700;
+  font-family: "Microsoft JhengHei", "PingFang HK", "Noto Sans TC", sans-serif;
+}
+
+.jm28-centre-figs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.jm28-mini {
+  margin: 0;
+  text-align: center;
+}
+
+.jm28-mini figcaption {
+  font-size: 0.78rem;
+  line-height: 1.2;
+  color: #2a2418;
+}
+
+.jm28-mini figcaption b {
+  display: block;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 0.86rem;
+}
+
+.jm28-mini figcaption span,
+.jm28-mini p span {
+  display: block;
+  font-family: "Microsoft JhengHei", "PingFang HK", "Noto Sans TC", sans-serif;
+  font-weight: 700;
+}
+
+.jm28-mini p {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  color: #2a2418;
+}
+
+.jm28-median {
+  stroke: #c4841a;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.jm28-bis,
+.jm28-alt,
+.jm28-perp {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.jm28-bis { stroke: #2f8a55; }
+.jm28-alt { stroke: #2f74b5; }
+
+.jm28-perp {
+  stroke: #c45c32;
+  stroke-dasharray: 5 4;
+}
+
+.jm28-radius {
+  fill: none;
+  stroke: #e02323;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.jm28-extend {
+  fill: none;
+  stroke: #2b2b2b;
+  stroke-width: 1.6;
+  stroke-dasharray: 2.5 3;
+  stroke-linecap: round;
+}
+
+.jm28-drop {
+  stroke: #2f74b5;
+  stroke-width: 1.7;
+  stroke-dasharray: 5 4;
+  stroke-linecap: round;
+}
+
+@media (max-width: 720px) {
+  .jm28-sheet-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jm28-ribbon {
+    min-width: 0;
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+  }
+
+  .jm28-card-top {
+    grid-template-columns: 1fr;
+  }
+
+  .jm28-centre {
+    grid-template-columns: 1fr;
+  }
+}

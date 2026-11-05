@@ -12,7 +12,6 @@ window.JM24_COMICS = {
       { id: "ch3", title: "Chapter 3 — Zero Revealed", file: "indices-club-zero-first-form-color.png?v=20260906-fix1" },
       { id: "ch4", title: "Chapter 4 — Zero's Second Form", file: "indices-club-zero-second-form-color.png?v=20260906-crisp" },
     ],
-    lawCard: { title: "Law Card — Indices School", file: "indices-school-laws-card-color.png?v=20260906-short-hair" },
   },
   "scientific-notation": {
     id: "scientific-notation",
@@ -26,7 +25,6 @@ window.JM24_COMICS = {
       { id: "ch3", title: "Chapter 3 — Manifest Fix", file: "magnitude-express-chapter-3-color.png" },
       { id: "ch4", title: "Chapter 4 — Stellar Run", file: "magnitude-express-chapter-4-color.png" },
     ],
-    lawCard: { title: "Law Card — Magnitude Express", file: "magnitude-express-laws-card-color.png" },
   },
   binary: {
     id: "binary",
@@ -40,7 +38,6 @@ window.JM24_COMICS = {
       { id: "ch3", title: "Chapter 3 — Binary Core", file: "bitspire-chapter-3-color.png" },
       { id: "ch4", title: "Chapter 4 — Apex Lock", file: "bitspire-chapter-4-color.png" },
     ],
-    lawCard: { title: "Law Card — Bitspire Tower", file: "bitspire-laws-card-color.png" },
   },
 };
 
@@ -50,7 +47,7 @@ window.buildComicFlatListForTopic = function buildComicFlatListForTopic(topicKey
   var topic = window.JM24_COMICS[topicKey];
   if (!topic) return [];
 
-  var list = topic.chapters.map(function (ch, i) {
+  return topic.chapters.map(function (ch, i) {
     return {
       topicKey: topicKey,
       topicLabel: topic.label,
@@ -61,18 +58,6 @@ window.buildComicFlatListForTopic = function buildComicFlatListForTopic(topicKey
       src: topic.basePath + ch.file,
     };
   });
-
-  list.push({
-    topicKey: topicKey,
-    topicLabel: topic.label,
-    series: topic.series,
-    type: "lawCard",
-    index: topic.chapters.length,
-    title: topic.lawCard.title,
-    src: topic.basePath + topic.lawCard.file,
-  });
-
-  return list;
 };
 
 window.getComicFlatListForTopic = window.buildComicFlatListForTopic;

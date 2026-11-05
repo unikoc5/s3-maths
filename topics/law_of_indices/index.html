@@ -837,6 +837,50 @@
       padding: 0; border: 0; background: none; box-shadow: none;
       color: #fde047; font-size: 16px; letter-spacing: .06em; line-height: 1.4; text-align: center;
     }
+    .summary-slideshow {
+      max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
+    }
+    .summary-arrow {
+      flex: none; width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid var(--line); background: var(--surface-2); color: var(--text);
+      font: inherit; font-size: 20px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .15s, color .15s;
+    }
+    .summary-arrow:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .summary-arrow:disabled { opacity: .35; cursor: default; }
+    .summary-stage {
+      flex: 1; min-width: 0; position: relative; aspect-ratio: 16 / 9;
+      background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    }
+    .summary-slide {
+      position: absolute; inset: 0; margin: 0; opacity: 0; visibility: hidden;
+      transition: opacity .22s ease;
+    }
+    .summary-slide.active { opacity: 1; visibility: visible; }
+    .summary-slide img { width: 100%; height: 100%; display: block; object-fit: contain; }
+    .summary-meta {
+      max-width: 1100px; margin: 10px auto 0; text-align: center;
+      font-size: 13px; font-weight: 600; color: var(--muted);
+    }
+    .summary-meta b { color: var(--text); font-family: "JetBrains Mono", monospace; }
+    .summary-zoom-overlay {
+      position: fixed; inset: 0; z-index: 1200; background: rgba(0, 0, 0, .94);
+      display: flex; align-items: center; justify-content: center; padding: 12px;
+    }
+    .summary-zoom-overlay.hidden { display: none; }
+    .summary-zoom-img {
+      max-width: 100%; max-height: 100%; object-fit: contain; display: block; border-radius: 6px;
+    }
+    .summary-zoom-close {
+      position: absolute; top: 10px; right: 10px; width: 44px; height: 44px;
+      border: 1px solid rgba(255, 255, 255, .35); border-radius: 50%;
+      background: rgba(255, 255, 255, .12); color: #fff; font-size: 28px; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    @media (max-width: 760px) {
+      .summary-slide.active img { cursor: zoom-in; }
+    }
   </style>
   <link rel="stylesheet" href="../../lessons/_shared/lesson.css?v=20260830b">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260829c">
@@ -2294,10 +2338,26 @@
       <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
     </section>
     <section id="panel-summary" class="jm-panel hidden">
-      <section class="block">
-        <h2>Summary</h2>
-        <p class="hint">Coming soon.</p>
-      </section>
+      <div class="summary-slideshow">
+        <button type="button" class="summary-arrow" id="summary-prev" aria-label="Previous page">&larr;</button>
+        <div class="summary-stage" id="summary-stage">
+          <figure class="summary-slide active">
+            <img src="summary/summary-1.jpg?v=20261101g" alt="Laws of Indices summary">
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/summary-2.jpg?v=20261101" alt="Scientific Notation summary" loading="lazy">
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/summary-3.jpg?v=20261101g" alt="Number Systems summary" loading="lazy">
+          </figure>
+        </div>
+        <button type="button" class="summary-arrow" id="summary-next" aria-label="Next page">&rarr;</button>
+      </div>
+      <p class="summary-meta">Page <b id="summary-page-num">1</b> of <b id="summary-page-total">3</b></p>
+      <div id="summary-zoom-overlay" class="summary-zoom-overlay hidden" role="dialog" aria-modal="true" aria-label="Zoomed summary page">
+        <button type="button" class="summary-zoom-close" aria-label="Close">&times;</button>
+        <img class="summary-zoom-img" alt="">
+      </div>
     </section>
     <section id="panel-quiz" class="jm-panel hidden">
       <section class="block">
@@ -2311,9 +2371,9 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script defer src="law-of-indices-binary.js?v=20260730-bin8"></script>
   <script defer src="law-of-indices-scientific.js?v=20260810-sci3"></script>
-  <script src="comics-manifest.js?v=20260906-short-hair"></script>
+  <script src="comics-manifest.js?v=20261101-nocard"></script>
   <script src="../../shared/jm-comics-engine.js?v=20260906-comicw"></script>
-  <script src="indices-comics.js?v=20260926-noprologue"></script>
+  <script src="indices-comics.js?v=20261101-nocard"></script>
   <script src="law-of-indices-game.js?v=20261024-nopick"></script>
   <script src="law-of-indices-sci-game.js?v=20261024-train1"></script>
   <script src="signal-room.js?v=20261011-story5"></script>
@@ -2721,6 +2781,57 @@
     document.querySelectorAll(".subnav .chip[data-lab]").forEach((btn) => {
       btn.addEventListener("click", () => showLab(btn.dataset.lab));
     });
+
+    (function initSummary() {
+      const slides = document.querySelectorAll("#summary-stage .summary-slide");
+      const prevBtn = document.getElementById("summary-prev");
+      const nextBtn = document.getElementById("summary-next");
+      const pageNum = document.getElementById("summary-page-num");
+      const panel = document.getElementById("panel-summary");
+      const overlay = document.getElementById("summary-zoom-overlay");
+      if (!slides.length || !prevBtn || !nextBtn) return;
+      const zoomImg = overlay.querySelector(".summary-zoom-img");
+      let idx = 0;
+
+      function render() {
+        slides.forEach((s, i) => s.classList.toggle("active", i === idx));
+        pageNum.textContent = String(idx + 1);
+        prevBtn.disabled = idx === 0;
+        nextBtn.disabled = idx >= slides.length - 1;
+      }
+      function go(step) {
+        const next = idx + step;
+        if (next < 0 || next >= slides.length) return;
+        idx = next;
+        render();
+      }
+      function closeZoom() {
+        overlay.classList.add("hidden");
+        zoomImg.removeAttribute("src");
+        document.body.style.overflow = "";
+      }
+
+      prevBtn.addEventListener("click", () => go(-1));
+      nextBtn.addEventListener("click", () => go(1));
+      document.addEventListener("keydown", (e) => {
+        if (panel.classList.contains("hidden")) return;
+        if (e.key === "Escape" && !overlay.classList.contains("hidden")) closeZoom();
+        else if (e.key === "ArrowLeft") go(-1);
+        else if (e.key === "ArrowRight") go(1);
+      });
+      document.getElementById("summary-stage").addEventListener("click", (e) => {
+        if (!window.matchMedia("(max-width: 760px)").matches) return;
+        const img = e.target.closest(".summary-slide.active img");
+        if (!img) return;
+        zoomImg.src = img.currentSrc || img.src;
+        zoomImg.alt = img.alt;
+        overlay.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      });
+      overlay.querySelector(".summary-zoom-close").addEventListener("click", closeZoom);
+      overlay.addEventListener("click", (e) => { if (e.target === overlay) closeZoom(); });
+      render();
+    })();
 
     waitKatex().then(() => {
       ["intro", "twox", "root", "zero", "neg"].forEach(initStepper);

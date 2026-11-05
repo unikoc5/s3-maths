@@ -68,27 +68,6 @@
           explain: "Rewrite 81 as \\(3^{4}\\) and 9 as \\(3^{2}\\): the index is \\(4(n-1)+(n-1)-2(n-2)=3n-1\\).",
         },
       ],
-      law1: [
-        {
-          id: "rl1",
-          prompt: "Which law is used to simplify \\((x^{3})^{4}\\)?",
-          choices: [
-            "Add the indices",
-            "Subtract the indices",
-            "Multiply the indices",
-            "Take the reciprocal",
-          ],
-          answer: 2,
-          explain: "A power of a power: multiply indices, \\(3 \\times 4 = 12\\).",
-        },
-        {
-          id: "rl2",
-          prompt: "\\((2^{3})^{2} \\times 2^{-4}\\) simplifies to",
-          choices: ["\\(2^{2}\\)", "\\(2^{6}\\)", "\\(2^{1}\\)", "\\(2^{8}\\)"],
-          answer: 0,
-          explain: "\\((2^{3})^{2} = 2^{6}\\), then \\(2^{6} \\times 2^{-4} = 2^{2}\\).",
-        },
-      ],
     },
     "scientific-notation": {
       ch1: [
@@ -195,32 +174,6 @@
           explain: "Standard form needs a coefficient \\(1 \\le a < 10\\).",
         },
       ],
-      law1: [
-        {
-          id: "sl1",
-          prompt: "\\((3 \\times 10^{4})^{2}\\) equals",
-          choices: [
-            "\\(9 \\times 10^{8}\\)",
-            "\\(6 \\times 10^{8}\\)",
-            "\\(9 \\times 10^{4}\\)",
-            "\\(3 \\times 10^{8}\\)",
-          ],
-          answer: 0,
-          explain: "Square the coefficient and double the index: \\(3^{2}=9\\), \\(4\\times 2=8\\).",
-        },
-        {
-          id: "sl2",
-          prompt: "0.0048 in standard form is",
-          choices: [
-            "\\(4.8 \\times 10^{3}\\)",
-            "\\(4.8 \\times 10^{-3}\\)",
-            "\\(48 \\times 10^{-4}\\)",
-            "\\(0.48 \\times 10^{-2}\\)",
-          ],
-          answer: 1,
-          explain: "Point moves 3 places: \\(4.8 \\times 10^{-3}\\).",
-        },
-      ],
     },
     binary: {
       ch1: [
@@ -295,22 +248,6 @@
           choices: ["1111\\(_{2}\\)", "14\\(_{10}\\)", "10000\\(_{2}\\)", "15\\(_{10}\\)"],
           answer: 2,
           explain: "1111\\(_{2}\\)=15, 10000\\(_{2}\\)=16. So 10000\\(_{2}\\) is largest.",
-        },
-      ],
-      law1: [
-        {
-          id: "bl1",
-          prompt: "101\\(_{2}\\) + 11\\(_{2}\\) in denary is",
-          choices: ["6", "7", "8", "9"],
-          answer: 2,
-          explain: "5 + 3 = 8.",
-        },
-        {
-          id: "bl2",
-          prompt: "The denary value of 1 0000\\(_{2}\\) is",
-          choices: ["8", "10", "16", "32"],
-          answer: 2,
-          explain: "\\(2^{4} = 16\\).",
         },
       ],
     },

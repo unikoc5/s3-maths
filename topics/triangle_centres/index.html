@@ -9,6 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b"><link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="similar-congruent-maze.css?v=20261101-maze">
+  <link rel="stylesheet" href="summary-sheet.css?v=20261101-summary">
   <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260830-merge">
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
   <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
@@ -321,10 +323,14 @@
       <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
     </section>
     <section id="panel-summary" class="jm-panel hidden">
-      <section class="block">
-        <h2>Summary</h2>
-        <p class="hint">Coming soon.</p>
-      </section>
+      <div class="subnav" id="summary-subnav" aria-label="Summary sheets">
+        <button class="chip active" type="button" data-summary="lines">Special Lines</button>
+        <button class="chip" type="button" data-summary="centres">Triangle Centres</button>
+        <button class="chip" type="button" data-summary="angles">Angle Pairs</button>
+        <button class="chip" type="button" data-summary="triangles">Similar &amp; Congruent</button>
+      </div>
+      <p class="hint" id="summary-intro"></p>
+      <div id="summary-stage"></div>
     </section>
     <section id="panel-quiz" class="jm-panel hidden">
       <div class="quiz-wrap">
@@ -347,7 +353,37 @@
   <script defer src="triangle-centres-quiz.js?v=20260928-sections"></script>
   <script src="comics-manifest.js?v=20260830-merge"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
-  <script defer src="triangle-centres-comics.js?v=20260830-fu"></script>
+  <script defer src="similar-congruent-maze.js?v=20261101-maze"></script>
+  <script defer src="triangle-centres-comics.js?v=20261101-maze"></script>
+  <script defer src="summary-sheet.js?v=20261101-summary"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var nav = document.getElementById("summary-subnav");
+      var stage = document.getElementById("summary-stage");
+      var intro = document.getElementById("summary-intro");
+      if (!nav || !stage) return;
+      var SHEETS = {
+        lines: { render: "renderJM28SummaryLines", intro: "One page for the four special lines in a triangle." },
+        centres: { render: "renderJM28SummaryCentres", intro: "One page for the four centres of a triangle." },
+        angles: { render: "renderJM28SummaryAngles", intro: "One page for the transversal and the three angle pairs." },
+        triangles: { render: "renderJM28SummaryTriangles", intro: "One page for the reasons two triangles are similar or congruent." }
+      };
+      function show(key) {
+        var sheet = SHEETS[key] || SHEETS.lines;
+        nav.querySelectorAll("[data-summary]").forEach(function (b) {
+          b.classList.toggle("active", b.getAttribute("data-summary") === key);
+        });
+        intro.textContent = sheet.intro;
+        var fn = window[sheet.render];
+        stage.innerHTML = typeof fn === "function" ? fn() : "";
+      }
+      nav.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-summary]");
+        if (btn) show(btn.getAttribute("data-summary"));
+      });
+      show("lines");
+    });
+  </script>
   <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
   <script defer src="triangle-centres-tools.js?v=20260830j"></script>
   <script defer src="meeting-point-game.js?v=20261018b"></script>

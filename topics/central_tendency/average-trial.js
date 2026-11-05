@@ -4,7 +4,6 @@
  * Challenge: Rapid Objection (2 min), Fair or Rigged? (3 gavels), Deduction Board (3 gavels).
  * Text is bilingual: any { en, zh } value is resolved by T() at render time; the HUD button toggles English / 中文.
  * A pocket calculator (HUD) is available while playing, so working does not need a separate device.
- * Teacher mode (HUD "ANS") unlocks every case and adds Show answer on each question.
  */
 (function () {
   "use strict";
@@ -14,7 +13,7 @@
 
   var CASES = window.AT_CASES || [];
   var ART = "game/";
-  var V = "?v=20261027-at24";
+  var V = "?v=20261031-at25";
   var KEY = "average-trial-v1";
   var MAX_PAT = 5;
   var RAPID_TIME = 120;
@@ -29,6 +28,7 @@
   })();
   save.cleared = save.cleared || {};
   save.best = save.best || {};
+  delete save.teacher;
   function store() { try { localStorage.setItem(KEY, JSON.stringify(save)); } catch (e) { /* private mode */ } }
 
   var lang = save.lang === "zh" ? "zh" : "en";
@@ -193,7 +193,6 @@
     '<div class="at-patience" hidden></div><div class="at-hud-chip" hidden></div></div>' +
     '<div class="at-hud-right">' +
     '<button type="button" class="at-btn is-ghost is-icon at-calc-btn" data-act="calc" hidden>123</button>' +
-    '<button type="button" class="at-btn is-ghost is-icon at-teach" data-act="teach" hidden>ANS</button>' +
     '<button type="button" class="at-btn is-ghost at-lang" data-act="lang"></button>' +
     '<button type="button" class="at-btn is-ghost is-icon" data-act="mute" title="Sound on / off"></button>' +
     '<button type="button" class="at-btn is-ghost is-icon" data-act="full" title="Full screen">&#x26F6;</button>' +
@@ -243,7 +242,6 @@
   var patEl = $(".at-patience");
   var chipEl = $(".at-hud-chip");
   var calcBtn = $('[data-act="calc"]');
-  var teachBtn = $('[data-act="teach"]');
   var calcEl = $(".at-calc");
   var langBtn = $('[data-act="lang"]');
   var muteBtn = $('[data-act="mute"]');
@@ -285,12 +283,6 @@
     calcBtn.title = T(L("Calculator", "計算機"));
     var calcTitle = $(".at-calc-title");
     if (calcTitle) calcTitle.textContent = T(L("Calculator", "計算機"));
-    updateTeach();
-  }
-  function updateTeach() {
-    teachBtn.textContent = lang === "zh" ? "答案" : "ANS";
-    teachBtn.title = lang === "zh" ? "老師模式：題目可顯示答案" : "Teacher mode: show the answer";
-    teachBtn.classList.toggle("is-on", !!save.teacher);
   }
   updateLangUi();
 
@@ -747,95 +739,12 @@
       items.map(function (f) { return esc(f.text); }).join(" · ") + "</p>";
   }
 
-  function revealHtml() {
-    if (!save.teacher) return "";
-    return '<button type="button" class="at-btn is-gold at-help at-reveal" data-c="reveal">' + esc(L("Show answer", "顯示答案")) + "</button>";
-  }
-  function onReveal(fn) {
-    var b = panel.querySelector('[data-c="reveal"]');
-    if (b) b.addEventListener("click", fn);
-  }
-
-  /* One answer that satisfies every clue. The last blank is fixed by the mean when there is one. */
-  function solveDeduce(st) {
-    var vars = st.vars, known = 0, found = null;
-    st.data.forEach(function (d) { if (typeof d === "number") known += d; });
-    function bounds(k, vals) {
-      var lo = 0, hi = 99;
-      if (!st.order) return [lo, hi];
-      var idx = st.data.indexOf(k), left = null, right = null, p, d;
-      for (p = idx - 1; p >= 0; p--) {
-        d = st.data[p];
-        if (typeof d === "number") { left = d; break; }
-        if (vals[d] != null && isFinite(vals[d])) { left = vals[d]; break; }
-      }
-      for (p = idx + 1; p < st.data.length; p++) {
-        d = st.data[p];
-        if (typeof d === "number") { right = d; break; }
-        if (vals[d] != null && isFinite(vals[d])) { right = vals[d]; break; }
-      }
-      if (st.order === "asc") {
-        if (left != null) lo = Math.max(lo, left);
-        if (right != null) hi = Math.min(hi, right);
-      } else {
-        if (left != null) hi = Math.min(hi, left);
-        if (right != null) lo = Math.max(lo, right);
-      }
-      return [lo, hi];
-    }
-    function rec(i, vals) {
-      if (found) return;
-      if (i === vars.length) {
-        if (!deduceCheck(st, vals)) {
-          found = {};
-          vars.forEach(function (k) { found[k] = vals[k]; });
-        }
-        return;
-      }
-      var k = vars[i];
-      if (i === vars.length - 1 && st.mean != null) {
-        var sofar = known, j;
-        for (j = 0; j < i; j++) sofar += vals[vars[j]];
-        var need = st.mean * st.data.length - sofar;
-        if (st.int === false || Math.abs(need - Math.round(need)) < 1e-6) {
-          vals[k] = st.int === false ? Math.round(need * 1000) / 1000 : Math.round(need);
-          rec(i + 1, vals);
-        }
-        return;
-      }
-      var b = bounds(k, vals), v;
-      for (v = b[0]; v <= b[1] && !found; v++) { vals[k] = v; rec(i + 1, vals); }
-    }
-    rec(0, {});
-    return found;
-  }
-
-  function solvePick(st) {
-    var best = null, n = st.data.length;
-    function fits(chosen) {
-      var left = st.data.filter(function (v, i) { return chosen.indexOf(i) < 0; });
-      if (st.remMean != null && Math.abs(mean(left) - st.remMean) > 1e-9) return false;
-      if (st.remMode != null) {
-        var ms = modes(left);
-        if (!(ms.length === 1 && ms[0] === st.remMode)) return false;
-      }
-      return true;
-    }
-    function rec(start, chosen) {
-      if (best) return;
-      if (chosen.length === st.count) { if (fits(chosen)) best = chosen.slice(); return; }
-      for (var i = start; i < n && !best; i++) { chosen.push(i); rec(i + 1, chosen); chosen.pop(); }
-    }
-    rec(0, []);
-    return best;
-  }
-
   function calcPanel(st, hooks) {
     var html = (st.title ? "<h3>" + esc(st.title) + "</h3>" : "") +
       '<p class="at-q">' + markup(st.q) + "</p>" + foundHtml(st) + evOf(hooks.evHtml) +
       '<div class="at-row"><input class="at-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="Your answer">' +
       (st.unit ? '<span class="at-unit">' + esc(st.unit) + "</span>" : "") +
-      '<button type="button" class="at-btn is-red" data-c="go">' + esc(L("Submit", "提交")) + "</button>" + revealHtml() + "</div>" +
+      '<button type="button" class="at-btn is-red" data-c="go">' + esc(L("Submit", "提交")) + "</button></div>" +
       '<p class="at-fb" aria-live="polite"></p>' +
       (st.hint ? '<button type="button" class="at-btn is-ghost at-help" data-c="hint" hidden>' + esc(HINT) + "</button>" : "");
     openPanel(html, hooks.wide);
@@ -867,7 +776,6 @@
     panel.querySelector('[data-c="go"]').addEventListener("click", submit);
     input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); submit(); } e.stopPropagation(); });
     if (hintBtn) hintBtn.addEventListener("click", function () { fb.className = "at-fb is-hint"; fb.innerHTML = markup(st.hint); });
-    onReveal(function () { input.value = fmt(st.a); submit(); });
   }
 
   function doCalc(st, done) {
@@ -887,7 +795,7 @@
       '<p class="at-q">' + markup(st.q) + "</p>" + foundHtml(st) + evOf(hooks.evHtml) +
       '<div class="at-choices" style="grid-template-columns:repeat(' + cols + ',1fr)">' + st.options.map(function (o, i) {
         return '<button type="button" class="at-btn at-choice" data-o="' + i + '">' + markup(o) + "</button>";
-      }).join("") + "</div>" + revealHtml() +
+      }).join("") + "</div>" +
       '<p class="at-fb" aria-live="polite"></p>' +
       '<button type="button" class="at-btn is-gold at-help" data-c="go" hidden>' + esc(L("Continue", "繼續")) + " &#x25B6;</button>";
     openPanel(html, hooks.wide);
@@ -915,10 +823,6 @@
       });
     });
     go.addEventListener("click", function () { hooks.onRight(); });
-    onReveal(function () {
-      var right = panel.querySelector('[data-o="' + st.a + '"]');
-      if (right) right.click();
-    });
   }
 
   function doChoice(st, done) {
@@ -975,7 +879,7 @@
           : '<span class="at-chip">' + d + "</span>";
       }).join("") + "</div>" +
       (ev ? "" : '<p class="at-ev-note">' + esc(L("Pencil note: " + en.join(" · "), "鉛筆註記：" + zh.join(" · "))) + "</p>") + "</div>" +
-      '<div class="at-row"><button type="button" class="at-btn is-red" data-c="go">' + esc(L("Check", "檢查")) + "</button>" + revealHtml() + "</div>" +
+      '<div class="at-row"><button type="button" class="at-btn is-red" data-c="go">' + esc(L("Check", "檢查")) + "</button></div>" +
       '<p class="at-fb" aria-live="polite"></p>' +
       (st.hint ? '<button type="button" class="at-btn is-ghost at-help" data-c="hint" hidden>' + esc(HINT) + "</button>" : "");
     openPanel(html, hooks.wide);
@@ -1008,12 +912,6 @@
       inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); check(); } e.stopPropagation(); });
     });
     if (hintBtn) hintBtn.addEventListener("click", function () { fb.className = "at-fb is-hint"; fb.innerHTML = markup(st.hint); });
-    onReveal(function () {
-      var sol = solveDeduce(st);
-      if (!sol) { fb.className = "at-fb is-bad"; fb.textContent = T(L("No single answer.", "找不到唯一答案。")); return; }
-      inputs.forEach(function (inp) { inp.value = String(sol[inp.getAttribute("data-v")]); });
-      check();
-    });
   }
 
   function doDeduce(st, done) {
@@ -1031,7 +929,7 @@
     var html = "<h3>" + esc(st.title || L("Find the missing entries", "找出被撕走的項目")) + "</h3>" +
       '<p class="at-q">' + markup(st.q) + "</p>" + foundHtml(st) + evFor(st) +
       '<div class="at-pick">' + st.data.map(function (v, i) { return '<button type="button" data-p="' + i + '">' + v + "</button>"; }).join("") + "</div>" +
-      '<div class="at-row"><button type="button" class="at-btn is-red" data-c="go">' + esc(L("Tear these out", "撕走這些")) + "</button>" + revealHtml() + "</div>" +
+      '<div class="at-row"><button type="button" class="at-btn is-red" data-c="go">' + esc(L("Tear these out", "撕走這些")) + "</button></div>" +
       '<p class="at-fb" aria-live="polite"></p>' +
       (st.hint ? '<button type="button" class="at-btn is-ghost at-help" data-c="hint" hidden>' + esc(HINT) + "</button>" : "");
     openPanel(html);
@@ -1077,16 +975,6 @@
       if (penalty() === false) { locked = true; panelDraw = null; }
     });
     if (hintBtn) hintBtn.addEventListener("click", function () { fb.className = "at-fb is-hint"; fb.innerHTML = markup(st.hint); });
-    onReveal(function () {
-      var idx = solvePick(st);
-      if (!idx) { fb.className = "at-fb is-bad"; fb.textContent = T(L("No single answer.", "找不到唯一答案。")); return; }
-      panel.querySelectorAll("[data-p].on").forEach(function (b) { b.click(); });
-      idx.forEach(function (i) {
-        var b = panel.querySelector('[data-p="' + i + '"]');
-        if (b && !b.classList.contains("on")) b.click();
-      });
-      panel.querySelector('[data-c="go"]').click();
-    });
   }
 
   /* cf: { q, show:"evId", target, n, m50, a, tol, wrongs, q2 } — drag the line to n/2, then read the median.
@@ -1108,7 +996,7 @@
       '<p class="at-q">' + markup(st.q) + "</p>" + foundHtml(st) +
       '<div class="at-row" data-ph="1"><button type="button" class="at-btn" data-c="up">&#x25B2;</button><button type="button" class="at-btn" data-c="down">&#x25BC;</button>' +
       '<button type="button" class="at-btn is-red" data-c="read">' + esc(L("Read across here", "在這裏橫向讀數")) + "</button></div>" +
-      '<p class="at-fb" aria-live="polite"></p>' + revealHtml() + "</div>" +
+      '<p class="at-fb" aria-live="polite"></p></div>' +
       '<div class="at-ev" data-cf>' + cfSvg(s, lineFn) + "</div></div>";
     openPanel(html, true);
     panelDraw = function () { doCf(st, done, phase === 2); };
@@ -1174,14 +1062,6 @@
         "藍線在累積頻數 = " + y + "。中位數是*中間*的那一項：要在 n ÷ 2 橫向讀數，而 n = " + st.n + "。"));
       penalty();
     });
-    onReveal(function () {
-      if (phase === 1) { y = st.target; readStep(true); }
-      var input = $(".at-input", panel);
-      if (!input) return;
-      input.value = fmt(st.a);
-      var go = panel.querySelector('[data-c="go"]');
-      if (go) go.click();
-    });
     if (resume) readStep(true);
   }
 
@@ -1217,7 +1097,6 @@
     var playing = mode !== "menu";
     exitBtn.hidden = !playing;
     calcBtn.hidden = !playing;
-    teachBtn.hidden = !playing;
     if (!playing) calcEl.hidden = true;
     calcBtn.classList.toggle("is-on", playing && !calcEl.hidden);
     patEl.hidden = !playing || mode === "rapid";
@@ -1297,14 +1176,9 @@
     });
   }
 
-  function unlocked(id) { return id === 1 || !!save.cleared[id - 1] || !!save.teacher; }
+  function unlocked(id) { return id === 1 || !!save.cleared[id - 1]; }
 
   var BACK = L("Back", "返回");
-  function teacherLink() {
-    return '<button type="button" class="at-link" data-m="teacher">' + esc(save.teacher
-      ? L("Teacher mode is on. Click to turn it off.", "老師模式已開啟。再按一下關閉。")
-      : L("Teacher mode: unlock every case and show answers", "老師模式：解鎖全部案件，並顯示答案")) + "</button>";
-  }
 
   function showTitle() {
     resetStage(); R = null;
@@ -1319,7 +1193,7 @@
         '<div class="at-cards" style="--cols:2;max-width:36em">' +
         '<button type="button" class="at-btn at-card" data-m="cases"><b>' + esc(L("Story Mode", "故事模式")) + "</b><strong>" + esc(L("Four cases", "四個案件")) + "</strong><span>" + esc(L("Notes A–D, one case each", "筆記 A 至 D，每份一個案件")) + "</span></button>" +
         '<button type="button" class="at-btn at-card is-red" data-m="challenge"><b>' + esc(L("Challenge Mode", "挑戰模式")) + "</b><strong>" + esc(L("Three trials", "三種挑戰")) + "</strong><span>" + esc(L("Random every time · beat your best", "每次隨機出題 · 刷新最高分")) + "</span></button>" +
-        "</div>" + teacherLink();
+        "</div>";
     });
   }
 
@@ -1336,8 +1210,7 @@
             "<b>" + esc(L("Case " + c.id, "第 " + c.id + " 章")) + " &middot; " + esc(c.notes) + "</b><strong>" + (open ? esc(c.title) : "&#x1F512; " + esc(L("Locked", "未解鎖"))) + "</strong><span>" + esc(c.topic) + "</span>" +
             (st ? '<i class="at-stars" style="font-style:normal">' + starText(st) + "</i>" : "") + "</button>";
         }).join("") + "</div>" +
-        '<div class="at-menu-row"><button type="button" class="at-btn is-ghost" data-m="title">&#x25C0; ' + esc(BACK) + "</button></div>" +
-        teacherLink();
+        '<div class="at-menu-row"><button type="button" class="at-btn is-ghost" data-m="title">&#x25C0; ' + esc(BACK) + "</button></div>";
     });
   }
 
@@ -1406,7 +1279,6 @@
     else if (m === "challenge") showChallenges();
     else if (m === "case") { var id = Number(b.getAttribute("data-id")); var k = CASES.filter(function (c) { return c.id === id; })[0]; if (k && unlocked(id)) startCase(k); }
     else if (m === "retry") retryFromCheckpoint();
-    else if (m === "teacher") { save.teacher = !save.teacher; store(); updateTeach(); if (menuDraw) menuDraw(); }
     else if (m === "ch") startChallenge(b.getAttribute("data-id"));
     else if (m === "stay") { if (menu._restore) menu._restore(); if (C) C.paused = false; }
     else if (m === "again") startChallenge(C ? C.kind : "rapid");
@@ -1418,7 +1290,6 @@
     var a = b.getAttribute("data-act");
     if (a === "mute") { save.muted = !save.muted; store(); updateMute(); }
     else if (a === "calc") { calcEl.hidden = !calcEl.hidden; calcBtn.classList.toggle("is-on", !calcEl.hidden); if (!calcEl.hidden) calcEl.focus(); SFX.page(); }
-    else if (a === "teach") { save.teacher = !save.teacher; store(); updateTeach(); SFX.page(); redrawOpenPanel(); }
     else if (a === "lang") setLang(lang === "zh" ? "en" : "zh");
     else if (a === "full") {
       if (document.fullscreenElement) document.exitFullscreen();
@@ -1559,7 +1430,7 @@
     C.over = true;
     var kind = C.kind, score = C.score;
     if (C.timer) clearInterval(C.timer);
-    var isBest = !save.teacher && score > (save.best[kind] || 0);
+    var isBest = score > (save.best[kind] || 0);
     if (isBest) { save.best[kind] = score; store(); }
     closePanel();
     hud("menu");

@@ -80,7 +80,6 @@
 .at-stage:has(.at-menu:not([hidden])) .at-patience,
 .at-stage:has(.at-menu:not([hidden])) .at-hud-chip,
 .at-stage:has(.at-menu:not([hidden])) [data-act="calc"],
-.at-stage:has(.at-menu:not([hidden])) [data-act="teach"],
 .at-stage:has(.at-menu:not([hidden])) [data-act="exit"] { display: none !important; }
 .at-hud > * { pointer-events: auto; }
 .at-hud-right { display: flex; gap: .45em; }
@@ -109,9 +108,8 @@
 .at-btn.is-ghost { background: rgba(10, 14, 34, .82); }
 .at-btn.is-icon { padding: .35em .55em; min-width: 2.2em; }
 .at-btn[hidden] { display: none; }
-.at-calc-btn, .at-teach { letter-spacing: 0; font-size: .72em; }
-.at-calc-btn.is-on, .at-teach.is-on { background: #d9961c; color: #1d1204; }
-.at-reveal { text-transform: none; }
+.at-calc-btn { letter-spacing: 0; font-size: .72em; }
+.at-calc-btn.is-on { background: #d9961c; color: #1d1204; }
 
 /* ---------- Pocket calculator (left side, so it does not cover the answer panel) ---------- */
 .at-calc {

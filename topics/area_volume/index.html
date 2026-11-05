@@ -15,6 +15,10 @@
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="area-volume-tools.js?v=20260730-prejm"></script>
   <script defer src="area-volume-game.js?v=20260730-builder"></script>
+  <script defer src="hot-drop/hot-drop.js?v=20261101u"></script>
+  <link rel="stylesheet" href="hot-drop/hot-drop.css?v=20261101u">
+  <script defer src="ratio-sort-game.js?v=rs9"></script>
+  <link rel="stylesheet" href="ratio-sort-game.css?v=rs9">
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="area-volume-comics.js?v=20260830-fu"></script>
   <script defer src="area-volume-quiz.js?v=20260730-prejm"></script>
@@ -356,6 +360,8 @@
       display: flex; justify-content: flex-end; margin-top: 8px; padding-top: 4px;
     }
     .comic-chapter-next { margin-left: auto; }
+    .summary-sheet { margin: 12px auto 0; max-width: 720px; }
+    .summary-sheet img { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 20px rgba(15,23,42,.12); }
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260906-comicw">  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
@@ -429,8 +435,27 @@
     </div>
   </section>
 
-  <!-- TAB 3: builder game -->
+  <!-- TAB 3: games -->
   <section id="panel-game" class="jm-panel hidden">
+    <div class="subnav" id="games-subnav" aria-label="Games">
+      <button class="chip active" type="button" data-game="hotdrop">Game 1 · Hot Drop</button>
+      <button class="chip" type="button" data-game="ratio">Game 2 · Ratio Solitaire</button>
+      <button class="chip" type="button" data-game="builder">Builder sandbox</button>
+    </div>
+
+    <section class="block hd-shell" id="hd-root">
+      <h2>Hot Drop — Cooling Pool Night Shift</h2>
+      <p class="hint">Xiao Wang fills every pool to a different level. Work out the largest number of red-hot steel balls that keeps the water at or below the red line, and survive until sunrise.</p>
+      <div class="hd-stage" id="hd-stage" role="application" aria-label="Hot Drop"></div>
+    </section>
+
+    <section class="block game-off" id="rs-root">
+      <h2>Ratio Solitaire</h2>
+      <p class="hint">Square, cube, or compare bases? Sort the cards and beat the clock.</p>
+      <div class="ts-game" id="rs-game"></div>
+    </section>
+
+    <div id="av-builder" class="game-off">
     <div class="build-top">
       <div class="mode-switch">
         <button class="mode-btn active" data-mode="2d">2D · Area</button>
@@ -487,6 +512,7 @@
       </section>
     </div>
     <p class="hint">Each formula is interactive — hover to highlight, click to open its full derivation with a labelled diagram.</p>
+    </div>
   </section>
 
   <!-- TAB: comics story + concept checks (separate from quiz DB) -->
@@ -494,6 +520,17 @@
     <div class="subnav" id="comics-subnav"></div>
     <div id="comics-stage"></div>
     <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+  </section>
+
+  <!-- TAB: summary -->
+  <section id="panel-summary" class="jm-panel hidden">
+    <section class="block">
+      <h2>Summary</h2>
+      <p class="hint">Areas &amp; Volumes survival kit — read it the night before the test.</p>
+      <figure class="summary-sheet">
+        <img src="summary/summary-1.jpg?v=20261101b" alt="JM32 Areas and Volumes survival kit — pyramid and cone, sphere, frustum, similar solids, triangle area ratio and exam tricks" loading="lazy">
+      </figure>
+    </section>
   </section>
 
   <!-- TAB: quiz -->

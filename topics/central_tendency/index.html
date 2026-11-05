@@ -241,10 +241,12 @@
     .deck-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
     .deck-advance { position: absolute; inset: 0; z-index: 2; cursor: pointer; }
     html.file-preview .deck-advance { pointer-events: none; }
+    .summary-sheet { margin: 12px auto 0; max-width: 720px; }
+    .summary-sheet img { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 20px rgba(15,23,42,.12); }
   </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections"><link rel="stylesheet" href="../../shared/section-quiz.css?v=20260928-sections">
-  <link rel="stylesheet" href="average-trial.css?v=20261027-at24">
+  <link rel="stylesheet" href="average-trial.css?v=20261031-at25">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
@@ -429,7 +431,10 @@
     <section id="panel-summary" class="jm-panel hidden">
       <section class="block">
         <h2>Summary</h2>
-        <p class="hint">Coming soon.</p>
+        <p class="hint">Averages survival kit — read it the night before the test.</p>
+        <figure class="summary-sheet">
+          <img src="summary/summary-1.jpg?v=20261101a" alt="JM31 Averages survival kit — mean, median, mode, frequency tables, cumulative frequency, choosing an average and data changes" loading="lazy">
+        </figure>
       </section>
     </section>
     <section id="panel-quiz" class="jm-panel hidden">
@@ -455,8 +460,8 @@
   <script defer src="central-tendency-tools.js?v=20261017d"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="central-tendency-comics.js?v=20260830-fu"></script>
-  <script defer src="average-trial-cases.js?v=20261027-at24"></script>
-  <script defer src="average-trial.js?v=20261027-at24"></script>
+  <script defer src="average-trial-cases.js?v=20261031-at25"></script>
+  <script defer src="average-trial.js?v=20261031-at25"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
