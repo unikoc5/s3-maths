@@ -1,0 +1,145 @@
+/* JM29 Game 2 — Proof Pipes */
+
+.pp-game { display: flex; flex-direction: column; gap: 10px; max-width: 1060px; margin: 0 auto; }
+
+.pp-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.pp-level { font-weight: 700; font-size: 15px; color: #0f172a; }
+.pp-stars { font-weight: 700; font-size: 15px; color: #b45309; }
+.pp-top .pp-btn { margin-left: auto; }
+
+.pp-tip {
+  margin: 0; padding: 10px 14px; border-radius: 10px;
+  background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a;
+  font-size: 14px; line-height: 1.5;
+}
+
+.pp-main { display: flex; flex-direction: column; gap: 10px; }
+@media (min-width: 820px) {
+  .pp-main.pp-side { display: grid; grid-template-columns: 240px minmax(0, 1fr); align-items: start; }
+  .pp-side .pp-cards { grid-template-columns: 1fr; position: sticky; top: 10px; }
+  .pp-side .pp-card-body { flex-direction: column; align-items: flex-start; }
+  .pp-side .pp-card .pp-fig { width: 120px; flex-basis: auto; }
+  .pp-side .pp-board { max-height: calc(100vh - 170px); }
+}
+
+.pp-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.pp-cards-1 { grid-template-columns: minmax(240px, 420px); }
+
+.pp-card {
+  --lane: #38bdf8;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 8px 12px 10px; border-radius: 12px; background: #fff;
+  border: 1px solid #cbd5e1; border-top: 5px solid var(--lane);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, .06);
+}
+.pp-card-head { display: flex; align-items: center; gap: 8px; }
+.pp-badge {
+  padding: 2px 9px; border-radius: 999px;
+  background: var(--lane); color: #0f172a; font-size: 12px; font-weight: 800;
+}
+.pp-steps { font-size: 12px; font-weight: 700; color: #7c3aed; }
+.pp-card-body { display: flex; align-items: center; gap: 10px; }
+.pp-card .pp-fig { width: 88px; flex: 0 0 88px; height: auto; display: block; }
+.pp-given { margin: 0; font-size: 13px; line-height: 1.4; color: #0f172a; }
+
+.pp-line { fill: none; stroke: #16181c; stroke-width: 1.8; stroke-linejoin: round; }
+.pp-mark { fill: none; stroke: #b91c1c; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.pp-pt { font-size: 8px; font-weight: 700; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
+.pp-len { font-size: 8px; font-weight: 700; fill: #1d4ed8; text-anchor: middle; dominant-baseline: central; }
+
+.pp-board { width: 100%; height: auto; max-height: calc(100vh - 290px); min-height: 260px; display: block; margin: 0 auto; user-select: none; }
+.pp-bg { fill: #10243a; }
+.pp-grid { stroke: rgba(148, 197, 255, .12); stroke-width: 1; stroke-dasharray: 2 4; }
+
+.pp-tile { --w: #38bdf8; }
+.pp-casing, .pp-metal, .pp-water { stroke-linecap: butt; fill: none; }
+.pp-casing { stroke: #0b1522; stroke-width: 22; }
+.pp-metal { stroke: #8fa3b8; stroke-width: 15; }
+.pp-water { stroke: var(--w); stroke-width: 8; opacity: 0; transition: opacity .12s; }
+.pp-casing-j { fill: #0b1522; }
+.pp-metal-j { fill: #8fa3b8; }
+.pp-water-j { fill: var(--w); opacity: 0; transition: opacity .12s; }
+.pp-water.on, .pp-water-j.on { opacity: 1; }
+
+.pp-rot { transform-origin: 30px 30px; transition: transform .18s ease-out; }
+
+.pp-hit { fill: transparent; }
+.pp-turn { cursor: pointer; outline: none; }
+.pp-turn:hover .pp-hit { fill: rgba(148, 197, 255, .12); }
+.pp-turn:focus-visible .pp-hit { stroke: #fbbf24; stroke-width: 2; }
+
+.pp-disc { fill: #1e3a5f; stroke: #fbbf24; stroke-width: 3; }
+.pp-knob { fill: #fbbf24; stroke: #78350f; stroke-width: 1.5; }
+.pp-switch .pp-metal { stroke-width: 12; }
+.pp-switch .pp-casing { stroke-width: 18; }
+.pp-switch .pp-arm { stroke: #f59e0b; }
+.pp-arrow { fill: #fef3c7; stroke: #78350f; stroke-width: 1.2; stroke-linejoin: round; }
+.pp-linkt { font-size: 13px; font-weight: 900; text-anchor: middle; dominant-baseline: central; paint-order: stroke; stroke: #10243a; stroke-width: 4px; }
+
+.pp-wheel { fill: none; stroke: #f59e0b; stroke-width: 3; }
+.pp-spoke { stroke: #f59e0b; stroke-width: 2.4; }
+.pp-tag {
+  font-size: 13px; font-weight: 800; text-anchor: middle; dominant-baseline: central;
+  paint-order: stroke; stroke: #10243a; stroke-width: 4px;
+}
+.pp-tag-mid { fill: #fde68a; }
+.pp-tag-int { fill: #a7f3d0; }
+.bad > .pp-wheel { stroke: #ef4444; stroke-width: 4; }
+.bad > .pp-spoke { stroke: #ef4444; }
+.bad > .pp-tag { fill: #fca5a5; }
+
+.pp-tank { fill: #1d4ed8; stroke: #e2e8f0; stroke-width: 2; }
+.pp-tank-t { font-size: 8.5px; font-weight: 800; fill: #fff; text-anchor: middle; dominant-baseline: central; }
+.pp-tank-n { font-size: 18px; fill: #0f172a; }
+
+.pp-grate { fill: #334155; stroke: #94a3b8; stroke-width: 2; }
+.pp-grate-x { fill: #475569; stroke: #64748b; }
+.pp-bars { stroke: #0b1522; stroke-width: 3; }
+
+.pp-out { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; transition: fill .2s, stroke .2s; }
+.pp-out-x { fill: #e2e8f0; stroke-dasharray: 4 3; }
+.pp-out-t { font-size: 15px; font-weight: 700; fill: #0f172a; dominant-baseline: central; }
+.pp-out-tx { fill: #475569; font-style: italic; }
+.pp-out.good { fill: #dcfce7; stroke: #16a34a; stroke-width: 2.5; }
+.pp-out.bad { fill: #fee2e2; stroke: #dc2626; stroke-width: 2.5; }
+
+.pp-relay { --w: #38bdf8; fill: #ede9fe; stroke: #a78bfa; stroke-width: 2; transition: stroke .2s; }
+.pp-relay.wet { stroke: var(--w); stroke-width: 4; }
+.pp-relay.bad, .pp-relay.wet.bad { fill: #fee2e2; stroke: #dc2626; stroke-width: 4; }
+.pp-relay-t { font-size: 15px; font-weight: 700; fill: #4c1d95; dominant-baseline: central; }
+
+.pp-drop { animation: pp-drop .7s ease-out infinite; }
+.pp-ring { fill: none; stroke: #f87171; stroke-width: 2.5; animation: pp-ring 1s ease-out infinite; }
+.pp-mixdot { fill: rgba(248, 113, 113, .18); stroke: #f87171; stroke-width: 2; stroke-dasharray: 4 3; }
+@keyframes pp-drop {
+  0% { transform: translate(0, 0); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+}
+@keyframes pp-ring {
+  0% { opacity: 1; r: 6; }
+  100% { opacity: 0; r: 18; }
+}
+
+.pp-actions { display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.pp-feed { flex: 1 1 280px; display: flex; flex-direction: column; gap: 6px; }
+.pp-msg { margin: 0; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.45; border-left-width: 5px !important; }
+.pp-msg-leak { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+.pp-msg-bad { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.pp-msg-good { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.pp-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+
+.pp-btn {
+  font: inherit; font-weight: 700; font-size: 14px; cursor: pointer;
+  padding: 9px 16px; border-radius: 10px; border: 1px solid #cbd5e1;
+  background: #fff; color: #0f172a;
+}
+.pp-btn:disabled { opacity: .5; cursor: default; }
+.pp-btn-ghost:hover { background: #f1f5f9; }
+.pp-go { background: #1d4ed8; border-color: #1d4ed8; color: #fff; font-size: 15px; padding: 10px 20px; }
+.pp-go:hover:not(:disabled) { background: #1e40af; }
+
+.pp-done { display: none; text-align: center; padding: 16px; border-radius: 12px; background: #fffbeb; border: 1px solid #fcd34d; }
+.pp-done.show { display: block; }
+.pp-done-stars { margin: 0; font-size: 30px; color: #f59e0b; letter-spacing: 4px; }
+.pp-done-t { margin: 4px 0 10px; font-size: 17px; font-weight: 700; color: #0f172a; }
+.pp-done-s { margin: -4px 0 10px; font-size: 14px; color: #475569; }
