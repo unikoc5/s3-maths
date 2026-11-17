@@ -741,13 +741,13 @@
     comp.ratio.value = 4;
     comp.connect(ctx.destination);
     audio.master = ctx.createGain();
-    audio.master.gain.value = audio.muted ? 0 : 0.85;
+    audio.master.gain.value = audio.muted ? 0 : 5.1;
     audio.master.connect(comp);
     audio.music = ctx.createGain();
     audio.music.gain.value = 0;
     audio.music.connect(audio.master);
     audio.sfx = ctx.createGain();
-    audio.sfx.gain.value = 0.9;
+    audio.sfx.gain.value = 4.8;
     audio.sfx.connect(audio.master);
     var buf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
     var data = buf.getChannelData(0);
@@ -805,7 +805,7 @@
 
   var BEDS = {
     heist: {
-      bpm: 92, swing: 0.64, bars: 4, vol: 0.5,
+      bpm: 92, swing: 0.64, bars: 4, vol: 4.05,
       bass: [[38, 41, 45, 48], [34, 38, 41, 45], [31, 34, 38, 41], [33, 37, 40, 43]],
       chords: [[53, 57, 60, 64], [50, 53, 57, 62], [50, 53, 55, 58], [49, 52, 55, 57]],
       play: function (t, i, bar, e) {
@@ -825,7 +825,7 @@
       },
     },
     tension: {
-      bpm: 124, swing: 0.5, bars: 4, vol: 0.45,
+      bpm: 124, swing: 0.5, bars: 4, vol: 3.9,
       roots: [33, 33, 29, 31],
       play: function (t, i, bar, e) {
         var r = this.roots[bar];
@@ -840,7 +840,7 @@
       },
     },
     triumph: {
-      bpm: 104, swing: 0.5, bars: 4, vol: 0.45,
+      bpm: 104, swing: 0.5, bars: 4, vol: 3.9,
       chords: [[62, 66, 69, 73], [59, 62, 66, 69], [55, 59, 62, 66], [57, 61, 64, 66]],
       roots: [38, 35, 31, 33],
       play: function (t, i, bar, e) {
@@ -940,7 +940,7 @@
   function setMuted(m) {
     audio.muted = m;
     store(KEY_MUTE, m ? "1" : "0");
-    if (audio.master) audio.master.gain.setTargetAtTime(m ? 0 : 0.85, audio.ctx.currentTime, 0.05);
+    if (audio.master) audio.master.gain.setTargetAtTime(m ? 0 : 5.1, audio.ctx.currentTime, 0.05);
     muteBtn.textContent = m ? "SOUND OFF" : "SOUND ON";
   }
 

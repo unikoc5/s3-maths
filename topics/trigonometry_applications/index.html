@@ -43,7 +43,7 @@
     .summary-sheet img { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 20px rgba(15,23,42,.12); }
   </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
-  <link rel="stylesheet" href="proto/proto.css?v=20261015-heist4">
+  <link rel="stylesheet" href="proto/proto.css?v=20261116-vol34">
 </head>
 <body class="paper-labs guibiao-page">
   <main class="jm-page">
@@ -61,9 +61,17 @@
     </nav>
 
         <section id="panel-concept" class="jm-panel">
-      <section class="block">
-        <h2>Concept &amp; Formula</h2>
-        <p class="hint">Coming soon.</p>
+      <section class="block jm-deck-panel">
+      <div class="subnav" id="concept-subnav" aria-label="Concept decks">
+        <button class="chip active" type="button" data-deck="gradient">Gradient &amp; inclination</button>
+        <button class="chip" type="button" data-deck="elevation">Elevation &amp; depression</button>
+        <button class="chip" type="button" data-deck="bearings">Bearings</button>
+      </div>
+      <div class="deck-wrap">
+        <iframe id="deck-frame" src="../../slides/trigonometry_applications/gradient/index.html" title="JM35 concept slides"></iframe>
+        <div class="deck-advance" id="deck-advance" role="presentation"></div>
+      </div>
+      <p class="hint">Click / Space = next. Left = previous. Three short stories: slope, looking up or down, and bearings.</p>
       </section>
     </section>
 <section id="panel-tools" class="jm-panel hidden">
@@ -172,7 +180,7 @@
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="guibiao-tools.js?v=20260830a"></script>
   <script defer src="trigo-applications-comics.js?v=20260829-fu"></script>
-  <script defer src="proto/proto.js?v=20261015-heist4"></script>
+  <script defer src="proto/proto.js?v=20261116-vol34"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
@@ -185,6 +193,21 @@
           ],
         });
       }
+      var base = "../../slides/trigonometry_applications/";
+      var DECKS = {
+        "gradient": base + "gradient/index.html",
+        "elevation": base + "elevation/index.html",
+        "bearings": base + "bearings/index.html",
+      };
+      var frame = document.getElementById("deck-frame");
+      document.querySelectorAll("#concept-subnav [data-deck]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.querySelectorAll("#concept-subnav .chip").forEach(function (x) {
+            x.classList.toggle("active", x === btn);
+          });
+          if (frame) frame.src = DECKS[btn.getAttribute("data-deck")];
+        });
+      });
     });
   </script>
   <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>

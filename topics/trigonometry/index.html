@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
@@ -915,7 +915,8 @@
     .summary-sheet img { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 20px rgba(15,23,42,.12); }
   </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260906-comicw">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
-  <link rel="stylesheet" href="blackout-voyage.css?v=20261104-cockpit4">
+  <link rel="stylesheet" href="blackout-voyage.css?v=20261115-cockpit12">
+  <link rel="stylesheet" href="trig-mini-prototypes.css?v=20261115-proto2">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
@@ -1101,11 +1102,28 @@
     </section>
 
         <section id="panel-games" class="jm-panel hidden">
-      <section class="block">
+      <div class="subnav" id="games-subnav" aria-label="Games">
+        <button class="chip active" type="button" data-game="voyage">Game 1 · Voyage</button>
+        <button class="chip" type="button" data-game="aim">Try · Aim Sight</button>
+        <button class="chip" type="button" data-game="rhythm">Try · Rhythm Lock</button>
+      </div>
+      <section class="block" id="bv-game">
         <p class="part-title">Game 1 · Trigonometric relations</p>
         <h2>Blackout Voyage</h2>
         <p class="hint">No calculators — exact values only. Work through special angles, identities, complementary angles and proofs. Every wrong answer costs 1000 ft of altitude; hit the sea and the chapter restarts. Clear a chapter with full altitude for three stars.</p>
         <div class="bv-stage" id="bv-stage" role="application" aria-label="Blackout Voyage"></div>
+      </section>
+      <section class="block game-off" id="tm-game-aim" hidden>
+        <p class="part-title">Prototype · Special angles</p>
+        <h2>Aim Sight</h2>
+        <p class="hint">One shot — pick the exact \(\tan\theta\), fire the beam at the beacon.</p>
+        <div id="tm-aim"></div>
+      </section>
+      <section class="block game-off" id="tm-game-rhythm" hidden>
+        <p class="part-title">Prototype · Exact-value recognition</p>
+        <h2>Rhythm Lock</h2>
+        <p class="hint">One wave — Lock only when a true exact value is in the blue zone. Space works too.</p>
+        <div id="tm-rhythm"></div>
       </section>
     </section>
 <section id="panel-comics" class="jm-panel hidden">
@@ -1136,7 +1154,10 @@
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="trigonometry-tools.js?v=20260926-pyth3"></script>
   <script defer src="trigo-relations-comics.js?v=20260829-fu"></script>
-  <script defer src="blackout-voyage.js?v=20261104-cockpit4"></script>
+  <script defer src="blackout-voyage-zh-lookup.js?v=20261115-bv-i18n3"></script>
+  <script defer src="blackout-voyage-data.js?v=20261115-cockpit12"></script>
+  <script defer src="blackout-voyage.js?v=20261115-cockpit12"></script>
+  <script defer src="trig-mini-prototypes.js?v=20261115-proto2"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();

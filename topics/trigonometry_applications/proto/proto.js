@@ -9,6 +9,18 @@
   if (!stage) return;
   // Resolved from the script URL because the game is mounted from two different pages.
   var ART = ((document.currentScript && document.currentScript.src) || "").replace(/proto\/proto\.js(\?.*)?$/, "game/");
+  var LANG_KEY = "jm35-lvp-lang";
+  var lang = (function () {
+    try { var l = localStorage.getItem(LANG_KEY); if (l === "zh" || l === "en") return l; } catch (e) {}
+    return "en";
+  })();
+  function L(en, zh) { return { en: en, zh: zh }; }
+  function T(x) {
+    if (x == null) return x;
+    if (typeof x === "object" && ("en" in x || "zh" in x)) return x[lang] != null ? x[lang] : (x.en || x.zh || "");
+    return x;
+  }
+  function TT(arr) { return (arr || []).map(T); }
 
   var NS = "http://www.w3.org/2000/svg";
   var DEG = Math.PI / 180;
@@ -256,22 +268,23 @@
 
   function buildPanel(o) {
     panel.innerHTML =
-      '<div class="lvp-kicker">' + o.kicker + "</div>" +
-      "<h3>" + o.title + "</h3>" +
-      '<p class="lvp-task">' + o.task + "</p>" +
-      (o.info ? '<ul class="lvp-info">' + o.info.map(function (s) { return "<li>" + s + "</li>"; }).join("") + "</ul>" : "") +
+      '<div class="lvp-kicker">' + T(o.kicker) + "</div>" +
+      "<h3>" + T(o.title) + "</h3>" +
+      '<p class="lvp-task">' + T(o.task) + "</p>" +
+      (o.info ? '<ul class="lvp-info">' + o.info.map(function (s) { return "<li>" + T(s) + "</li>"; }).join("") + "</ul>" : "") +
       '<div class="lvp-fields">' + o.fields.map(function (f) {
-        return '<label class="lvp-field"><span>' + f.label + (f.sub ? "<small>" + f.sub + "</small>" : "") + "</span>" +
-          '<input data-f="' + f.id + '" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="' + (f.ph || "") + '">' +
+        return '<label class="lvp-field"><span>' + T(f.label) + (f.sub ? "<small>" + T(f.sub) + "</small>" : "") + "</span>" +
+          '<input data-f="' + f.id + '" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="' + T(f.ph || "") + '">' +
           "<em>" + (f.unit || "") + "</em></label>";
       }).join("") + "</div>" +
-      '<div class="lvp-actions"><button type="button" class="lvp-btn go">' + o.action + "</button>" +
+      '<div class="lvp-actions"><button type="button" class="lvp-btn go">' + T(o.action) + "</button>" +
       (o.tries ? '<span class="lvp-tries"></span>' : "") + "</div>" +
       '<div class="lvp-say"></div>' +
       '<ol class="lvp-hints" hidden></ol>' +
-      '<div class="lvp-after"><button type="button" class="lvp-btn ghost hint">Hint</button>' +
-      '<button type="button" class="lvp-btn ghost snd">' + (audio.muted ? "Sound off" : "Sound on") + "</button>" +
-      '<button type="button" class="lvp-btn next" hidden>' + (o.nextLabel || "Next level ▸") + "</button></div>";
+      '<div class="lvp-after"><button type="button" class="lvp-btn ghost hint"></button>' +
+      '<button type="button" class="lvp-btn ghost lang"></button>' +
+      '<button type="button" class="lvp-btn ghost snd"></button>' +
+      '<button type="button" class="lvp-btn next" hidden>' + T(o.nextLabel || L("Next level ▸", "下一關 ▸")) + "</button></div>";
 
     var go = panel.querySelector(".go");
     var say = panel.querySelector(".lvp-say");
@@ -282,24 +295,31 @@
     var tries = o.tries || 0;
     var hints = o.hints || [], shown = 0;
 
-    function hintLabel() { hintBtn.textContent = shown < hints.length ? "Hint " + (shown + 1) + "/" + hints.length : "No more hints"; hintBtn.disabled = shown >= hints.length; }
+    function hintLabel() {
+      hintBtn.textContent = shown < hints.length
+        ? T(L("Hint " + (shown + 1) + "/" + hints.length, "提示 " + (shown + 1) + "/" + hints.length))
+        : T(L("No more hints", "沒有更多提示"));
+      hintBtn.disabled = shown >= hints.length;
+    }
     hintLabel();
     hintBtn.addEventListener("click", function () {
       if (shown >= hints.length) return;
-      hintList.appendChild(el("li", null, hints[shown++]));
+      hintList.appendChild(el("li", null, T(hints[shown++])));
       hintList.hidden = false;
       hintLabel();
     });
     panel.querySelector(".snd").addEventListener("click", function () { ensureAudio(); setMuted(!audio.muted); });
+    panel.querySelector(".lang").addEventListener("click", function () { setLang(lang === "zh" ? "en" : "zh"); });
     go.addEventListener("click", function () { if (!go.disabled) o.onAction(); });
     next.addEventListener("click", function () { if (o.onNext) o.onNext(); });
     Array.prototype.forEach.call(panel.querySelectorAll("input"), function (inp) {
       inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); go.click(); } });
     });
+    toolLabels();
 
     function drawTries() {
       if (!triesEl) return;
-      var h = (o.triesLabel || "Tries") + " ";
+      var h = T(o.triesLabel || L("Tries", "次數")) + " ";
       for (var i = 0; i < o.tries; i++) h += '<i class="' + (i < tries ? "on" : "") + '"></i>';
       triesEl.innerHTML = h;
     }
@@ -313,12 +333,12 @@
         for (var i = 0; i < ids.length; i++) {
           var f = o.fields.filter(function (x) { return x.id === ids[i]; })[0];
           var s = this.raw(ids[i]).trim();
-          if (!s) return "Fill in " + f.label + ".";
-          if (isNaN(this.val(ids[i]))) return f.label + ": “" + s + "” is not a valid number.";
+          if (!s) return T(L("Fill in " + T(f.label) + ".", "請填寫「" + T(f.label) + "」。"));
+          if (isNaN(this.val(ids[i]))) return T(L(T(f.label) + ": “" + s + "” is not a valid number.", T(f.label) + "：「" + s + "」不是有效數字。"));
         }
         return "";
       },
-      say: function (msg, kind) { say.className = "lvp-say " + (kind || ""); say.textContent = msg; },
+      say: function (msg, kind) { say.className = "lvp-say " + (kind || ""); say.textContent = T(msg); },
       lock: function (b) {
         go.disabled = b;
         Array.prototype.forEach.call(panel.querySelectorAll("input"), function (i) { i.disabled = b; });
@@ -498,7 +518,7 @@
     sv("rect", { x: R.x - 20, y: R.y - 20, width: 40, height: 40, rx: 4, fill: "#243752", stroke: C.cy, "stroke-width": 2 }, mg);
     sv("rect", { x: R.x - 10, y: R.y - 10, width: 20, height: 20, rx: 2, fill: "#101a2c", stroke: "rgba(34,227,255,.5)" }, mg);
     sv("circle", { cx: R.x, cy: R.y, r: 3, fill: C.cy, filter: "url(#lvp-glow)" }, mg);
-    txt(mg, R.x, R.y + 44, "R · first rooftop", { size: 15 });
+    txt(mg, R.x, R.y + 44, T(L("R · first rooftop", "R · 第一座天台")), { size: 15 });
     txt(mg, R.x, R.y + 63, ROOF + " m above sea level", { size: 14, fill: C.gd, weight: 600 });
 
     var sx = FR.x + 26, sy = FR.y + FR.h - 30;
@@ -507,7 +527,7 @@
     line(mg, { x: sx, y: sy - 6 }, { x: sx, y: sy + 6 }, C.ink, 2);
     line(mg, { x: sx + SC, y: sy - 6 }, { x: sx + SC, y: sy + 6 }, C.ink, 2);
     txt(mg, sx + SC / 2, sy - 12, "1 cm", { size: 13 });
-    txt(mg, sx + SC + 14, sy + 5, "Scale 1 : 10 000", { size: 15, anchor: "start", fill: C.gd });
+    txt(mg, sx + SC + 14, sy + 5, T(L("Scale 1 : 10 000", "比例 1 : 10 000")), { size: 15, anchor: "start", fill: C.gd });
     compass(mg, FR.x + FR.w - 48, FR.y + 52);
     frameEdge(map);
 
@@ -533,8 +553,8 @@
       line(selLayer, a.p, R, "rgba(34,227,255,.35)", 8, null, { filter: "url(#lvp-blur)" });
       line(selLayer, a.p, R, C.cy, 2.5, "9 7");
       var m = { x: (a.p.x + R.x) / 2, y: (a.p.y + R.y) / 2 };
-      txt(selLayer, m.x + 14, m.y - 10, fx(a.cm, 1) + " cm on the map", { size: 16, fill: C.cy, anchor: "start" });
-      api.say("Anchor " + a.id + " selected. " + a.id + "R measures " + fx(a.cm, 1) + " cm on the map; " + a.id + " is " + a.h + " m above sea level.", "info");
+      txt(selLayer, m.x + 14, m.y - 10, fx(a.cm, 1) + " " + T(L("cm on the map", "cm（圖上）")), { size: 16, fill: C.cy, anchor: "start" });
+      api.say(T(L("Anchor " + a.id + " selected. " + a.id + "R measures " + fx(a.cm, 1) + " cm on the map; " + a.id + " is " + a.h + " m above sea level.", "已選錨點 " + a.id + "。" + a.id + "R 在圖上量得 " + fx(a.cm, 1) + " cm；" + a.id + " 海拔 " + a.h + " m。")), "info");
     }
 
     var side = sv("g", { display: "none" }, root);
@@ -542,30 +562,30 @@
 
     function launch() {
       if (busy) return;
-      if (!sel) { api.say("Pick an anchor (A, B or C) on the map first.", "bad"); return; }
-      var cm = sel.cm, hm = sel.hm, v = sel.v, th = sel.th, L = sel.L;
+      if (!sel) { api.say(L("Pick an anchor (A, B or C) on the map first.", "請先在地圖上選錨點（A、B 或 C）。"), "bad"); return; }
+      var cm = sel.cm, hm = sel.hm, v = sel.v, th = sel.th, cableM = sel.L;
       var bad = api.check(["h", "th", "L"]);
       if (bad) { api.say(bad, "bad"); return; }
       var ih = api.val("h"), ith = api.val("th"), iL = api.val("L");
       var errs = [];
       if (Math.abs(ih - hm) > 0.5) {
-        if (Math.abs(ih - cm) < 0.05) errs.push("Horizontal distance: " + fx(cm, 1) + " cm is the map length. Convert with the scale 1 : 10 000.");
-        else if (Math.abs(ih - cm * 10000) < 1) errs.push("Horizontal distance: that number is in cm. Convert to metres.");
-        else errs.push("Horizontal distance is wrong: real distance = map length × 10 000, then change to m.");
+        if (Math.abs(ih - cm) < 0.05) errs.push(L("Horizontal distance: " + fx(cm, 1) + " cm is the map length. Convert with the scale 1 : 10 000.", "水平距離：" + fx(cm, 1) + " cm 是圖上長度。請用比例 1 : 10 000 換算。"));
+        else if (Math.abs(ih - cm * 10000) < 1) errs.push(L("Horizontal distance: that number is in cm. Convert to metres.", "水平距離：那是 cm，請換成公尺。"));
+        else errs.push(L("Horizontal distance is wrong: real distance = map length × 10 000, then change to m.", "水平距離不對：實際距離 = 圖上長度 × 10 000，再換成 m。"));
       }
       if (Math.abs(ith - th) > 0.2) {
-        if (Math.abs(ith - atand(hm / v)) < 0.3) errs.push("Inclination: vertical and horizontal are swapped. tan θ = vertical ÷ horizontal.");
-        else errs.push("Inclination is wrong: vertical distance = difference in height, then use tan⁻¹.");
+        if (Math.abs(ith - atand(hm / v)) < 0.3) errs.push(L("Inclination: vertical and horizontal are swapped. tan θ = vertical ÷ horizontal.", "傾角：垂直和水平對調了。tan θ = 垂直 ÷ 水平。"));
+        else errs.push(L("Inclination is wrong: vertical distance = difference in height, then use tan⁻¹.", "傾角不對：垂直距離是高度差，再用 tan⁻¹。"));
       }
-      if (Math.abs(iL - L) > Math.max(1, L * 0.005)) {
-        if (Math.abs(iL - (hm + v)) < 1) errs.push("Cable length is not vertical + horizontal: the cable is the hypotenuse (Pythagoras, or sin / cos).");
-        else errs.push("Cable length is wrong: the cable is the hypotenuse of the right-angled triangle.");
+      if (Math.abs(iL - cableM) > Math.max(1, cableM * 0.005)) {
+        if (Math.abs(iL - (hm + v)) < 1) errs.push(L("Cable length is not vertical + horizontal: the cable is the hypotenuse (Pythagoras, or sin / cos).", "纜繩長不是垂直加水平：纜繩是斜邊（畢氏或 sin/cos）。"));
+        else errs.push(L("Cable length is wrong: the cable is the hypotenuse of the right-angled triangle.", "纜繩長不對：纜繩是直角三角形的斜邊。"));
       }
-      if (errs.length) { flashRed(); api.say(errs.join("\n"), "bad"); return; }
-      ride(hm, v, th, L);
+      if (errs.length) { flashRed(); api.say(errs.map(T).join("\n"), "bad"); return; }
+      ride(hm, v, th, cableM);
     }
 
-    function ride(hm, v, th, L) {
+    function ride(hm, v, th, cableM) {
       busy = true;
       api.lock(true);
       map.setAttribute("display", "none");
@@ -590,15 +610,15 @@
 
       txt(sg, A.x, A.y - 48, sel.id + "  ·  " + sel.h + " m", { size: 16, fill: C.gd });
       sv("rect", { x: Rt.x + 8, y: roofY + 14, width: 84, height: 22, rx: 4, fill: "rgba(4,8,16,.75)" }, sg);
-      txt(sg, Rt.x + 50, roofY + 30, "Roof · " + ROOF + " m", { size: 14, fill: C.gd, cls: "nohalo" });
+      txt(sg, Rt.x + 50, roofY + 30, T(L("Roof · ", "天台 · ")) + ROOF + " m", { size: 14, fill: C.gd, cls: "nohalo" });
       line(sg, A, { x: Rt.x, y: A.y }, "rgba(232,244,255,.35)", 1.5, "6 6");
       dimV(sg, Rt.x - 16, A.y, roofY, fx(v, 0) + " m", -1);
       dimH(sg, A.x, Rt.x, roofY + 48, fx(hm, 0) + " m");
       arc(sg, A, 70, 0, th, C.gd);
       txt(sg, A.x + 80, A.y + 22, fx(th, 1) + "°", { size: 16, fill: C.gd, anchor: "start" });
 
-      var dir = { x: (Rt.x - A.x) / (L * s), y: (Rt.y - A.y) / (L * s) };
-      var cableLen = Math.min(L, LMAX) * s;
+      var dir = { x: (Rt.x - A.x) / (cableM * s), y: (Rt.y - A.y) / (cableM * s) };
+      var cableLen = Math.min(cableM, LMAX) * s;
       var cableGlow = line(sg, A, A, "rgba(207,227,245,.35)", 7, null, { filter: "url(#lvp-blur)" });
       var cable = line(sg, A, A, "#e6f0ff", 2.5);
       var rider = sv("g", { transform: "translate(" + A.x + "," + (A.y + 6) + ")" }, sg);
@@ -615,11 +635,11 @@
         var e = { x: A.x + dir.x * cableLen * k, y: A.y + dir.y * cableLen * k };
         [cable, cableGlow].forEach(function (c) { c.setAttribute("x2", e.x); c.setAttribute("y2", e.y); });
       }, function () {
-        if (L > LMAX) {
+        if (cableM > LMAX) {
           var end = { x: A.x + dir.x * cableLen, y: A.y + dir.y * cableLen };
           anim(700, function (k) { [cable, cableGlow].forEach(function (c) { c.setAttribute("y2", end.y + 160 * k * k); c.setAttribute("x2", end.x - 40 * k); }); }, function () {
             flashRed();
-            finish(false, "The cable is too short. This route needs " + fx(L, 1) + " m, but the cable is only 400 m.");
+            finish(false, L("The cable is too short. This route needs " + fx(cableM, 1) + " m, but the cable is only 400 m.", "纜繩太短。這條路線需要 " + fx(cableM, 1) + " m，但纜繩只有 400 m。"));
           });
           return;
         }
@@ -627,22 +647,22 @@
           anim(900, function (k) { moveRider(k * k); }, function () {
             flashRed();
             sv("circle", { cx: Rt.x, cy: roofY, r: 26, fill: "rgba(255,77,94,.55)", filter: "url(#lvp-glow-lg)" }, sg);
-            txt(sg, Rt.x - 30, roofY - 56, "CRASH", { size: 34, fill: C.rd, anchor: "end", ls: ".08em" });
-            finish(false, "Too steep: " + fx(th, 1) + "° is more than 25°. You hit the wall at full speed.");
+            txt(sg, Rt.x - 30, roofY - 56, T(L("CRASH", "墜毀")), { size: 34, fill: C.rd, anchor: "end", ls: ".08em" });
+            finish(false, L("Too steep: " + fx(th, 1) + "° is more than 25°. You hit the wall at full speed.", "太陡：" + fx(th, 1) + "° 超過 25°。你全速撞牆了。"));
           });
           return;
         }
         if (th < TMIN) {
           anim(2200, function (k) { moveRider(0.5 * (1 - Math.pow(1 - k, 3))); }, function () {
             flashRed();
-            finish(false, "Too shallow: " + fx(th, 1) + "° is less than 10°. You stopped halfway, hanging in mid-air.");
+            finish(false, L("Too shallow: " + fx(th, 1) + "° is less than 10°. You stopped halfway, hanging in mid-air.", "太平：" + fx(th, 1) + "° 少於 10°。你停在半空中。"));
           });
           return;
         }
         anim(2000, function (k) { moveRider(k * k * (3 - 2 * k)); }, function () {
           sv("circle", { cx: Rt.x, cy: roofY, r: 22, fill: "rgba(62,240,160,.5)", filter: "url(#lvp-glow-lg)" }, sg);
-          txt(sg, Rt.x + 50, roofY - 50, "LANDED", { size: 26, fill: C.ok, ls: ".1em" });
-          finish(true, "Landed. Inclination " + fx(th, 1) + "° is within 10°–25°, and the " + fx(L, 1) + " m cable is under 400 m.");
+          txt(sg, Rt.x + 50, roofY - 50, T(L("LANDED", "著陸")), { size: 26, fill: C.ok, ls: ".1em" });
+          finish(true, L("Landed. Inclination " + fx(th, 1) + "° is within 10°–25°, and the " + fx(cableM, 1) + " m cable is under 400 m.", "著陸成功。傾角 " + fx(th, 1) + "° 在 10°–25° 內，" + fx(cableM, 1) + " m 纜繩也少於 400 m。"));
         });
       });
     }
@@ -652,7 +672,7 @@
       if (ok) { api.win(); return; }
       var back = sv("g", { class: "lvp-pick" }, side);
       sv("rect", { x: FR.x + 20, y: FR.y + 20, width: 170, height: 42, rx: 10, fill: "rgba(5,8,15,.9)", stroke: C.cy, "stroke-width": 1.5 }, back);
-      txt(back, FR.x + 105, FR.y + 47, "← Back to map", { size: 16, fill: C.cy, cls: "nohalo" });
+      txt(back, FR.x + 105, FR.y + 47, T(L("← Back to map", "← 返回地圖")), { size: 16, fill: C.cy, cls: "nohalo" });
       back.addEventListener("click", function () {
         side.setAttribute("display", "none");
         map.setAttribute("display", "");
@@ -692,8 +712,8 @@
     line(g, { x: FR.x, y: GY }, { x: FR.x + FR.w, y: GY }, "#2d4062", 3);
     tower(g, A.x - 150, A.y, 150, GY - A.y, false);
     tower(g, Bx, Bt.y, 140, GY - Bt.y, false);
-    txt(g, A.x - 75, A.y + 34, "BUILDING A", { size: 13, fill: C.mut, ls: ".18em" });
-    txt(g, Bx + 70, Bt.y + 34, "BUILDING B", { size: 13, fill: C.mut, ls: ".18em" });
+    txt(g, A.x - 75, A.y + 34, T(L("BUILDING A", "建築物 A")), { size: 13, fill: C.mut, ls: ".18em" });
+    txt(g, Bx + 70, Bt.y + 34, T(L("BUILDING B", "建築物 B")), { size: 13, fill: C.mut, ls: ".18em" });
 
     line(g, A, { x: Bx + 150, y: A.y }, "rgba(232,244,255,.4)", 1.5, "6 6");
     line(g, A, Bt, "rgba(255,198,90,.85)", 2, "8 6");
@@ -715,20 +735,20 @@
       if (bad) { api.say(bad, "bad"); return; }
       var id = api.val("d"), ihb = api.val("hb"), iL = api.val("L"), errs = [];
       if (!rel(id, P.d, 0.01, 0.5)) {
-        if (rel(id, P.HA * tand(P.be), 0.01, 0.5)) errs.push("Horizontal distance: tan β = vertical ÷ horizontal, so horizontal = height ÷ tan β, not × tan β.");
-        else if (rel(id, P.HA / tand(P.al), 0.01, 0.5)) errs.push("Horizontal distance: use β, the angle to the FOOT of B. Its triangle has A's full height as the vertical side.");
-        else errs.push("Horizontal distance is wrong. Use β and Building A's height.");
+        if (rel(id, P.HA * tand(P.be), 0.01, 0.5)) errs.push(L("Horizontal distance: tan β = vertical ÷ horizontal, so horizontal = height ÷ tan β, not × tan β.", "水平距離：tan β = 垂直 ÷ 水平，所以水平 = 高度 ÷ tan β，不是 × tan β。"));
+        else if (rel(id, P.HA / tand(P.al), 0.01, 0.5)) errs.push(L("Horizontal distance: use β, the angle to the FOOT of B. Its triangle has A's full height as the vertical side.", "水平距離：用 β（到 B 腳的角）。其三角形垂直邊是 A 的全高。"));
+        else errs.push(L("Horizontal distance is wrong. Use β and Building A's height.", "水平距離不對。用 β 和建築物 A 的高度。"));
       }
       if (!near(ihb, P.HB, 0.8)) {
-        if (near(ihb, P.drop, 0.8)) errs.push("Height of B: that is how far B's roof is BELOW A's roof. Subtract it from A's height.");
-        else errs.push("Height of B is wrong. First use α to find how far B's roof is below A's roof.");
+        if (near(ihb, P.drop, 0.8)) errs.push(L("Height of B: that is how far B's roof is BELOW A's roof. Subtract it from A's height.", "B 的高度：那是 B 天台比 A 低多少。要用 A 的高度減去它。"));
+        else errs.push(L("Height of B is wrong. First use α to find how far B's roof is below A's roof.", "B 的高度不對。先用 α 求 B 天台比 A 低多少。"));
       }
       if (!rel(iL, P.L, 0.01, 0.8)) {
-        if (near(iL, P.d + P.drop, 1.5)) errs.push("Cable: the cable is the hypotenuse, not horizontal + vertical.");
-        else if (rel(iL, Math.hypot(P.d, P.HA), 0.01, 1)) errs.push("Cable: the cable goes to B's roof, not to the foot of B.");
-        else errs.push("Cable length is wrong. It is the hypotenuse of the triangle with angle α.");
+        if (near(iL, P.d + P.drop, 1.5)) errs.push(L("Cable: the cable is the hypotenuse, not horizontal + vertical.", "纜繩：纜繩是斜邊，不是水平加垂直。"));
+        else if (rel(iL, Math.hypot(P.d, P.HA), 0.01, 1)) errs.push(L("Cable: the cable goes to B's roof, not to the foot of B.", "纜繩：纜繩接到 B 天台，不是 B 的腳。"));
+        else errs.push(L("Cable length is wrong. It is the hypotenuse of the triangle with angle α.", "纜繩長不對。它是帶角 α 的三角形斜邊。"));
       }
-      if (errs.length) { flashRed(); api.say(errs.join("\n"), "bad"); return; }
+      if (errs.length) { flashRed(); api.say(errs.map(T).join("\n"), "bad"); return; }
       busy = true;
       api.lock(true);
       man.setAttribute("display", "none");
@@ -736,8 +756,8 @@
       sv("rect", { x: Bt.x + 22, y: Bt.y - 58, width: 6, height: 58, fill: "#2a3a55" }, g);
       zipRide(g, { x: A.x - 9, y: A.y - 56 }, { x: Bt.x + 25, y: Bt.y - 56 }, 1900, function () {
         sv("circle", { cx: Bt.x + 30, cy: Bt.y, r: 22, fill: "rgba(62,240,160,.5)", filter: "url(#lvp-glow-lg)" }, g);
-        txt(g, Bt.x + 75, Bt.y - 70, "LANDED", { size: 24, fill: C.ok, ls: ".1em" });
-        api.say("Landed on Building B. Gap " + fx(P.d, 1) + " m, B is " + fx(P.HB, 1) + " m tall, cable " + fx(P.L, 1) + " m.", "good");
+        txt(g, Bt.x + 75, Bt.y - 70, T(L("LANDED", "著陸")), { size: 24, fill: C.ok, ls: ".1em" });
+        api.say(T(L("Landed on Building B. Gap " + fx(P.d, 1) + " m, B is " + fx(P.HB, 1) + " m tall, cable " + fx(P.L, 1) + " m.", "著陸於建築物 B。間距 " + fx(P.d, 1) + " m，B 高 " + fx(P.HB, 1) + " m，纜繩 " + fx(P.L, 1) + " m。")), "good");
         api.win();
       });
     }
@@ -769,7 +789,7 @@
     sv("rect", { x: FR.x, y: GY, width: FR.w, height: FR.y + FR.h - GY, fill: "#0a101c" }, g);
     tower(g, A.x - 200, A.y, 200, GY - A.y, false);
     tower(g, Tx, Tt.y, 190, GY - Tt.y, true);
-    txt(g, Tx + 95, Tt.y + 34, "CRANE TOWER", { size: 13, fill: C.cy, ls: ".18em" });
+    txt(g, Tx + 95, Tt.y + 34, T(L("CRANE TOWER", "CRANE 塔")), { size: 13, fill: C.cy, ls: ".18em" });
     sv("rect", { x: Tx - 10, y: Tt.y - 6, width: 26, height: 8, fill: "#3a4d6e" }, g);
 
     line(g, A, { x: Tx, y: A.y }, "rgba(232,244,255,.4)", 1.5, "6 6");
@@ -789,16 +809,16 @@
       if (bad) { api.say(bad, "bad"); return; }
       var ith = api.val("th"), iL = api.val("L"), errs = [];
       if (!near(ith, P.th, 0.2)) {
-        if (near(ith, atand(P.d / P.rise), 0.3)) errs.push("Angle: vertical and horizontal are swapped. tan θ = vertical ÷ horizontal.");
-        else if (near(ith, atand(P.HT / P.d), 0.3)) errs.push("Angle: the vertical side starts at YOUR roof, not at the street. Use the height difference.");
-        else errs.push("Angle of elevation is wrong. Find the vertical side first, then use tan⁻¹.");
+        if (near(ith, atand(P.d / P.rise), 0.3)) errs.push(L("Angle: vertical and horizontal are swapped. tan θ = vertical ÷ horizontal.", "角度：垂直和水平對調了。tan θ = 垂直 ÷ 水平。"));
+        else if (near(ith, atand(P.HT / P.d), 0.3)) errs.push(L("Angle: the vertical side starts at YOUR roof, not at the street. Use the height difference.", "角度：垂直邊從你的天台起算，不是地面。用高度差。"));
+        else errs.push(L("Angle of elevation is wrong. Find the vertical side first, then use tan⁻¹.", "仰角不對。先求垂直邊，再用 tan⁻¹。"));
       }
       if (!rel(iL, P.L, 0.006, 0.6)) {
-        if (near(iL, P.rise + P.d, 1)) errs.push("Rope: the rope is the hypotenuse, not vertical + horizontal.");
-        else if (rel(iL, Math.hypot(P.HT, P.d), 0.01, 1)) errs.push("Rope: measure from your roof, not from the street.");
-        else errs.push("Rope length is wrong. The rope is the hypotenuse of the triangle.");
+        if (near(iL, P.rise + P.d, 1)) errs.push(L("Rope: the rope is the hypotenuse, not vertical + horizontal.", "繩：繩是斜邊，不是垂直加水平。"));
+        else if (rel(iL, Math.hypot(P.HT, P.d), 0.01, 1)) errs.push(L("Rope: measure from your roof, not from the street.", "繩：從你的天台量起，不是從地面。"));
+        else errs.push(L("Rope length is wrong. The rope is the hypotenuse of the triangle.", "繩長不對。繩是三角形的斜邊。"));
       }
-      if (errs.length) { flashRed(); api.say(errs.join("\n"), "bad"); return; }
+      if (errs.length) { flashRed(); api.say(errs.map(T).join("\n"), "bad"); return; }
       busy = true;
       api.lock(true);
       man.setAttribute("display", "none");
@@ -806,8 +826,8 @@
         rider.setAttribute("display", "none");
         standing(g, Tt.x + 40, Tt.y);
         sv("circle", { cx: Tt.x + 10, cy: Tt.y, r: 22, fill: "rgba(62,240,160,.5)", filter: "url(#lvp-glow-lg)" }, g);
-        txt(g, Tt.x + 90, Tt.y - 70, "ON THE TOWER", { size: 22, fill: C.ok, ls: ".1em" });
-        api.say("Hooked. Angle of elevation " + fx(P.th, 1) + "°, rope " + fx(P.L, 1) + " m. You're on Crane Tower.", "good");
+        txt(g, Tt.x + 90, Tt.y - 70, T(L("ON THE TOWER", "登上塔樓")), { size: 22, fill: C.ok, ls: ".1em" });
+        api.say(T(L("Hooked. Angle of elevation " + fx(P.th, 1) + "°, rope " + fx(P.L, 1) + " m. You're on Crane Tower.", "鉤住了。仰角 " + fx(P.th, 1) + "°，繩長 " + fx(P.L, 1) + " m。你已登上 Crane 塔。")), "good");
         api.win();
       });
     }
@@ -898,8 +918,8 @@
       sv("animate", { attributeName: "opacity", values: "1;.3;1", dur: "1.2s", repeatCount: "indefinite" }, cg.lastChild);
       dimV(g, p.x + dir * -24, FY, p.y, c.h + " m", -dir);
       var lx2 = p.x + dir * 54;
-      camLabels.push(txt(g, lx2, p.y + 34, "Camera " + c.id, { size: 16, anchor: dir > 0 ? "start" : "end" }));
-      camLabels.push(txt(g, lx2, p.y + 54, "depression " + c.lo + "° – " + c.hi + "°", { size: 15, fill: C.gd, anchor: dir > 0 ? "start" : "end", weight: 600 }));
+      camLabels.push(txt(g, lx2, p.y + 34, T(L("Camera ", "鏡頭 ")) + c.id, { size: 16, anchor: dir > 0 ? "start" : "end" }));
+      camLabels.push(txt(g, lx2, p.y + 54, T(L("depression ", "俯角 ")) + c.lo + "° – " + c.hi + "°", { size: 15, fill: C.gd, anchor: dir > 0 ? "start" : "end", weight: 600 }));
       line(g, { x: p.x + dir * 44, y: p.y + 2 }, { x: p.x + dir * 120, y: p.y + 2 }, "rgba(232,244,255,.3)", 1.5, "5 5");
     });
 
@@ -956,7 +976,7 @@
       var bad = api.check(["x"]);
       if (bad) { api.say(bad, "bad"); return; }
       var x = api.val("x");
-      if (x < RL || x > RR) { api.say("The vent rail only runs from x = " + RL + " m to " + RR + " m.", "bad"); return; }
+      if (x < RL || x > RR) { api.say(T(L("The vent rail only runs from x = " + RL + " m to " + RR + " m.", "通風軌只在 x = " + RL + " m 到 " + RR + " m 之間。")), "bad"); return; }
       vx = x;
       place();
       busy = true;
@@ -968,14 +988,14 @@
         drawCones(seen);
         if (!seen.length) {
           sv("ellipse", { cx: px(vx), cy: FY, rx: 30, ry: 8, fill: "rgba(62,240,160,.5)", filter: "url(#lvp-glow-lg)" }, cones);
-          api.say("Safe. Neither camera can see x = " + fx(vx, 1) + " m.", "good");
+          api.say(T(L("Safe. Neither camera can see x = " + fx(vx, 1) + " m.", "安全。兩部鏡頭都看不到 x = " + fx(vx, 1) + " m。")), "good");
           api.win();
           return;
         }
         flashRed();
         var left = api.useTry();
-        if (!left) { api.reroll("Spotted by camera " + seen[0].id + ". Out of tries."); return; }
-        api.say("Spotted by camera " + seen[0].id + ".", "bad");
+        if (!left) { api.reroll(T(L("Spotted by camera " + seen[0].id + ". Out of tries.", "被鏡頭 " + seen[0].id + " 發現。次數用盡。"))); return; }
+        api.say(T(L("Spotted by camera " + seen[0].id + ".", "被鏡頭 " + seen[0].id + " 發現。")), "bad");
         wait(1800, function () {
           cones.innerHTML = "";
           anim(600, function (k) { manY = yEnd + (py(HC) + 72 - yEnd) * k; place(); }, function () { busy = false; api.lock(false); });
@@ -1038,7 +1058,7 @@
     sv("circle", { cx: cam.x + 38, cy: cam.y + 2, r: 7, fill: "#09111f", stroke: "#8ba3c4" }, g);
     var led = sv("circle", { cx: cam.x + 38, cy: cam.y + 2, r: 3, fill: C.rd, filter: "url(#lvp-glow)" }, g);
     sv("animate", { attributeName: "opacity", values: "1;.3;1", dur: "1.2s", repeatCount: "indefinite" }, led);
-    txt(g, cam.x + 54, cam.y - 16, "Camera", { size: 16, anchor: "start" });
+    txt(g, cam.x + 54, cam.y - 16, T(L("Camera", "鏡頭")), { size: 16, anchor: "start" });
     line(g, { x: cam.x + 44, y: cam.y + 2 }, { x: cam.x + 150, y: cam.y + 2 }, "rgba(232,244,255,.3)", 1.5, "5 5");
     dimV(g, px(0) - 24, FY, cam.y, nf(P.Hc) + " m", -1);
 
@@ -1053,7 +1073,7 @@
     var kg = sv("g", {}, g);
     sv("circle", { cx: key.x, cy: key.y, r: 14, fill: "rgba(255,198,90,.3)", filter: "url(#lvp-glow)" }, kg);
     sv("rect", { x: key.x - 12, y: key.y - 6, width: 24, height: 12, rx: 2, fill: C.gd }, kg);
-    txt(g, key.x, key.y - 26, "keycard", { size: 14, fill: C.gd });
+    txt(g, key.x, key.y - 26, T(L("keycard", "門卡")), { size: 14, fill: C.gd });
     dimH(g, px(0), key.x, FY + 96, nf(P.key) + " m to the keycard");
 
     var man = phantom(g, "stand");
@@ -1071,15 +1091,15 @@
       if (bad) { api.say(bad, "bad"); return; }
       var ial = api.val("al"), ix = api.val("x"), errs = [];
       if (!near(ial, P.al, 0.3)) {
-        if (near(ial, atand(P.d / (P.Hc - P.hc)), 0.4)) errs.push("Angle: vertical and horizontal are swapped. tan α = vertical ÷ horizontal.");
-        else if (near(ial, atand(P.Hc / P.d), 0.4)) errs.push("Angle: the line passes the TOP of the case, so the vertical side is camera height − case height.");
-        else errs.push("Angle of depression is wrong. Use the triangle from the camera to the top of the case.");
+        if (near(ial, atand(P.d / (P.Hc - P.hc)), 0.4)) errs.push(L("Angle: vertical and horizontal are swapped. tan α = vertical ÷ horizontal.", "角度：垂直和水平對調了。tan α = 垂直 ÷ 水平。"));
+        else if (near(ial, atand(P.Hc / P.d), 0.4)) errs.push(L("Angle: the line passes the TOP of the case, so the vertical side is camera height − case height.", "角度：線擦過展櫃頂，垂直邊是鏡頭高 − 櫃高。"));
+        else errs.push(L("Angle of depression is wrong. Use the triangle from the camera to the top of the case.", "俯角不對。用鏡頭到展櫃頂的三角形。"));
       }
       if (!near(ix, P.xe, 0.15)) {
-        if (near(ix, P.sh, 0.15)) errs.push("Shadow end: that is the length of the shadow. The question asks for the distance from the wall.");
-        else errs.push("Shadow end is wrong. With the same angle, the vertical side is now the full camera height.");
+        if (near(ix, P.sh, 0.15)) errs.push(L("Shadow end: that is the length of the shadow. The question asks for the distance from the wall.", "陰影末端：那是影長。題目要的是離牆距離。"));
+        else errs.push(L("Shadow end is wrong. With the same angle, the vertical side is now the full camera height.", "陰影末端不對。同一角下，垂直邊改為鏡頭全高。"));
       }
-      if (errs.length) { flashRed(); api.say(errs.join("\n"), "bad"); return; }
+      if (errs.length) { flashRed(); api.say(errs.map(T).join("\n"), "bad"); return; }
       busy = true;
       api.lock(true);
       var end = { x: px(P.xe), y: FY };
@@ -1094,7 +1114,7 @@
         anim(1800, function (k) { manX = x0 + (key.x - 24 - x0) * k; placeMan(); }, function () {
           kg.setAttribute("opacity", ".25");
           sv("circle", { cx: key.x, cy: key.y, r: 24, fill: "rgba(62,240,160,.45)", filter: "url(#lvp-glow-lg)" }, g);
-          api.say("Keycard taken. The shadow reaches " + fx(P.xe, 2) + " m and the card was at " + nf(P.key) + " m, so you stayed hidden the whole way.", "good");
+          api.say(T(L("Keycard taken. The shadow reaches " + fx(P.xe, 2) + " m and the card was at " + nf(P.key) + " m, so you stayed hidden the whole way.", "門卡到手。陰影伸到 " + fx(P.xe, 2) + " m，卡在 " + nf(P.key) + " m，全程藏在陰影裡。")), "good");
           api.win();
         });
       });
@@ -1111,7 +1131,7 @@
     { seq: ["C", "R", "F"], sensor: "L", room: function () { return { W: 10, H: 10 }; }, th: [30, 80] },
     { seq: ["C", "R", "F", "L"], sensor: "C", room: function () { return { W: 10, H: 10 }; }, th: [30, 80] },
   ];
-  var SURF = { C: "ceiling", F: "floor", R: "right wall", L: "left wall" };
+  var SURF = { C: L("ceiling", "天花"), F: L("floor", "地板"), R: L("right wall", "右牆"), L: L("left wall", "左牆") };
   function flat(s) { return s === "C" || s === "F"; }
 
   function traceBeam(W, H, e, th, n) {
@@ -1194,7 +1214,7 @@
     line(g, e, { x: e.x + 80, y: e.y }, "rgba(232,244,255,.35)", 1.5, "6 6");
     arc(g, e, 50, -TH, 0, C.gd);
     txt(g, e.x + 58, e.y + 20, TH + "°", { size: 16, fill: C.gd, anchor: "start" });
-    txt(g, e.x + 14, e.y + 40, "laser · " + nf(P.e) + " m up", { size: 13, fill: C.mut, anchor: "start" });
+    txt(g, e.x + 14, e.y + 40, T(L("laser · ", "雷射 · ")) + nf(P.e) + T(L(" m up", " m 高")), { size: 13, fill: C.mut, anchor: "start" });
 
     var goal = P.hits[P.hits.length - 1], sp = P2(goal), sIn = { x: 0, y: 0 };
     if (goal.s === "R") sIn = { x: -1, y: 0 }; else if (goal.s === "L") sIn = { x: 1, y: 0 }; else if (goal.s === "C") sIn = { x: 0, y: 1 }; else sIn = { x: 0, y: -1 };
@@ -1204,7 +1224,7 @@
     var sring = sv("circle", { cx: sc.x, cy: sc.y, r: 13, fill: "none", stroke: C.gd, "stroke-width": 1.5, opacity: .6 }, g);
     sv("animate", { attributeName: "r", values: "11;20;11", dur: "2s", repeatCount: "indefinite" }, sring);
     sv("animate", { attributeName: "opacity", values: ".7;0;.7", dur: "2s", repeatCount: "indefinite" }, sring);
-    txt(g, sc.x + sIn.x * 30 + (flat(goal.s) ? 0 : 0), sc.y + sIn.y * 34 + (flat(goal.s) ? 5 : -18), "SENSOR", { size: 12, fill: C.gd, anchor: goal.s === "R" ? "end" : goal.s === "L" ? "start" : "middle", ls: ".12em" });
+    txt(g, sc.x + sIn.x * 30 + (flat(goal.s) ? 0 : 0), sc.y + sIn.y * 34 + (flat(goal.s) ? 5 : -18), T(L("SENSOR", "感應器")), { size: 12, fill: C.gd, anchor: goal.s === "R" ? "end" : goal.s === "L" ? "start" : "middle", ls: ".12em" });
 
     var beamLayer = sv("g", {}, g);
     var busy = false;
@@ -1298,16 +1318,19 @@
           sensor.setAttribute("stroke", C.ok);
           sring.setAttribute("stroke", C.ok);
           sv("circle", { cx: sc.x, cy: sc.y, r: 20, fill: "rgba(62,240,160,.5)", filter: "url(#lvp-glow-lg)" }, beamLayer);
-          api.say("Sensor hit. Lock open.", "good");
+          api.say(L("Sensor hit. Lock open.", "打中感應器。鎖已打開。"), "good");
           api.win();
           return;
         }
         beamLayer.setAttribute("opacity", ".35");
         flashRed();
         var ok = mirrors.slice(0, miss).map(function (m) { return m.id; });
-        var msg = ok.length ? "The beam bounced off " + (ok.length > 1 ? ok.slice(0, -1).join(", ") + " and " + ok[ok.length - 1] : ok[0]) + ", but mirror " + mirrors[miss].id + " missed it." : "Mirror A missed the beam.";
+        var msg = ok.length
+          ? L("The beam bounced off " + (ok.length > 1 ? ok.slice(0, -1).join(", ") + " and " + ok[ok.length - 1] : ok[0]) + ", but mirror " + mirrors[miss].id + " missed it.",
+            "光束經 " + (ok.length > 1 ? ok.slice(0, -1).join("、") + " 和 " + ok[ok.length - 1] : ok[0]) + " 反射，但鏡子 " + mirrors[miss].id + " 沒接住。")
+          : L("Mirror A missed the beam.", "鏡子 A 沒接住光束。");
         var left = api.useTry();
-        if (!left) { api.reroll(msg + " Out of charge."); return; }
+        if (!left) { api.reroll(T(msg) + " " + T(L("Out of charge.", "電量用盡。"))); return; }
         api.say(msg, "bad");
         wait(1600, function () { beamLayer.innerHTML = ""; beamLayer.setAttribute("opacity", "1"); busy = false; api.lock(false); });
       });
@@ -1403,9 +1426,9 @@
     sv("path", { d: "M" + H0.x + " " + (H0.y - 12) + " L" + (H0.x + 8) + " " + (H0.y + 9) + " L" + (H0.x - 8) + " " + (H0.y + 9) + " Z", fill: "#3a6ea8", stroke: "#fff", "stroke-width": 1 }, g);
     var bl = sv("circle", { cx: H0.x, cy: H0.y - 2, r: 3, fill: "#4fa3ff", filter: "url(#lvp-glow)" }, g);
     sv("animate", { attributeName: "fill", values: "#4fa3ff;#ff4d5e;#4fa3ff", dur: "1s", repeatCount: "indefinite" }, bl);
-    txt(g, H0.x - 20, H0.y + 32, "H · patrol boat", { size: 15, fill: "#8fc4ff", anchor: "end" });
+    txt(g, H0.x - 20, H0.y + 32, T(L("H · patrol boat", "H · 巡邏船")), { size: 15, fill: "#8fc4ff", anchor: "end" });
     txt(g, Pp.x - 16, Pp.y - 30, "P", { size: 18, fill: C.cy, anchor: "end" });
-    txt(g, Pp.x - 16, Pp.y - 8, "your speedboat", { size: 14, fill: C.cy, anchor: "end", weight: 600 });
+    txt(g, Pp.x - 16, Pp.y - 8, T(L("your speedboat", "你的快艇")), { size: 14, fill: C.cy, anchor: "end", weight: 600 });
 
     var trail = sv("polyline", { points: "", fill: "none", stroke: "rgba(34,227,255,.5)", "stroke-width": 2, "stroke-dasharray": "3 6" }, g);
     var wake = sv("g", {}, g);
@@ -1431,15 +1454,15 @@
 
     function launch() {
       if (busy) return;
-      if (!api.raw("b").trim()) { api.say("Fill in Smoke bearing.", "bad"); return; }
+      if (!api.raw("b").trim()) { api.say(L("Fill in Smoke bearing.", "請填寫煙幕方位。"), "bad"); return; }
       var b = parseBearing(api.raw("b"));
-      if (isNaN(b)) { api.say("Bearing: write a true bearing such as 125° or a compass bearing such as S55°E.", "bad"); return; }
+      if (isNaN(b)) { api.say(L("Bearing: write a true bearing such as 125° or a compass bearing such as S55°E.", "方位：請寫真方位如 125°，或羅盤方位如 S55°E。"), "bad"); return; }
       var bad = api.check(["d", "t"]);
       if (bad) { api.say(bad, "bad"); return; }
       var d = api.val("d"), t = api.val("t");
-      if (d <= 0) { api.say("Distance must be positive.", "bad"); return; }
-      if (d > 20) { api.say("The drone can fly at most 20 km.", "bad"); return; }
-      if (t <= 0 || t > 60) { api.say("Time must be between 0 and 60 minutes.", "bad"); return; }
+      if (d <= 0) { api.say(L("Distance must be positive.", "距離必須為正。"), "bad"); return; }
+      if (d > 20) { api.say(L("The drone can fly at most 20 km.", "無人機最多飛 20 km。"), "bad"); return; }
+      if (t <= 0 || t > 60) { api.say(L("Time must be between 0 and 60 minutes.", "時間須在 0 到 60 分鐘之間。"), "bad"); return; }
       busy = true;
       api.lock(true);
       var T = vec(b, d), Tp = kp(T);
@@ -1474,7 +1497,7 @@
           smoke.setAttribute("stroke-dasharray", null);
           sv("circle", { cx: Tp.x, cy: Tp.y, r: 34, fill: "rgba(220,232,245,.35)", filter: "url(#lvp-glow-lg)" }, g);
           clock.textContent = "T + " + fx(t, 0) + " min";
-          api.say("Smoke on target. You slipped past the patrol boat unseen.", "good");
+          api.say(L("Smoke on target. You slipped past the patrol boat unseen.", "煙幕命中。你悄悄躲過了巡邏船。"), "good");
           api.win();
           return;
         }
@@ -1482,9 +1505,11 @@
         smoke.setAttribute("stroke", C.rd);
         var relv = { x: T.x - Pkm.x, y: T.y - Pkm.y };
         var off = Math.abs(relv.x * dirC.y - relv.y * dirC.x);
-        var msg = off > NET ? "The smoke missed your course. The patrol saw you." : "Right place, wrong time. The smoke had cleared.";
+        var msg = off > NET
+          ? L("The smoke missed your course. The patrol saw you.", "煙幕偏離航線。巡邏船發現你了。")
+          : L("Right place, wrong time. The smoke had cleared.", "位置對，時間不對。煙幕已經散了。");
         var left = api.useTry();
-        if (!left) { api.reroll(msg + " No drones left."); return; }
+        if (!left) { api.reroll(T(msg) + " " + T(L("No drones left.", "沒有無人機了。"))); return; }
         api.say(msg, "bad");
         wait(1800, function () {
           pts = [];
@@ -1543,16 +1568,16 @@
     sv("circle", { cx: Lp.x, cy: Lp.y, r: 40, fill: "rgba(255,240,180,.12)", filter: "url(#lvp-glow-lg)" }, g);
     sv("path", { d: "M" + (Lp.x - 7) + " " + (Lp.y + 10) + " L" + (Lp.x - 4) + " " + (Lp.y - 14) + " L" + (Lp.x + 4) + " " + (Lp.y - 14) + " L" + (Lp.x + 7) + " " + (Lp.y + 10) + " Z", fill: "#e8f0fa", stroke: "#8ba3c4" }, g);
     sv("circle", { cx: Lp.x, cy: Lp.y - 16, r: 4, fill: "#fff2b3", filter: "url(#lvp-glow)" }, g);
-    txt(g, Lp.x - 14, Lp.y - 22, "L · lighthouse", { size: 14, fill: C.ink, anchor: "end" });
+    txt(g, Lp.x - 14, Lp.y - 22, T(L("L · lighthouse", "L · 燈塔")), { size: 14, fill: C.ink, anchor: "end" });
 
     sv("circle", { cx: Qp.x, cy: Qp.y, r: 22, fill: "rgba(255,198,90,.18)", filter: "url(#lvp-glow)" }, g);
     sv("path", { d: "M" + (Qp.x - 18) + " " + (Qp.y - 4) + " L" + (Qp.x + 18) + " " + (Qp.y - 4) + " L" + (Qp.x + 12) + " " + (Qp.y + 7) + " L" + (Qp.x - 12) + " " + (Qp.y + 7) + " Z", fill: C.gd, stroke: "#fff", "stroke-width": 1 }, g);
     sv("rect", { x: Qp.x - 5, y: Qp.y - 12, width: 10, height: 8, fill: "#ffe0a8" }, g);
-    txt(g, Qp.x, Qp.y + 30, "Q · pickup ship", { size: 14, fill: C.gd });
+    txt(g, Qp.x, Qp.y + 30, T(L("Q · pickup ship", "Q · 接應船")), { size: 14, fill: C.gd });
 
     line(g, O, { x: O.x, y: O.y - 70 }, "rgba(232,244,255,.5)", 1.5, "5 5");
     txt(g, O.x + 12, O.y - 60, "N", { size: 14, fill: C.mut, anchor: "start" });
-    txt(g, O.x + 18, O.y + 30, "you", { size: 14, fill: C.cy, anchor: "start", weight: 600 });
+    txt(g, O.x + 18, O.y + 30, T(L("you", "你")), { size: 14, fill: C.cy, anchor: "start", weight: 600 });
 
     var trail = sv("polyline", { points: "", fill: "none", stroke: "rgba(34,227,255,.5)", "stroke-width": 2, "stroke-dasharray": "3 6" }, g);
     var wake = sv("g", {}, g);
@@ -1565,14 +1590,14 @@
     var busy = false;
     function launch() {
       if (busy) return;
-      if (!api.raw("b").trim()) { api.say("Fill in Bearing.", "bad"); return; }
+      if (!api.raw("b").trim()) { api.say(L("Fill in Bearing.", "請填寫方位。"), "bad"); return; }
       var b = parseBearing(api.raw("b"));
-      if (isNaN(b)) { api.say("Bearing: write a true bearing such as 058° or a compass bearing such as N58°E.", "bad"); return; }
+      if (isNaN(b)) { api.say(L("Bearing: write a true bearing such as 058° or a compass bearing such as N58°E.", "方位：請寫真方位如 058°，或羅盤方位如 N58°E。"), "bad"); return; }
       var bad = api.check(["d", "t"]);
       if (bad) { api.say(bad, "bad"); return; }
       var d = api.val("d"), t = api.val("t");
-      if (d <= 0 || d > 20) { api.say("Distance must be between 0 and 20 km.", "bad"); return; }
-      if (t <= 0 || t > 60) { api.say("Time must be between 0 and 60 minutes.", "bad"); return; }
+      if (d <= 0 || d > 20) { api.say(L("Distance must be between 0 and 20 km.", "距離須在 0 到 20 km 之間。"), "bad"); return; }
+      if (t <= 0 || t > 60) { api.say(L("Time must be between 0 and 60 minutes.", "時間須在 0 到 60 分鐘之間。"), "bad"); return; }
       busy = true;
       api.lock(true);
       var T = vec(b, d), Tp = mp(T), pts = [], frameN = 0;
@@ -1588,14 +1613,16 @@
         var there = Math.hypot(T.x - P.e, T.y - P.n) <= 0.3, onTime = near(t, P.t, 0.6);
         if (there && onTime) {
           sv("circle", { cx: Qp.x, cy: Qp.y, r: 30, fill: "rgba(62,240,160,.45)", filter: "url(#lvp-glow-lg)" }, g);
-          api.say("Aboard. The pickup ship hauls you in, right on time.", "good");
+          api.say(L("Aboard. The pickup ship hauls you in, right on time.", "上船了。接應船準時把你拉上去。"), "good");
           api.win();
           return;
         }
         flashRed();
-        var msg = !there ? "You ended up out at sea, away from the ship." : "Right place, but the ship expected you at a different time.";
+        var msg = !there
+          ? L("You ended up out at sea, away from the ship.", "你偏到海上，沒靠到船。")
+          : L("Right place, but the ship expected you at a different time.", "位置對，但船約的是另一個時間。");
         var left = api.useTry();
-        if (!left) { api.reroll(msg + " Out of tries."); return; }
+        if (!left) { api.reroll(T(msg) + " " + T(L("Out of tries.", "次數用盡。"))); return; }
         api.say(msg, "bad");
         wait(1800, function () {
           pts = [];
@@ -1616,10 +1643,10 @@
    * ================================================================ */
 
   var MIRROR_HINTS = [
-    "Each leg of the beam is the hypotenuse of a right-angled triangle with the laser's angle.",
-    "A mirror sends the beam away at the same angle it arrives, so every leg uses the same angle.",
-    "Towards the ceiling or floor: horizontal run = vertical change ÷ tan θ. Towards a wall: vertical change = horizontal run × tan θ.",
-    "Work leg by leg, in order, keeping track of where each leg starts.",
+    L("Each leg of the beam is the hypotenuse of a right-angled triangle with the laser's angle.", "每一段光束都是以雷射角為角的直角三角形斜邊。"),
+    L("A mirror sends the beam away at the same angle it arrives, so every leg uses the same angle.", "鏡子入射角等於反射角，所以每一段都用同一個角。"),
+    L("Towards the ceiling or floor: horizontal run = vertical change ÷ tan θ. Towards a wall: vertical change = horizontal run × tan θ.", "射向天花／地板：水平距離 = 垂直變化 ÷ tan θ。射向牆：垂直變化 = 水平距離 × tan θ。"),
+    L("Work leg by leg, in order, keeping track of where each leg starts.", "按順序一段一段算，並記住每段的起點。"),
   ];
 
   function mirrorRound(k, title, task) {
@@ -1628,14 +1655,25 @@
       build: levelMirror,
       panel: function (P) {
         return {
-          kicker: "Reflection",
+          kicker: L("Reflection", "反射"),
           title: title,
-          task: task + " Beam stays hidden until you fire.",
+          task: typeof task === "object"
+            ? L(task.en + " Beam stays hidden until you fire.", task.zh + " 發射前看不見光束。")
+            : task + " Beam stays hidden until you fire.",
           info: null,
-          fields: P.seq.map(function (s, i) { return { id: "ABCD"[i], label: "Mirror " + "ABCD"[i], sub: SURF[s] + (flat(s) ? " · x" : " · h"), unit: "m" }; }),
-          action: "Fire",
+          fields: P.seq.map(function (s, i) {
+            var surf = SURF[s];
+            var tag = flat(s) ? " · x" : " · h";
+            return {
+              id: "ABCD"[i],
+              label: L("Mirror " + "ABCD"[i], "鏡 " + "ABCD"[i]),
+              sub: L((surf.en || surf) + tag, (surf.zh || surf) + tag),
+              unit: "m",
+            };
+          }),
+          action: L("Fire", "發射"),
           tries: 3,
-          triesLabel: "Charge",
+          triesLabel: L("Charge", "電量"),
           hints: MIRROR_HINTS,
         };
       },
@@ -1644,27 +1682,27 @@
 
   var CHAPTERS = [
     {
-      tab: "1 Rooftops", sub: "inclination · depression · elevation", nextLabel: "Into the tower ▸",
+      tab: L("1 Rooftops", "1 天台"), sub: L("inclination · depression · elevation", "傾角 · 俯角 · 仰角"), nextLabel: L("Into the tower ▸", "進入塔樓 ▸"),
       rounds: [
         {
           gen: genZip, build: levelZip,
           panel: function (P) {
             return {
-              kicker: "Gradient & inclination",
-              title: "Ridge to rooftop",
-              task: "Pick a map anchor, then enter its <b>horizontal distance</b>, <b>inclination</b> and <b>cable length</b>.",
-              info: ["Cable ≤ 400 m", "Inclination 10°–25°"],
+              kicker: L("Gradient & inclination", "斜率與傾角"),
+              title: L("Ridge to rooftop", "山脊到天台"),
+              task: L("Pick a map anchor, then enter its <b>horizontal distance</b>, <b>inclination</b> and <b>cable length</b>.", "先選地圖錨點，再輸入其<b>水平距離</b>、<b>傾角</b>和<b>纜繩長</b>。"),
+              info: [L("Cable ≤ 400 m", "纜繩 ≤ 400 m"), L("Inclination 10°–25°", "傾角 10°–25°")],
               fields: [
-                { id: "h", label: "Horizontal distance", unit: "m" },
-                { id: "th", label: "Inclination", unit: "°" },
-                { id: "L", label: "Cable length", unit: "m" },
+                { id: "h", label: L("Horizontal distance", "水平距離"), unit: "m" },
+                { id: "th", label: L("Inclination", "傾角"), unit: "°" },
+                { id: "L", label: L("Cable length", "纜繩長"), unit: "m" },
               ],
-              action: "Launch",
+              action: L("Launch", "出發"),
               hints: [
-                "Real distance = map length × 10 000. Then change cm into m.",
-                "Vertical distance = anchor height − rooftop height.",
-                "Inclination: tan θ = vertical ÷ horizontal. The cable is the hypotenuse.",
-                "Check every anchor against both rules before you choose.",
+                L("Real distance = map length × 10 000. Then change cm into m.", "實際距離 = 圖上長度 × 10 000，再把 cm 換成 m。"),
+                L("Vertical distance = anchor height − rooftop height.", "垂直距離 = 錨點高度 − 天台高度。"),
+                L("Inclination: tan θ = vertical ÷ horizontal. The cable is the hypotenuse.", "傾角：tan θ = 垂直 ÷ 水平。纜繩是斜邊。"),
+                L("Check every anchor against both rules before you choose.", "選定前先用兩條規則檢查每個錨點。"),
               ],
             };
           },
@@ -1673,21 +1711,21 @@
           gen: genRoof, build: levelRoof,
           panel: function (P) {
             return {
-              kicker: "Angles of depression",
-              title: "Rooftop to rooftop",
-              task: "From A's roof: find the <b>gap</b>, <b>B's height</b> and the <b>cable</b> to B's roof.",
+              kicker: L("Angles of depression", "俯角"),
+              title: L("Rooftop to rooftop", "天台到天台"),
+              task: L("From A's roof: find the <b>gap</b>, <b>B's height</b> and the <b>cable</b> to B's roof.", "從 A 天台求<b>間距</b>、<b>B 的高度</b>，以及到 B 天台的<b>纜繩</b>。"),
               info: null,
               fields: [
-                { id: "d", label: "Horizontal distance", sub: "A to B", unit: "m" },
-                { id: "hb", label: "Height of B", unit: "m" },
-                { id: "L", label: "Cable length", sub: "A's roof to B's roof", unit: "m" },
+                { id: "d", label: L("Horizontal distance", "水平距離"), sub: L("A to B", "A 到 B"), unit: "m" },
+                { id: "hb", label: L("Height of B", "B 的高度"), unit: "m" },
+                { id: "L", label: L("Cable length", "纜繩長"), sub: L("A's roof to B's roof", "A 天台到 B 天台"), unit: "m" },
               ],
-              action: "Zip across",
+              action: L("Zip across", "滑過去"),
               hints: [
-                "Angles of depression are measured down from the horizontal at A's roof.",
-                "Start with β: its triangle has A's full height as the vertical side. Horizontal = height ÷ tan β.",
-                "Use α with the same horizontal distance to find how far B's roof is below A's roof.",
-                "The cable is the hypotenuse of the α triangle.",
+                L("Angles of depression are measured down from the horizontal at A's roof.", "俯角是從 A 天台的水平線向下量。"),
+                L("Start with β: its triangle has A's full height as the vertical side. Horizontal = height ÷ tan β.", "先用 β：其三角形垂直邊是 A 的全高。水平 = 高度 ÷ tan β。"),
+                L("Use α with the same horizontal distance to find how far B's roof is below A's roof.", "用同一水平距離和 α，求 B 天台比 A 低多少。"),
+                L("The cable is the hypotenuse of the α triangle.", "纜繩是 α 三角形的斜邊。"),
               ],
             };
           },
@@ -1696,19 +1734,19 @@
           gen: genGrapple, build: levelGrapple,
           panel: function (P) {
             return {
-              kicker: "Angle of elevation",
-              title: "Up to Crane Tower",
-              task: "Aim the hook at the tower ledge: <b>angle of elevation</b> and <b>rope length</b>.",
+              kicker: L("Angle of elevation", "仰角"),
+              title: L("Up to Crane Tower", "攀上 Crane 塔"),
+              task: L("Aim the hook at the tower ledge: <b>angle of elevation</b> and <b>rope length</b>.", "把鉤瞄準塔簷：求<b>仰角</b>和<b>繩長</b>。"),
               info: null,
               fields: [
-                { id: "th", label: "Angle of elevation", unit: "°" },
-                { id: "L", label: "Rope length", unit: "m" },
+                { id: "th", label: L("Angle of elevation", "仰角"), unit: "°" },
+                { id: "L", label: L("Rope length", "繩長"), unit: "m" },
               ],
-              action: "Fire hook",
+              action: L("Fire hook", "發射鉤爪"),
               hints: [
-                "Draw the right-angled triangle from you to the ledge.",
-                "Vertical side = ledge height − your roof height.",
-                "tan θ = vertical ÷ horizontal; the rope is the hypotenuse.",
+                L("Draw the right-angled triangle from you to the ledge.", "畫出你到簷邊的直角三角形。"),
+                L("Vertical side = ledge height − your roof height.", "垂直邊 = 簷高 − 你的天台高度。"),
+                L("tan θ = vertical ÷ horizontal; the rope is the hypotenuse.", "tan θ = 垂直 ÷ 水平；繩是斜邊。"),
               ],
             };
           },
@@ -1716,24 +1754,24 @@
       ],
     },
     {
-      tab: "2 Gallery", sub: "angles of depression", nextLabel: "To the vault ▸",
+      tab: L("2 Gallery", "2 畫廊"), sub: L("angles of depression", "俯角"), nextLabel: L("To the vault ▸", "前往金庫 ▸"),
       rounds: [
         {
           gen: genCams, build: levelCams,
           panel: function (P) {
             return {
-              kicker: "Angles of depression",
-              title: "Drop between the cameras",
-              task: "Drop at an <b>x</b> that <b>neither camera</b> can see. Cones appear only after you drop.",
+              kicker: L("Angles of depression", "俯角"),
+              title: L("Drop between the cameras", "在鏡頭之間落下"),
+              task: L("Drop at an <b>x</b> that <b>neither camera</b> can see. Cones appear only after you drop.", "選一個<b>兩部鏡頭都看不到</b>的 <b>x</b>。圓錐要落下後才會顯示。"),
               info: null,
-              fields: [{ id: "x", label: "Drop point x", unit: "m" }],
-              action: "Drop",
+              fields: [{ id: "x", label: L("Drop point x", "落下點 x"), unit: "m" }],
+              action: L("Drop", "落下"),
               tries: 3,
               hints: [
-                "Each camera sees a strip of floor between its two rays.",
-                "A ray with angle of depression θ from height h meets the floor h ÷ tan θ from that wall.",
-                "Camera B is on the right wall: subtract its distances from the room width.",
-                "Drop into the gap between the two strips.",
+                L("Each camera sees a strip of floor between its two rays.", "每部鏡頭在兩條射線之間看到一段地板。"),
+                L("A ray with angle of depression θ from height h meets the floor h ÷ tan θ from that wall.", "高度 h、俯角 θ 的射線，離該牆 h ÷ tan θ 處碰到地板。"),
+                L("Camera B is on the right wall: subtract its distances from the room width.", "鏡頭 B 在右牆：用房寬減去它的距離。"),
+                L("Drop into the gap between the two strips.", "落在兩段可見區之間的空隙。"),
               ],
             };
           },
@@ -1742,19 +1780,19 @@
           gen: genShadow, build: levelShadow,
           panel: function (P) {
             return {
-              kicker: "Angle of depression",
-              title: "In the case's shadow",
-              task: "Sight line clears the case top. Find its <b>angle of depression</b> and where it <b>meets the floor</b>.",
+              kicker: L("Angle of depression", "俯角"),
+              title: L("In the case's shadow", "藏在展櫃陰影裡"),
+              task: L("Sight line clears the case top. Find its <b>angle of depression</b> and where it <b>meets the floor</b>.", "視線擦過展櫃頂。求其<b>俯角</b>以及<b>與地板相交處</b>。"),
               info: null,
               fields: [
-                { id: "al", label: "Angle of depression", unit: "°" },
-                { id: "x", label: "Shadow ends at", sub: "x from the wall", unit: "m" },
+                { id: "al", label: L("Angle of depression", "俯角"), unit: "°" },
+                { id: "x", label: L("Shadow ends at", "陰影末端"), sub: L("x from the wall", "離牆的 x"), unit: "m" },
               ],
-              action: "Sneak",
+              action: L("Sneak", "潛行"),
               hints: [
-                "Draw the line from the camera to the top back corner of the case.",
-                "Down to the case top, the line drops (camera height − case height) over the distance to the case.",
-                "Keep the same angle: with the full camera height you get where the line meets the floor.",
+                L("Draw the line from the camera to the top back corner of the case.", "畫出鏡頭到展櫃後上角的線。"),
+                L("Down to the case top, the line drops (camera height − case height) over the distance to the case.", "到櫃頂時，下降量是（鏡頭高 − 櫃高），水平是到展櫃的距離。"),
+                L("Keep the same angle: with the full camera height you get where the line meets the floor.", "保持同一角：用鏡頭全高可求線與地板的交點。"),
               ],
             };
           },
@@ -1762,37 +1800,37 @@
       ],
     },
     {
-      tab: "3 Mirrors", sub: "reflection", nextLabel: "Open the vault ▸",
+      tab: L("3 Mirrors", "3 鏡子"), sub: L("reflection", "反射"), nextLabel: L("Open the vault ▸", "打開金庫 ▸"),
       rounds: [
-        mirrorRound(0, "Lock 1 · two mirrors", "Place A (ceiling) and B (floor) so the beam hits the right-wall sensor."),
-        mirrorRound(1, "Lock 2 · three mirrors", "Place A–C (ceiling → right → floor) so the beam hits the left-wall sensor."),
-        mirrorRound(2, "Lock 3 · four mirrors", "Place A–D (ceiling → right → floor → left) so the beam hits the ceiling sensor."),
+        mirrorRound(0, L("Lock 1 · two mirrors", "鎖 1 · 兩面鏡"), L("Place A (ceiling) and B (floor) so the beam hits the right-wall sensor.", "放置 A（天花）和 B（地板），使光束打中右牆感應器。")),
+        mirrorRound(1, L("Lock 2 · three mirrors", "鎖 2 · 三面鏡"), L("Place A–C (ceiling → right → floor) so the beam hits the left-wall sensor.", "放置 A–C（天花 → 右 → 地板），使光束打中左牆感應器。")),
+        mirrorRound(2, L("Lock 3 · four mirrors", "鎖 3 · 四面鏡"), L("Place A–D (ceiling → right → floor → left) so the beam hits the ceiling sensor.", "放置 A–D（天花 → 右 → 地板 → 左），使光束打中天花感應器。")),
       ],
     },
     {
-      tab: "4 Harbour", sub: "bearings · shortest distance", nextLabel: "Finish the heist ▸",
+      tab: L("4 Harbour", "4 港口"), sub: L("bearings · shortest distance", "方位 · 最短距離"), nextLabel: L("Finish the heist ▸", "完成行動 ▸"),
       rounds: [
         {
           gen: genPatrol, build: levelPatrol,
           panel: function (P) {
             return {
-              kicker: "Bearings · shortest distance",
-              title: "Slip past the patrol",
-              task: "Drop smoke <b>where and when</b> you pass closest to patrol H.",
-              info: ["Course " + fmtB(P.c) + " · " + P.v + " km/h"],
+              kicker: L("Bearings · shortest distance", "方位 · 最短距離"),
+              title: L("Slip past the patrol", "躲過巡邏船"),
+              task: L("Drop smoke <b>where and when</b> you pass closest to patrol H.", "在離巡邏船 H <b>最近的位置與時間</b>投放煙幕。"),
+              info: [L("Course " + fmtB(P.c) + " · " + P.v + " km/h", "航向 " + fmtB(P.c) + " · " + P.v + " km/h")],
               fields: [
-                { id: "b", label: "Smoke bearing", sub: "from H", unit: "", ph: "e.g. 125° or S55°E" },
-                { id: "d", label: "Distance", sub: "from H", unit: "km" },
-                { id: "t", label: "Time", sub: "minutes from now", unit: "min" },
+                { id: "b", label: L("Smoke bearing", "煙幕方位"), sub: L("from H", "從 H 看"), unit: "", ph: L("e.g. 125° or S55°E", "例如 125° 或 S55°E") },
+                { id: "d", label: L("Distance", "距離"), sub: L("from H", "從 H 看"), unit: "km" },
+                { id: "t", label: L("Time", "時間"), sub: L("minutes from now", "由現在起的分鐘"), unit: "min" },
               ],
-              action: "Launch drone",
+              action: L("Launch drone", "發射無人機"),
               tries: 3,
-              triesLabel: "Drones",
+              triesLabel: L("Drones", "無人機"),
               hints: [
-                "You pass closest to H at the foot of the perpendicular from H to your course.",
-                "Find the angle between your course and the line from P back to H (the back bearing).",
-                "Shortest distance = PH × sin(that angle); distance you travel = PH × cos(that angle).",
-                "The bearing of the closest point from H is your course ± 90°.",
+                L("You pass closest to H at the foot of the perpendicular from H to your course.", "離 H 最近的點，是 H 到航線垂足。"),
+                L("Find the angle between your course and the line from P back to H (the back bearing).", "求航向與 P 回到 H 的線（反方位）的夾角。"),
+                L("Shortest distance = PH × sin(that angle); distance you travel = PH × cos(that angle).", "最短距離 = PH × sin(該角)；你走的距離 = PH × cos(該角)。"),
+                L("The bearing of the closest point from H is your course ± 90°.", "從 H 看最近點的方位是你的航向 ± 90°。"),
               ],
             };
           },
@@ -1801,21 +1839,21 @@
           gen: genPickup, build: levelPickup,
           panel: function (P) {
             return {
-              kicker: "Bearings",
-              title: "Meet the pickup ship",
-              task: "Set <b>bearing</b>, <b>distance</b> and <b>arrival time</b> to reach Q.",
-              info: ["Speed " + P.v + " km/h"],
+              kicker: L("Bearings", "方位"),
+              title: L("Meet the pickup ship", "會合接應船"),
+              task: L("Set <b>bearing</b>, <b>distance</b> and <b>arrival time</b> to reach Q.", "設定到達 Q 的<b>方位</b>、<b>距離</b>和<b>到達時間</b>。"),
+              info: [L("Speed " + P.v + " km/h", "速度 " + P.v + " km/h")],
               fields: [
-                { id: "b", label: "Bearing", sub: "from you", unit: "", ph: "e.g. 058° or N58°E" },
-                { id: "d", label: "Distance", unit: "km" },
-                { id: "t", label: "Arrival time", sub: "minutes from now", unit: "min" },
+                { id: "b", label: L("Bearing", "方位"), sub: L("from you", "從你出發"), unit: "", ph: L("e.g. 058° or N58°E", "例如 058° 或 N58°E") },
+                { id: "d", label: L("Distance", "距離"), unit: "km" },
+                { id: "t", label: L("Arrival time", "到達時間"), sub: L("minutes from now", "由現在起的分鐘"), unit: "min" },
               ],
-              action: "Full speed",
+              action: L("Full speed", "全速前進"),
               tries: 3,
               hints: [
-                "You, L and Q form a right-angled triangle with the right angle at L.",
-                "tan(angle at you) = east distance ÷ north distance. A bearing is measured clockwise from north.",
-                "Distance by Pythagoras. Time = distance ÷ speed, then change hours into minutes.",
+                L("You, L and Q form a right-angled triangle with the right angle at L.", "你、L、Q 組成直角在 L 的直角三角形。"),
+                L("tan(angle at you) = east distance ÷ north distance. A bearing is measured clockwise from north.", "tan(你那邊的角) = 東向距離 ÷ 北向距離。方位由北順時針量。"),
+                L("Distance by Pythagoras. Time = distance ÷ speed, then change hours into minutes.", "距離用畢氏定理。時間 = 距離 ÷ 速度，再換成分鐘。"),
               ],
             };
           },
@@ -1828,80 +1866,80 @@
    * Story — animated cutscenes
    * ================================================================ */
 
-  var NAMES = { echo: "ECHO", crane: "SILAS CRANE", phantom: "PHANTOM" };
+  var NAMES = { echo: L("ECHO", "回聲"), crane: L("SILAS CRANE", "SILAS CRANE"), phantom: L("PHANTOM", "幽靈") };
   var FACES = { echo: "echo-smile.png", crane: "collector-smug.png", phantom: "phantom-ready.png" };
 
   var OPENING = [
-    { bg: "op-02-news.png", ken: "ken-a", music: "heist", lines: ["Tonight only: the Prism Heart diamond goes on show in Silas Crane's private tower."] },
-    { bg: "op-03-collector.png", ken: "ken-b", who: "crane", lines: ["Lasers, cameras, a mirror vault. Nobody takes anything from Silas Crane."] },
-    { bg: "op-04-call.png", ken: "ken-c", who: "echo", lines: ["Phantom, did you hear that? He's practically inviting us."] },
-    { bg: "op-04-call-tease.png", who: "phantom", lines: ["Then let's accept the invitation."] },
+    { bg: "op-02-news.png", ken: "ken-a", music: "heist", lines: [L("Tonight only: the Prism Heart diamond goes on show in Silas Crane's private tower.", "僅限今晚：棱心鑽石在 Silas Crane 的私人塔樓公展。")] },
+    { bg: "op-03-collector.png", ken: "ken-b", who: "crane", lines: [L("Lasers, cameras, a mirror vault. Nobody takes anything from Silas Crane.", "雷射、鏡頭、鏡面金庫。沒人能從 Silas Crane 手裡拿走任何東西。")] },
+    { bg: "op-04-call.png", ken: "ken-c", who: "echo", lines: [L("Phantom, did you hear that? He's practically inviting us.", "幽靈，你聽到了嗎？他簡直是在邀請我們。")] },
+    { bg: "op-04-call-tease.png", who: "phantom", lines: [L("Then let's accept the invitation.", "那就接受邀請吧。")] },
   ];
 
   var STORY = [
     {
-      card: { img: "ch1-rooftops.png", kicker: "Chapter 1", name: "The Rooftops", sub: "inclination · depression · elevation" },
+      card: { img: "ch1-rooftops.png", kicker: L("Chapter 1", "第 1 章"), name: L("The Rooftops", "天台"), sub: L("inclination · depression · elevation", "傾角 · 俯角 · 仰角") },
       music: "heist",
       intro: [
-        { bg: "ch1-ridge.png", ken: "ken-b", who: "echo", lines: ["No road to Crane Tower. Ridge, two rooftops, then the tower."] },
+        { bg: "ch1-ridge.png", ken: "ken-b", who: "echo", lines: [L("No road to Crane Tower. Ridge, two rooftops, then the tower.", "沒有路通往 Crane 塔。山脊、兩座天台，然後是塔。")] },
       ],
       between: [
-        [{ bg: "ch1-rooftops.png", ken: "ken-a", who: "echo", lines: ["One roof down. The next one is lower."] }],
-        [{ bg: "ch1-grapple.png", ken: "ken-c", who: "phantom", lines: ["Crane Tower is higher. Going up."] }],
+        [{ bg: "ch1-rooftops.png", ken: "ken-a", who: "echo", lines: [L("One roof down. The next one is lower.", "一座天台過了。下一座比較低。")] }],
+        [{ bg: "ch1-grapple.png", ken: "ken-c", who: "phantom", lines: [L("Crane Tower is higher. Going up.", "Crane 塔更高。往上。")] }],
       ],
       outro: [
-        { bg: "op-03-collector.png", who: "crane", lines: ["Hm? Something on my roof? Just a bird, I'm sure."] },
+        { bg: "op-03-collector.png", who: "crane", lines: [L("Hm? Something on my roof? Just a bird, I'm sure.", "嗯？屋頂上有東西？肯定只是鳥。")] },
       ],
     },
     {
-      card: { img: "fl-2-gallery.png", kicker: "Chapter 2", name: "The Gallery", sub: "angles of depression" },
+      card: { img: "fl-2-gallery.png", kicker: L("Chapter 2", "第 2 章"), name: L("The Gallery", "畫廊"), sub: L("angles of depression", "俯角") },
       music: "heist",
       intro: [
-        { bg: "op-06-infiltrate.png", ken: "ken-a", lines: ["Through the roof hatch into Crane's private gallery."] },
-        { bg: "fl-2-gallery.png", ken: "ken-c", who: "echo", lines: ["Two cameras. Find the blind spot."] },
+        { bg: "op-06-infiltrate.png", ken: "ken-a", lines: [L("Through the roof hatch into Crane's private gallery.", "從天窗潛入 Crane 的私人畫廊。")] },
+        { bg: "fl-2-gallery.png", ken: "ken-c", who: "echo", lines: [L("Two cameras. Find the blind spot.", "兩部鏡頭。找出盲點。")] },
       ],
       between: [
-        [{ bg: "ch2-keycard.png", ken: "ken-b", who: "echo", lines: ["The guard dropped the vault keycard out past that glass case.", "Crawl to it. Stay in the case's shadow."] }],
+        [{ bg: "ch2-keycard.png", ken: "ken-b", who: "echo", lines: [L("The guard dropped the vault keycard out past that glass case.", "守衛把金庫門卡掉在玻璃展櫃那邊。"), L("Crawl to it. Stay in the case's shadow.", "爬過去。待在展櫃陰影裡。")] }],
       ],
       outro: [
-        { bg: "ch2-keycard.png", who: "phantom", lines: ["Keycard. Next stop, the vault."] },
+        { bg: "ch2-keycard.png", who: "phantom", lines: [L("Keycard. Next stop, the vault.", "門卡到手。下一站，金庫。")] },
       ],
     },
     {
-      card: { img: "fl-3-mirror.png", kicker: "Chapter 3", name: "The Mirror Vault", sub: "reflection" },
+      card: { img: "fl-3-mirror.png", kicker: L("Chapter 3", "第 3 章"), name: L("The Mirror Vault", "鏡面金庫"), sub: L("reflection", "反射") },
       music: "tension",
       intro: [
-        { bg: "fl-4-vault.png", ken: "ken-b", lines: ["Three optical locks. Each opens only to its own laser."] },
+        { bg: "fl-4-vault.png", ken: "ken-b", lines: [L("Three optical locks. Each opens only to its own laser.", "三道光學鎖。每把只對自己的雷射開啟。")] },
       ],
       between: [
-        [{ bg: "fl-3-mirror.png", ken: "ken-a", who: "echo", lines: ["Lock one open. This one needs a wall mirror too."] }],
-        [{ bg: "fl-3-mirror.png", ken: "ken-c", who: "echo", lines: ["Last lock. Four mirrors."] }],
+        [{ bg: "fl-3-mirror.png", ken: "ken-a", who: "echo", lines: [L("Lock one open. This one needs a wall mirror too.", "第一鎖開了。這把還需要牆鏡。")] }],
+        [{ bg: "fl-3-mirror.png", ken: "ken-c", who: "echo", lines: [L("Last lock. Four mirrors.", "最後一鎖。四面鏡子。")] }],
       ],
       outro: [
-        { bg: "fl-4-vault.png", ken: "ken-a", lines: ["The last sensor flashes green. The vault door rolls open..."] },
-        { bg: "prop-prism-heart.png", ken: "ken-c", who: "phantom", lines: ["The Prism Heart. Hello, beautiful."] },
-        { bg: "op-04-call-alarm.png", sfx: "alarm", who: "echo", lines: ["Harbour patrol on the way! Get to the boat!"] },
+        { bg: "fl-4-vault.png", ken: "ken-a", lines: [L("The last sensor flashes green. The vault door rolls open...", "最後感應器亮綠。金庫門打開……")] },
+        { bg: "prop-prism-heart.png", ken: "ken-c", who: "phantom", lines: [L("The Prism Heart. Hello, beautiful.", "棱心。你好啊，美人。")] },
+        { bg: "op-04-call-alarm.png", sfx: "alarm", who: "echo", lines: [L("Harbour patrol on the way! Get to the boat!", "港口巡邏來了！快上船！")] },
       ],
     },
     {
-      card: { img: "ch4-speedboat.png", kicker: "Chapter 4", name: "Harbour Escape", sub: "bearings · shortest distance", alert: true },
+      card: { img: "ch4-speedboat.png", kicker: L("Chapter 4", "第 4 章"), name: L("Harbour Escape", "港口脫逃"), sub: L("bearings · shortest distance", "方位 · 最短距離"), alert: true },
       music: "tension",
       intro: [
-        { bg: "ch4-speedboat.png", ken: "ken-b", who: "echo", lines: ["Patrol boat ahead. I've hacked its drone."] },
+        { bg: "ch4-speedboat.png", ken: "ken-b", who: "echo", lines: [L("Patrol boat ahead. I've hacked its drone.", "前方有巡邏船。我黑進了它的無人機。")] },
       ],
       between: [
-        [{ bg: "ch4-speedboat.png", ken: "ken-a", who: "echo", lines: ["We're past them! Now find the pickup ship."] }],
+        [{ bg: "ch4-speedboat.png", ken: "ken-a", who: "echo", lines: [L("We're past them! Now find the pickup ship.", "甩開他們了！現在找接應船。")] }],
       ],
       outro: [],
     },
   ];
 
   var ENDING = [
-    { bg: "end-laugh.png", ken: "ken-a", music: "triumph", who: "phantom", lines: ["The Prism Heart is ours!"] },
-    { bg: "end-laugh.png", who: "echo", lines: ["Too easy!"] },
-    { bg: "end-fake.png", ken: "ken-c", sfx: "hit", lines: ["...crack."] },
-    { bg: "end-fake.png", who: "phantom", lines: ["Wait. This is... glass?"] },
-    { bg: "op-03-collector.png", ken: "ken-b", who: "crane", lines: ["Nice maths, Phantom. But the real Prism Heart never left my side."] },
+    { bg: "end-laugh.png", ken: "ken-a", music: "triumph", who: "phantom", lines: [L("The Prism Heart is ours!", "棱心是我們的了！")] },
+    { bg: "end-laugh.png", who: "echo", lines: [L("Too easy!", "太簡單了！")] },
+    { bg: "end-fake.png", ken: "ken-c", sfx: "hit", lines: [L("...crack.", "……咔。")] },
+    { bg: "end-fake.png", who: "phantom", lines: [L("Wait. This is... glass?", "等等。這是……玻璃？")] },
+    { bg: "op-03-collector.png", ken: "ken-b", who: "crane", lines: [L("Nice maths, Phantom. But the real Prism Heart never left my side.", "數學不錯，幽靈。不過真正的棱心從未離開我身邊。")] },
   ];
 
   /* Audio — procedural beds and effects (no files) ----------------- */
@@ -1913,26 +1951,32 @@
   function mtof(m) { return 440 * Math.pow(2, (m - 69) / 12); }
   function stageVisible() { return !document.hidden && (document.fullscreenElement === stage || stage.offsetParent !== null); }
 
+  /* Match JM34 Blackout Voyage bus loudness. */
+  var MASTER_VOL = 5.1;
   function ensureAudio() {
     if (audio.ctx) {
-      if (audio.ctx.state === "suspended" && stageVisible()) audio.ctx.resume();
+      if (audio.ctx.state === "suspended") audio.ctx.resume();
+      if (audio.want && (!audio.bed || audio.bed !== audio.want)) startBed(audio.want);
       return;
     }
     var Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return;
     var ctx = audio.ctx = new Ctx();
     var comp = ctx.createDynamicsCompressor();
-    comp.threshold.value = -14;
-    comp.ratio.value = 4;
+    comp.threshold.value = -6;
+    comp.knee.value = 20;
+    comp.ratio.value = 2;
+    comp.attack.value = 0.01;
+    comp.release.value = 0.25;
     comp.connect(ctx.destination);
     audio.master = ctx.createGain();
-    audio.master.gain.value = audio.muted ? 0 : 0.85;
+    audio.master.gain.value = audio.muted ? 0 : MASTER_VOL;
     audio.master.connect(comp);
     audio.music = ctx.createGain();
     audio.music.gain.value = 0;
     audio.music.connect(audio.master);
     audio.sfx = ctx.createGain();
-    audio.sfx.gain.value = 0.9;
+    audio.sfx.gain.value = 4.8;
     audio.sfx.connect(audio.master);
     var buf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
     var data = buf.getChannelData(0);
@@ -1990,7 +2034,7 @@
 
   var BEDS = {
     heist: {
-      bpm: 92, swing: 0.64, bars: 4, vol: 0.5,
+      bpm: 92, swing: 0.64, bars: 4, vol: 4.05,
       bass: [[38, 41, 45, 48], [34, 38, 41, 45], [31, 34, 38, 41], [33, 37, 40, 43]],
       chords: [[53, 57, 60, 64], [50, 53, 57, 62], [50, 53, 55, 58], [49, 52, 55, 57]],
       play: function (t, i, bar, e) {
@@ -2010,7 +2054,7 @@
       },
     },
     tension: {
-      bpm: 124, swing: 0.5, bars: 4, vol: 0.45,
+      bpm: 124, swing: 0.5, bars: 4, vol: 3.9,
       roots: [33, 33, 29, 31],
       play: function (t, i, bar, e) {
         var r = this.roots[bar];
@@ -2025,7 +2069,7 @@
       },
     },
     triumph: {
-      bpm: 104, swing: 0.5, bars: 4, vol: 0.45,
+      bpm: 104, swing: 0.5, bars: 4, vol: 3.9,
       chords: [[62, 66, 69, 73], [59, 62, 66, 69], [55, 59, 62, 66], [57, 61, 64, 66]],
       roots: [38, 35, 31, 33],
       play: function (t, i, bar, e) {
@@ -2039,8 +2083,10 @@
   };
 
   function setBed(name) {
-    audio.want = name;
-    if (!audio.ctx || audio.bed === name) return;
+    audio.want = name || "";
+    if (!name) return;
+    if (!audio.ctx) return;
+    if (audio.bed === name && audio.music.gain.value > 0.05) return;
     startBed(name);
   }
 
@@ -2105,9 +2151,38 @@
   function setMuted(m) {
     audio.muted = m;
     try { localStorage.setItem(MUTE_KEY, m ? "1" : "0"); } catch (e) {}
-    if (audio.master) audio.master.gain.setTargetAtTime(m ? 0 : 0.85, audio.ctx.currentTime, 0.05);
-    var label = m ? "Sound off" : "Sound on";
-    Array.prototype.forEach.call(stage.querySelectorAll(".snd"), function (b) { b.textContent = label; });
+    if (audio.master) audio.master.gain.setTargetAtTime(m ? 0 : MASTER_VOL, audio.ctx.currentTime, 0.05);
+    toolLabels();
+  }
+
+  function toolLabels() {
+    var snd = T(audio.muted ? L("Sound off", "音效關") : L("Sound on", "音效開"));
+    Array.prototype.forEach.call(stage.querySelectorAll(".snd"), function (b) { b.textContent = snd; });
+    Array.prototype.forEach.call(stage.querySelectorAll(".lang"), function (b) {
+      b.textContent = lang === "zh" ? "EN" : "中";
+      b.title = T(L("中文", "English"));
+    });
+    if (skipBtn) skipBtn.textContent = T(L("Skip ▸▸", "跳過 ▸▸"));
+  }
+
+  var uiMode = "title";
+  var roundAt = null;
+
+  function setLang(l) {
+    lang = l === "zh" ? "zh" : "en";
+    try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    toolLabels();
+    refreshTabs();
+    if (uiMode === "title") showTitle();
+    else if (uiMode === "end") showEnd();
+    else if (uiMode === "round" && roundAt) openRound(roundAt.ch, roundAt.r);
+    else if (uiMode === "talk" && talking && talking.paint) talking.paint();
+    else if (uiMode === "card" && current >= 0 && STORY[current]) {
+      var c = STORY[current].card;
+      cCard.querySelector("p").textContent = T(c.kicker);
+      cCard.querySelector(".lvc-card-h").textContent = T(c.name);
+      cCard.querySelector("span").textContent = T(c.sub);
+    }
   }
 
   /* Cutscene layer -------------------------------------------------- */
@@ -2118,7 +2193,7 @@
     '<div class="lvc-card"><p></p><div class="lvc-card-h"></div><span></span></div>' +
     '<div class="lvc-dialog"><div class="lvc-face"><img alt=""></div><div class="lvc-dbody"><div class="lvc-name"></div><p class="lvc-line"></p></div><span class="lvc-next">▼</span></div>' +
     '<div class="lvc-title" hidden></div>' +
-    '<div class="lvc-tools"><button type="button" class="lvc-tool skip" hidden>Skip ▸▸</button><button type="button" class="lvc-tool snd"></button></div>');
+    '<div class="lvc-tools"><button type="button" class="lvc-tool skip" hidden></button><button type="button" class="lvc-tool lang"></button><button type="button" class="lvc-tool snd"></button></div>');
   cine.hidden = true;
   stage.appendChild(cine);
   var bgs = cine.querySelectorAll(".lvc-bg");
@@ -2130,7 +2205,11 @@
   var dLine = cine.querySelector(".lvc-line");
   var cTitle = cine.querySelector(".lvc-title");
   var skipBtn = cine.querySelector(".skip");
-  cine.querySelector(".snd").textContent = audio.muted ? "Sound off" : "Sound on";
+  toolLabels();
+  cine.querySelector(".lang").addEventListener("click", function (e) {
+    e.stopPropagation();
+    setLang(lang === "zh" ? "en" : "zh");
+  });
 
   var talking = null, cineGen = 0;
   function cineLater(ms, fn) { var g = cineGen; setTimeout(function () { if (g === cineGen) fn(); }, ms); }
@@ -2169,10 +2248,12 @@
 
   function talk(beats, done) {
     if (!beats.length) { done(); return; }
+    uiMode = "talk";
     var g = cineGen, bi = -1, li = 0, typing = null, text = "";
-    var api = { advance: advance, skip: finish };
+    var api = { advance: advance, skip: finish, paint: paint };
     talking = api;
     skipBtn.hidden = false;
+    toolLabels();
     nextBeat();
 
     function nextBeat() {
@@ -2186,24 +2267,28 @@
       showLine();
     }
 
-    function showLine() {
+    function paint() { if (bi >= 0 && bi < beats.length) showLine(true); }
+
+    function showLine(instant) {
       var b = beats[bi], who = b.who || null;
       dialog.className = "lvc-dialog on" + (who ? " who-" + who : " narration");
       if (who) {
         dFace.hidden = false;
         dFaceImg.src = ART + FACES[who];
-        dName.textContent = NAMES[who];
+        dName.textContent = T(NAMES[who]);
       } else {
         dFace.hidden = true;
       }
-      type(b.lines[li]);
+      type(T(b.lines[li]), instant);
     }
 
-    function type(s) {
+    function type(s, instant) {
       text = s;
+      clearInterval(typing);
+      typing = null;
+      if (instant) { dLine.textContent = text; return; }
       dLine.textContent = "";
       var n = 0;
-      clearInterval(typing);
       typing = setInterval(function () {
         if (g !== cineGen) { clearInterval(typing); return; }
         n++;
@@ -2231,14 +2316,16 @@
   }
 
   function showCard(i, done) {
+    uiMode = "card";
+    current = i;
     var c = STORY[i].card;
     setBg(c.img, "ken-a");
     setBed(STORY[i].music);
     SFX.whoosh();
     cCard.className = "lvc-card" + (c.alert ? " alert" : "");
-    cCard.querySelector("p").textContent = c.kicker;
-    cCard.querySelector(".lvc-card-h").textContent = c.name;
-    cCard.querySelector("span").textContent = c.sub;
+    cCard.querySelector("p").textContent = T(c.kicker);
+    cCard.querySelector(".lvc-card-h").textContent = T(c.name);
+    cCard.querySelector("span").textContent = T(c.sub);
     requestAnimationFrame(function () { cCard.classList.add("on"); });
     var ended = false;
     var api = { advance: end, skip: end };
@@ -2257,13 +2344,18 @@
 
   function showTitleScreen(o) {
     cTitle.innerHTML =
-      '<p class="lvc-kicker">' + o.kicker + "</p>" +
+      '<p class="lvc-kicker">' + T(o.kicker) + "</p>" +
       '<div class="lvc-h">' + o.h + "</div>" +
-      '<p class="lvc-sub">' + o.sub + "</p>" +
-      '<button type="button" class="lvc-go">' + o.action + "</button>";
+      '<p class="lvc-sub">' + T(o.sub) + "</p>" +
+      '<button type="button" class="lvc-go">' + T(o.action) + "</button>";
     cTitle.className = "lvc-title" + (o.cls ? " " + o.cls : "");
     cTitle.hidden = false;
-    cTitle.querySelector(".lvc-go").addEventListener("click", function () { ensureAudio(); SFX.click(); o.onGo(); });
+    cTitle.querySelector(".lvc-go").addEventListener("click", function () {
+      ensureAudio();
+      if (audio.want) setBed(audio.want);
+      SFX.click();
+      o.onGo();
+    });
   }
 
   /* Flow ------------------------------------------------------------ */
@@ -2273,20 +2365,24 @@
   var TEST = /[?&]lvtest\b/.test(location.search);
 
   function showTitle() {
+    uiMode = "title";
+    roundAt = null;
     openCine();
     tabBtns.forEach(function (b) { b.classList.remove("on"); });
     setBg("op-01-title.png");
     setBed("heist");
     showTitleScreen({
-      kicker: "JM35 · Trigonometry Heist",
+      kicker: L("JM35 · Trigonometry Heist", "JM35 · 三角學搶案"),
       h: "Laser<span>Vault</span>",
-      sub: "Tonight the Prism Heart diamond goes on show inside Silas Crane's laser-guarded tower. Four chapters, ten right-angled triangles, one perfect heist.",
-      action: "Start the heist ▸",
-      onGo: function () { cTitle.hidden = true; talk(OPENING, function () { playChapter(0); }); },
+      sub: L("Tonight the Prism Heart diamond goes on show inside Silas Crane's laser-guarded tower. Four chapters, ten right-angled triangles, one perfect heist.", "今晚，棱心鑽石在 Silas Crane 的雷射塔公展。四章、十個直角三角形、一場完美搶案。"),
+      action: L("Start the heist ▸", "開始行動 ▸"),
+      onGo: function () { cTitle.hidden = true; ensureAudio(); setBed("heist"); talk(OPENING, function () { playChapter(0); }); },
     });
   }
 
   function playChapter(i) {
+    ensureAudio();
+    setBed(STORY[i].music || "heist");
     openCine();
     current = i;
     tabBtns.forEach(function (b, j) { b.classList.toggle("on", j === i); });
@@ -2302,13 +2398,15 @@
   }
 
   function showEnd() {
+    uiMode = "end";
+    openCine();
     tabBtns.forEach(function (b) { b.classList.remove("on"); });
     showTitleScreen({
       cls: "bottom",
-      kicker: "Heist complete... or is it?",
+      kicker: L("Heist complete... or is it?", "行動完成……還是沒有？"),
       h: "To Be<span>Continued</span>",
-      sub: "Inclination, depression, elevation, reflection and bearings: you cracked every triangle. Crane just cracked you.",
-      action: "Replay with new numbers ▸",
+      sub: L("Inclination, depression, elevation, reflection and bearings: you cracked every triangle. Crane just cracked you.", "傾角、俯角、仰角、反射與方位：每個三角形你都破解了。只是 Crane 也破解了你。"),
+      action: L("Replay with new numbers ▸", "用新數字再玩 ▸"),
       onGo: function () {
         tabBtns.forEach(function (b) { b.classList.remove("done"); });
         showTitle();
@@ -2326,6 +2424,8 @@
 
   // Every visit rolls fresh numbers, so a round cannot be passed by remembering answers.
   function openRound(i, r) {
+    uiMode = "round";
+    roundAt = { ch: i, r: r };
     cineGen++;
     talking = null;
     cine.hidden = true;
@@ -2334,14 +2434,19 @@
     var ch = CHAPTERS[i], rd = ch.rounds[r], last = r + 1 === ch.rounds.length;
     var P = rd.gen();
     var cfg = rd.panel(P);
-    cfg.kicker = "Chapter " + (i + 1) + " · Round " + (r + 1) + "/" + ch.rounds.length + " · " + cfg.kicker;
-    cfg.nextLabel = last ? ch.nextLabel : "Next round ▸";
+    var kEn = cfg.kicker && cfg.kicker.en != null ? cfg.kicker.en : String(cfg.kicker || "");
+    var kZh = cfg.kicker && cfg.kicker.zh != null ? cfg.kicker.zh : kEn;
+    cfg.kicker = L(
+      "Chapter " + (i + 1) + " · Round " + (r + 1) + "/" + ch.rounds.length + " · " + kEn,
+      "第 " + (i + 1) + " 章 · 第 " + (r + 1) + "/" + ch.rounds.length + " 關 · " + kZh
+    );
+    cfg.nextLabel = last ? ch.nextLabel : L("Next round ▸", "下一關 ▸");
     var handle = null, api = null;
     cfg.onAction = function () { if (handle) handle.launch(); };
     cfg.onNext = function () { roundDone(i, r); };
     cfg.onWin = function () { SFX.win(); if (last && tabBtns[i]) tabBtns[i].classList.add("done"); };
     cfg.onReroll = function (msg) {
-      api.say(msg + "\nNew numbers coming up…", "bad");
+      api.say(T(msg) + "\n" + T(L("New numbers coming up…", "即將換一組新數字……")), "bad");
       wait(2600, function () { openRound(i, r); });
     };
     api = buildPanel(cfg);
@@ -2349,11 +2454,22 @@
     if (TEST) window.__lvp = { chapter: i, round: r, P: P, open: openRound };
   }
 
+  function refreshTabs() {
+    tabBtns.forEach(function (b, i) {
+      var ch = CHAPTERS[i];
+      var on = b.classList.contains("on");
+      var done = b.classList.contains("done");
+      b.innerHTML = T(ch.tab) + "<small>" + T(ch.sub) + "</small>";
+      b.classList.toggle("on", on);
+      b.classList.toggle("done", done);
+    });
+  }
+
   if (tabsEl) {
     CHAPTERS.forEach(function (ch, i) {
-      var b = el("button", "lvp-tab", ch.tab + "<small>" + ch.sub + "</small>");
+      var b = el("button", "lvp-tab", T(ch.tab) + "<small>" + T(ch.sub) + "</small>");
       b.type = "button";
-      b.addEventListener("click", function () { ensureAudio(); playChapter(i); });
+      b.addEventListener("click", function () { ensureAudio(); setBed(STORY[i].music || "heist"); playChapter(i); });
       tabsEl.appendChild(b);
       tabBtns.push(b);
     });
@@ -2361,7 +2477,7 @@
 
   skipBtn.addEventListener("click", function (e) { e.stopPropagation(); if (talking) talking.skip(); });
   cine.querySelector(".lvc-tools .snd").addEventListener("click", function (e) { e.stopPropagation(); ensureAudio(); setMuted(!audio.muted); });
-  stage.addEventListener("pointerdown", ensureAudio);
+  stage.addEventListener("pointerdown", function () { ensureAudio(); if (audio.want) setBed(audio.want); });
   cine.addEventListener("click", function (e) {
     if (!talking || (e.target.closest && e.target.closest(".lvc-tools, .lvc-title"))) return;
     talking.advance();

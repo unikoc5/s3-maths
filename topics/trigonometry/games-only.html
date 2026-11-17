@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260926-direct">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JM34 · Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260906-comicw">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <link rel="stylesheet" href="blackout-voyage.css?v=20261115-cockpit12">
+  <link rel="stylesheet" href="trig-mini-prototypes.css?v=20261115-proto2">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+      background: linear-gradient(180deg,#f8fafc,#f1f5f9); background-attachment: fixed; }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); letter-spacing:-.03em; }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .jm-page { width: min(1100px, 100%); }
+  </style>
+</head>
+<body class="paper-labs">
+  <main class="jm-page">
+    <p class="jm-eyebrow">JM34</p>
+    <h1>Games</h1>
+    <p class="lead">Exact values, identities, complementary angles and proofs — no calculators.</p>
+    <div class="subnav" id="games-subnav" aria-label="Games">
+      <button class="chip active" type="button" data-game="voyage">Game 1 · Voyage</button>
+      <button class="chip" type="button" data-game="aim">Try · Aim Sight</button>
+      <button class="chip" type="button" data-game="rhythm">Try · Rhythm Lock</button>
+    </div>
+    <section class="block" id="bv-game">
+      <p class="part-title">Game 1 · Trigonometric relations</p>
+      <h2>Blackout Voyage</h2>
+      <p class="hint">No calculators — exact values only. Every wrong answer costs altitude; hit the sea and the chapter restarts.</p>
+      <div class="bv-stage" id="bv-stage" role="application" aria-label="Blackout Voyage"></div>
+    </section>
+    <section class="block game-off" id="tm-game-aim" hidden>
+      <p class="part-title">Prototype · Special angles</p>
+      <h2>Aim Sight</h2>
+      <p class="hint">One shot — pick the exact tan θ, fire the beam at the beacon.</p>
+      <div id="tm-aim"></div>
+    </section>
+    <section class="block game-off" id="tm-game-rhythm" hidden>
+      <p class="part-title">Prototype · Exact-value recognition</p>
+      <h2>Rhythm Lock</h2>
+      <p class="hint">Lock only when a true exact value is in the blue zone.</p>
+      <div id="tm-rhythm"></div>
+    </section>
+  </main>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="blackout-voyage-zh-lookup.js?v=20261115-bv-i18n3"></script>
+  <script defer src="blackout-voyage-data.js?v=20261115-cockpit12"></script>
+  <script defer src="blackout-voyage.js?v=20261115-cockpit12"></script>
+  <script defer src="trig-mini-prototypes.js?v=20261115-proto2"></script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+/* JM34 — aim + rhythm prototypes (one level each) */
+
+#panel-games .game-off { display: none !important; }
+
+.tm-proto { display: flex; flex-direction: column; gap: 14px; }
+.tm-bar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 14px; border-radius: 12px;
+  background: #fff; border: 1px solid #dbe3ef;
+}
+.tm-bar strong { font-size: 15px; color: #0f172a; }
+.tm-bar span { font-size: 13px; color: #64748b; }
+.tm-bar .tm-btn { margin-left: auto; }
+
+.tm-btn {
+  appearance: none; border: 1px solid #94a3b8; background: #f8fafc;
+  color: #0f172a; font: inherit; font-weight: 700; font-size: 14px;
+  padding: .45em .9em; border-radius: 10px; cursor: pointer;
+}
+.tm-btn:hover { background: #eef2ff; border-color: #818cf8; }
+.tm-btn.primary { background: #2563eb; border-color: #1d4ed8; color: #fff; }
+.tm-btn.primary:hover { background: #1d4ed8; }
+.tm-btn:disabled { opacity: .45; cursor: default; }
+.tm-btn.pick {
+  border-color: #4f46e5; background: #c7d2fe; color: #312e81;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, .2);
+}
+
+.tm-hint {
+  margin: 0; padding: 10px 14px; border-radius: 10px;
+  background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a;
+  font-size: 14px; line-height: 1.5;
+}
+.tm-note {
+  min-height: 1.4em; margin: 0; font-size: 14px; font-weight: 700; color: #334155;
+}
+.tm-note.ok { color: #15803d; }
+.tm-note.bad { color: #b91c1c; }
+
+.tm-panel {
+  padding: 14px; border-radius: 16px;
+  background: #fff; border: 1px solid #dbe3ef;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .04);
+}
+
+/* ─── Aim / sight ───────────────────────────────────────────────── */
+.tm-aim-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 420px;
+  border-radius: 14px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, #0b1220 0%, #1e293b 55%, #334155 55%, #1c1917 100%);
+  border: 1px solid #0f172a;
+}
+.tm-aim-stage svg { display: block; width: 100%; height: 100%; }
+.tm-aim-hud {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  margin-top: 12px;
+}
+.tm-aim-hud .label {
+  font-size: 13px; font-weight: 800; color: #64748b; letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.tm-notches { display: flex; flex-wrap: wrap; gap: 8px; }
+.tm-beam {
+  stroke: #67e8f9; stroke-width: 3; stroke-linecap: round;
+  filter: drop-shadow(0 0 6px #22d3ee);
+  opacity: 0;
+}
+.tm-beam.on { opacity: 1; transition: opacity .15s ease; }
+.tm-beam.miss { stroke: #f87171; filter: drop-shadow(0 0 6px #ef4444); }
+.tm-beam.hit { stroke: #4ade80; filter: drop-shadow(0 0 8px #22c55e); }
+.tm-peak-glow { fill: #fbbf24; opacity: 0; }
+.tm-peak-glow.on { opacity: 1; animation: tmPulse .9s ease-out; }
+@keyframes tmPulse {
+  0% { opacity: 0; transform: scale(.6); }
+  40% { opacity: 1; }
+  100% { opacity: .35; }
+}
+
+/* ─── Rhythm lock ───────────────────────────────────────────────── */
+.tm-rhythm {
+  position: relative;
+  height: 280px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+}
+.tm-lane {
+  position: absolute; inset: 0;
+}
+.tm-zone {
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 88px; transform: translateX(-50%);
+  background: rgba(37, 99, 235, .18);
+  border-left: 2px solid rgba(96, 165, 250, .85);
+  border-right: 2px solid rgba(96, 165, 250, .85);
+  pointer-events: none;
+}
+.tm-zone::after {
+  content: "LOCK";
+  position: absolute; left: 50%; top: 10px; transform: translateX(-50%);
+  font-size: 11px; font-weight: 800; letter-spacing: .16em; color: #93c5fd;
+}
+.tm-card {
+  position: absolute;
+  top: 50%; transform: translate(-50%, -50%);
+  min-width: 132px; max-width: 160px;
+  padding: 12px 10px; border-radius: 12px;
+  background: #1e293b; border: 2px solid #64748b;
+  color: #f8fafc; text-align: center;
+  font-weight: 800; font-size: 14px; line-height: 1.35;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .35);
+  pointer-events: none;
+}
+.tm-card .katex { font-size: .95em; color: #f8fafc; }
+.tm-card .sub {
+  display: block; margin-top: 4px; font-size: 12px; font-weight: 700; color: #94a3b8;
+}
+.tm-card.flash-ok { border-color: #4ade80; background: #14532d; }
+.tm-card.flash-bad { border-color: #f87171; background: #7f1d1d; }
+.tm-card.gone { opacity: 0; transition: opacity .2s ease; }
+
+.tm-rhythm-ui {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  margin-top: 12px;
+}
+.tm-rhythm-ui .tm-btn.primary { min-width: 9em; font-size: 16px; padding: .65em 1.1em; }
+.tm-score { font-size: 14px; font-weight: 800; color: #334155; }
