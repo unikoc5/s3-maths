@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260926-direct">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JM30 · Comics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260906-comicw">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
+  <style>
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+      background: linear-gradient(180deg,#f8fafc,#f1f5f9); background-attachment: fixed; }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); letter-spacing:-.03em; }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .jm-page { width: min(980px, 100%); }
+    .comic-figure { margin:0; border-radius:14px; border:1px solid var(--line); background:#0f172a; overflow:hidden; }
+    .comic-figure img { display:block; width:100%; height:auto; }
+    #comics-subnav { margin-bottom: 14px; }
+  </style>
+</head>
+<body class="paper-labs">
+  <main class="jm-page">
+    <p class="jm-eyebrow">JM30</p>
+    <h1>Comics</h1>
+    <p class="lead">Fair games, tree diagrams and expected value — with a quick check after each chapter.</p>
+    <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+    <div id="comics-stage"></div>
+  </main>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script src="../../shared/jm-comics-engine.js?v=20260926-direct"></script>
+  <script src="probability-comics.js?v=20261119-comics"></script>
+</body>
+</html>

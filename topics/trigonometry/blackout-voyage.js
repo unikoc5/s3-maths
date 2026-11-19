@@ -14,12 +14,20 @@
   if (!root || !D) return;
 
   var ART = "game/";
-  var V = "?v=20261115-cockpit12";
+  var V = "?v=20261119-ansgate";
   var SAVE_KEY = "jm34-bv-save-v1";
   var MUTE_KEY = "jm34-bv-muted";
   var LANG_KEY = "jm34-bv-lang";
   var MAX_ALT = 5;
   var CLIMB_STREAK = 3;
+  /* Show-answer is for local testing only — hidden on github.io / Platform embeds. */
+  function allowAnswerReveal() {
+    try {
+      var h = (location.hostname || "").toLowerCase();
+      return location.protocol === "file:" || h === "localhost" || h === "127.0.0.1";
+    } catch (e) { return false; }
+  }
+  var ALLOW_ANS = allowAnswerReveal();
 
   var L = D.L, CHAPTERS = D.CHAPTERS, NAMES = D.NAMES, FACES = D.FACES, rad = D.rad;
   var OPENING = D.OPENING, CH_INTRO = D.CH_INTRO, ENDING = D.ENDING;
@@ -403,7 +411,7 @@
     '  <button class="bv-tool" type="button" data-t="mute"></button>' +
     '  <button class="bv-tool" type="button" data-t="fs"></button>' +
     '  <button class="bv-tool bv-tool-lang" type="button" data-t="lang"></button>' +
-    '  <button class="bv-tool bv-tool-reveal" type="button" data-t="reveal"></button>' +
+    (ALLOW_ANS ? '  <button class="bv-tool bv-tool-reveal" type="button" data-t="reveal"></button>' : "") +
     '  <button class="bv-tool bv-tool-skip" type="button" data-t="skip" hidden></button>' +
     "</div>" +
     '<div class="bv-fade"></div>';
@@ -465,8 +473,10 @@
     el.fs.title = T(UI.fullscreen);
     el.lang.textContent = lang === "zh" ? "EN" : "中";
     el.lang.title = T(UI.langSwitch);
-    el.reveal.textContent = T(UI.revealShort);
-    el.reveal.title = T(UI.reveal);
+    if (el.reveal) {
+      el.reveal.textContent = T(UI.revealShort);
+      el.reveal.title = T(UI.reveal);
+    }
     el.skip.textContent = T(UI.skipShort);
     el.skip.title = T(UI.skip);
     el.cineNext.textContent = T(UI.cineNext);
@@ -1082,8 +1092,9 @@
     W[p.type](p, { work: el.work, ans: el.ans, done: function () { solved(p, k); } });
   }
 
-  /* Dev/test: skip the whole puzzle and show the win line (no step-through). */
+  /* Dev/test: skip the whole puzzle and show the win line (no step-through). Local only. */
   function revealAnswer() {
+    if (!ALLOW_ANS) return;
     if (state.mode !== "play" || state.solved || state.busy || !state.puzzle) return;
     ensureAudio();
     sfx("ok");
@@ -1495,10 +1506,12 @@
     e.stopPropagation();
     if (cineSkip) cineSkip();
   });
-  el.reveal.addEventListener("click", function (e) {
-    e.stopPropagation();
-    revealAnswer();
-  });
+  if (el.reveal) {
+    el.reveal.addEventListener("click", function (e) {
+      e.stopPropagation();
+      revealAnswer();
+    });
+  }
   el.lang.addEventListener("click", function (e) {
     e.stopPropagation();
     setLang(lang === "zh" ? "en" : "zh");

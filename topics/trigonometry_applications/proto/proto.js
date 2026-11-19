@@ -14,6 +14,14 @@
     try { var l = localStorage.getItem(LANG_KEY); if (l === "zh" || l === "en") return l; } catch (e) {}
     return "en";
   })();
+  /* Show-answer is for local testing only — hidden on github.io / Platform embeds. */
+  function allowAnswerReveal() {
+    try {
+      var h = (location.hostname || "").toLowerCase();
+      return location.protocol === "file:" || h === "localhost" || h === "127.0.0.1";
+    } catch (e) { return false; }
+  }
+  var ALLOW_ANS = allowAnswerReveal();
   function L(en, zh) { return { en: en, zh: zh }; }
   function T(x) {
     if (x == null) return x;
@@ -282,6 +290,7 @@
       '<div class="lvp-say"></div>' +
       '<ol class="lvp-hints" hidden></ol>' +
       '<div class="lvp-after"><button type="button" class="lvp-btn ghost hint"></button>' +
+      (ALLOW_ANS ? '<button type="button" class="lvp-btn ghost reveal"></button>' : "") +
       '<button type="button" class="lvp-btn ghost lang"></button>' +
       '<button type="button" class="lvp-btn ghost snd"></button>' +
       '<button type="button" class="lvp-btn next" hidden>' + T(o.nextLabel || L("Next level ▸", "下一關 ▸")) + "</button></div>";
@@ -290,6 +299,7 @@
     var say = panel.querySelector(".lvp-say");
     var hintList = panel.querySelector(".lvp-hints");
     var hintBtn = panel.querySelector(".hint");
+    var revealBtn = panel.querySelector(".reveal");
     var next = panel.querySelector(".next");
     var triesEl = panel.querySelector(".lvp-tries");
     var tries = o.tries || 0;
@@ -310,12 +320,33 @@
     });
     panel.querySelector(".snd").addEventListener("click", function () { ensureAudio(); setMuted(!audio.muted); });
     panel.querySelector(".lang").addEventListener("click", function () { setLang(lang === "zh" ? "en" : "zh"); });
+    if (revealBtn) {
+      revealBtn.addEventListener("click", function () {
+        if (!ALLOW_ANS || go.disabled) return;
+        ensureAudio();
+        if (o.onReveal) o.onReveal();
+        else fillAnswers(o.answers);
+      });
+    }
     go.addEventListener("click", function () { if (!go.disabled) o.onAction(); });
     next.addEventListener("click", function () { if (o.onNext) o.onNext(); });
     Array.prototype.forEach.call(panel.querySelectorAll("input"), function (inp) {
       inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); go.click(); } });
     });
     toolLabels();
+
+    function fillAnswers(ans) {
+      if (!ALLOW_ANS || !ans) return;
+      Object.keys(ans).forEach(function (id) {
+        var inp = panel.querySelector('[data-f="' + id + '"]');
+        if (!inp || inp.disabled) return;
+        var v = ans[id];
+        inp.value = typeof v === "number" ? String(Math.round(v * 100) / 100) : String(v);
+        try { inp.dispatchEvent(new Event("input", { bubbles: true })); } catch (e) {}
+      });
+      say.className = "lvp-say info";
+      say.textContent = T(L("Answers filled in. Press the action button to continue.", "答案已填入。按行動鍵繼續。"));
+    }
 
     function drawTries() {
       if (!triesEl) return;
@@ -339,8 +370,10 @@
         return "";
       },
       say: function (msg, kind) { say.className = "lvp-say " + (kind || ""); say.textContent = T(msg); },
+      fill: fillAnswers,
       lock: function (b) {
         go.disabled = b;
+        if (revealBtn) revealBtn.disabled = b;
         Array.prototype.forEach.call(panel.querySelectorAll("input"), function (i) { i.disabled = b; });
       },
       useTry: function () { tries = Math.max(0, tries - 1); drawTries(); return tries; },
@@ -585,6 +618,11 @@
       ride(hm, v, th, cableM);
     }
 
+    function reveal() {
+      select(P.good);
+      api.fill({ h: P.good.hm, th: P.good.th, L: P.good.L });
+    }
+
     function ride(hm, v, th, cableM) {
       busy = true;
       api.lock(true);
@@ -681,7 +719,7 @@
       });
     }
 
-    return { launch: launch };
+    return { launch: launch, reveal: reveal };
   }
 
   /* ================================================================
@@ -1674,6 +1712,11 @@
           action: L("Fire", "發射"),
           tries: 3,
           triesLabel: L("Charge", "電量"),
+          answers: (function () {
+            var a = {};
+            P.hits.slice(0, P.seq.length).forEach(function (h, i) { a["ABCD"[i]] = h.pos; });
+            return a;
+          })(),
           hints: MIRROR_HINTS,
         };
       },
@@ -1698,6 +1741,7 @@
                 { id: "L", label: L("Cable length", "纜繩長"), unit: "m" },
               ],
               action: L("Launch", "出發"),
+              answers: { h: P.good.hm, th: P.good.th, L: P.good.L },
               hints: [
                 L("Real distance = map length × 10 000. Then change cm into m.", "實際距離 = 圖上長度 × 10 000，再把 cm 換成 m。"),
                 L("Vertical distance = anchor height − rooftop height.", "垂直距離 = 錨點高度 − 天台高度。"),
@@ -1721,6 +1765,7 @@
                 { id: "L", label: L("Cable length", "纜繩長"), sub: L("A's roof to B's roof", "A 天台到 B 天台"), unit: "m" },
               ],
               action: L("Zip across", "滑過去"),
+              answers: { d: P.d, hb: P.HB, L: P.L },
               hints: [
                 L("Angles of depression are measured down from the horizontal at A's roof.", "俯角是從 A 天台的水平線向下量。"),
                 L("Start with β: its triangle has A's full height as the vertical side. Horizontal = height ÷ tan β.", "先用 β：其三角形垂直邊是 A 的全高。水平 = 高度 ÷ tan β。"),
@@ -1743,6 +1788,7 @@
                 { id: "L", label: L("Rope length", "繩長"), unit: "m" },
               ],
               action: L("Fire hook", "發射鉤爪"),
+              answers: { th: P.th, L: P.L },
               hints: [
                 L("Draw the right-angled triangle from you to the ledge.", "畫出你到簷邊的直角三角形。"),
                 L("Vertical side = ledge height − your roof height.", "垂直邊 = 簷高 − 你的天台高度。"),
@@ -1767,6 +1813,7 @@
               fields: [{ id: "x", label: L("Drop point x", "落下點 x"), unit: "m" }],
               action: L("Drop", "落下"),
               tries: 3,
+              answers: { x: (P.gap[0] + P.gap[1]) / 2 },
               hints: [
                 L("Each camera sees a strip of floor between its two rays.", "每部鏡頭在兩條射線之間看到一段地板。"),
                 L("A ray with angle of depression θ from height h meets the floor h ÷ tan θ from that wall.", "高度 h、俯角 θ 的射線，離該牆 h ÷ tan θ 處碰到地板。"),
@@ -1789,6 +1836,7 @@
                 { id: "x", label: L("Shadow ends at", "陰影末端"), sub: L("x from the wall", "離牆的 x"), unit: "m" },
               ],
               action: L("Sneak", "潛行"),
+              answers: { al: P.al, x: P.xe },
               hints: [
                 L("Draw the line from the camera to the top back corner of the case.", "畫出鏡頭到展櫃後上角的線。"),
                 L("Down to the case top, the line drops (camera height − case height) over the distance to the case.", "到櫃頂時，下降量是（鏡頭高 − 櫃高），水平是到展櫃的距離。"),
@@ -1826,6 +1874,7 @@
               action: L("Launch drone", "發射無人機"),
               tries: 3,
               triesLabel: L("Drones", "無人機"),
+              answers: { b: fmtB(P.mb), d: P.s, t: P.t },
               hints: [
                 L("You pass closest to H at the foot of the perpendicular from H to your course.", "離 H 最近的點，是 H 到航線垂足。"),
                 L("Find the angle between your course and the line from P back to H (the back bearing).", "求航向與 P 回到 H 的線（反方位）的夾角。"),
@@ -1850,6 +1899,7 @@
               ],
               action: L("Full speed", "全速前進"),
               tries: 3,
+              answers: { b: fmtB(P.b), d: P.d, t: P.t },
               hints: [
                 L("You, L and Q form a right-angled triangle with the right angle at L.", "你、L、Q 組成直角在 L 的直角三角形。"),
                 L("tan(angle at you) = east distance ÷ north distance. A bearing is measured clockwise from north.", "tan(你那邊的角) = 東向距離 ÷ 北向距離。方位由北順時針量。"),
@@ -2162,6 +2212,10 @@
       b.textContent = lang === "zh" ? "EN" : "中";
       b.title = T(L("中文", "English"));
     });
+    Array.prototype.forEach.call(stage.querySelectorAll(".reveal"), function (b) {
+      b.textContent = T(L("Show answer", "顯示答案"));
+      b.title = T(L("Fill in the correct answers for testing", "填入正確答案（測試用）"));
+    });
     if (skipBtn) skipBtn.textContent = T(L("Skip ▸▸", "跳過 ▸▸"));
   }
 
@@ -2443,6 +2497,12 @@
     cfg.nextLabel = last ? ch.nextLabel : L("Next round ▸", "下一關 ▸");
     var handle = null, api = null;
     cfg.onAction = function () { if (handle) handle.launch(); };
+    if (ALLOW_ANS) {
+      cfg.onReveal = function () {
+        if (handle && handle.reveal) handle.reveal();
+        else if (api) api.fill(cfg.answers);
+      };
+    }
     cfg.onNext = function () { roundDone(i, r); };
     cfg.onWin = function () { SFX.win(); if (last && tabBtns[i]) tabBtns[i].classList.add("done"); };
     cfg.onReroll = function (msg) {
