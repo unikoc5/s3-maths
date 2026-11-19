@@ -16,7 +16,7 @@
       const g = ctx.createGain();
       o.type = "square";
       o.frequency.value = freq;
-      g.gain.value = 0.06;
+      g.gain.value = 0.35;
       o.connect(g).connect(ctx.destination);
       o.start();
       o.stop(ctx.currentTime + (dur || 0.08));

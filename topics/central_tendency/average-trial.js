@@ -165,15 +165,15 @@
     s.connect(g); g.connect(c.destination); s.start();
   }
   var SFX = {
-    blip: function (p) { tone(p || 520, 0.035, "square", 0.025); },
-    good: function () { tone(660, 0.09, "square", 0.05); tone(880, 0.09, "square", 0.05, 0.09); tone(1320, 0.16, "square", 0.05, 0.18); },
-    bad: function () { tone(300, 0.22, "sawtooth", 0.06, 0, 120); },
-    shout: function () { noise(0.25, 0.16); tone(392, 0.35, "sawtooth", 0.05); tone(523, 0.35, "square", 0.04); tone(659, 0.45, "square", 0.035, 0.05); },
-    gavel: function () { tone(140, 0.12, "triangle", 0.2); tone(140, 0.12, "triangle", 0.2, 0.22); tone(120, 0.18, "triangle", 0.22, 0.44); },
-    ev: function () { tone(988, 0.08, "square", 0.04); tone(1318, 0.18, "square", 0.04, 0.08); },
-    page: function () { tone(740, 0.05, "triangle", 0.05); },
-    fanfare: function () { [523, 659, 784, 1046, 784, 1046].forEach(function (f, i) { tone(f, i === 5 ? 0.5 : 0.14, "square", 0.05, i * 0.13); }); },
-    fail: function () { [392, 330, 262, 196].forEach(function (f, i) { tone(f, 0.28, "sawtooth", 0.05, i * 0.22); }); },
+    blip: function (p) { tone(p || 520, 0.035, "square", 0.12); },
+    good: function () { tone(660, 0.09, "square", 0.24); tone(880, 0.09, "square", 0.24, 0.09); tone(1320, 0.16, "square", 0.24, 0.18); },
+    bad: function () { tone(300, 0.22, "sawtooth", 0.28, 0, 120); },
+    shout: function () { noise(0.25, 0.55); tone(392, 0.35, "sawtooth", 0.24); tone(523, 0.35, "square", 0.2); tone(659, 0.45, "square", 0.18, 0.05); },
+    gavel: function () { tone(140, 0.12, "triangle", 0.7); tone(140, 0.12, "triangle", 0.7, 0.22); tone(120, 0.18, "triangle", 0.75, 0.44); },
+    ev: function () { tone(988, 0.08, "square", 0.2); tone(1318, 0.18, "square", 0.2, 0.08); },
+    page: function () { tone(740, 0.05, "triangle", 0.24); },
+    fanfare: function () { [523, 659, 784, 1046, 784, 1046].forEach(function (f, i) { tone(f, i === 5 ? 0.5 : 0.14, "square", 0.24, i * 0.13); }); },
+    fail: function () { [392, 330, 262, 196].forEach(function (f, i) { tone(f, 0.28, "sawtooth", 0.24, i * 0.22); }); },
   };
 
   /* ================================================================

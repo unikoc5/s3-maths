@@ -160,13 +160,13 @@
   }
   function beep(type) {
     if (!soundOn || !audioCtx) return;
-    if (type === "laser") tone("square", 880, 220, 0.12, 0.12);
-    else if (type === "wrong") tone("sawtooth", 180, 70, 0.3, 0.16);
-    else if (type === "tick") tone("triangle", 660, null, 0.1, 0.14);
-    else if (type === "go") tone("triangle", 990, 1480, 0.25, 0.18);
+    if (type === "laser") tone("square", 880, 220, 0.12, 0.55);
+    else if (type === "wrong") tone("sawtooth", 180, 70, 0.3, 0.7);
+    else if (type === "tick") tone("triangle", 660, null, 0.1, 0.6);
+    else if (type === "go") tone("triangle", 990, 1480, 0.25, 0.75);
     else if (type === "correct") {
       const t = audioCtx.currentTime;
-      [523, 659, 784, 1047].forEach((f, i) => tone("triangle", f, null, 0.16, 0.16, t + i * 0.07));
+      [523, 659, 784, 1047].forEach((f, i) => tone("triangle", f, null, 0.16, 0.7, t + i * 0.07));
     }
   }
 

@@ -1493,14 +1493,14 @@
     if (!audio.ctx) {
       audio.ctx = new Ctx();
       audio.master = audio.ctx.createGain();
-      audio.master.gain.value = 0.9;
-      // Brick-wall limiter: the beds used to clip on laptop speakers.
+      /* Match JM34 Blackout Voyage bus loudness. */
+      audio.master.gain.value = 5.1;
       audio.limiter = audio.ctx.createDynamicsCompressor();
-      audio.limiter.threshold.value = -9;
-      audio.limiter.knee.value = 4;
-      audio.limiter.ratio.value = 16;
-      audio.limiter.attack.value = 0.002;
-      audio.limiter.release.value = 0.18;
+      audio.limiter.threshold.value = -6;
+      audio.limiter.knee.value = 20;
+      audio.limiter.ratio.value = 2;
+      audio.limiter.attack.value = 0.01;
+      audio.limiter.release.value = 0.25;
       audio.master.connect(audio.limiter);
       audio.limiter.connect(audio.ctx.destination);
       audio.music = audio.ctx.createGain();
@@ -1724,8 +1724,8 @@
   }
 
   function applyMix() {
-    if (audio.music) audio.music.gain.value = 4 * mix.music;
-    if (audio.sfx) audio.sfx.gain.value = mix.sfx;
+    if (audio.music) audio.music.gain.value = 4.05 * mix.music;
+    if (audio.sfx) audio.sfx.gain.value = 4.8 * mix.sfx;
   }
 
   function writeMix() {

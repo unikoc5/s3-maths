@@ -444,14 +444,20 @@
       var AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       ctx = new AC();
-      var master = gainNode(0.9);
+      /* Match JM34 Blackout Voyage bus loudness. */
+      var master = gainNode(5.1);
       var comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -6;
+      comp.knee.value = 20;
+      comp.ratio.value = 2;
+      comp.attack.value = 0.01;
+      comp.release.value = 0.25;
       master.connect(comp);
       comp.connect(ctx.destination);
       var verb = ctx.createConvolver();
       verb.buffer = impulse(3.4);
       verb.connect(gainNode(0.5, master));
-      sfxBus = gainNode(0.6, master);
+      sfxBus = gainNode(0.94, master);
       sfxBus.connect(gainNode(0.18, verb));
       musicBus = gainNode(0, master);
       musicBus.connect(verb);
@@ -748,7 +754,7 @@
       step = 0;
       nextTime = ctx.currentTime + 0.1;
       musicBus.gain.cancelScheduledValues(ctx.currentTime);
-      musicBus.gain.setTargetAtTime(0.32, ctx.currentTime, 1.5);
+      musicBus.gain.setTargetAtTime(0.8, ctx.currentTime, 1.5);
       timer = setInterval(schedule, 120);
       schedule();
     }

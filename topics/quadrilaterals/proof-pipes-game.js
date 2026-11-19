@@ -1570,11 +1570,11 @@
       o.connect(g); g.connect(actx.destination);
       o.start(t + start); o.stop(t + start + dur + 0.02);
     }
-    if (kind === "click") tone(520, 0, 0.06, "triangle", 0.08, 380);
-    else if (kind === "flow") { tone(180, 0, 0.5, "sine", 0.06, 320); tone(240, 0.1, 0.5, "sine", 0.04, 420); }
-    else if (kind === "leak") { tone(900, 0, 0.25, "sawtooth", 0.03, 300); }
-    else if (kind === "wrong") { tone(300, 0, 0.18, "square", 0.05); tone(220, 0.18, 0.28, "square", 0.05); }
-    else if (kind === "win") { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.09, 0.22, "triangle", 0.09); }); }
+    if (kind === "click") tone(520, 0, 0.06, "triangle", 0.4, 380);
+    else if (kind === "flow") { tone(180, 0, 0.5, "sine", 0.3, 320); tone(240, 0.1, 0.5, "sine", 0.22, 420); }
+    else if (kind === "leak") { tone(900, 0, 0.25, "sawtooth", 0.18, 300); }
+    else if (kind === "wrong") { tone(300, 0, 0.18, "square", 0.28); tone(220, 0.18, 0.28, "square", 0.28); }
+    else if (kind === "win") { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.09, 0.22, "triangle", 0.45); }); }
   }
 
   function boot() {

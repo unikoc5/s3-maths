@@ -311,7 +311,7 @@
 
     /* Clipped mains hum (~60 Hz) that sags and stutters like a struggling power line, then a relay cuts it. */
     function mainsBuzz(c, t, len) {
-      var bus = heavyBus(c, 6, 0.55);
+      var bus = heavyBus(c, 6, 1);
       var shape = c.createBiquadFilter();
       var gate = c.createGain();
       shape.type = "lowpass";
@@ -353,7 +353,7 @@
 
     /* Storm uses real recordings through <audio> elements: fetch/decodeAudioData is blocked on file://. */
     var STORM_DIR = "game-art/signal-room/";
-    var RAIN_VOL = 0.6;
+    var RAIN_VOL = 1;
     var RAIN_FADE = 1.5;
     var THUNDER = ["storm-thunder-1.mp3", "storm-thunder-2.mp3", "storm-thunder-3.mp3"];
     var thunderLive = [];
@@ -513,14 +513,14 @@
       press: function () {
         if (muted) return;
         var el = new Audio(STORM_DIR + "button-press.mp3");
-        el.volume = 0.9;
+        el.volume = 1;
         el.play().catch(function () {});
       },
       release: function () {
         var c = ac();
         if (!c) return;
         var now = c.currentTime;
-        var bus = heavyBus(c, 2.6, 0.8);
+        var bus = heavyBus(c, 2.6, 1);
         strike(c, now, 0.06, "lowpass", 3000, 0.7, 1.1, bus);
         var thump = tone(c, 110, now, 0.22, 0.8, "sine", bus);
         thump.frequency.exponentialRampToValueAtTime(40, now + 0.2);
@@ -534,7 +534,7 @@
         if (!c) return;
         var now = c.currentTime;
         [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) {
-          tone(c, f, now + i * 0.14, 0.55, 0.07, "triangle");
+          tone(c, f, now + i * 0.14, 0.55, 0.35, "triangle");
         });
       },
       chirp: function (ok) {
@@ -542,18 +542,18 @@
         if (!c) return;
         var now = c.currentTime;
         if (ok) {
-          tone(c, 880, now, 0.08, 0.06, "square");
-          tone(c, 1320, now + 0.08, 0.12, 0.06, "square");
+          tone(c, 880, now, 0.08, 0.3, "square");
+          tone(c, 1320, now + 0.08, 0.12, 0.3, "square");
         } else {
-          tone(c, 196, now, 0.22, 0.09, "square");
-          tone(c, 185, now + 0.02, 0.2, 0.06, "sawtooth");
+          tone(c, 196, now, 0.22, 0.4, "square");
+          tone(c, 185, now + 0.02, 0.2, 0.3, "sawtooth");
         }
       },
       voice: function (clear) {
         if (muted) return { stop: function () {} };
         var el = new Audio(STORM_DIR + (clear ? "radio-chatter-clear.mp3" : "radio-chatter.mp3"));
         el.loop = true;
-        el.volume = clear ? 0.7 : 0.85;
+        el.volume = 1;
         el.addEventListener("loadedmetadata", function () {
           el.currentTime = Math.random() * Math.max(0, el.duration - 8);
         }, { once: true });

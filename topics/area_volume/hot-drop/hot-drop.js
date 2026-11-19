@@ -139,20 +139,21 @@
     if (!Ctx) return;
     var ctx = audio.ctx = new Ctx();
     var comp = ctx.createDynamicsCompressor();
-    comp.threshold.value = -12;
-    comp.knee.value = 6;
-    comp.ratio.value = 8;
-    comp.attack.value = 0.003;
+    /* Match JM34 Blackout Voyage bus loudness. */
+    comp.threshold.value = -6;
+    comp.knee.value = 20;
+    comp.ratio.value = 2;
+    comp.attack.value = 0.01;
     comp.release.value = 0.25;
     comp.connect(ctx.destination);
     audio.master = ctx.createGain();
-    audio.master.gain.value = audio.muted ? 0 : 0.85;
+    audio.master.gain.value = audio.muted ? 0 : 5.1;
     audio.master.connect(comp);
     audio.music = ctx.createGain();
     audio.music.gain.value = 0;
     audio.music.connect(audio.master);
     audio.sfx = ctx.createGain();
-    audio.sfx.gain.value = 1.4;
+    audio.sfx.gain.value = 4.8;
     audio.sfx.connect(audio.master);
     audio.echoIn = ctx.createGain();
     var dl = ctx.createDelay(1);
@@ -274,7 +275,7 @@
 
   var BEDS = {
     night: {
-      bpm: 92, swing: 0.54, bars: 8, vol: 1.25,
+      bpm: 92, swing: 0.54, bars: 8, vol: 4.05,
       play: function (t, i, bar, e) {
         var c = bar % 4, r = MINOR.roots[c], ch = MINOR.chords[c];
         if (i === 0) {
@@ -297,7 +298,7 @@
       },
     },
     rush: {
-      bpm: 128, swing: 0.5, bars: 4, vol: 1.15,
+      bpm: 128, swing: 0.5, bars: 4, vol: 3.9,
       play: function (t, i, bar, e) {
         var r = MINOR.roots[bar], ch = MINOR.chords[bar];
         if (i % 2 === 0) kick(t, 0.3);
@@ -311,7 +312,7 @@
       },
     },
     dawn: {
-      bpm: 100, swing: 0.5, bars: 4, vol: 1.3,
+      bpm: 100, swing: 0.5, bars: 4, vol: 4.05,
       chords: [[62, 66, 69, 74], [59, 62, 66, 71], [55, 59, 62, 67], [57, 61, 64, 69]],
       roots: [38, 35, 31, 33],
       play: function (t, i, bar, e) {
@@ -324,7 +325,7 @@
       },
     },
     sad: {
-      bpm: 66, swing: 0.5, bars: 4, vol: 1.2,
+      bpm: 66, swing: 0.5, bars: 4, vol: 3.9,
       chords: [[57, 60, 64], [53, 57, 60], [55, 59, 62], [52, 56, 59]],
       play: function (t, i, bar, e) {
         var ch = this.chords[bar];
@@ -418,7 +419,7 @@
   function setMuted(m) {
     audio.muted = m;
     try { localStorage.setItem(KEY_MUTE, m ? "1" : "0"); } catch (e) {}
-    if (audio.master) audio.master.gain.setTargetAtTime(m ? 0 : 0.85, audio.ctx.currentTime, 0.05);
+    if (audio.master) audio.master.gain.setTargetAtTime(m ? 0 : 5.1, audio.ctx.currentTime, 0.05);
     var label = m ? "Sound off" : "Sound on";
     Array.prototype.forEach.call(stage.querySelectorAll(".snd"), function (b) { b.textContent = label; });
   }
